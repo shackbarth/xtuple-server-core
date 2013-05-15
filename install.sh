@@ -158,19 +158,19 @@ clone_repos() {
   cd $XTUPLE_INSTALL/xtuple/node-datasource/
   cat sample_config.js | sed 's/bindAddress: "localhost",/bindAddress: "0.0.0.0",/' > config.js
   
-  cd $XTUPLE_INSTALL/xtuple/enyo-client/extensions
-  rm -f debug.js
-  echo "enyo.depends(" > debug.js
-  echo "  '/public-extensions/source/project/client/package.js'," >> debug.js
-  echo "  '/public-extensions/source/crm/client/package.js'," >> debug.js
-  echo "  '/public-extensions/source/admin/client/package.js'," >> debug.js
-  echo "  '/public-extensions/source/incident_plus/client/package.js'," >> debug.js
-  echo "  '/public-extensions/source/sales/client/package.js'" >> debug.js
-  echo ");" >> debug.js
   
   cd $XTUPLE_INSTALL/xtuple
   npm install
-  
+
+	# build extensions
+  cd $XTUPLE_INSTALL/xtuple/enyo-client/extensions
+	./tools/buildExtensions.sh
+
+	# deploy enyo client
+	cd ../application
+	rm -rf deploy
+	cd tools
+	./deploy.sh  
   echo ""
   echo "repos are configured..."
   echo ""
