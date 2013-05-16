@@ -3,7 +3,14 @@
 XTUPLE_REPO='mobile-repo.xtuple.com' 
 XTUPLE_INSTALL='/usr/local/xtuple'
 POSTBOOKS_VERSION=4.0.3
+PGDIR=/etc/postgresql/9.1/main
 
+fix_pg_hba()
+{
+	mv $PGDIR/pg_hba.conf $PGDIR/pg_hba.conf.default
+	cat $PGDIR/pg_hba.conf.default | sed "s/local\s*all\s*postgres.*/local\tall\tpostgres\ttrust/" | sed "s/local\s*all\s*all.*/local\tall\tall\ttrust/" | sed "s#host\s*all\s*all\s*127\.0\.0\.1.*#host\tall\tall\t127.0.0.1/32\ttrust#" > $PGDIR/pg_hba.conf
+ 	chown postgres:postgres $PGDIR/pg_hba.conf
+}
 
 # Setup databases.
 setup_databases() {
@@ -200,40 +207,32 @@ echo "postgres status is $RETVAL"
 
 if [ $RETVAL -ne 0 ]; then
   echo "postgresql is not setup properly"
+	echo "most likely it did not create a cluster properly due to LC_ALL not being correct"
   exit 1
 fi
 
-LISTEN_ADDRESSES=`psql -U postgres -qtc 'show listen_addresses'`
 
-if [ "$LISTEN_ADDRESSES" =  "local" ]; then
-	echo "listen_addresses = '*'" >> /etc/postgresql/9.1/main/postgresql.conf
-else
-	echo 'listen addresses set correctly'
-fi
-CUSTOM_VARIABLE_CLASSES=`psql -U postgres -qtc 'show custom_variable_classes'`
-
-if [ "$CUSTOM_VARIABLE_CLASSES" =  '' ]; then
-	echo "custom_variable_classes = 'plv8'" >> /etc/postgresql/9.1/main/postgresql.conf
-else
-	echo 'plv8 setup correctly'
-fi
 		
 # modify postgresql.conf
 
 LISTEN_ADDRESSES=`psql -U postgres -qtc 'show listen_addresses'`
 
-if [ "$LISTEN_ADDRESSES" =  "local" ]; then
+if [ "$LISTEN_ADDRESSES" =  " local" ]; then
 	echo "listen_addresses = '*'" >> /etc/postgresql/9.1/main/postgresql.conf
+	echo "changing listen_addresses to * in postgresql.config"
 else
 	echo 'listen addresses set correctly'
 fi
 CUSTOM_VARIABLE_CLASSES=`psql -U postgres -qtc 'show custom_variable_classes'`
 
-if [ "$CUSTOM_VARIABLE_CLASSES" =  '' ]; then
+if [ "$CUSTOM_VARIABLE_CLASSES" =  ' ' ]; then
 	echo "custom_variable_classes = 'plv8'" >> /etc/postgresql/9.1/main/postgresql.conf
+	echo "adding custom_variable_classes line to postgresql.conf"
 else
 	echo 'plv8 setup correctly'
 fi
+
+fix_pg_hba
 		
 service postgresql restart
 
