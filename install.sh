@@ -106,8 +106,20 @@ setup_databases() {
   # do not escape the dollar signs if entering in a psql session
   psql -U postgres -h localhost global -c "UPDATE xt.usr SET usr_password='\$2a\$10\$5hgMfhNhQGvbRiv874rtyOieG09yYg2DQ9Ob18b2q/Tye4Fpqyav2' WHERE usr_id='admin';"
 
+  psql -U admin -h localhost global -c "INSERT INTO xt.ext (ext_name,ext_descrip,ext_location,ext_notes,ext_priv_name,ext_load_order)\
+	VALUES ('project','Project Module', '/public-extensions', '', 'AccessProjectExtension', 2),\
+	('incident_plus', 'Project Versions on Incidents', '/public-extensions', 'Useful where incidents are used as a bug tracker tracking software versions.', 'AccessIncidentPlusExtension', 3),\
+	('connect', 'Integration Tool', '/private-extensions', '', 'AccessConnectExtension', 4),\
+	('sales', 'Sales Extension', '/public-extensions', '', 'AccessSalesExtension', 1000),\
+	('admin', 'Administration extension', '/public-extensions', '', 'AccessAdminExtension', 9),\
+	('crm', 'Customer Relationship Management', '/public-extensions', '', 'AccessCRMExtension', 1),\
+	('orange', 'Orange HRM', '/private-extensions', '', 'AccessOrangeExtension', 10000),\
+	('ppm', 'Portfolio Project Management', '/private-extensions', '', 'AccessPPMExtension', 11);"
+
+	psql -U admin -h localhost global -c "INSERT INTO xt.orgext (orgext_org_name, orgext_ext_id) SELECT 'dev', ext_id FROM xt.ext;"
+
   echo ""
-  echo "Databaes are now setup..."
+  echo "Databases are now setup..."
   echo ""
   
   echo ""
