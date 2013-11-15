@@ -33,7 +33,6 @@ init_everything() {
         log "######################################################"
         log ""
 
-        psql -U postgres $DATABASE -c "select xt.js_init(); insert into xt.usrext (usrext_usr_username, usrext_ext_id) select 'admin', ext_id from xt.ext where ext_location = '/core-extensions';" 2>&1 | tee -a $LOG_FILE
 
         cdir $XT_DIR/xtuple/node-datasource
 
@@ -64,6 +63,11 @@ init_everything() {
         cdir $XT_DIR/xtuple
         node scripts/build_app.js -c /etc/xtuple/config.js -d $DATABASE 2>&1 | tee -a $LOG_FILE
 
+	log "setup admin user"
+        psql -U admin $DATABASE -c "select xt.js_init(); insert into xt.usrext (usrext_usr_username, usrext_ext_id) select 'admin', ext_id from xt.ext where ext_location = '/core-extensions';" 2>&1 | tee -a $LOG_FILE
+	log "add permissions"
+
+	psql -U admin $DATABASE -c "select xt.js_init(); INSERT INTO xt.usrext(usrext_usr_username, usrext_ext_id) select 'admin', ext_id from xt.ext WHERE ext_id NOT IN (SELECT usrext_ext_id FROM xt.usrext WHERE usrext_usr_username='admin')" 2>&1 | tee -a $LOG_FILE
         log ""
         log "######################################################"
         log "######################################################"
@@ -180,11 +184,13 @@ setup_postgres() {
 
         psql -q -U postgres -f 'init.sql' 2>&1 | tee -a $LOG_FILE
 
-        createdb -U postgres -O admin dev 2>&1 | tee -a $LOG_FILE
+        createdb -U postgres -O admin $DATABASE  2>&1 | tee -a $LOG_FILE
 
-        pg_restore -U postgres -d dev postbooks_demo-$NEWESTVERSION.backup 2>&1 | tee -a $LOG_FILE
+        pg_restore -U postgres -d $DATABASE postbooks_demo-$NEWESTVERSION.backup 2>&1 | tee -a $LOG_FILE
 
-        psql -U postgres dev -c "CREATE EXTENSION plv8" 2>&1 | tee -a $LOG_FILE
+
+        psql -U postgres $DATABASE -c "CREATE EXTENSION plv8" 2>&1 | tee -a $LOG_FILE
+	
 }
 
 
