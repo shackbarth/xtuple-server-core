@@ -107,7 +107,7 @@ pull_modules() {
         npm install 2>&1 | tee -a $LOG_FILE
         npm install -g mocha 2>&1 | tee -a $LOG_FILE
 
-    cdir test/shared
+    cdir test/lib
     rm -f login_data.js
     echo "exports.data = {" >> login_data.js
     echo "  webaddress: ''," >> login_data.js
