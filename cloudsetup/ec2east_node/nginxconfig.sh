@@ -1,8 +1,8 @@
 #!/bin/bash
 
-[-z  "$NODEREDIRECTPORT" ] && { echo "NODEREDIRECTPORT is not set"; exit -1; }
-[-z  "$NODEPORT" ] && { echo "NODEPORT is not set"; exit -1; }
-[-z  "$CUSTOMER" ] && { echo "CUSTOMER is not set"; exit -1; }
+[ -z  "$NODEREDIRECTPORT" ] && { echo "NODEREDIRECTPORT is not set"; exit -1; }
+[ -z  "$NODEPORT" ] && { echo "NODEPORT is not set"; exit -1; }
+[ -z  "$CUSTOMER" ] && { echo "CUSTOMER is not set"; exit -1; }
 	
 # PORT is the the HTTP port it is simply there to redirect
 PORT=${NODEREDIRECTPORT}
@@ -32,7 +32,7 @@ fi
 
 writenginxconfig()
 {
-cat << EOF >> $SITEAVAIL/${CUSTOMER}
+cat << EOF > $SITEAVAIL/${CUSTOMER}
 upstream ${CUSTOMER} {
 	server 127.0.0.1:${PORT};
 }
@@ -97,7 +97,7 @@ server {
 		proxy_set_header Host \$host;
 		proxy_set_header X-Real-IP \$remote_addr;
 		proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-		proxy_cache my-cache;
+		proxy_cache off; 
 		proxy_cache_valid 200 302 60m;
 		proxy_cache_valid 404 1m;
 		proxy_ignore_headers "Set-Cookie";
@@ -109,5 +109,6 @@ server {
 }
 EOF
 cd $SITEENABLE && ln -s $SITEAVAIL/${CUSTOMER} .
-
 }
+chknginxservice
+writenginxconfig
