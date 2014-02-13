@@ -14,7 +14,7 @@ PORTSSL=${NODEPORT}
 # Don't change, unless you know...
 SITEAVAIL=/etc/nginx/sites-available
 SITEENABLE=/etc/nginx/sites-enabled
-IPV4LOCAL=`ec2metadata | grep local-ipv4 | cut -d' ' -f 2`
+IPV4LOCAL=`ec2metadata --local-ipv4`
 
 #This script writes out the nginx config.
 chknginxservice()
@@ -111,4 +111,3 @@ EOF
 cd $SITEENABLE && ln -s $SITEAVAIL/${CUSTOMER} .
 }
 chknginxservice
-writenginxconfig
