@@ -1,3 +1,11 @@
+[ -z "$XTHOME" ] && { echo "XTHOME is not set"; exit -1; }
+[ -z "$XTCODE" ] && { echo "XTCODE is not set"; exit -1; }
+[ -z  "$NODEREDIRECTPORT" ] && { echo "NODEREDIRECTPORT is not set"; exit -1; }
+[ -z  "$NODEPORT" ] && { echo "NODEPORT is not set"; exit -1; }
+[ -z  "$CUSTOMER" ] && { echo "CUSTOMER is not set"; exit -1; }
+[ -z  "$DBUSER" ] && { echo "DBUSER is not set"; exit -1; }
+[ -z  "$DBPASS" ] && { echo "DBPASS is not set"; exit -1; }
+
 checkconfigdir()
 {
 if [ ! -d "${XTHOME}/${CUSTOMER}" ];
@@ -88,8 +96,8 @@ regexp:true, undef:true, strict:true, trailing:true, white:true */
     databaseServer: {
       hostname: "localhost",
       port: 6432,
-      user: "${USER}",
-      password: "${PASS}"
+      user: "${DBUSER}",
+      password: "${DBPASS}"
     }
   };
 }());
@@ -122,7 +130,7 @@ exec ./main.js -c /etc/xtuple/${CUSTOMER}/${CUSTOMER}.js > /var/log/${CUSTOMER}_
 EOF
 }
 
-chknodeservice()
+checknodeservice()
 {
 if [ ! -f /etc/init/${CUSTOMER}_mobile.conf ];
 then
