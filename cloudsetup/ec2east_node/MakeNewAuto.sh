@@ -253,8 +253,7 @@ read HUH
 case $HUH in
 Y)
 
-checkconfigdir
-writeconfigjs
+sh nodeconfig.sh
 #writenodeservice
 sh nginxconfig.sh 
 chknodeservice
