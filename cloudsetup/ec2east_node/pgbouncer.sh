@@ -3,6 +3,10 @@
 [ -z  "$BOUNCERINI" ] && { echo "BOUNCERINI is not set"; exit -1; }
 [ -z  "$DBNAME" ] && { echo "DBNAME is not set"; exit -1; }
 [ -z  "$DBIPADDRESS" ] && { echo "DBIPADDRESS is not set"; exit -1; }
+[ -z  "$DBPORT" ] && { echo "DBPORT is not set"; exit -1; }
+[ -z  "$DBUSER" ] && { echo "DBUSER is not set"; exit -1; }
+[ -z  "$DBPASS" ] && { echo "DBPASS is not set"; exit -1; }
+
 
 chkbouncer()
 {
@@ -14,27 +18,8 @@ echo "${CHKBOUNCERINI}"
 else
 
 cat << EOF >> ${BOUNCERINI}
-${DBNAME} = host=${DBIPADDRESS} port=${FINDPORT} dbname=${DBNAME} password=${PASS} user=${USER} pool_size=3
+${DBNAME} = host=${DBIPADDRESS} port=${DBIPORT} dbname=${DBNAME} password=${DBPASS} user=${DBUSER} pool_size=3
 EOF
 
 }
 
-writepgbouncer()
-{
-
-# Let's try to find their PG Port
-FINDCLUSTER=`ssh -i /etc/xtuple/Scripts/ec2-keypair.pem ubuntu@${DBIPADDRESS} pg_lsclusters -h | grep $CUSTOMER`
-
-if [ "$FINDCLUSTER" ];
-then
-FINDPORT=`ssh -i /etc/xtuple/Scripts/ec2-keypair.pem ubuntu@${DBIPADDRESS} pg_lsclusters -h | grep $CUSTOMER | tr -s " " | cut -d ' ' -f 3`
-echo "Found $CUSTOMER db cluster on $DBIPADDRESS on ${FINDPORT}"
-echo "searching pgbouncer.ini for a similar entry"
-chkbouncer
-else
-echo "Database for $CUSTOMER doesn't exist on $DBIPADDRESS. Try $OTHER"
-# DBIPADDRESS=${OTHER}
-# FINDPORT=`ssh -i /etc/xtuple/ec2-keypair.pem ubuntu@${DBIPADDRESS} pg_lsclusters -h | grep $CUSTOMER | tr -s " " | cut -d ' ' -f 3`
-writepgbouncer
-fi
-}
