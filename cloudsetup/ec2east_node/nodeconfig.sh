@@ -1,17 +1,19 @@
+#!/bin/bash
+
 [ -z "$XTHOME" ] && { echo "XTHOME is not set"; exit -1; }
 [ -z "$XTCODE" ] && { echo "XTCODE is not set"; exit -1; }
-[ -z  "$NODEREDIRECTPORT" ] && { echo "NODEREDIRECTPORT is not set"; exit -1; }
-[ -z  "$NODEPORT" ] && { echo "NODEPORT is not set"; exit -1; }
-[ -z  "$CUSTOMER" ] && { echo "CUSTOMER is not set"; exit -1; }
-[ -z  "$DBUSER" ] && { echo "DBUSER is not set"; exit -1; }
-[ -z  "$DBPASS" ] && { echo "DBPASS is not set"; exit -1; }
+[ -z "$NODEREDIRECTPORT" ] && { echo " nodeconfig NODEREDIRECTPORT is not set"; exit -1; }
+[ -z "$NODEPORT" ] && { echo "NODEPORT is not set"; exit -1; }
+[ -z "$CUSTOMER" ] && { echo "CUSTOMER is not set"; exit -1; }
+[ -z "$DBUSER" ] && { echo "DBUSER is not set"; exit -1; }
+[ -z "$DBPASS" ] && { echo "DBPASS is not set"; exit -1; }
 
 checkconfigdir()
 {
 if [ ! -d "${XTHOME}/${CUSTOMER}" ];
 then
 echo "Creating Directory with mkdir -p ${XTHOME}/${CUSTOMER}"
-mkdir -p ${XTHOME}/${CUSTOMER}
+mkdir -p ${XTHOME}/${CUSTOMER}/lib
 echo "Copying $XTCODE/node-datasource/lib to ${XTHOME}/${CUSTOMER}"
 cp -R ${XTHOME}/lib_template ${XTHOME}/${CUSTOMER}/lib
 echo "done"

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-[ -z  "$NODEREDIRECTPORT" ] && { echo "NODEREDIRECTPORT is not set"; exit -1; }
+[ -z  "$NODEREDIRECTPORT" ] && { echo " nginxconfig NODEREDIRECTPORT is not set"; exit -1; }
 [ -z  "$NODEPORT" ] && { echo "NODEPORT is not set"; exit -1; }
 [ -z  "$CUSTOMER" ] && { echo "CUSTOMER is not set"; exit -1; }
 	

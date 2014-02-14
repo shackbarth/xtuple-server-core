@@ -20,6 +20,6 @@ else
 cat << EOF >> ${BOUNCERINI}
 ${DBNAME} = host=${DBIPADDRESS} port=${DBIPORT} dbname=${DBNAME} password=${DBPASS} user=${DBUSER} pool_size=3
 EOF
-
+fi
 }
-
+chkbouncer

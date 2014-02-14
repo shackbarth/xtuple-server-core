@@ -8,6 +8,8 @@
 # Todo: Check monitor.xtuple.com database for port overlap - possibly read that db and assign something not taken. :)
 # Trigger on Ports column? Autoincrement? That'd be nice.
 
+if [ -z "$NODEREDIRECTPORT" ]; then
+
 HIGHHTTP=`grep 'server 127.0.0.1:100'  /etc/nginx/sites-available/* | cut -d':' -f 3 | cut -d ';' -f 1 | sort -r |head -1`
 NEWHTTP=`expr $HIGHHTTP + 1`
 
@@ -15,28 +17,28 @@ HIGHHTTPS=`grep 'server 127.0.0.1:104'  /etc/nginx/sites-available/* | cut -d':'
 NEWHTTPS=`expr $HIGHHTTPS + 1`
 
 echo "New HTTP = $NEWHTTP , New HTTPS = $NEWHTTPS"
+export NODEREDIRECTPORT=$NEWHTTP
+export NODEPORT=$NEWHTTPS
+
+fi
 
 export CUSTOMER=$1
-NODEREDIRECTPORT=$NEWHTTP
-NODEPORT=$NEWHTTPS
 
-export PORT=${NODEREDIRECTPORT}
-export PORTSSL=${NODEPORT}
 
 # Port 10080
 # portssl 10443
-DBNAME=$2
-USER=node
-PASS='SOMEPASSWORD'
+export DBNAME=$2
+export DBUSER=node
+export DBPASS='SOMEPASSWORD'
 
 # Port 10023 10.0.1.125
 # Port 10024 10.0.1.239
 WORKDATE=`/bin/date "+%m%d%Y"`
 
-XTHOME=/etc/xtuple/
-XTCODE=/usr/local/current
-BOUNCERINI=/etc/pgbouncer/pgbouncer.ini
-LOG="${CUSTOMER}_${WORKDATE}.log"
+export XTHOME=/etc/xtuple/
+export XTCODE=/usr/local/xtuple/xtuple
+export BOUNCERINI=/etc/pgbouncer/pgbouncer.ini
+export LOG="${CUSTOMER}_${WORKDATE}.log"
 
 checkconfigdir()
 {
@@ -253,10 +255,10 @@ read HUH
 case $HUH in
 Y)
 
-sh nodeconfig.sh
+./nodeconfig.sh
 #writenodeservice
-sh nginxconfig.sh 
-chknodeservice
+./nginxconfig.sh 
+#chknodeservice
 # writepgbouncer
 
 echo "wrote all configs"
