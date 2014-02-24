@@ -1,51 +1,19 @@
 #!/bin/bash
-# sh ./MakeNew.sh customer/clustername databasename
 
-# What this does:
-# Setups up configs and entries for:
-# Nginx, xTuple Mobile, Upstart, and PGBouncer, all from one command.
-
-# Todo: Check monitor.xtuple.com database for port overlap - possibly read that db and assign something not taken. :)
-# Trigger on Ports column? Autoincrement? That'd be nice.
-
-if [ -z "$NODEREDIRECTPORT" ]; then
-
-HIGHHTTP=`grep 'server 127.0.0.1:100'  /etc/nginx/sites-available/* | cut -d':' -f 3 | cut -d ';' -f 1 | sort -r |head -1`
-NEWHTTP=`expr $HIGHHTTP + 1`
-
-HIGHHTTPS=`grep 'server 127.0.0.1:104'  /etc/nginx/sites-available/* | cut -d':' -f 3 | cut -d ';' -f 1 | sort -r |head -1`
-NEWHTTPS=`expr $HIGHHTTPS + 1`
-
-echo "New HTTP = $NEWHTTP , New HTTPS = $NEWHTTPS"
-export NODEREDIRECTPORT=$NEWHTTP
-export NODEPORT=$NEWHTTPS
-
-fi
-
-export CUSTOMER=$1
-
-
-# Port 10080
-# portssl 10443
-export DBNAME=$2
-export DBUSER=node
-export DBPASS='SOMEPASSWORD'
-
-# Port 10023 10.0.1.125
-# Port 10024 10.0.1.239
-WORKDATE=`/bin/date "+%m%d%Y"`
-
-export XTHOME=/etc/xtuple/
-export XTCODE=/usr/local/xtuple/xtuple
-export BOUNCERINI=/etc/pgbouncer/pgbouncer.ini
-export LOG="${CUSTOMER}_${WORKDATE}.log"
+[ -z "$XTHOME" ] && { echo "XTHOME is not set"; exit -1; }
+[ -z "$XTCODE" ] && { echo "XTCODE is not set"; exit -1; }
+[ -z "$NODEREDIRECTPORT" ] && { echo " nodeconfig NODEREDIRECTPORT is not set"; exit -1; }
+[ -z "$NODEPORT" ] && { echo "NODEPORT is not set"; exit -1; }
+[ -z "$CUSTOMER" ] && { echo "CUSTOMER is not set"; exit -1; }
+[ -z "$DBUSER" ] && { echo "DBUSER is not set"; exit -1; }
+[ -z "$DBPASS" ] && { echo "DBPASS is not set"; exit -1; }
 
 checkconfigdir()
 {
 if [ ! -d "${XTHOME}/${CUSTOMER}" ];
 then
 echo "Creating Directory with mkdir -p ${XTHOME}/${CUSTOMER}"
-mkdir -p ${XTHOME}/${CUSTOMER}
+mkdir -p ${XTHOME}/${CUSTOMER}/lib
 echo "Copying $XTCODE/node-datasource/lib to ${XTHOME}/${CUSTOMER}"
 cp -R ${XTHOME}/lib_template ${XTHOME}/${CUSTOMER}/lib
 echo "done"
@@ -130,8 +98,8 @@ regexp:true, undef:true, strict:true, trailing:true, white:true */
     databaseServer: {
       hostname: "localhost",
       port: 6432,
-      user: "${USER}",
-      password: "${PASS}"
+      user: "${DBUSER}",
+      password: "${DBPASS}"
     }
   };
 }());
@@ -164,7 +132,7 @@ exec ./main.js -c /etc/xtuple/${CUSTOMER}/${CUSTOMER}.js > /var/log/${CUSTOMER}_
 EOF
 }
 
-chknodeservice()
+checknodeservice()
 {
 if [ ! -f /etc/init/${CUSTOMER}_mobile.conf ];
 then
@@ -174,98 +142,6 @@ else
 echo "${CUSTOMER}_mobile.conf already exists. Skipping."
 fi
 }
-
-
-
-chkbouncer()
-{
-CHKBOUNCERINI=`grep ${DBNAME} ${BOUNCERINI}`
-if [ "$CHKBOUNCERINI" ];
-then
-echo "${DBNAME} exists in ${BOUNCERINI} as:"
-echo "${CHKBOUNCERINI}"
-else
-echo "${DBNAME} not found in ${BOUNCERINI}. We can write it in there, Yes? or No? (Y/N)"
-read WRITELINE
-
-case $WRITELINE in
-Y)
-cat << EOF >> ${BOUNCERINI}
-${DBNAME} = host=${BOUNCEIP} port=${FINDPORT} dbname=${DBNAME} password=${PASS} user=${USER} pool_size=3
-EOF
-;;
-N)
-echo "Try again or X to cancel"
-chkbouncer
-;;
-
-X)
-echo "Quitting"
-exit 0;
-;;
-esac
-fi
-}
-
-writepgbouncer()
-{
-echo "What pg server should this bounce to?"
-echo "Select one of the Options:"
-echo "A) 10.0.1.125 (10023)"
-echo "B) 10.0.1.239 (10024)"
-
-echo "Enter 'A' or 'B'"
-read BOUNCEIP
-case $BOUNCEIP in
-"A")
-BOUNCEIP=10.0.1.125
-SSHPORT=10023
-OTHER="10.0.1.239"
-;;
-"B")
-BOUNCEIP=10.0.1.239
-SSHPORT=10024
-OTHER="10.0.1.125"
-;;
-*)
-echo "Invalid - Try again."
-writepgbouncer
-;;
-esac
-echo "Let's try to find their PG Port"
-FINDCLUSTER=`ssh -i /etc/xtuple/Scripts/ec2-keypair.pem ubuntu@${BOUNCEIP} pg_lsclusters -h | grep $CUSTOMER`
-
-if [ "$FINDCLUSTER" ];
-then
-FINDPORT=`ssh -i /etc/xtuple/Scripts/ec2-keypair.pem ubuntu@${BOUNCEIP} pg_lsclusters -h | grep $CUSTOMER | tr -s " " | cut -d ' ' -f 3`
-echo "Found $CUSTOMER db cluster on $BOUNCEIP on ${FINDPORT}"
-echo "searching pgbouncer.ini for a similar entry"
-chkbouncer
-else
-echo "Database for $CUSTOMER doesn't exist on $BOUNCEIP. Try $OTHER"
-# BOUNCEIP=${OTHER}
-# FINDPORT=`ssh -i /etc/xtuple/ec2-keypair.pem ubuntu@${BOUNCEIP} pg_lsclusters -h | grep $CUSTOMER | tr -s " " | cut -d ' ' -f 3`
-writepgbouncer
-fi
-}
-
-echo "You Entered: $1, $2"
-echo "This look OK? (Y/N)"
-read HUH
-case $HUH in
-Y)
-
-./nodeconfig.sh
-#writenodeservice
-./nginxconfig.sh 
-#chknodeservice
-# writepgbouncer
-
-echo "wrote all configs"
-;;
-N)
-echo "quitting"
-;;
-esac
-
-exit 0;
+checkconfigdir
+writeconfigjs
+checknodeservice
