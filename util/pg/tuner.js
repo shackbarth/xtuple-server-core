@@ -11,6 +11,7 @@
     os = require('os'),
     m = require('mstring'),
     posix = require('posix'),
+    Writer = require('simple-file-writer'),
 
     MB = 1048576,
 
@@ -65,16 +66,77 @@
       shmall: ((os.totalmem() / 2) / 4096)
     };
 
+  var tuner = exports;
+
+  _.extend(tuner, /** @exports tuner */ {
+    /**
+     * cluster {
+     *   version: {version},
+     *   name: 'main',
+     *   port: 5432,
+     *   config: /etc/postgresql/{version}/kelhay,
+     *   data: /var/lib/postgresql/{version}/kelhay,
+     *   locale: 'en_US.UTF-8'
+     * }
+     * params {
+     *   ... anything
+     *
+     *   box: true -> installed on an appliance
+     * }
+     */
+    tune: function (cluster, params) {
+      var sysctl_file,
+        conf_params = {
+          locale: cluster.locale,
+          data_directory: cluster.data,
+          version: cluster.version,
+          cluster: cluster.name,
+          port: cluster.port,
+          max_connections: defaults.max_connections || params.max_connections,
+          shared_buffers: shared_buffers(cluster, params),
+          temp_buffers: temp_buffers(cluster, params),
+          work_mem: work_mem(cluster, params),
+          maintenance_work_mem: maintenance_work_mem(cluster, params),
+          max_stack_depth: max_stack_depth(cluster, params),
+          effective_cache_size: effective_cache_size(cluster, params),
+        },
+        conf = postgresql_conf
+          .format(_.extend({ }, conf_params, params))
+          .replace(/^\s+/mg, '')
+          .trim(),
+        kernelconf;
+
+      if (cluster.version < 9.3 && !params.dryrun && params.write !== false) {
+        kernelconf = sysctl_conf
+          .format({ shmmax: env.shmmax, shmall: env.shmall })
+          .replace(/^\s+/mg, '')
+          .trim();
+
+        try {
+          new Writer('/etc/sysctl.d/30-postgresql-shm.conf').write(kernelconf);
+        }
+        catch (e) {
+          console.log(e);
+        }
+      }
+
+      if (params.write !== false) {
+        try {
+          new Writer(cluster.config + 'postgresql.conf').write(conf);
+        }
+        catch (e) {
+          console.log(e);
+        }
+      }
+
+      return conf;
+    }
+  });
+
   /**
    * <http://www.postgresql.org/docs/current/static/runtime-config-resource.html#GUC-SHARED-BUFFERS>
    */
   function shared_buffers (cluster, params) {
-    var sysctl;
-    if (cluster.version < 9.3) {
-      sysctl_conf.format({ shmmax: env.shmmax, shmall: env.shmall });
-      // TODO write to file
-    }
-
     return Math.ceil(env.totalmem / 4.0);
   }
   /**
@@ -112,41 +174,4 @@
   function temp_buffers (cluster, params) {
     return Math.ceil(env.cpus / 2);
   }
-
-  /**
-   * cluster {
-   *   version: {version},
-   *   name: 'main',
-   *   port: 5432,
-   *   config: /etc/postgresql/{version}/kelhay,
-   *   data: /var/lib/postgresql/{version}/kelhay,
-   *   locale: 'en_US.UTF-8'
-   * }
-   * params {
-   *   ... anything
-   *
-   *   box: true -> installed on an appliance
-   * }
-   */
-  function tune (cluster, params) {
-    return postgresql_conf
-      .format(_.extend({ }, cluster, {
-        locale: cluster.locale,
-        data_directory: cluster.data,
-        version: cluster.version,
-        cluster: cluster.name,
-        port: cluster.port,
-        max_connections: defaults.max_connections || params.max_connections,
-        shared_buffers: shared_buffers(cluster, params),
-        temp_buffers: temp_buffers(cluster, params),
-        work_mem: work_mem(cluster, params),
-        maintenance_work_mem: maintenance_work_mem(cluster, params),
-        max_stack_depth: max_stack_depth(cluster, params),
-        effective_cache_size: effective_cache_size(cluster, params),
-      }))
-    .replace(/^\s+/mg, '')
-    .trim();
-  }
-
-  exports.tune = tune;
 })();
