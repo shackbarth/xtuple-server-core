@@ -1,0 +1,33 @@
+{
+  "name": "xtuple-scripts",
+  "version": "0.0.0",
+  "description": "xtuple-scripts ==============",
+  "main": "index.js",
+  "dependencies": {
+    "congruence": "~1.2.4",
+    "mstring": "~0.1.2",
+    "simple-file-writer": "~1.0.9",
+    "sync": "~0.2.2",
+    "csv": "~0.3.7",
+    "exec-sync": "~0.1.6",
+    "underscore": "~1.6.0",
+    "string-format": "~0.2.1",
+    "chai": "~1.9.0"
+  },
+  "devDependencies": {
+    "mocha": "~1.17.1"
+  },
+  "scripts": {
+    "test": "mocha util/spec -R spec -ig sudo",
+    "test-sudo": "mocha util/spec -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/tjwebb/xtuple-scripts.git"
+  },
+  "author": "",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/tjwebb/xtuple-scripts/issues"
+  }
+}
