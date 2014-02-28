@@ -2,10 +2,11 @@
   'use strict';
 
   var os = require('os'),
-    tuner = require('./tuner');
+    tuner = require('./tuner'),
+    pg = require('./ctl');
 
   if (os.platform() !== 'linux') {
-    throw 'pgone is only supported on linux at this time';
+    throw 'util/pg is only supported on linux at this time';
   }
 
   /**
@@ -18,7 +19,7 @@
    */
   function setup (params) {
 
-    var cluster = pg_createcluster(params.version, params.customer);
+    var cluster = pg.createcluster(params.version, params.customer);
     // TODO parse output
       /*
       $ sudo pg_createcluster {version} kelhay
@@ -33,9 +34,4 @@
     tuner.tune(cluster);
   }
 
-  function pg_createcluster (version, customer) {
-    // $ pg_createcluster 9.1 kelhay
-  }
-
 })();
-
