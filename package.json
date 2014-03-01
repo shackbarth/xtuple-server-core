@@ -18,8 +18,8 @@
     "mocha": "~1.17.1"
   },
   "scripts": {
-    "test": "mocha util/spec -R spec -ig sudo",
-    "test-sudo": "mocha util/spec -R spec"
+    "test": "mocha lib/spec -R spec -ig sudo",
+    "test-sudo": "mocha lib/spec -R spec"
   },
   "repository": {
     "type": "git",
