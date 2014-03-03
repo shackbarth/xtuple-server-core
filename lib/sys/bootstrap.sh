@@ -13,36 +13,46 @@ install_xtuple () {
   XTVERSION=$1
 
   cd $XTHOME
+  mkdir -p installer
+  mkdir -p src
+  #mkdir -p src/private-extensions
+  #mkdir -p src/xtuple-extensions
 
   log "Backing up any existing files in installer/..."
-  mkdir -p installer
   tar=$(tar cvf installer.bak.tar installer/)
   rm -rf installer
 
   log "Downloading installers...\n"
-  clone=$(git clone --recursive https://github.com/xtuple/xtuple-scripts.git installer)
+  clone=$(git clone -q --recursive https://github.com/xtuple/xtuple-scripts.git installer)
+  [[ $? -ne 0 ]] && die "$clone"
+  
+  clone=$(git clone -q --recursive https://github.com/xtuple/private-extensions src/private-extensions)
   [[ $? -ne 0 ]] && die "$clone"
 
-  if [[ -z $XTVERSION ]]; then
-    log "Downloading latest xtuple npm module..."
-  else
-    log "Downloading xtuple npm module v$XTVERSION..."
-  fi
+  # TODO install using npm
+
+  #if [[ -z $XTVERSION ]]; then
+    #log "Downloading latest xtuple npm module..."
+  #else
+    #log "Downloading xtuple npm module v$XTVERSION..."
+  #fi
 
   #npm=$(sudo npm --loglevel error install -g xtuple@$XTVERSION)
-  npm=$(sudo npm install -g xtuple@$XTVERSION)
-  [[ $? -ne 0 ]] && die "$npm"
+  #npm=$(sudo npm install -g xtuple@$XTVERSION)
+  #[[ $? -ne 0 ]] && die "$npm"
 
-  npmxt=$(npm show xtuple version | tail -2 | head -1)
+  #npmxt=$(npm show xtuple version | tail -2 | head -1)
 
-  XTVERSION="$npmxt"
-  log "Downloaded: xTuple v$XTVERSION"
-  #XTTAG="v$XTVERSION"
-  #XTVERSION=$(git describe --abbrev=0)
-  #git clone --recursive git://github.com/xtuple/xtuple.git
-  #git checkout $XTVERSION
+  #XTVERSION="$npmxt"
+  git clone --recursive git://github.com/xtuple/xtuple.git src/xtuple
+  XTTAG="v$XTVERSION"
+  XTVERSION=$(git describe --abbrev=0)
+  git checkout $XTVERSION
 
-  sudo node installer/lib/sys/install.js install --xt-version $XTVERSION --log-file $LOG_FILE --dbadmin-pw $DBADMIN_PASS --require-tests $@
+  log "Downloaded: xTuple $XTTAG"
+  sudo node installer/lib/sys/install.js install \
+    --xt-version $XTVERSION --xt-home $XTHOME --xt-srcdir $XTHOME/src/xtuple \
+    --log-file $LOG_FILE --dbadminpw $DBADMIN_PASS --require-tests $@
 }
 
 install_rhel () {
@@ -93,12 +103,13 @@ install_debian () {
   echo ""
   log "SSH Remote Access Credentials"
   log "   username: xtadmin"
-  log "   password: <secure>"
+  log "   password: <hidden>"
   echo "[xtuple]    password: $XTADMIN_PASS"
   echo ""
-  log "WRITE THIS DOWN. You will not see this information again."
+  log "WRITE THIS DOWN. This information is about to be destroyed."
+  log "Failure to heed this warning may result in being locked out of the machine forever."
   echo ""
-  log "Press Enter to continue..."
+  log "Press Enter to continue installation..."
 
   read
 }
