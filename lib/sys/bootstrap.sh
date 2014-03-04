@@ -1,18 +1,19 @@
 #!/bin/bash
 
 ROOT=$(pwd)
-XTHOME=/usr/local/xtuple
-LOG_FILE=$ROOT/xtuple-install.log
-XTADMIN_PASS=
-DBADMIN_PASS=
-XTVERSION=
 ARGV=$@
 TRAPMSG=
 
-install_xtuple () {
-  XTVERSION=$1
+xthome=/usr/local/xtuple
+logfile=$ROOT/xtuple-install.log
+xtadmin_pass=
+dbadmin_pass=
+xtversion=
 
-  cd $XTHOME
+install_xtuple () {
+  xtversion=$1
+
+  cd $xthome
   mkdir -p installer
   mkdir -p src
   #mkdir -p src/private-extensions
@@ -31,28 +32,28 @@ install_xtuple () {
 
   # TODO install using npm
 
-  #if [[ -z $XTVERSION ]]; then
+  #if [[ -z $xtversion ]]; then
     #log "Downloading latest xtuple npm module..."
   #else
-    #log "Downloading xtuple npm module v$XTVERSION..."
+    #log "Downloading xtuple npm module v$xtversion..."
   #fi
 
-  #npm=$(sudo npm --loglevel error install -g xtuple@$XTVERSION)
-  #npm=$(sudo npm install -g xtuple@$XTVERSION)
+  #npm=$(sudo npm --loglevel error install -g xtuple@$xtversion)
+  #npm=$(sudo npm install -g xtuple@$xtversion)
   #[[ $? -ne 0 ]] && die "$npm"
 
   #npmxt=$(npm show xtuple version | tail -2 | head -1)
 
-  #XTVERSION="$npmxt"
+  #xtversion="$npmxt"
   git clone --recursive git://github.com/xtuple/xtuple.git src/xtuple
-  XTTAG="v$XTVERSION"
-  XTVERSION=$(git describe --abbrev=0)
-  git checkout $XTVERSION
+  XTTAG="v$xtversion"
+  xtversion=$(git describe --abbrev=0)
+  git checkout $xtversion
 
   log "Downloaded: xTuple $XTTAG"
   sudo node installer/lib/sys/install.js install \
-    --xt-version $XTVERSION --xt-home $XTHOME --xt-srcdir $XTHOME/src/xtuple \
-    --log-file $LOG_FILE --dbadminpw $DBADMIN_PASS --require-tests $@
+    --xt-version $xtversion --xt-home $xthome --xt-srcdir $xthome/src/xtuple --xt-runtests \
+    --logfile $logfile --pg-adminpw $dbadmin_pass $@
 }
 
 install_rhel () {
@@ -80,31 +81,31 @@ install_debian () {
   sudo add-apt-repository ppa:nginx/stable -y
   sudo add-apt-repository ppa:chris-lea/node.js-legacy -y
   sudo add-apt-repository ppa:chris-lea/node.js -y
-  sudo apt-get -qq update 2>&1 | tee -a $LOG_FILE
+  sudo apt-get -qq update 2>&1 | tee -a $logfile
   sudo apt-get -q -y install curl build-essential libssl-dev git openssh-server \
     postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-plv8 \
     nginx-full=1.4.5-1+precise0 \
     nodejs=0.8.26-1chl1~precise1 npm \
-  2>&1 | tee -a $LOG_FILE
+  2>&1 | tee -a $logfile
 
   log "Creating users..."
 
-  XTADMIN_PASS=$(head -c 8 /dev/random | base64 | sed "s/[=[:space:]]//g")
-  DBADMIN_PASS=$(head -c 4 /dev/random | base64 | sed "s/[=[:space:]]//g")
+  xtadmin_pass=$(head -c 8 /dev/random | base64 | sed "s/[=[:space:]]//g")
+  dbadmin_pass=$(head -c 4 /dev/random | base64 | sed "s/[=[:space:]]//g")
 
   sudo addgroup xtuple
   sudo adduser xtuple  --group xtuple --home /usr/local/xtuple --system
   sudo adduser xtadmin --group xtuple --home /usr/local/xtuple
   sudo usermod xtadmin -G sudo
   sudo chown :xtuple /usr/local/xtuple
-  echo $XTADMIN_PASS | sudo passwd xtadmin --stdin
+  echo $xtadmin_pass | sudo passwd xtadmin --stdin
   sudo su - xtadmin
 
   echo ""
   log "SSH Remote Access Credentials"
   log "   username: xtadmin"
   log "   password: <hidden>"
-  echo "[xtuple]    password: $XTADMIN_PASS"
+  echo "[xtuple]    password: $xtadmin_pass"
   echo ""
   log "WRITE THIS DOWN. This information is about to be destroyed."
   log "Failure to heed this warning may result in being locked out of the machine forever."
@@ -116,7 +117,7 @@ install_debian () {
 
 log() {
   echo -e "[xtuple] $@"
-  echo -e "[xtuple] $@" >> $LOG_FILE
+  echo -e "[xtuple] $@" >> $logfile
 }
 die() {
   TRAPMSG="$@"
@@ -139,7 +140,7 @@ log "         xxx     xxx"
 if [[ ! -z $(which yum) ]]; then
   install_rhel
 elif [[ ! -z $(which apt-get) ]]; then
-  #install_debian
+  install_debian
   echo ''
 else
   log "supported package manager not found"
