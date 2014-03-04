@@ -1,12 +1,13 @@
 #!/bin/bash
+env > /tmp/nodeconfig.log
 
-[ -z "$XTHOME" ] && { echo "XTHOME is not set"; exit -1; }
-[ -z "$XTCODE" ] && { echo "XTCODE is not set"; exit -1; }
-[ -z "$NODEREDIRECTPORT" ] && { echo " nodeconfig NODEREDIRECTPORT is not set"; exit -1; }
-[ -z "$NODEPORT" ] && { echo "NODEPORT is not set"; exit -1; }
-[ -z "$CUSTOMER" ] && { echo "CUSTOMER is not set"; exit -1; }
-[ -z "$DBUSER" ] && { echo "DBUSER is not set"; exit -1; }
-[ -z "$DBPASS" ] && { echo "DBPASS is not set"; exit -1; }
+[ -z "$XTHOME" ] 		&& { echo "XTHOME is not set f2fa2ea3"; exit -1; }
+[ -z "$XTCODE" ] 		&& { echo "XTCODE is not set f2fa2ea3"; exit -1; }
+[ -z "$NODEREDIRECTPORT" ] 	&& { echo " nodeconfig NODEREDIRECTPORT is not set f2fa2ea3"; exit -1; }
+[ -z "$NODEPORT" ] 		&& { echo "NODEPORT is not set f2fa2ea3"; exit -1; }
+[ -z "$CUSTOMER" ] 		&& { echo "CUSTOMER is not set f2fa2ea3"; exit -1; }
+[ -z "$DBUSER" ] 		&& { echo "DBUSER is not set f2fa2ea3"; exit -1; }
+[ -z "$DBPASS" ] 		&& { echo "DBPASS is not set f2fa2ea3"; exit -1; }
 
 checkconfigdir()
 {
@@ -16,9 +17,11 @@ echo "Creating Directory with mkdir -p ${XTHOME}/${CUSTOMER}"
 mkdir -p ${XTHOME}/${CUSTOMER}/lib
 echo "Copying $XTCODE/node-datasource/lib to ${XTHOME}/${CUSTOMER}"
 cp -R ${XTHOME}/lib_template ${XTHOME}/${CUSTOMER}/lib
-echo "done"
+#md5sum of SUCCESS
+echo "e9b4c3b4"
 else
-echo "Path ${XTHOME}/${CUSTOMER} already Exists!"
+#md5sum of EXISTS
+echo "Path ${XTHOME}/${CUSTOMER} already Exists! bcb3b227"
 fi
 }
 
