@@ -5,9 +5,9 @@ ARGV=$@
 TRAPMSG=
 
 xthome=/usr/local/xtuple
-logfile=$ROOT/xtuple-install.log
-xtadmin_pass=
-dbadmin_pass=
+logfile=$ROOT/install.log
+xtremote_pass=
+pg_adminpw=
 xtversion=
 
 install_xtuple () {
@@ -24,10 +24,13 @@ install_xtuple () {
   rm -rf installer
 
   log "Downloading installers...\n"
-  clone=$(git clone -q --recursive https://github.com/xtuple/xtuple-scripts.git installer)
+  clone=$(git clone --recursive https://github.com/xtuple/xtuple-scripts.git installer)
   [[ $? -ne 0 ]] && die "$clone"
   
-  clone=$(git clone -q --recursive https://github.com/xtuple/private-extensions src/private-extensions)
+  clone=$(git clone --recursive https://github.com/xtuple/xtuple-extensions src/xtuple-extensions)
+  [[ $? -ne 0 ]] && die "$clone"
+
+  clone=$(git clone --recursive https://github.com/xtuple/private-extensions src/private-extensions)
   [[ $? -ne 0 ]] && die "$clone"
 
   # TODO install using npm
@@ -46,22 +49,26 @@ install_xtuple () {
 
   #xtversion="$npmxt"
   git clone --recursive git://github.com/xtuple/xtuple.git src/xtuple
+  cd src/xtuple
   XTTAG="v$xtversion"
   xtversion=$(git describe --abbrev=0)
   git checkout $xtversion
+  npm install
 
-  log "Downloaded: xTuple $XTTAG"
+  log "cloned xTuple $XTTAG"
+
+  printf "\033c"
   sudo node installer/lib/sys/install.js install \
-    --xt-version $xtversion --xt-home $xthome --xt-srcdir $xthome/src/xtuple --xt-runtests \
-    --logfile $logfile --pg-adminpw $dbadmin_pass $@
+    --xt-version $xtversion --xt-srcdir $xthome/src/xtuple --xt-verify \
+    --pg-adminpw $pg_adminpw $@
 }
 
 install_rhel () {
   echo "TODO support rhel"
   exit 1;
 
-  #sudo useradd -p $MAINTENANCEPASS xtadmin
-  #sudo usermod -G wheel xtadmin
+  #sudo useradd -p $MAINTENANCEPASS xtremote
+  #sudo usermod -G wheel xtremote
 
   #yum install postgres93-server
   #plv8 is in here: http://yum.postgresql.org/news-packagelist.php
@@ -90,29 +97,36 @@ install_debian () {
 
   log "Creating users..."
 
-  xtadmin_pass=$(head -c 8 /dev/random | base64 | sed "s/[=[:space:]]//g")
-  dbadmin_pass=$(head -c 4 /dev/random | base64 | sed "s/[=[:space:]]//g")
+  xtremote_pass=$(head -c 8 /dev/random | base64 | sed "s/[=[:space:]]//g")
+  pg_adminpw=$(head -c 4 /dev/random | base64 | sed "s/[=[:space:]]//g")
 
   sudo addgroup xtuple
   sudo adduser xtuple  --group xtuple --home /usr/local/xtuple --system
-  sudo adduser xtadmin --group xtuple --home /usr/local/xtuple
-  sudo usermod xtadmin -G sudo
+  sudo adduser xtremote --group xtuple --home /usr/local/xtuple
+  sudo usermod xtremote -G sudo
   sudo chown :xtuple /usr/local/xtuple
-  echo $xtadmin_pass | sudo passwd xtadmin --stdin
-  sudo su - xtadmin
+  echo $xtremote_pass | sudo passwd xtremote --stdin
+  sudo su - xtremote
 
+}
+
+setup_policy () {
   echo ""
   log "SSH Remote Access Credentials"
-  log "   username: xtadmin"
+  log "   username: xtremote"
   log "   password: <hidden>"
-  echo "[xtuple]    password: $xtadmin_pass"
+  echo "[xtuple]    password: $xtremote_pass"
   echo ""
-  log "WRITE THIS DOWN. This information is about to be destroyed."
-  log "Failure to heed this warning may result in being locked out of the machine forever."
+  log "WRITE THIS DOWN. This information is about to be destroyed forever."
   echo ""
   log "Press Enter to continue installation..."
 
   read
+
+  xtremote_pass=
+
+  # TODO remove root from sshd config
+  # TODO set root shell to limbo
 }
 
 log() {
@@ -125,7 +139,6 @@ die() {
   exit 1
 }
 
-printf "\033c"
 trap 'CODE=$? ; log "\n\nxTuple Install Aborted:\n  line: $BASH_LINENO \n  cmd: $BASH_COMMAND \n  code: $CODE\n  msg: $TRAPMSG\n" ; exit 1' ERR EXIT
 
 log "This program will install xTuple\n"
@@ -146,6 +159,8 @@ else
   log "supported package manager not found"
   exit 1;
 fi
+
+setup_policy
 
 # arguments are passed through to the myriad downstream install scripts;
 # we only specifically care about xt-version right now
