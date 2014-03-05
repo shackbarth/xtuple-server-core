@@ -1,0 +1,241 @@
+Welcome to the xTuple Installer!
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+xxx xxx
+xxx xxx
+xxxxx
+xxx xxx
+xxx xxx
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+xxx xxx
+xxx xxx
+xxx xxx
+xxxxx
+xxx xxx
+xxx xxx
+xxx xxx
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+xxx xxx
+xxx xxx
+xxx xxx
+xxxxx
+xxx xxx
+xxx xxx
+xxx xxx
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+xxx xxx
+xxx xxx
+xxx xxx
+xxxxx
+xxx xxx
+xxx xxx
+xxx xxx
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+xxx xxx
+xxx xxx
+xxx xxx
+xxxxx
+xxx xxx
+xxx xxx
+xxx xxx
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+
+xxx xxx
+xxx xxx
+xxx xxx
+xxxxx
+xxx xxx
+xxx xxx
+xxx xxx
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+Welcome to the xTuple Installer!
+
+xxx xxx
+xxx xxx
+xxx xxx
+xxxxx
+xxx xxx
+xxx xxx
+xxx xxx
+Installing xtuple version 1.7.2
+Cloning xtuple-scripts...
+
+[xtuple] Welcome to the xTuple Installer!
+
+[xtuple]           xxx     xxx
+[xtuple]            xxx   xxx 
+[xtuple]             xxx xxx  
+[xtuple]              xxxxx   
+[xtuple]             xxx xxx  
+[xtuple]            xxx   xxx 
+[xtuple]           xxx     xxx
+[xtuple] Installing xtuple version 1.7.2
+[xtuple] Cloning xtuple-scripts...
+
+[xtuple] This program will install xTuple
+[xtuple]           xxx     xxx
+[xtuple]            xxx   xxx 
+[xtuple]             xxx xxx  
+[xtuple]              xxxxx   
+[xtuple]             xxx xxx  
+[xtuple]            xxx   xxx 
+[xtuple]           xxx     xxx
+[xtuple] Installing xtuple version 1.7.2
+[xtuple] Cloning xtuple-scripts...
+
+[xtuple] This program will install xTuple
+
+[xtuple]           xxx     xxx
+[xtuple]            xxx   xxx 
+[xtuple]             xxx xxx  
+[xtuple]              xxxxx   
+[xtuple]             xxx xxx  
+[xtuple]            xxx   xxx 
+[xtuple]           xxx     xxx
+[xtuple] Installing xtuple version 1.7.2
+[xtuple] Cloning xtuple-scripts...
+
+[xtuple] This program will install xTuple
+
+[xtuple]          xxx     xxx
+[xtuple]           xxx   xxx 
+[xtuple]            xxx xxx  
+[xtuple]             xxxxx   
+[xtuple]            xxx xxx  
+[xtuple]           xxx   xxx 
+[xtuple]          xxx     xxx
+[xtuple] Installing xtuple version 1.7.2
+[xtuple] Cloning xtuple-scripts...
+
+[xtuple] This program will install xTuple
+
+[xtuple]          xxx     xxx
+[xtuple]           xxx   xxx 
+[xtuple]            xxx xxx  
+[xtuple]             xxxxx   
+[xtuple]            xxx xxx  
+[xtuple]           xxx   xxx 
+[xtuple]          xxx     xxx
+[xtuple] Installing xtuple 1.7.2...
+[xtuple] Backing up any existing files in installer/...
+[xtuple] Cloning xtuple-scripts...
+
+[xtuple] 
+
+xTuple Install Aborted:
+  line: 145 
+  cmd: clone=$(git clone --recursive https://github.com/xtuple/xtuple-scripts.git installer) 
+  code: 0
+  msg: 
+
+[xtuple] This program will install xTuple
+
+[xtuple]          xxx     xxx
+[xtuple]           xxx   xxx 
+[xtuple]            xxx xxx  
+[xtuple]             xxxxx   
+[xtuple]            xxx xxx  
+[xtuple]           xxx   xxx 
+[xtuple]          xxx     xxx
+[xtuple] Ω
+[xtuple] 
+
+xTuple Install Aborted:
+  line: 0 
+  cmd: exit 1 
+  code: 1
+  msg: 
+
+[xtuple] This program will install xTuple
+
+[xtuple]          xxx     xxx
+[xtuple]           xxx   xxx 
+[xtuple]            xxx xxx  
+[xtuple]             xxxxx   
+[xtuple]            xxx xxx  
+[xtuple]           xxx   xxx 
+[xtuple]          xxx     xxx
+[xtuple] Backing up any existing files in installer/...
+[xtuple] Downloading installers...
+
+[xtuple] Downloading xtuple npm module v1.7.2...
+[xtuple] Downloaded: xTuple v1.7.2
+[xtuple] 
+
+xTuple Install Aborted:
+  line: 0 
+  cmd: sudo node installer/lib/sys/install.js install --xt-version $XTVERSION --log-file $LOG_FILE --dbadmin-pw $DBADMIN_PASS --require-tests $@ 
+  code: 1
+  msg: 
+
+[xtuple] 
+
+xTuple Install Aborted:
+  line: 0 
+  cmd: sudo node installer/lib/sys/install.js install --xt-version $XTVERSION --log-file $LOG_FILE --dbadmin-pw $DBADMIN_PASS --require-tests $@ 
+  code: 1
+  msg: 
+

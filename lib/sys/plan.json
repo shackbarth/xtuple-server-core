@@ -1,0 +1,42 @@
+[
+    {
+      "name": "sys",
+      "tasks": [
+        "install"
+      ]
+    },
+    {
+      "name": "pg",
+      "tasks": [
+        "config",
+        "cluster",
+        "tuner",
+        "init",
+        "hba"
+      ]
+    },
+    {
+      "name": "nginx",
+      "tasks": [
+        "config",
+        "ssl"
+      ]
+    },
+    {
+      "name": "xt",
+      "tasks": [
+        "serverconfig",
+        "testconfig",
+        "database",
+        "build"
+      ]
+    },
+    {
+      "name": "service",
+      "tasks": [
+        "config",
+        "verify"
+      ]
+    }
+  ]
+
