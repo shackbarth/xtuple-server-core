@@ -75,16 +75,17 @@ install_debian () {
   log "   Found $os"
   [[ $os =~ '12.04' ]] || die "Operating System not supported"
 
-  log "Installing Debian Packages..."
+  log "Adding Debian Repositories..."
   echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null
   sudo wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
   sudo apt-get -qq update 2>&1 | tee -a $logfile
-  sudo apt-get -q -y install python-software-properties
+  sudo apt-get -qq install python-software-properties
   sudo add-apt-repository ppa:nginx/stable -y
   sudo add-apt-repository ppa:chris-lea/node.js-legacy -y
   sudo add-apt-repository ppa:chris-lea/node.js -y
+  log "Installing Debian Packages..."
   sudo apt-get -qq update 2>&1 | tee -a $logfile
-  sudo apt-get -q -y install curl build-essential libssl-dev git openssh-server \
+  sudo apt-get -qq install curl build-essential libssl-dev git openssh-server \
     postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-plv8 \
     nginx-full=1.4.5-1+precise0 \
     nodejs=0.8.26-1chl1~precise1 npm \
@@ -98,7 +99,7 @@ install_debian () {
   sudo addgroup xtuple
   sudo adduser xtuple  --group xtuple --home /usr/local/xtuple --system
   sudo adduser xtremote --group xtuple --home /usr/local/xtuple
-  sudo usermod xtremote -G sudo
+  sudo usermod xtremote -aG sudo
   sudo chown :xtuple /usr/local/xtuple
   echo $xtremote_pass | sudo passwd xtremote --stdin
   sudo su - xtremote
@@ -143,7 +144,7 @@ log "           xxx xxx  "
 log "            xxxxx   "
 log "           xxx xxx  "
 log "          xxx   xxx "
-log "         xxx     xxx"
+log "         xxx     xxx\n"
 
 if [[ ! -z $(which yum) ]]; then
   install_rhel
