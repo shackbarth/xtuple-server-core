@@ -27,11 +27,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/tjwebb/xtuple-scripts.git"
+    "url": "git://github.com/xtuple/xtuple-scripts.git"
   },
   "author": "",
-  "license": "BSD",
+  "license": "CPAL",
   "bugs": {
-    "url": "https://github.com/tjwebb/xtuple-scripts/issues"
+    "url": "https://github.com/xtuple/xtuple-scripts/issues"
   }
 }
