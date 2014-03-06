@@ -13,9 +13,11 @@ xtversion=
 install_xtuple () {
   xtversion=$1
 
-  cd $xthome
-  mkdir -p installer
-  mkdir -p src
+  versiondir=$xthome/src/$xtversion
+  mkdir -p $versiondir
+
+  srcdir=$versiondir/xtuple
+  cd $versiondir
   #mkdir -p src/private-extensions
   #mkdir -p src/xtuple-extensions
 
@@ -27,39 +29,32 @@ install_xtuple () {
   clone=$(git clone --recursive https://github.com/xtuple/xtuple-scripts.git installer)
   [[ $? -ne 0 ]] && die "$clone"
   
-  clone=$(git clone --recursive https://github.com/xtuple/xtuple-extensions src/xtuple-extensions)
+  clone=$(git clone --recursive https://github.com/xtuple/xtuple-extensions)
   [[ $? -ne 0 ]] && die "$clone"
 
-  clone=$(git clone --recursive https://github.com/xtuple/private-extensions src/private-extensions)
+  clone=$(git clone --recursive https://github.com/xtuple/private-extensions)
+  [[ $? -ne 0 ]] && die "$clone"
+
+  clone=$(git clone --recursive git://github.com/xtuple/xtuple.git)
   [[ $? -ne 0 ]] && die "$clone"
 
   # TODO install using npm
 
-  #if [[ -z $xtversion ]]; then
-    #log "Downloading latest xtuple npm module..."
-  #else
-    #log "Downloading xtuple npm module v$xtversion..."
-  #fi
-
-  #npm=$(sudo npm --loglevel error install -g xtuple@$xtversion)
-  #npm=$(sudo npm install -g xtuple@$xtversion)
-  #[[ $? -ne 0 ]] && die "$npm"
-
-  #npmxt=$(npm show xtuple version | tail -2 | head -1)
-
-  #xtversion="$npmxt"
-  git clone --recursive git://github.com/xtuple/xtuple.git src/xtuple
   cd src/xtuple
-  XTTAG="v$xtversion"
-  xtversion=$(git describe --abbrev=0)
-  git checkout $xtversion
+  tag="v$xtversion"
+  git fetch $tag
+  git checkout $tag
   npm install
 
-  log "cloned xTuple $XTTAG"
+  log "Cloned xTuple $tag."
 
   printf "\033c"
-  sudo node installer/lib/sys/install.js install \
-    --xt-version $xtversion --xt-srcdir $xthome/src/xtuple --xt-verify \
+  cd installer
+  git fetch $tag
+  git checkout $tag
+  npm install
+  sudo node lib/sys/install.js install \
+    --xt-version $xtversion --xt-srcdir $xthome/src/$xtversion/xtuple --xt-verify \
     --pg-adminpw $pg_adminpw $@
 }
 
@@ -97,8 +92,8 @@ install_debian () {
 
   log "Creating users..."
 
-  xtremote_pass=$(head -c 8 /dev/random | base64 | sed "s/[=[:space:]]//g")
-  pg_adminpw=$(head -c 4 /dev/random | base64 | sed "s/[=[:space:]]//g")
+  xtremote_pass=$(head -c 8 /dev/urandom | base64 | sed "s/[=[:space:]]//g")
+  pg_adminpw=$(head -c 4 /dev/urandom | base64 | sed "s/[=[:space:]]//g")
 
   sudo addgroup xtuple
   sudo adduser xtuple  --group xtuple --home /usr/local/xtuple --system
