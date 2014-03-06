@@ -75,8 +75,6 @@ install_debian () {
   log "   Found $os"
   [[ $os =~ '12.04' ]] || die "Operating System not supported"
 
-  die "install_debian exiting on purpose"
-
   log "Installing Debian Packages..."
   echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null
   sudo wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
