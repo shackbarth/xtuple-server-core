@@ -78,6 +78,8 @@ install_debian () {
   log "Installing Debian Packages..."
   echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null
   sudo wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+  sudo apt-get -qq update 2>&1 | tee -a $logfile
+  sudo apt-get -q -y install python-software-properties
   sudo add-apt-repository ppa:nginx/stable -y
   sudo add-apt-repository ppa:chris-lea/node.js-legacy -y
   sudo add-apt-repository ppa:chris-lea/node.js -y
