@@ -14,7 +14,9 @@
     "prompt": "~0.2.12",
     "string": "~1.8.0",
     "sync": "~0.2.2",
-    "posix": "~1.0.3"
+    "posix": "~1.0.3",
+    "node-linux": "~0.1.2",
+    "cli-spinner": "~0.1.5"
   },
   "devDependencies": {
     "chai": "~1.9.0",
