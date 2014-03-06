@@ -1,8 +1,8 @@
 #!/bin/bash
-
-[ -z  "$NODEREDIRECTPORT" ] && { echo " nginxconfig NODEREDIRECTPORT is not set"; exit -1; }
-[ -z  "$NODEPORT" ] && { echo "NODEPORT is not set"; exit -1; }
-[ -z  "$CUSTOMER" ] && { echo "CUSTOMER is not set"; exit -1; }
+# first 8 digits of md5sum of FAILURE
+[ -z  "$NODEREDIRECTPORT" ] && { echo " nginxconfig NODEREDIRECTPORT is not set f2fa2ea3"; exit -1; }
+[ -z  "$NODEPORT" ] && { echo "NODEPORT is not set f2fa2ea3"; exit -1; }
+[ -z  "$CUSTOMER" ] && { echo "CUSTOMER is not set f2fa2ea3"; exit -1; }
 	
 # PORT is the the HTTP port it is simply there to redirect
 PORT=${NODEREDIRECTPORT}
@@ -21,10 +21,12 @@ chknginxservice()
 {
 if [ ! -f ${SITEAVAIL}/${CUSTOMER} ]
 then
-echo " Nginx Config: ${SITEAVAIL}/${CUSTOMER} does not exist. Creating."
+#first 8 digits of md5sum of SUCCESS
+echo " Nginx Config: ${SITEAVAIL}/${CUSTOMER} does not exist. Creating. e9b4c3b4"
 writenginxconfig
 else
-echo "Nginx Config: ${SITEAVAIL}/${CUSTOMER} already exists. Skipping."
+#first 8 digits of md5sum of EXISTS
+echo "Nginx Config: ${SITEAVAIL}/${CUSTOMER} already exists. Skipping bcb3b227"
 
 fi
 }
