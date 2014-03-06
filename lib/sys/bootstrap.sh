@@ -22,39 +22,39 @@ install_xtuple () {
   #mkdir -p src/xtuple-extensions
 
   log "Backing up any existing files in installer/..."
-  tar=$(tar cvf installer.bak.tar installer/)
+  tar=$(tar cvf installer.bak.tar installer/ &> /dev/null)
   rm -rf installer
+  rm -rf xtuple-extensions
+  rm -rf private-extensions
+  rm -rf xtuple
 
   log "Downloading installers...\n"
   clone=$(git clone --recursive https://github.com/xtuple/xtuple-scripts.git installer)
   [[ $? -ne 0 ]] && die "$clone"
   
-  clone=$(git clone --recursive https://github.com/xtuple/xtuple-extensions)
+  clone=$(git clone --recursive https://github.com/xtuple/xtuple-extensions.git)
   [[ $? -ne 0 ]] && die "$clone"
 
-  clone=$(git clone --recursive https://github.com/xtuple/private-extensions)
+  clone=$(git clone https://github.com/xtuple/private-extensions.git)
   [[ $? -ne 0 ]] && die "$clone"
 
-  clone=$(git clone --recursive git://github.com/xtuple/xtuple.git)
+  clone=$(git clone --recursive https://github.com/xtuple/xtuple.git)
   [[ $? -ne 0 ]] && die "$clone"
 
   # TODO install using npm
 
-  cd src/xtuple
+  cd $srcdir
   tag="v$xtversion"
-  git fetch $tag
   git checkout $tag
-  npm install
+  sudo npm install
 
   log "Cloned xTuple $tag."
 
-  printf "\033c"
-  cd installer
-  git fetch $tag
-  git checkout $tag
-  npm install
+  cd ../installer
+  #git checkout $tag
+  sudo npm install
   sudo node lib/sys/install.js install \
-    --xt-version $xtversion --xt-srcdir $xthome/src/$xtversion/xtuple --xt-verify \
+    --xt-version $xtversion --xt-srcdir $srcdir --xt-verify \
     --pg-adminpw $pg_adminpw $@
 }
 
@@ -62,7 +62,7 @@ install_rhel () {
   echo "TODO support rhel"
   exit 1;
 
-  #sudo useradd -p $MAINTENANCEPASS xtremote
+  #sudo useradd -p $MAINTENANCEPASS remote
   #sudo usermod -G wheel xtremote
 
   #yum install postgres93-server
@@ -76,12 +76,12 @@ install_debian () {
   [[ $os =~ '12.04' ]] || die "Operating System not supported"
 
   log "Adding Debian Repositories..."
-  echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list 2>&1 /dev/null
-  sudo wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - 2>&1 /dev/null
+  echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list &> /dev/null
+  sudo wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - &> /dev/null
   sudo apt-get -qq update 2>&1 | tee -a $logfile
   sudo apt-get -qq install python-software-properties
-  sudo add-apt-repository ppa:nginx/stable -y
-  sudo add-apt-repository ppa:chris-lea/node.js-legacy -y
+  sudo add-apt-repository ppa:nginx/stable -y 2>&1 /dev/null
+  sudo add-apt-repository ppa:chris-lea/node.js-legacy -y &> /dev/null
   sudo add-apt-repository ppa:chris-lea/node.js -y
   log "Installing Debian Packages..."
   sudo apt-get -qq update 2>&1 | tee -a $logfile
@@ -97,13 +97,13 @@ install_debian () {
   pg_adminpw=$(head -c 4 /dev/urandom | base64 | sed "s/[=[:space:]]//g")
 
   sudo addgroup xtuple
-  sudo adduser xtuple  --group xtuple --home /usr/local/xtuple --system
-  sudo adduser xtremote --group xtuple --home /usr/local/xtuple
-  sudo usermod xtremote -aG sudo
+  sudo adduser xtuple  --system --home /usr/local/xtuple
+  sudo adduser xtuple xtuple
+  sudo useradd -p $xtremote_pass xtremote -d /usr/local/xtuple
+  sudo usermod -a -G xtuple,sudo xtremote
   sudo chown :xtuple /usr/local/xtuple
-  echo $xtremote_pass | sudo passwd xtremote --stdin
-  sudo su - xtremote
-
+  #echo $xtremote_pass | sudo passwd xtremote --stdin
+  #sudo su - xtremote
 }
 
 setup_policy () {
@@ -118,7 +118,7 @@ setup_policy () {
   log "Press Enter to continue installation..."
 
   read
-
+  printf "\033c"
   xtremote_pass=
 
   # TODO remove root from sshd config
