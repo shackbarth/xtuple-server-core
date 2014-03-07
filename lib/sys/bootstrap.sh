@@ -55,7 +55,7 @@ install_xtuple () {
   sudo npm install
   sudo node lib/sys/install.js install \
     --xt-version $xtversion --xt-srcdir $srcdir --xt-verify \
-    --pg-adminpw $pg_adminpw $@
+    --pg-adminpw $pg_adminpw "$@"
 }
 
 install_rhel () {
@@ -85,8 +85,9 @@ install_debian () {
   sudo add-apt-repository ppa:chris-lea/node.js -y
   log "Installing Debian Packages..."
   sudo apt-get -qq update 2>&1 | tee -a $logfile
-  sudo apt-get -qq install curl build-essential libssl-dev git openssh-server \
-    postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-plv8 \
+  sudo apt-get -qq install curl build-essential libssl-dev git openssh-server cups \
+    postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 \
+    postgresql-9.1-plv8=1.4.0.ds-2.pgdg12.4+1 \
     nginx-full=1.4.5-1+precise0 \
     nodejs=0.8.26-1chl1~precise1 npm \
   2>&1 | tee -a $logfile
@@ -114,6 +115,7 @@ setup_policy () {
   echo "[xtuple]    password: $xtremote_pass"
   echo ""
   log "WRITE THIS DOWN. This information is about to be destroyed forever."
+  log "You have been warned."
   echo ""
   log "Press Enter to continue installation..."
 
