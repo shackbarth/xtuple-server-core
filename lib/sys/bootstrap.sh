@@ -7,7 +7,7 @@ TRAPMSG=
 xthome=/usr/local/xtuple
 logfile=$ROOT/install.log
 xtremote_pass=
-pg_adminpw=
+xt_adminpw=
 xtversion=
 
 install_xtuple () {
@@ -55,7 +55,7 @@ install_xtuple () {
   sudo npm install
   sudo node lib/sys/install.js install \
     --xt-version $xtversion --xt-srcdir $srcdir --xt-verify \
-    --pg-adminpw $pg_adminpw "$@"
+    --pg-adminpw $xt_adminpw "$@"
 }
 
 install_rhel () {
@@ -85,6 +85,7 @@ install_debian () {
   sudo add-apt-repository ppa:chris-lea/node.js -y
   log "Installing Debian Packages..."
   sudo apt-get -qq update 2>&1 | tee -a $logfile
+  # TODO versionize postgres
   sudo apt-get -qq install curl build-essential libssl-dev git openssh-server cups \
     postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 \
     postgresql-9.1-plv8=1.4.0.ds-2.pgdg12.4+1 \
@@ -94,8 +95,8 @@ install_debian () {
 
   log "Creating users..."
 
-  xtremote_pass=$(head -c 8 /dev/urandom | base64 | sed "s/[=[:space:]]//g")
-  pg_adminpw=$(head -c 4 /dev/urandom | base64 | sed "s/[=[:space:]]//g")
+  xtremote_pass=$(head -c 8 /dev/urandom | base64 | sed "s/[=\s]//g")
+  xt_adminpw=$(head -c 4 /dev/urandom | base64 | sed "s/[=\s]//g")
 
   sudo addgroup xtuple
   sudo adduser xtuple  --system --home /usr/local/xtuple
@@ -103,8 +104,6 @@ install_debian () {
   sudo useradd -p $xtremote_pass xtremote -d /usr/local/xtuple
   sudo usermod -a -G xtuple,sudo xtremote
   sudo chown :xtuple /usr/local/xtuple
-  #echo $xtremote_pass | sudo passwd xtremote --stdin
-  #sudo su - xtremote
 }
 
 setup_policy () {

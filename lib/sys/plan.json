@@ -11,7 +11,6 @@
       "config",
       "cluster",
       "tuner",
-      "init",
       "hba"
     ]
   },
@@ -25,9 +24,9 @@
   {
     "name": "xt",
     "tasks": [
+      "database",
       "serverconfig",
       "testconfig",
-      "database",
       "build_common",
       "build_main"
     ]
@@ -35,7 +34,7 @@
   {
     "name": "service",
     "tasks": [
-      "config",
+      "setup",
       "verify"
     ]
   }
