@@ -22,6 +22,12 @@
     ]
   },
   {
+    "name": "cups",
+    "tasks": [
+      "configure"
+    ]
+  },
+  {
     "name": "xt",
     "tasks": [
       "database",

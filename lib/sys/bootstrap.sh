@@ -102,7 +102,7 @@ install_debian () {
   sudo adduser xtuple  --system --home /usr/local/xtuple
   sudo adduser xtuple xtuple
   sudo useradd -p $xtremote_pass xtremote -d /usr/local/xtuple
-  sudo usermod -a -G xtuple,www-data,postgres xtremote
+  sudo usermod -a -G xtuple,www-data,postgres,lpadmin xtremote
   sudo chown :xtuple /usr/local/xtuple
 }
 
