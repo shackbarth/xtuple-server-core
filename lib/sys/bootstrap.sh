@@ -8,7 +8,7 @@ xthome=/usr/local/xtuple
 logfile=$ROOT/install.log
 xtremote_pass=
 xt_adminpw=
-xtversion=
+xtversion=1.8.0   # parameterize this; bad coupling with install.js
 pgversion=9.1
 plv8version=1.4.0
 
@@ -121,7 +121,6 @@ setup_policy () {
   log "Press Enter to continue installation..."
 
   read
-  printf "\033c"
   xtremote_pass=
 
   # TODO remove root from sshd config
