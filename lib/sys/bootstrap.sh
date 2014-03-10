@@ -7,7 +7,7 @@ TRAPMSG=
 xthome=/usr/local/xtuple
 logfile=$ROOT/install.log
 xtremote_pass=
-pg_adminpw=
+xt_adminpw=
 xtversion=
 
 install_xtuple () {
@@ -16,7 +16,7 @@ install_xtuple () {
   versiondir=$xthome/src/$xtversion
   mkdir -p $versiondir
 
-  srcdir=$versiondir/xtuple
+  appdir=$versiondir/xtuple
   cd $versiondir
   #mkdir -p src/private-extensions
   #mkdir -p src/xtuple-extensions
@@ -43,7 +43,7 @@ install_xtuple () {
 
   # TODO install using npm
 
-  cd $srcdir
+  cd $appdir
   tag="v$xtversion"
   git checkout $tag
   sudo npm install
@@ -53,9 +53,9 @@ install_xtuple () {
   cd ../installer
   #git checkout $tag
   sudo npm install
-  sudo node lib/sys/install.js install \
-    --xt-version $xtversion --xt-srcdir $srcdir --xt-verify \
-    --pg-adminpw $pg_adminpw $@
+  sudo -u xtuple node lib/sys/install.js install \
+    --xt-version $xtversion --xt-appdir $appdir --xt-verify \
+    --xt-adminpw $xt_adminpw "$@"
 }
 
 install_rhel () {
@@ -85,25 +85,25 @@ install_debian () {
   sudo add-apt-repository ppa:chris-lea/node.js -y
   log "Installing Debian Packages..."
   sudo apt-get -qq update 2>&1 | tee -a $logfile
-  sudo apt-get -qq install curl build-essential libssl-dev git openssh-server \
-    postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-plv8 \
+  # TODO versionize postgres
+  sudo apt-get -qq install curl build-essential libssl-dev git openssh-server cups \
+    postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 \
+    postgresql-9.1-plv8=1.4.0.ds-2.pgdg12.4+1 \
     nginx-full=1.4.5-1+precise0 \
     nodejs=0.8.26-1chl1~precise1 npm \
   2>&1 | tee -a $logfile
 
   log "Creating users..."
 
-  xtremote_pass=$(head -c 8 /dev/urandom | base64 | sed "s/[=[:space:]]//g")
-  pg_adminpw=$(head -c 4 /dev/urandom | base64 | sed "s/[=[:space:]]//g")
+  xtremote_pass=$(head -c 8 /dev/urandom | base64 | sed "s/[=\s]//g")
+  xt_adminpw=$(head -c 4 /dev/urandom | base64 | sed "s/[=\s]//g")
 
   sudo addgroup xtuple
   sudo adduser xtuple  --system --home /usr/local/xtuple
   sudo adduser xtuple xtuple
   sudo useradd -p $xtremote_pass xtremote -d /usr/local/xtuple
-  sudo usermod -a -G xtuple,sudo xtremote
+  sudo usermod -a -G xtuple,www-data,postgres,lpadmin xtremote
   sudo chown :xtuple /usr/local/xtuple
-  #echo $xtremote_pass | sudo passwd xtremote --stdin
-  #sudo su - xtremote
 }
 
 setup_policy () {
@@ -114,6 +114,7 @@ setup_policy () {
   echo "[xtuple]    password: $xtremote_pass"
   echo ""
   log "WRITE THIS DOWN. This information is about to be destroyed forever."
+  log "You have been warned."
   echo ""
   log "Press Enter to continue installation..."
 

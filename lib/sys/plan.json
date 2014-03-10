@@ -1,42 +1,47 @@
 [
-    {
-      "name": "sys",
-      "tasks": [
-        "install"
-      ]
-    },
-    {
-      "name": "pg",
-      "tasks": [
-        "config",
-        "cluster",
-        "tuner",
-        "init",
-        "hba"
-      ]
-    },
-    {
-      "name": "nginx",
-      "tasks": [
-        "config",
-        "ssl"
-      ]
-    },
-    {
-      "name": "xt",
-      "tasks": [
-        "serverconfig",
-        "testconfig",
-        "database",
-        "build"
-      ]
-    },
-    {
-      "name": "service",
-      "tasks": [
-        "config",
-        "verify"
-      ]
-    }
-  ]
-
+  {
+    "name": "sys",
+    "tasks": [
+      "install"
+    ]
+  },
+  {
+    "name": "pg",
+    "tasks": [
+      "config",
+      "cluster",
+      "tuner",
+      "hba"
+    ]
+  },
+  {
+    "name": "nginx",
+    "tasks": [
+      "config",
+      "ssl"
+    ]
+  },
+  {
+    "name": "cups",
+    "tasks": [
+      "configure"
+    ]
+  },
+  {
+    "name": "xt",
+    "tasks": [
+      "database",
+      "serverconfig",
+      "testconfig",
+      "build_common",
+      "build_main"
+    ]
+  },
+  {
+    "name": "service",
+    "tasks": [
+      "setup",
+      "verify"
+    ]
+  }
+]
