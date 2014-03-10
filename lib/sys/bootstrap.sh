@@ -16,7 +16,7 @@ install_xtuple () {
   versiondir=$xthome/src/$xtversion
   mkdir -p $versiondir
 
-  srcdir=$versiondir/xtuple
+  appdir=$versiondir/xtuple
   cd $versiondir
   #mkdir -p src/private-extensions
   #mkdir -p src/xtuple-extensions
@@ -43,7 +43,7 @@ install_xtuple () {
 
   # TODO install using npm
 
-  cd $srcdir
+  cd $appdir
   tag="v$xtversion"
   git checkout $tag
   sudo npm install
@@ -53,9 +53,9 @@ install_xtuple () {
   cd ../installer
   #git checkout $tag
   sudo npm install
-  sudo node lib/sys/install.js install \
-    --xt-version $xtversion --xt-srcdir $srcdir --xt-verify \
-    --pg-adminpw $xt_adminpw "$@"
+  sudo -u xtuple node lib/sys/install.js install \
+    --xt-version $xtversion --xt-appdir $appdir --xt-verify \
+    --xt-adminpw $xt_adminpw "$@"
 }
 
 install_rhel () {
@@ -102,7 +102,7 @@ install_debian () {
   sudo adduser xtuple  --system --home /usr/local/xtuple
   sudo adduser xtuple xtuple
   sudo useradd -p $xtremote_pass xtremote -d /usr/local/xtuple
-  sudo usermod -a -G xtuple,sudo xtremote
+  sudo usermod -a -G xtuple,www-data,postgres xtremote
   sudo chown :xtuple /usr/local/xtuple
 }
 
