@@ -31,17 +31,10 @@ install_xtuple () {
   git config --global credential.helper 'cache --timeout=1800'
 
   log "Downloading installers...\n"
-  clone=$(git clone --recursive https://github.com/xtuple/xtuple-scripts.git installer)
-  [[ $? -ne 0 ]] && die "$clone"
-  
-  clone=$(git clone --recursive https://github.com/xtuple/xtuple-extensions.git)
-  [[ $? -ne 0 ]] && die "$clone"
-
-  clone=$(git clone https://github.com/xtuple/private-extensions.git)
-  [[ $? -ne 0 ]] && die "$clone"
-
-  clone=$(git clone --recursive https://github.com/xtuple/xtuple.git)
-  [[ $? -ne 0 ]] && die "$clone"
+  git clone --recursive https://github.com/xtuple/xtuple-scripts.git installer
+  git clone --recursive https://github.com/xtuple/xtuple-extensions.git
+  git clone https://github.com/xtuple/private-extensions.git
+  git clone --recursive https://github.com/xtuple/xtuple.git
 
   # TODO install using npm
 
