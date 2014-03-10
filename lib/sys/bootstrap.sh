@@ -55,7 +55,7 @@ install_xtuple () {
   cd ../installer
   #git checkout $tag
   sudo npm install
-  sudo -u xtuple node lib/sys/install.js install \
+  sudo node lib/sys/install.js install \
     --xt-version $xtversion --xt-appdir $appdir --xt-verify \
     --xt-adminpw $xt_adminpw "$@"
 }
