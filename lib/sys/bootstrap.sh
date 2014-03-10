@@ -9,6 +9,8 @@ logfile=$ROOT/install.log
 xtremote_pass=
 xt_adminpw=
 xtversion=
+pgversion=9.1
+plv8version=1.4.0
 
 install_xtuple () {
   xtversion=$1
@@ -21,25 +23,18 @@ install_xtuple () {
   #mkdir -p src/private-extensions
   #mkdir -p src/xtuple-extensions
 
-  log "Backing up any existing files in installer/..."
-  tar=$(tar cvf installer.bak.tar installer/ &> /dev/null)
   rm -rf installer
   rm -rf xtuple-extensions
   rm -rf private-extensions
   rm -rf xtuple
 
+  git config --global credential.helper 'cache --timeout=1800'
+
   log "Downloading installers...\n"
-  clone=$(git clone --recursive https://github.com/xtuple/xtuple-scripts.git installer)
-  [[ $? -ne 0 ]] && die "$clone"
-  
-  clone=$(git clone --recursive https://github.com/xtuple/xtuple-extensions.git)
-  [[ $? -ne 0 ]] && die "$clone"
-
-  clone=$(git clone https://github.com/xtuple/private-extensions.git)
-  [[ $? -ne 0 ]] && die "$clone"
-
-  clone=$(git clone --recursive https://github.com/xtuple/xtuple.git)
-  [[ $? -ne 0 ]] && die "$clone"
+  git clone --recursive https://github.com/xtuple/xtuple-scripts.git installer
+  git clone --recursive https://github.com/xtuple/xtuple-extensions.git
+  git clone https://github.com/xtuple/private-extensions.git
+  git clone --recursive https://github.com/xtuple/xtuple.git
 
   # TODO install using npm
 
@@ -53,7 +48,7 @@ install_xtuple () {
   cd ../installer
   #git checkout $tag
   sudo npm install
-  sudo -u xtuple node lib/sys/install.js install \
+  sudo node lib/sys/install.js install \
     --xt-version $xtversion --xt-appdir $appdir --xt-verify \
     --xt-adminpw $xt_adminpw "$@"
 }
@@ -72,26 +67,33 @@ install_rhel () {
 install_debian () {
   log "Checking Operating System..."
   os=$(lsb_release -s -d)
-  log "   Found $os"
+  flavor=$(lsb_release -s -c)
+  log "   Found $os\n"
   [[ $os =~ '12.04' ]] || die "Operating System not supported"
 
   log "Adding Debian Repositories..."
-  echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list &> /dev/null
-  sudo wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - &> /dev/null
-  sudo apt-get -qq update 2>&1 | tee -a $logfile
-  sudo apt-get -qq install python-software-properties
-  sudo add-apt-repository ppa:nginx/stable -y 2>&1 /dev/null
-  sudo add-apt-repository ppa:chris-lea/node.js-legacy -y &> /dev/null
+  sudo apt-get -q -y update | tee -a $logfile
+  sudo apt-get -q -y autoremove
+  sudo apt-get -q -y install python-software-properties
+  sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ $flavor-pgdg main"
+  
+  #sudo wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+  sudo add-apt-repository ppa:nginx/stable -y
+  sudo add-apt-repository ppa:chris-lea/node.js-legacy -y
   sudo add-apt-repository ppa:chris-lea/node.js -y
+  sudo add-apt-repository ppa:git-core/ppa -y
+
   log "Installing Debian Packages..."
-  sudo apt-get -qq update 2>&1 | tee -a $logfile
+  sudo apt-get -q -y update | tee -a $logfile
   # TODO versionize postgres
-  sudo apt-get -qq install curl build-essential libssl-dev git openssh-server cups \
-    postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 \
-    postgresql-9.1-plv8=1.4.0.ds-2.pgdg12.4+1 \
-    nginx-full=1.4.5-1+precise0 \
-    nodejs=0.8.26-1chl1~precise1 npm \
-  2>&1 | tee -a $logfile
+  sudo apt-get -q -y install curl build-essential libssl-dev openssh-server cups \
+    git=1:1.9.0-1~ppa0~${flavor}1 \
+    postgresql-$pgversion postgresql-server-dev-$pgversion postgresql-contrib-$pgversion \
+    postgresql-$pgversion-plv8=$plv8version.ds-2.pgdg12.4+1 \
+    nginx-full=1.4.5-1+${flavor}0 \
+    nodejs=0.8.26-1chl1~${flavor}1 \
+    npm=1.3.0-1chl1~${flavor}1 \
+  | tee -a $logfile
 
   log "Creating users..."
 
