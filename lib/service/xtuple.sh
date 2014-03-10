@@ -4,10 +4,13 @@
 version="$1"
 name="$2"
 
-forever_logfile=/etc/xtuple/forever.log
-forever_opts="-a --minUptime 5000 --spinSleepTime 5000"
 home=usr/local/xtuple/
 appdir=$home/src/$version/$name
+
+forever_path=/var/lib/xtuple
+forever_logfile=/var/log/xtuple/forever.log
+forever_opts="-a --minUptime 5000 --spinSleepTime 5000 -p $forever_path"
+
 xtuple_logfile=/var/log/xtuple/$version/$name/access.log
 xtuple_errfile=/var/log/xtuple/$version/$name/error.log
 xtuple_config=/etc/xtuple/$version/$name/config.js
@@ -18,9 +21,8 @@ start)
   [[ -z $version ]] && continue
   [[ -z $name ]] && continue
 
-  sudo -u xtuple forever start $forever_opts \
-    -l $forever_logfile -o $xtuple_logfile -e $xtuple_errfile \
-    $xtuple_server -c $xtuple_config
+  echo "forever start $forever_opts -l $forever_logfile -o $xtuple_logfile -e $xtuple_errfile $xtuple_main -c $xtuple_config"
+  exec forever start $forever_opts -l $forever_logfile -o $xtuple_logfile -e $xtuple_errfile $xtuple_main -c $xtuple_config
 
   # TODO maybe also control nginx and pgcluster from here?
   ;;
@@ -29,8 +31,7 @@ stop)
   [[ -z $version ]] && continue
   [[ -z $name ]] && continue
 
-  sudo -u xtuple forever stop \
-    $xtuple_server -c $xtuple_config
+  exec forever stop $xtuple_main -c $xtuple_config
 
   ;;
 
