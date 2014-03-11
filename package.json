@@ -22,7 +22,6 @@
     "mocha": "~1.17.1"
   },
   "scripts": {
-    "test": "mocha lib/spec -R spec -ig sudo",
     "test-sudo": "mocha lib/spec -R spec"
   },
   "repository": {
