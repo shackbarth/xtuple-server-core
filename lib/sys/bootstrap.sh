@@ -88,7 +88,7 @@ install_debian () {
     log "Installing Debian Packages..."
     sudo apt-get -q -y update | tee -a $logfile
     # TODO versionize postgres
-    sudo apt-get -q -y --force-yes install curl build-essential libssl-dev openssh-server cups \
+    sudo apt-get -q -y --force-yes install curl build-essential libssl-dev openssh-server cups ncurses-term \
       git=1:1.9.0-1~ppa0~${dist}1 \
       postgresql-$pgversion postgresql-server-dev-$pgversion postgresql-contrib-$pgversion \
       postgresql-$pgversion-plv8=$plv8version.ds-2.pgdg12.4+1 \
