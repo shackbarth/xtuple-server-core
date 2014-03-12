@@ -8,13 +8,14 @@ xthome=/usr/local/xtuple
 logfile=$ROOT/install.log
 xtremote_pass=
 xt_adminpw=
-xtversion=1.8.0   # parameterize this; bad coupling with install.js
+xtversion=1.8.1
 pgversion=9.1
 plv8version=1.4.0
 nginxversion=1.4.6
 
 install_xtuple () {
   xtversion=$1
+  shift
 
   versiondir=$xthome/src/$xtversion
   mkdir -p $versiondir
@@ -49,8 +50,7 @@ install_xtuple () {
   cd ../installer
   #git checkout $tag
   sudo npm install
-  eval "sudo node lib/sys/install.js install \
-    --xt-version $xtversion --xt-appdir $appdir --xt-adminpw $xt_adminpw $argv"
+  eval "sudo node lib/sys/install.js install --xt-version $xtversion --xt-appdir $appdir --xt-adminpw $xt_adminpw $argv"
 }
 
 install_rhel () {
