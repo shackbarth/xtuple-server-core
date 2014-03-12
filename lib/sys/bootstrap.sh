@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ROOT=$(pwd)
-ARGV=$@
+argv=$@
 TRAPMSG=
 
 xthome=/usr/local/xtuple
@@ -48,9 +48,9 @@ install_xtuple () {
   cd ../installer
   #git checkout $tag
   sudo npm install
-  sudo node lib/sys/install.js install \
+  eval "sudo node lib/sys/install.js install \
     --xt-version $xtversion --xt-appdir $appdir --xt-verify \
-    --xt-adminpw $xt_adminpw "$@"
+    --xt-adminpw $xt_adminpw $argv"
 }
 
 install_rhel () {
@@ -71,48 +71,60 @@ install_debian () {
   log "   Found $os\n"
   [[ $os =~ '12.04' ]] || die "Operating System not supported"
 
-  log "Adding Debian Repositories..."
-  sudo apt-get -q -y update | tee -a $logfile
-  sudo apt-get -q -y autoremove
-  sudo apt-get -q -y install python-software-properties
-  sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ $flavor-pgdg main"
-  
-  #sudo wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-  sudo add-apt-repository ppa:nginx/stable -y
-  sudo add-apt-repository ppa:chris-lea/node.js-legacy -y
-  sudo add-apt-repository ppa:chris-lea/node.js -y
-  sudo add-apt-repository ppa:git-core/ppa -y
+  if [[ -z $(which node npm) ]]; then
+    log "Adding Debian Repositories..."
 
-  log "Installing Debian Packages..."
-  sudo apt-get -q -y update | tee -a $logfile
-  # TODO versionize postgres
-  sudo apt-get -q -y install curl build-essential libssl-dev openssh-server cups \
-    git=1:1.9.0-1~ppa0~${flavor}1 \
-    postgresql-$pgversion postgresql-server-dev-$pgversion postgresql-contrib-$pgversion \
-    postgresql-$pgversion-plv8=$plv8version.ds-2.pgdg12.4+1 \
-    nginx-full=1.4.5-1+${flavor}0 \
-    nodejs=0.8.26-1chl1~${flavor}1 \
-    npm=1.3.0-1chl1~${flavor}1 \
-  | tee -a $logfile
-
-  log "Creating users..."
-
-  xtremote_pass=$(head -c 8 /dev/urandom | base64 | sed "s/[=\s]//g")
-  xt_adminpw=$(head -c 4 /dev/urandom | base64 | sed "s/[=\s]//g")
-
-  sudo addgroup xtuple
-  sudo adduser xtuple  --system --home /usr/local/xtuple
-  sudo adduser xtuple xtuple
-  sudo useradd -p $xtremote_pass xtremote -d /usr/local/xtuple
-  sudo usermod -a -G xtuple,www-data,postgres,lpadmin xtremote
-  sudo chown :xtuple /usr/local/xtuple
+    sudo apt-get -q -y update | tee -a $logfile
+    sudo apt-get -q -y autoremove --force-yes
+    sudo apt-get -q -y install python-software-properties --force-yes
+    sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ $flavor-pgdg main"
+    
+    #sudo wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+    sudo add-apt-repository ppa:nginx/stable -y
+    sudo add-apt-repository ppa:chris-lea/node.js-legacy -y
+    sudo add-apt-repository ppa:chris-lea/node.js -y
+    sudo add-apt-repository ppa:git-core/ppa -y
+   
+    log "Installing Debian Packages..."
+    sudo apt-get -q -y update | tee -a $logfile
+    # TODO versionize postgres
+    sudo apt-get -q -y --force-yes install curl build-essential libssl-dev openssh-server cups \
+      git=1:1.9.0-1~ppa0~${flavor}1 \
+      postgresql-$pgversion postgresql-server-dev-$pgversion postgresql-contrib-$pgversion \
+      postgresql-$pgversion-plv8=$plv8version.ds-2.pgdg12.4+1 \
+      nginx-full=1.4.5-1+${flavor}0 \
+      nodejs=0.8.26-1chl1~${flavor}1 \
+      npm=1.3.0-1chl1~${flavor}1 \
+    | tee -a $logfile
+  fi
 }
 
 setup_policy () {
+  if [[ -z $(id -u xtuple) && -z $(id -u xtremote) ]]; then
+    log "Creating users..."
+
+    xtremote_pass=$(head -c 8 /dev/urandom | base64 | sed "s/[=\s]//g")
+    xt_adminpw=$(head -c 4 /dev/urandom | base64 | sed "s/[=\s]//g")
+   
+    sudo addgroup xtuple
+    sudo adduser xtuple  --system --home /usr/local/xtuple
+    sudo adduser xtuple xtuple
+    sudo useradd -p $xtremote_pass xtremote -d /usr/local/xtuple
+    sudo usermod -a -G xtuple,www-data,postgres,lpadmin xtremote
+    sudo chown :xtuple /usr/local/xtuple
+  elif [[ -z $(service xtuple) ]]; then
+    echo -e "It looks like an installation was started, but did not complete successfully."
+    echo -e "Please restore the system to a clean state"
+    exit 1
+  else
+    echo -e "xTuple is already installed."
+    service xtuple
+    exit 2
+  fi
+
   echo ""
   log "SSH Remote Access Credentials"
   log "   username: xtremote"
-  log "   password: <hidden>"
   echo "[xtuple]    password: $xtremote_pass"
   echo ""
   log "WRITE THIS DOWN. This information is about to be destroyed forever."
@@ -159,16 +171,4 @@ else
 fi
 
 setup_policy
-
-# arguments are passed through to the myriad downstream install scripts;
-# we only specifically care about xt-version right now
-for arg in "$@"
-do
-  case "$arg" in
-    --xt-version)
-      install_xtuple $2 ;;
-    *)
-      shift ;;
-  esac
-done
-install_xtuple
+install_xtuple $1
