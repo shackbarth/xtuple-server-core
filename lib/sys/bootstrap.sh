@@ -11,7 +11,7 @@ xt_adminpw=
 xtversion=1.8.0   # parameterize this; bad coupling with install.js
 pgversion=9.1
 plv8version=1.4.0
-nginxverison=1.4.6
+nginxversion=1.4.6
 
 install_xtuple () {
   xtversion=$1
