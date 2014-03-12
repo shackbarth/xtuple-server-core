@@ -11,6 +11,7 @@ xt_adminpw=
 xtversion=1.8.0   # parameterize this; bad coupling with install.js
 pgversion=9.1
 plv8version=1.4.0
+nginxverison=1.4.6
 
 install_xtuple () {
   xtversion=$1
@@ -66,7 +67,7 @@ install_rhel () {
 install_debian () {
   log "Checking Operating System..."
   os=$(lsb_release -s -d)
-  flavor=$(lsb_release -s -c)
+  dist=$(lsb_release -s -c)
   log "   Found $os\n"
   [[ $os =~ '12.04' ]] || die "Operating System not supported"
 
@@ -76,9 +77,9 @@ install_debian () {
     sudo apt-get -q -y update | tee -a $logfile
     sudo apt-get -q -y autoremove --force-yes
     sudo apt-get -q -y install python-software-properties --force-yes
-    sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ $flavor-pgdg main"
     
-    #sudo wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+    sudo wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+    echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null
     sudo add-apt-repository ppa:nginx/stable -y
     sudo add-apt-repository ppa:chris-lea/node.js-legacy -y
     sudo add-apt-repository ppa:chris-lea/node.js -y
@@ -88,12 +89,12 @@ install_debian () {
     sudo apt-get -q -y update | tee -a $logfile
     # TODO versionize postgres
     sudo apt-get -q -y --force-yes install curl build-essential libssl-dev openssh-server cups \
-      git=1:1.9.0-1~ppa0~${flavor}1 \
+      git=1:1.9.0-1~ppa0~${dist}1 \
       postgresql-$pgversion postgresql-server-dev-$pgversion postgresql-contrib-$pgversion \
       postgresql-$pgversion-plv8=$plv8version.ds-2.pgdg12.4+1 \
-      nginx-full=1.4.5-1+${flavor}0 \
-      nodejs=0.8.26-1chl1~${flavor}1 \
-      npm=1.3.0-1chl1~${flavor}1 \
+      nginx-full=$nginxversion-1+${dist}0 \
+      nodejs=0.8.26-1chl1~${dist}1 \
+      npm=1.3.0-1chl1~${dist}1 \
     | tee -a $logfile
   fi
 }
