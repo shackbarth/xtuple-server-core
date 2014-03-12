@@ -49,8 +49,7 @@ install_xtuple () {
   #git checkout $tag
   sudo npm install
   eval "sudo node lib/sys/install.js install \
-    --xt-version $xtversion --xt-appdir $appdir --xt-verify \
-    --xt-adminpw $xt_adminpw $argv"
+    --xt-version $xtversion --xt-appdir $appdir --xt-adminpw $xt_adminpw $argv"
 }
 
 install_rhel () {
