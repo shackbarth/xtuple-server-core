@@ -18,12 +18,10 @@ install_xtuple () {
   shift
 
   versiondir=$xthome/src/$xtversion
-  mkdir -p $versiondir
-
   appdir=$versiondir/xtuple
+
+  mkdir -p $appdir
   cd $versiondir
-  #mkdir -p src/private-extensions
-  #mkdir -p src/xtuple-extensions
 
   rm -rf installer
   rm -rf xtuple-extensions
