@@ -6,7 +6,7 @@ TRAPMSG=
 xthome=/usr/local/xtuple
 logfile=$ROOT/install.log
 xtremote_pass=
-xt_adminpw=
+xt_adminpw=$(head -c 4 /dev/urandom | base64 | sed "s/[=\s]//g")
 xtversion=1.8.1
 pgversion=9.1
 plv8version=1.4.0
@@ -22,9 +22,10 @@ install_xtuple () {
   argv=$@
 
   versiondir=$xthome/src/$xtversion
+  appdir=$versiondir/xtuple
 
-  mkdir -p $xtversion/$pgname
-  cd $xtversion/$pgname
+  mkdir -p $versiondir;
+  cd $versiondir
 
   rm -rf installer xtuple-extensions private-extensions xtuple
 
@@ -44,7 +45,6 @@ install_xtuple () {
 
   git clone --recursive https://github.com/xtuple/xtuple.git
   cd xtuple
-  appdir=$(pwd)
   tag="v$xtversion"
   git checkout $tag
   sudo npm install
@@ -52,8 +52,7 @@ install_xtuple () {
 
   log "Cloned xTuple $tag."
 
-  eval "node lib/sys/install.js install --xt-version $xtversion --xt-appdir $appdir --xt-adminpw $xt_adminpw \
-    --pg-name $pgname $argv"
+  eval "node lib/sys/install.js install --xt-version $xtversion --xt-appdir $appdir --xt-adminpw $xt_adminpw --pg-name $pgname $argv"
 }
 
 install_rhel () {
@@ -107,7 +106,6 @@ setup_policy () {
     log "Creating users..."
 
     xtremote_pass=$(head -c 6 /dev/urandom | base64 | sed "s/[=\s]//g")
-    xt_adminpw=$(head -c 4 /dev/urandom | base64 | sed "s/[=\s]//g")
    
     sudo addgroup xtuple
     sudo adduser xtuple  --system
