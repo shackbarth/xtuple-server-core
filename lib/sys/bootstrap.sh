@@ -1,7 +1,6 @@
 #!/bin/bash
 
 ROOT=$(pwd)
-argv=$@
 TRAPMSG=
 
 xthome=/usr/local/xtuple
@@ -17,38 +16,44 @@ install_xtuple () {
   xtversion=$1
   shift
 
+  pgname=$1
+  shift
+
+  argv=$@
+
   versiondir=$xthome/src/$xtversion
-  appdir=$versiondir/xtuple
 
-  mkdir -p $appdir
-  cd $versiondir
+  mkdir -p $xtversion/$pgname
+  cd $xtversion/$pgname
 
-  rm -rf installer
-  rm -rf xtuple-extensions
-  rm -rf private-extensions
-  rm -rf xtuple
+  rm -rf installer xtuple-extensions private-extensions xtuple
 
   git config --global credential.helper 'cache --timeout=1800'
 
   log "Downloading installers...\n"
   git clone --recursive https://github.com/xtuple/xtuple-scripts.git installer
+  cd installer
+  #git checkout $tag
+  sudo npm install
+
   git clone --recursive https://github.com/xtuple/xtuple-extensions.git
   git clone https://github.com/xtuple/private-extensions.git
+  cd private-extensions
+  #npm install
+  cd ..
+
   git clone --recursive https://github.com/xtuple/xtuple.git
-
-  # TODO install using npm
-
-  cd $appdir
+  cd xtuple
+  appdir=$(pwd)
   tag="v$xtversion"
   git checkout $tag
   sudo npm install
+  cd ..
 
   log "Cloned xTuple $tag."
 
-  cd ../installer
-  #git checkout $tag
-  sudo npm install
-  eval "sudo node lib/sys/install.js install --xt-version $xtversion --xt-appdir $appdir --xt-adminpw $xt_adminpw $argv"
+  eval "node lib/sys/install.js install --xt-version $xtversion --xt-appdir $appdir --xt-adminpw $xt_adminpw \
+    --pg-name $pgname $argv"
 }
 
 install_rhel () {
@@ -72,9 +77,9 @@ install_debian () {
   if [[ -z $(which node npm) ]]; then
     log "Adding Debian Repositories..."
 
-    sudo apt-get -q -y update | tee -a $logfile
-    sudo apt-get -q -y autoremove --force-yes
-    sudo apt-get -q -y install python-software-properties --force-yes
+    sudo apt-get -qq update | tee -a $logfile
+    sudo apt-get -qq autoremove --force-yes
+    sudo apt-get -qq install python-software-properties --force-yes
     
     sudo wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
     echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null
@@ -84,9 +89,9 @@ install_debian () {
     sudo add-apt-repository ppa:git-core/ppa -y
    
     log "Installing Debian Packages..."
-    sudo apt-get -q -y update | tee -a $logfile
+    sudo apt-get -qq update | tee -a $logfile
     # TODO versionize postgres
-    sudo apt-get -q -y --force-yes install curl build-essential libssl-dev openssh-server cups ncurses-term \
+    sudo apt-get -qq --force-yes install curl build-essential libssl-dev openssh-server cups ncurses-term \
       git=1:1.9.0-1~ppa0~${dist}1 \
       postgresql-$pgversion postgresql-server-dev-$pgversion postgresql-contrib-$pgversion \
       postgresql-$pgversion-plv8=$plv8version.ds-2.pgdg12.4+1 \
@@ -101,22 +106,21 @@ setup_policy () {
   if [[ -z $(id -u xtuple) && -z $(id -u xtremote) ]]; then
     log "Creating users..."
 
-    xtremote_pass=$(head -c 8 /dev/urandom | base64 | sed "s/[=\s]//g")
+    xtremote_pass=$(head -c 6 /dev/urandom | base64 | sed "s/[=\s]//g")
     xt_adminpw=$(head -c 4 /dev/urandom | base64 | sed "s/[=\s]//g")
    
     sudo addgroup xtuple
-    sudo adduser xtuple  --system --home /usr/local/xtuple
+    sudo adduser xtuple  --system
     sudo adduser xtuple xtuple
     sudo useradd -p $xtremote_pass xtremote -d /usr/local/xtuple
     sudo usermod -a -G xtuple,www-data,postgres,lpadmin xtremote
-    sudo chown :xtuple /usr/local/xtuple
+    sudo chown -R xtuple /usr/local/xtuple
   elif [[ -z $(service xtuple) ]]; then
     echo -e "It looks like an installation was started, but did not complete successfully."
     echo -e "Please restore the system to a clean state"
     exit 1
   else
     echo -e "xTuple is already installed."
-    service xtuple
     exit 2
   fi
 
@@ -169,4 +173,4 @@ else
 fi
 
 setup_policy
-install_xtuple $1
+install_xtuple $@
