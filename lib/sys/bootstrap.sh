@@ -120,7 +120,7 @@ setup_policy () {
     exit 1
   else
     echo -e "xTuple is already installed."
-    exit 2
+    #exit 2
   fi
 
   echo ""
@@ -150,7 +150,7 @@ die() {
   exit 1
 }
 
-trap 'CODE=$? ; log "\n\nxTuple Install Aborted:\n  line: $BASH_LINENO \n  cmd: $BASH_COMMAND \n  code: $CODE\n  msg: $TRAPMSG\n" ; exit 1' ERR EXIT
+trap 'CODE=$? ; log "\n\nxTuple Install Aborted:\n  line: $BASH_LINENO \n  cmd: $BASH_COMMAND \n  code: $CODE\n  msg: $TRAPMSG\n" ; exit 1' ERR
 
 log "This program will install xTuple\n"
 log "         xxx     xxx"
