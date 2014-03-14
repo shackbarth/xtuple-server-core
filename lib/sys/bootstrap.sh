@@ -49,7 +49,7 @@ install_xtuple () {
   tag="v$xtversion"
   git checkout $tag
   sudo npm install
-  cd ..
+  cd ../installer
 
   log "Cloned xTuple $tag."
 
