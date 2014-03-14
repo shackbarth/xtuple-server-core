@@ -36,6 +36,7 @@ install_xtuple () {
   cd installer
   #git checkout $tag
   sudo npm install
+  cd ..
 
   git clone --recursive https://github.com/xtuple/xtuple-extensions.git
   git clone https://github.com/xtuple/private-extensions.git
