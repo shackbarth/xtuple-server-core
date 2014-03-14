@@ -72,34 +72,32 @@ install_debian () {
   os=$(lsb_release -s -d)
   dist=$(lsb_release -s -c)
   log "   Found $os\n"
-  [[ $os =~ '12.04' ]] || die "Operating System not supported"
+  #[[ $os =~ '12.04' ]] || die "Operating System not supported"
 
-  if [[ -z $(which node npm) ]]; then
-    log "Adding Debian Repositories..."
+  log "Adding Debian Repositories..."
 
-    sudo apt-get -qq update | tee -a $logfile
-    sudo apt-get -qq autoremove --force-yes
-    sudo apt-get -qq install python-software-properties --force-yes
-    
-    sudo wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-    echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null
-    sudo add-apt-repository ppa:nginx/stable -y
-    sudo add-apt-repository ppa:chris-lea/node.js-legacy -y
-    sudo add-apt-repository ppa:chris-lea/node.js -y
-    sudo add-apt-repository ppa:git-core/ppa -y
-   
-    log "Installing Debian Packages..."
-    sudo apt-get -qq update | tee -a $logfile
-    # TODO versionize postgres
-    sudo apt-get -qq --force-yes install curl build-essential libssl-dev openssh-server cups ncurses-term \
-      git=1:1.9.0-1~ppa0~${dist}1 \
-      postgresql-$pgversion postgresql-server-dev-$pgversion postgresql-contrib-$pgversion \
-      postgresql-$pgversion-plv8=$plv8version.ds-2.pgdg12.4+1 \
-      nginx-full=$nginxversion-1+${dist}0 \
-      nodejs=0.8.26-1chl1~${dist}1 \
-      npm=1.3.0-1chl1~${dist}1 \
-    | tee -a $logfile
-  fi
+  sudo apt-get -qq update | tee -a $logfile
+  sudo apt-get -qq autoremove --force-yes
+  sudo apt-get -qq install python-software-properties --force-yes
+  
+  sudo wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+  echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null
+  sudo add-apt-repository ppa:nginx/stable -y
+  sudo add-apt-repository ppa:chris-lea/node.js-legacy -y
+  sudo add-apt-repository ppa:chris-lea/node.js -y
+  sudo add-apt-repository ppa:git-core/ppa -y
+  
+  log "Installing Debian Packages..."
+  sudo apt-get -qq update | tee -a $logfile
+  # TODO versionize postgres
+  sudo apt-get -qq --force-yes install curl build-essential libssl-dev openssh-server cups ncurses-term \
+    git=1:1.9.0-1~ppa0~${dist}1 \
+    postgresql-$pgversion postgresql-server-dev-$pgversion postgresql-contrib-$pgversion \
+    postgresql-$pgversion-plv8=$plv8version.ds-2.pgdg12.4+1 \
+    nginx-full=$nginxversion-1+${dist}0 \
+    nodejs=0.8.26-1chl1~${dist}1 \
+    npm=1.3.0-1chl1~${dist}1 \
+  | tee -a $logfile
 }
 
 setup_policy () {
