@@ -15,14 +15,16 @@
     "sync": "~0.2.2",
     "posix": "~1.0.3",
     "node-linux": "~0.1.2",
-    "execSync": "~1.0.1-pre"
+    "execSync": "~1.0.1-pre",
+    "cron": "~1.0.4",
+    "zip": "~1.1.1"
   },
   "devDependencies": {
     "chai": "~1.9.0",
     "mocha": "~1.17.1"
   },
   "scripts": {
-    "test-sudo": "mocha lib/spec -R spec"
+    "test": "mocha lib/spec -R spec"
   },
   "repository": {
     "type": "git",

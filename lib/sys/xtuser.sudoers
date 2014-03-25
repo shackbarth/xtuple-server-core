@@ -1,0 +1,4 @@
+{name}    ALL = \
+      /usr/sbin/service xtuple [0-9.]* {name} [A-Za-z]+, \
+      /usr/bin/pg_ctlcluster [0-9.]* {name} [A-Za-z]+
+
