@@ -6,8 +6,7 @@ TRAPMSG=
 xthome=/usr/local/xtuple
 logfile=$ROOT/install.log
 xtremote_pass=
-xt_adminpw=$(head -c 4 /dev/urandom | base64 | sed "s/[=\s]//g")
-xtversion=1.8.1
+xtversion=1.8.2
 pgversion=9.1
 plv8version=1.4.0
 nginxversion=1.4.6
@@ -16,7 +15,7 @@ install_xtuple () {
   xtversion=$1
   shift
 
-  pgname=$1
+  xtname=$1
   shift
 
   argv=$@
@@ -53,7 +52,7 @@ install_xtuple () {
 
   log "Cloned xTuple $tag."
 
-  eval "node lib/sys/install.js install --xt-version $xtversion --xt-appdir $appdir --xt-adminpw $xt_adminpw --pg-name $pgname $argv"
+  eval "node lib/sys/install.js install --xt-version $xtversion --xt-appdir $appdir --xt-name $xtname $argv"
 }
 
 install_rhel () {
@@ -169,5 +168,5 @@ else
   exit 1;
 fi
 
-setup_policy
+#setup_policy
 install_xtuple $@
