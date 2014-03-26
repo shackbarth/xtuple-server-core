@@ -185,7 +185,7 @@
     });
   });
 
-  _.each(_.tail(plan), function (step) {
+  _.each(plan, function (step) {
     installer.log({ msg: 'Module: {name}'.format(step) }, true);
     installer.log({ msg: '  Tasks: ' + JSON.stringify(step.tasks) }, true);
     installer.log({ msg: '  Arguments: '+ JSON.stringify(runargs[step.name], null, 2) }, true);
@@ -195,7 +195,7 @@
   prompt.get('Press Enter to Continue', function(err, result) {
     installer.run(_.extend(runargs, {
       logfile: installer.logfile,
-      sys: { plan: _.tail(plan) }
+      sys: { plan: plan }
     }), true);
     current = logo_lines_colored.length;
     installer.log_progress({ step: 'sys', task: 'installer', msg: 'Done!'});
