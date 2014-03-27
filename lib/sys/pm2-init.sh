@@ -17,7 +17,7 @@
 ### END INIT INFO
 
 NAME=xtuple
-PM2=/usr/lib/node_modules/pm2/bin/pm2
+PM2=$(which pm2)
 USER=xtnode
 
 export PATH=$PATH:/usr/bin
@@ -49,7 +49,7 @@ reload() {
 }
 
 status() {
-    #echo "Status for $NAME:"
+    echo "xTuple Mobile Web Status:"
     super $PM2 list
     RETVAL=$?
 }
