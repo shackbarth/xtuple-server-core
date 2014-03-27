@@ -1,0 +1,16 @@
+{
+  "root": "/home/tjwebb/.forever",
+  "pidPath": "/home/tjwebb/.forever/pids",
+  "sockPath": "/home/tjwebb/.forever/sock",
+  "loglength": 100,
+  "logstream": false,
+  "columns": [
+    "uid",
+    "script",
+    "forever",
+    "pid",
+    "logfile",
+    "uptime"
+  ],
+  "name": "test02"
+}
