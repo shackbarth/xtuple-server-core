@@ -52,7 +52,7 @@ install_xtuple () {
 
   log "Cloned xTuple $tag."
 
-  eval "node lib/sys/install.js install --xt-version $xtversion --xt-appdir $appdir --xt-name $xtname $argv"
+  eval "node install.js install --xt-version $xtversion --xt-appdir $appdir --xt-name $xtname $argv"
 }
 
 install_rhel () {
@@ -91,50 +91,14 @@ install_debian () {
   # TODO versionize postgres
   sudo apt-get -qq --force-yes install curl build-essential libssl-dev openssh-server cups ncurses-term \
     git=1:1.9.0-1~ppa0~${dist}1 \
-    postgresql-$pgversion postgresql-server-dev-$pgversion postgresql-contrib-$pgversion \
-    postgresql-$pgversion-plv8=$plv8version.ds-2.pgdg12.4+1 \
+    postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 \
+    postgresql-9.1-plv8=$plv8version.ds-2.pgdg12.4+1 \
+    postgresql-9.3 postgresql-server-dev-9.3 postgresql-contrib-9.3 \
+    postgresql-9.3-plv8=$plv8version.ds-2.pgdg12.4+1 \
     nginx-full=$nginxversion-1+${dist}0 \
     nodejs=0.8.26-1chl1~${dist}1 \
     npm=1.3.0-1chl1~${dist}1 \
   | tee -a $logfile
-}
-
-setup_policy () {
-  if [[ -z $(id -u xtuple) && -z $(id -u xtremote) ]]; then
-    log "Creating users..."
-
-    xtremote_pass=$(head -c 6 /dev/urandom | base64 | sed "s/[=\s]//g")
-   
-    sudo addgroup xtuple
-    sudo adduser xtuple  --system
-    sudo adduser xtuple xtuple
-    sudo useradd -p $xtremote_pass xtremote -d /usr/local/xtuple
-    sudo usermod -a -G xtuple,www-data,postgres,lpadmin xtremote
-    sudo chown -R xtuple /usr/local/xtuple
-  elif [[ -z $(service xtuple) ]]; then
-    echo -e "It looks like an installation was started, but did not complete successfully."
-    echo -e "Please restore the system to a clean state"
-    exit 1
-  else
-    echo -e "xTuple is already installed."
-    #exit 2
-  fi
-
-  echo ""
-  log "SSH Remote Access Credentials"
-  log "   username: xtremote"
-  echo "[xtuple]    password: $xtremote_pass"
-  echo ""
-  log "WRITE THIS DOWN. This information is about to be destroyed forever."
-  log "You have been warned."
-  echo ""
-  log "Press Enter to continue installation..."
-
-  read
-  xtremote_pass=
-
-  # TODO remove root from sshd config
-  # TODO set root shell to limbo
 }
 
 log() {
@@ -168,5 +132,4 @@ else
   exit 1;
 fi
 
-#setup_policy
 install_xtuple $@
