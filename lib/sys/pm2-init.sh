@@ -16,64 +16,83 @@
 # Description: xTuple Mobile Web Service Manager
 ### END INIT INFO
 
+help() {
+  echo -e 'xTuple Service Manager'
+  echo -e ''
+  echo -e 'Usage: sudo service xtuple {start|stop|status|restart}'
+  echo -e 'Examples:  '
+  echo -e '   Restart all xTuple services:    sudo service xtuple restart'
+  echo -e '   Display xTuple status:          sudo service xtuple status'
+  echo -e ''
+  echo -e 'Usage: sudo service xtuple <version> <account> {start|stop|status|restart}'
+  echo -e 'Examples:'
+  echo -e '   Restart xTuple for \'initech\': sudo service xtuple 4.4.0 initech restart
+  echo -e '   Show status for \'initech\':    sudo service xtuple 4.4.0 initech status
+  echo -e ''
+  echo -e 'Having trouble? Email us: <dev@xtuple.com>'
+  echo -e ''
+}
+
 NAME=xtuple
 PM2=$(which pm2)
-USER=xtnode
+
+argv=$@
+version=$1
+account=$2
+action=$3
+
+if [[ -z $action && -z $account && -z $version ]]; then
+  help
+elif [[ -z $action && -z $account ]]; then
+  action=$version
+elif [[ -z $action ]]; then
+  help
+fi
 
 export PATH=$PATH:/usr/bin
 
 super() {
-    sudo -u $USER PATH=$PATH $*
+  sudo -u $account PATH=$PATH $*
 }
 
 start() {
-    echo "Starting $NAME"
-    super $PM2 resurrect
+  echo 'Starting $account $version...'
+  super $PM2 resurrect
 }
 
 stop() {
-    super $PM2 dump
-    super $PM2 delete all
-    super $PM2 kill
+  echo 'Stopping $account $version...'
+  super $PM2 dump
+  super $PM2 delete all
+  super $PM2 kill
 }
 
 restart() {
-    echo "Restarting $NAME"
-    stop
-    start
-}
-
-reload() {
-    echo "Reloading $NAME"
-    super $PM2 reload all
+  stop
+  start
 }
 
 status() {
-    echo "xTuple Mobile Web Status:"
-    super $PM2 list
-    RETVAL=$?
+  echo 'xTuple Mobile Web Status Dashboard'
+  super $PM2 list
+  RETVAL=$?
 }
 
-action=$1
-shift
-case "$action" in
+case '$action' in
     start)
-        start $@
+        start $version $account $action
         ;;
     stop)
-        stop
+        stop $version $account $action
         ;;
     status)
-        status
+        status $version $account $action
         ;;
     restart)
-        restart
-        ;;
-    reload)
-        reload
+        restart $version $account $action
         ;;
     *)
-        echo "Usage: {start|stop|status|restart|reload}"
+        help
         exit 1
         ;;
 esac
