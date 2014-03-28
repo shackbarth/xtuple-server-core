@@ -6,12 +6,12 @@
     format = require('string-format'),
     os = require('os'),
     prompt = require('prompt'),
-    Commander = require('commander'),
+    Commander = require('installer'),
     clc = require('cli-color'),
     S = require('string'),
     _ = require('underscore'),
     usage = '',
-    command = Commander.version('1.8.0').command('install'),
+    install = Commander.version('1.8.0').command('install'),
     runargs = { };
 
   var wd = __dirname,
@@ -135,7 +135,7 @@
             module: step.name,
           }, option_details));
 
-          command.option(flag, option_details.description);
+          install.option(flag, option_details.description);
 
           // set default argument value
           (runargs[step.name] || (runargs[step.name] = { }));
@@ -150,24 +150,24 @@
     });
   });
 
-  command.parse(process.argv);
-  command.usage(
-    _.reduce(_.where(command.options, { optional: 0 }), function (memo, option) {
+  install.parse(process.argv);
+  install.usage(
+    _.reduce(_.where(install.options, { optional: 0 }), function (memo, option) {
       return memo + ' ' + option.flags;
     }, ''));
 
-  // now that commander has parsed the arguments, go back through and override
-  // default values with provided values. commander's automatic camelcasing of
+  // now that installer has parsed the arguments, go back through and override
+  // default values with provided values. installer's automatic camelcasing of
   // arguments, as well as its strange setting of values directly on the
   // 'Commander' object unfortunately complicate this process somewhat.
-  _.each(command.options, function (option) {
+  _.each(install.options, function (option) {
     var flag = option.long,
       cleanflag = option.long.replace('--', ''),
       prop = S(cleanflag).camelize().s,
       argpath = cleanflag.split('-');
 
-    if (!_.isUndefined(command[prop])) {
-      runargs[argpath[0]][argpath[1]] = command[prop];
+    if (!_.isUndefined(install[prop])) {
+      runargs[argpath[0]][argpath[1]] = install[prop];
     }
   });
 
