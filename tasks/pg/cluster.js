@@ -6,11 +6,11 @@
    */
   var cluster = exports;
 
-  var archetype = require('../sys/archetype'),
-    pgctl = require('./ctl'),
+  var task = require('../sys/task'),
+    pgcli = require('../../lib/pg-cli'),
     _ = require('underscore');
 
-  _.extend(cluster, archetype, /** @exports cluster */ {
+  _.extend(cluster, task, /** @exports cluster */ {
 
     options: {
       slots: {
@@ -34,7 +34,7 @@
           name: options.xt.name,
           version: options.pg.version
         },
-        result = pgctl.createcluster(cluster);
+        result = pgcli.createcluster(cluster);
 
       return result;
     }

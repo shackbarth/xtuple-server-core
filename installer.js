@@ -197,7 +197,7 @@
   installer.log({ msg: 'Confirm that the above Installation Plan is Correct'}, true);
 
   prompt.get('Press Enter to Continue', function(err, result) {
-    process.emit('optionsParse', options);
+    process.emit('init', options);
     installer.run(_.extend(options, {
       logfile: installer.logfile,
       sys: { plan: plan }

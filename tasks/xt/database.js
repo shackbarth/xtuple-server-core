@@ -79,8 +79,8 @@
             };
           
           if (!fs.existsSync(wget_format.file)) {
-            exec('sudo -u xtuple wget -qO {file} {url}'.format(wget_format));
-            exec('sudo -u xtuple chown xtuple {file}'.format(wget_format));
+            exec('sudo wget -qO {file} {url}'.format(wget_format));
+            exec('sudo chown xtuple {file}'.format(wget_format));
           }
           return wget_format;
         }),
