@@ -3,7 +3,7 @@
 
   var tuner = require('./tuner'),
     pghba = require('./hba'),
-    pgctl = require('./ctl'),
+    pgcli = require('../../lib/pg-cli'),
     exec = require('execSync'),
     format = require('string-format'),
     defaults = require('./defaults'),
@@ -52,7 +52,7 @@
      */
     configure: function (mode, options) {
       var config = _.extend({ mode: mode }, defaults.base, defaults[mode], options),
-        clusters = pgctl.lsclusters(),
+        clusters = pgcli.lsclusters(),
         collection = _.compact(_.map(_.pluck(_.flatten(_.values(clusters)), 'config'),
             function (path) {
           var conf = path + '/postgresql.conf';
