@@ -1,6 +1,12 @@
 (function () {
   'use strict';
 
+  /**
+   * Aggregate info about the databases the installer has been directed to set
+   * up.
+   */
+  var database = exports;
+
   var format = require('string-format'),
     path = require('path'),
     fs = require('fs'),
@@ -9,9 +15,8 @@
     url_template = 'http://sourceforge.net/projects/postbooks/files/' +
       '03%20PostBooks-databases/{version}/postbooks_{flavor}-{version}.backup/download',
     xtrole_template =
-      'CREATE USER admin WITH PASSWORD \'{adminpw}\' CREATEDB CREATEUSER IN GROUP xtrole';
-
-  var database = exports;
+      'CREATE USER admin WITH PASSWORD \'{adminpw}\' CREATEDB CREATEUSER IN GROUP xtrole',
+    knex;
 
   _.extend(database, /** @exports database */ {
 
@@ -124,17 +129,12 @@
         throw new Error('No databases have been found for installation');
       }
 
-      // prime the databases
-      exec('sudo -u postgres psql -q -p {port} -c "CREATE GROUP xtrole"'
-        .format(options.pg.cluster));
-
-      exec('sudo -u postgres psql -q -p {port} -c "{sql}"'
-        .format(_.extend({ sql: xtrole_sql }, options.pg.cluster)));
-
       _.each(databases, function (db) {
         var create_template = _.extend(db, options.pg.cluster);
-
+        // create database
         exec('sudo -u postgres createdb -O admin -p {port} {flavor}'.format(create_template));
+
+        // enable plv8 extension
         exec('sudo -u postgres {flavor} psql -q -p {port} -c "CREATE EXTENSION plv8"'
           .format(create_template));
       });
@@ -144,4 +144,7 @@
       };
     }
   });
+
+  /** @listens knex */
+  process.on('knex', function (_knex) { knex = _knex; });
 })();

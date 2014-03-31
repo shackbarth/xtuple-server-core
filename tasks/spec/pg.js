@@ -234,9 +234,6 @@ describe('phase: pg', function () {
         });
 
         options.xt.database = xt.database.run(options);
-        
-        //options.xt.build_common = xt.build_common.run(options);
-
         snap.prelude(options);
         options.pg.snapshot = snap.createSnapshot(options);
       });

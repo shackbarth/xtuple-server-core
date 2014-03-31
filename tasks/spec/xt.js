@@ -3,9 +3,9 @@ var assert = require('chai').assert,
   m = require('mstring'),
   _ = require('underscore');
 
-describe('xt', function () {
+describe('phase: xt', function () {
 
-  describe('#testconfig', function () {
+  describe('task: testconfig', function () {
     var $k = Math.round((Math.random() * 2e16)).toString(16);
     var testconfig = require('../xt/testconfig');
 
@@ -26,7 +26,7 @@ describe('xt', function () {
     });
   });
 
-  describe('#serverconfig', function () {
+  describe('task: serverconfig', function () {
     var $k = Math.round((Math.random() * 2e16)).toString(16);
     var serverconfig = require('../xt/serverconfig');
 
