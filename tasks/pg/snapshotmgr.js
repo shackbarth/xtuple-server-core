@@ -109,7 +109,7 @@
         pg_dump = 'sudo -u postgres /usr/lib/postgresql/9.3/bin/pg_dump',
         cmd_template = pg_dump + ' -U postgres -w -p {port} -Fd -f {out} --no-synchronized-snapshots {database}';
 
-      // backup globals (users, roles, etc)
+      // backup globals (users, roles, etc) separately
       var globals_snapshot = exec('sudo -u postgres pg_dumpall -U postgres -w -p {port} -g > {out}.sql'.format({
         port: options.pg.cluster.port,
         out: snapshotmgr.getSnapshotPath(options)
