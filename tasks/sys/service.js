@@ -65,7 +65,7 @@
       fs.writeFileSync(pm2.services_conf_target, pm2.conf);
 
       // start process manager and web service
-      exec(['pm2 start', pm2.conf_target, '-x -u xtnode -- -c', xt_conf_target].join(' '));
+      exec(['pm2 start', pm2.conf_target, '-x -u xtweb -- -c', xt_conf_target].join(' '));
       service.launch(pm2.services_conf_target);
     },
 
@@ -75,7 +75,7 @@
      * @public
      */
     launch: function (config) {
-      return exec('pm2 start {config} -x -u xtnode'.format({ config: config }));
+      return exec('pm2 start {config} -x -u xtweb'.format({ config: config }));
     }
   });
 

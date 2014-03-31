@@ -58,7 +58,13 @@
           data_directory: cluster.data,
           shared_buffers: shared_buffers(cluster, config, env),
           max_stack_depth: max_stack_depth(cluster, config, env),
-          effective_cache_size: effective_cache_size(cluster, config, env)
+          effective_cache_size: effective_cache_size(cluster, config, env),
+        /*
+         * TODO 
+          ssl_cert_file:
+          ssl_key_file:
+          ssl_ca_file:
+          */
         }),
         postgresql_conf = postgresql_conf_template
           .format(conf_values)
@@ -70,6 +76,7 @@
 
       // postgres 9.3 claims to handle shared_buffers differently, and as a
       // result does not require the altering of SHMMAX
+      // XXX pg 9.3 untested in practice
       if ((+pg.version) < 9.3) {
         sysctl_conf = sysctl_conf_template
           .format({ shmmax: env.shmmax, shmall: env.shmall })
