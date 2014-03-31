@@ -21,14 +21,15 @@
     "node-schedule": "~0.1.13",
     "moment": "~2.5.1",
     "knex": "~0.5.11",
-    "pg": "~2.11.1"
+    "pg": "~2.11.1",
+    "adm-zip": "~0.4.4"
   },
   "devDependencies": {
     "chai": "~1.9.0",
     "mocha": "~1.17.1"
   },
   "scripts": {
-    "test": "mocha tasks/spec -R spec"
+    "test": "mocha tasks/spec/index.js -R spec"
   },
   "repository": {
     "type": "git",
