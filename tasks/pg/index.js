@@ -31,21 +31,25 @@
      * @param options.database
      */
     init: function (options) {
+      /*
+       * XXX <https://github.com/tgriesser/knex/issues/227>
       process.emit('knex', Knex.initialize({
         client: 'pg',
         debug: true,
         connection: {
-          host: options.pg.host || '127.0.0.1',
-          port: options.pg.port,
-          user: options.xt.name,
+          host: (options.pg.host === 'localhost') ? null : options.pg.host,
+          port: options.pg.cluster.port,
+          user: 'postgres',
+          database: 'postgres',
           ssl: true,
-          database: options.database,
           charset: 'utf8'
         }
       }));
+      */
     },
 
     cluster: require('./cluster'),
+    config: require('./config'),
     defaults: require('./defaults'),
     hba: require('./hba'),
     snapshotmgr: require('./snapshotmgr'),
@@ -53,8 +57,10 @@
   });
 
   // setup database connection
+  /*
   process.on('init', function (options) {
     pg.init(options);
   });
+  */
 
 })();

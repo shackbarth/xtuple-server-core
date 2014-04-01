@@ -46,8 +46,8 @@
       }
       options.nginx.inkey = path.resolve(options.nginx.inkey);
 
-      options.nginx.outcrt = ssl.getCertBasename(options) + '.crt';
-      options.nginx.outkey = ssl.getCertBasename(options) + '.key';
+      options.nginx.outcrt = path.resolve(ssl.getCertBasename(options) + '.crt');
+      options.nginx.outkey = path.resolve(ssl.getCertBasename(options) + '.key');
     },
 
     /** @override */

@@ -1,6 +1,8 @@
 (function () {
   'use strict';
 
+  var pgconfig = exports;
+
   var tuner = require('./tuner'),
     pghba = require('./hba'),
     pgcli = require('../../lib/pg-cli'),
@@ -8,12 +10,15 @@
     format = require('string-format'),
     defaults = require('./defaults'),
     _ = require('underscore');
-
-  var pg = exports;
   
-  _.extend(pg, /** @exports pg */ {
+  _.extend(pgconfig, /** @exports pgconfig */ {
 
     options: {
+      host: {
+        required: '<host>',
+        description: 'Postgres server host address',
+        value: 'localhost'
+      },
       mode: {
         required: '<mode>',
         description: 'Installation mode (dedicated|cloud|testing). Dedicated implies one slot.'
@@ -30,6 +35,10 @@
       }
     },
 
+    beforeTask: function (options) {
+
+    },
+
     /**
      *  options {
      *    version: 9.1,
@@ -44,7 +53,7 @@
         slot = defaults.slot;
         //config = pg.configure(mode, options);
 
-      return _.extend({ mode: mode, slots: options.pg.slots }, slot.base, slot[mode]);
+      return _.extend({ mode: mode, slots: options.pg.slots || 1}, slot.base, slot[mode]);
     },
 
     /**

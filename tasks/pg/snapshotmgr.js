@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 (function () {
   'use strict';
 
@@ -11,6 +9,7 @@
   var task = require('../sys/task'),
     service = require('../sys/service'),
     scheduler = require('node-schedule'),
+    pgcli = require('../../lib/pg-cli'),
     fs = require('fs'),
     os = require('os'),
     moment = require('moment'),
@@ -149,29 +148,22 @@
           ts: moment().format('MMDDYYY')
         },
         deprecated_db = '{database}_{version}_{ts}'.format(deprecated_format),
-        pg_restore = '/usr/lib/postgresql/9.3/bin/pg_restore';
+        pg_restore = '/usr/lib/postgresql/9.3/bin/pg_restore',
+        queries = [
       
-      // disconnect all users
-      (function () {
-        return knex('pg_stat_activity')
-          .select(knex.raw('pg_terminate_backend(procpid)'))
-          .where({ datname: options.database });
-      })()
-      // disable connections
-      .then(function () {
-        return knex.raw('revoke connect on database {database} from public'.format(options));
-      })
-      // rename database
-      .then(function () {
-        return knex.raw(['rename', options.database, 'to', deprecated_db].join(' '));
-      })
-      // initiate restore process... and wait.
-      .then(function () {
-        exec('createdb -O admin '+ options.database);
-        exec(pg_restore + ' -j {jobs} -Fd {in} {database}'.format({
-          'in': db_snapshot,
-          jobs: Math.max(1, os.cpus().length - 1)
-        }));
+          // disconnect all users and lock database
+          'select pg_terminate_backend(procpid) from pg_stat_activity',
+          'revoke connect on database {database} from public'.format(options),
+
+          // rename database
+          ['rename', options.database, 'to', deprecated_db].join(' ')
+        ];
+
+      // initiate restore process... and wait. could take awhile
+      pgcli.createdb({ owner: 'admin', dbname: options.database });
+      pgcli.restore({
+        filename: snapshotmgr.getSnapshotPath(options),
+        dbname: options.dbname
       });
     },
 
@@ -249,4 +241,3 @@
     });
 
 })();
-

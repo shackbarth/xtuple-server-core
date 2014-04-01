@@ -13,6 +13,7 @@ module.exports = {
     phi: phi,
     stacklimit: posix.getrlimit('stack').soft,
     platform: os.platform(),
+    slots: 1,
     MB: MB,
     GB: GB,
 
@@ -40,6 +41,7 @@ module.exports = {
       max_connections: 128,
       work_mem: 1,
       temp_buffers: 16,
+      shared_buffers: 128,
       maintenance_work_mem: 8
     },
 
