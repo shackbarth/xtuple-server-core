@@ -22,10 +22,11 @@
       '# xTuple HBA Entries (auto-generated)',
       '# ===================================================',
 
+      'local      all             all                                     trust',
+
       '# allow "xtdaemon" user access from anywhere, but require matching ssl',
       '# cert for this privilege to even be considered.',
-      'local      all             xtdaemon                                cert clientcert=1',
-      'hostssl    all             xtdaemon        0.0.0.0/0               cert clientcert=1',
+      '{xtdaemon_ssl}hostssl    all             xtdaemon        0.0.0.0/0               cert clientcert=1',
 
       '# internal network (rfc1918)',
       'hostssl    all             all             10.0.0.0/8              md5',
@@ -47,21 +48,25 @@
     prelude: function (options) {
       var version = options.pg.version,
         name = options.xt.name,
-        path = path.resolve('/etc/postgresql/', version, name, 'pg_hba.conf');
+        pgpath = path.resolve('/etc/postgresql/', version, name, 'pg_hba.conf');
+
+      exec('usermod -a -G www-data postgres');
 
       return _.all([
-        fs.existsSync(path)
+        fs.existsSync(pgpath)
       ]);
     },
 
     /** @override */
-    install: function (options) {
+    run: function (options) {
       var pg = options.pg,
         xt = options.xt,
         hba_src = fs.readFileSync(path.resolve(__dirname, filename_template.format(pg))),
         hba_target = path.resolve('/etc/postgresql/', pg.version, xt.name, 'pg_hba.conf'),
-        hba_extant = fs.readFileSync(hba_target),
-        hba_conf = hba_extant.split('\n').concat(xtuple_hba_entries).join('\n');
+        hba_extant = fs.readFileSync(hba_target).toString('ascii'),
+        hba_conf = hba_extant.split('\n').concat(xtuple_hba_entries).join('\n').format({
+          xtdaemon_ssl: (pg.host === 'localhost') ? '#' : ''
+        });
 
       fs.writeFileSync(hba_target, hba_conf);
   

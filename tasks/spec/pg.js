@@ -5,16 +5,31 @@ var assert = require('chai').assert,
   m = require('mstring'),
   moment = require('moment'),
   _ = require('underscore'),
+  nginx = require('../nginx'),
   pgcli = require('../../lib/pg-cli'),
   pghba = require('../pg/hba');
 
 _.mixin(require('congruence'));
 
 describe('phase: pg', function () {
+  var pgPhase = require('../pg');
+
+  describe('sanity', function () {
+    it('should exist', function () {
+      assert(pgPhase);
+    });
+    it('should export tasks', function () {
+      assert(pgPhase.config);
+      assert(pgPhase.tuner);
+      assert(pgPhase.hba);
+      assert(pgPhase.snapshotmgr);
+      assert(pgPhase.cluster);
+    });
+  });
 
   describe('task: tuner', function () {
     var $k = Math.round((Math.random() * 2e16)).toString(16),
-      tuner = require('../pg/tuner'),
+      tuner = pgPhase.tuner,
       testcluster = {
         version: 9.1,
         name: $k
@@ -124,7 +139,13 @@ describe('phase: pg', function () {
   });
 
   describe('task: snapshotmgr', function () {
-    var snap = require('../pg/snapshotmgr');
+    var snap = pgPhase.snapshotmgr;
+
+    describe('cli', function () {
+      it.skip('should start a service when invoked from the command line', function () {
+
+      });
+    });
 
     describe('#rotateSnapshot', function () {
       var $k = Math.round((Math.random() * 2e16)).toString(16),
@@ -206,11 +227,15 @@ describe('phase: pg', function () {
     describe('#createSnapshot', function () {
       var xt = require('../xt'),
         $k = Math.round((Math.random() * 2e16)).toString(16),
-        testcluster = {
+        snapshotcluster = {
           version: 9.1,
           name: $k
         },
         options = {
+          nginx: {
+            outcrt: path.resolve('/srv/ssl/', 'localhost' + $k +'.crt'),
+            outkey: path.resolve('/srv/ssl/', 'localhost' + $k +'.key')
+          },
           xt: {
             name: $k,
             version: '1.8.1',
@@ -219,35 +244,40 @@ describe('phase: pg', function () {
             setupdemos: true
           },
           pg: {
-            version: 9.1,
+            version: '9.1',
+            host: 'localhost'
           }
         },
         snapshot_path = snap.getSnapshotRoot(options.pg.version, $k);
 
       before(function () {
+        nginx.ssl.generate('/srv/ssl/', 'localhost' + $k);
         exec('mkdir -p '+ options.xt.appdir);
-        options.pg.cluster = pgcli.createcluster(testcluster);
+
+        options.pg.cluster = pgcli.createcluster(snapshotcluster);
         pgcli.ctlcluster({
           version: options.pg.version,
           name: options.xt.name,
           action: 'start'
         });
+        options.pg.config = pgPhase.config.run(options);
+        pgPhase.tuner.run(options);
+        pgPhase.hba.prelude(options);
+        pgPhase.hba.run(options);
+        pgPhase.cluster.initCluster(options);
 
         options.xt.database = xt.database.run(options);
         snap.prelude(options);
         options.pg.snapshot = snap.createSnapshot(options);
       });
 
-      it('should create a snapshot of all databases in the specified cluster', function () {
+      it('should create a snapshot of all databases in the cluster', function () {
         assert.lengthOf(options.pg.snapshot, options.xt.database.list.length + 1);
         assert.notInclude(_.pluck(options.pg.snapshot, 'code'), 1);
       });
-      it('should save all users and roles in the specified cluster', function () {
-
-      });
 
       after(function () {
-        pgcli.dropcluster(testcluster);
+        pgcli.dropcluster(snapshotcluster);
         _.each([
           'rm -rf '+ options.xt.appdir,
           'rm -rf '+ snapshot_path,

@@ -12,11 +12,9 @@
     fs = require('fs'),
     _ = require('underscore'),
     exec = require('execSync').exec,
+    pgcli = require('../../lib/pg-cli'),
     url_template = 'http://sourceforge.net/projects/postbooks/files/' +
-      '03%20PostBooks-databases/{version}/postbooks_{flavor}-{version}.backup/download',
-    xtrole_template =
-      'CREATE USER admin WITH PASSWORD \'{adminpw}\' CREATEDB CREATEUSER IN GROUP xtrole',
-    knex;
+      '03%20PostBooks-databases/{version}/postbooks_{dbname}-{version}.backup/download';
 
   _.extend(database, /** @exports database */ {
 
@@ -74,12 +72,12 @@
           version: database.versions[xt.version]
         },
         // schedule postbooks demo database files for installation
-        databases = !xt.setupdemos ? [ ] : _.map(database.download, function (flavor) {
-          var flavor_format = _.extend({ flavor: flavor }, download_format),
+        databases = !xt.setupdemos ? [ ] : _.map(database.download, function (dbname) {
+          var dbname_format = _.extend({ dbname: dbname }, download_format),
             wget_format = {
-              flavor: flavor,
-              file: path.resolve(options.xt.appdir, '..', flavor + '.backup'),
-              url: url_template.format(flavor_format),
+              dbname: dbname,
+              file: path.resolve(options.xt.appdir, '..', dbname + '.backup'),
+              url: url_template.format(dbname_format),
               common: true
             };
           
@@ -90,14 +88,13 @@
           return wget_format;
         }),
         maindb_path = path.resolve(options.xt.maindb),
-        asset_path = path.resolve(__dirname, '../../', 'assets'),
-        xtrole_sql = xtrole_template.format(options.xt);
+        asset_path = path.resolve(__dirname, '../../', 'assets');
 
       // schedule asset files for installation
       if (options.xt.masterref) {
         databases.push({
           file: path.resolve(asset_path, database.masterref),
-          flavor: 'masterref',
+          dbname: 'masterref',
           common: true
         });
       }
@@ -107,7 +104,7 @@
         if (fs.existsSync(maindb_path)) {
           databases.push({
             file: maindb_path,
-            flavor: xt.name,
+            dbname: xt.name,
             main: true
           });
         }
@@ -119,7 +116,7 @@
         if (xt.maindb && xt.pilot) {
           databases.push({
             file: maindb_path,
-            flavor: xt.name + 'pilot',
+            dbname: xt.name + 'pilot',
             main: true
           });
         }
@@ -129,22 +126,26 @@
         throw new Error('No databases have been found for installation');
       }
 
-      _.each(databases, function (db) {
-        var create_template = _.extend(db, options.pg.cluster);
-        // create database
-        exec('sudo -u postgres createdb -O admin -p {port} {flavor}'.format(create_template));
-
-        // enable plv8 extension
-        exec('sudo -u postgres {flavor} psql -q -p {port} -c "CREATE EXTENSION plv8"'
-          .format(create_template));
-      });
-
       return {
-        list: databases
+        list: _.map(databases, function (db) {
+          var psql_template = _.extend({ owner: 'admin' }, db, options),
+            // create database
+            createdb = pgcli.createdb(psql_template),
+
+            // enable plv8 extension
+            plv8 = pgcli.psql(psql_template, 'CREATE EXTENSION plv8');
+
+          if (createdb.code !== 0) {
+            throw new Error('Database creation failed: '+ JSON.stringify(createdb, null, 2));
+          }
+          if (plv8.code !== 0) {
+            throw new Error('PLV8 installation failed: '+ JSON.stringify(plv8, null, 2));
+          }
+
+          return db;
+        })
       };
     }
   });
 
-  /** @listens knex */
-  process.on('knex', function (_knex) { knex = _knex; });
 })();
