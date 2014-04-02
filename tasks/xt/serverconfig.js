@@ -25,21 +25,43 @@
       ***/
     }),
 
+    /**
+     * Location of datasource config file
+     */
+    configdir: null,
+
+    /**
+     * Location of log files for node service
+     */
+    logdir: null,
+
+    /**
+     * Location of state files such as PIDs
+     */
+    statedir: null,
+
     options: {
       appdir: {
         required: '<path>',
         description: 'Path to the xtuple application directory'
       },
-      configdir: {
-        optional: '[path]',
-        description: 'Location of datasource config file.',
-        value: '/etc/xtuple/{version}/{name}'
-      },
-      logdir: {
-        optional: '[path]',
-        description: 'Location of log files for node service',
-        value: '/var/log/xtuple/{version}/{name}/'
-      }
+    },
+
+    /**
+     * @override
+     */
+    beforeTask: function (options) {
+      var version = options.xt.version,
+        name = options.xt.name;
+
+      options.xt.configdir = path.resolve('/etc/xtuple', version, name);
+      options.xt.logdir = path.resolve('/var/log/xtuple', version, name);
+      options.xt.statedir = path.resolve('/var/lib/xtuple', version, name);
+
+      // ensure path integrity and write config file
+      exec('mkdir -p ' + options.xt.configdir);
+      exec('mkdir -p ' + options.xt.logdir);
+      exec('mkdir -p ' + options.xt.statedir);
     },
 
     run: function (options) {
@@ -48,12 +70,7 @@
         domain = options.nginx.domain,
         sample_path = path.resolve(xt.appdir, 'node-datasource/sample_config'),
         config_path = path.resolve('/etc/xtuple', xt.version, pg.name),
-        state_path = path.resolve('/var/lib/xtuple'),
         config_js = path.resolve(config_path, 'config.js'),
-        log_path = path.resolve(xt.logdir.format({
-          version: xt.version,
-          name: options.pg.name
-        })),
         encryption_key_path = path.resolve(config_path, 'encryption_key.txt'),
         ssl_path = path.resolve(config_path, 'ssl'),
         ssl_crt = path.resolve(ssl_path, domain + '.crt'),
@@ -62,17 +79,17 @@
 
         // replace default config.js values
         derived_config_obj = _.extend(sample_obj, {
-          processName: 'xt-node-' + domain,
+          processName: 'xt-web-' + domain,
           datasource: _.extend(sample_config.datasource, {
             name: domain,
-            keyFile: path.resolve(ssl_path, domain + '.key'),
-            certFile: path.resolve(ssl_path, domain + '.crt'),
+            keyFile: options.nginx.outkey,
+            certFile: options.nginx.outcrt,
             saltFile: path.resolve(config_path, 'salt.txt'),
             encryptionKeyFile: encryption_key_path,
             hostname: domain,
-            description: 'xTuple Node.js',
-            port: parseInt(pg.cluster.port) + 3011,          // XXX #refactor magic
-            redirectPort: parseInt(pg.cluster.port) + 3456,  // XXX #refactor magic
+            description: options.nginx.sitename,
+            port: serverconfig.getServerPort(options) - 445,
+            redirectPort: serverconfig.getServerPort(options),
             databases: _.pluck(xt.database.list, 'flavor'),
             testDatabase: 'demo',
           }),
@@ -90,10 +107,6 @@
         salt,
         encryptionKey;
 
-      // ensure path integrity and write config file
-      exec('mkdir -p ' + config_path);
-      exec('mkdir -p ' + log_path);
-      exec('mkdir -p ' + state_path);
       fs.writeFileSync(config_js, output_conf);
           
       // write salt file
@@ -125,9 +138,27 @@
         string: output_conf,
         json: derived_config_obj,
         config_path: config_path,
-        config_js: config_js,
-        log_path: log_path
+        config_js: config_js
       };
+    },
+
+    /**
+     * Offset from the postgres cluster port that this server connects to,
+     * default port minus postgres port.
+     * (8888 - 5432)
+     *
+     * Interestingly:
+     * (3456 mod 1111) + (5432 mod 1111) = 1111
+     *
+     * @memberof serverconfig
+     */
+    portOffset: 3456,
+
+    /**
+     * @public
+     */
+    getServerPort: function (options) {
+      return parseInt(options.pg.cluster.port) + serverconfig.portOffset;
     }
   });
 })();

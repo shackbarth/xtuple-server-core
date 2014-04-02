@@ -35,7 +35,7 @@
     },
 
     /** @override */
-    prelude: function (options) {
+    beforeTask: function (options) {
       var root = snapshotmgr.getSnapshotRoot(options.xt.version, options.xt.name);
       exec('mkdir -p ' + root);
       exec('chown postgres /var/lib/postgresql');

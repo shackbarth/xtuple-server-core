@@ -36,16 +36,15 @@
      * Store the certificate basename in the options map.
      * @override
      */
-    prelude: function (options) {
+    beforeTask: function (options) {
       var chain = path.resolve(options.nginx.inzip);
-      if (_.isString(chain)) {
+      if (_.isString(options.nginx.inzip)) {
         options.nginx.incrt = ssl.createBundle(chain);
       }
       else {
         options.nginx.incrt = path.resolve(options.nginx.incrt);
       }
       options.nginx.inkey = path.resolve(options.nginx.inkey);
-
       options.nginx.outcrt = path.resolve(ssl.getCertBasename(options) + '.crt');
       options.nginx.outkey = path.resolve(ssl.getCertBasename(options) + '.key');
     },

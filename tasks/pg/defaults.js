@@ -67,7 +67,7 @@ module.exports = {
      * Slot type used for demo-type databases, quickstart, free trials, or
      * possibly development.
      */
-    testing: {
+    test: {
       shared_buffers: 128,
       max_connections: 8,
       maintenance_work_mem: 4

@@ -31,15 +31,24 @@
       }
     },
 
-    /** @override */
-    prelude: function (options) {
-      // generate sitename
+    /**
+     * Integer offset from the Postgres cluster port that this site connects
+     * to; used to assign the port that the nginx upstream server will listen
+     * on.
+    portOffset: 3011,
+
+    /**
+     * Generate 'sitename' value and format the domain argument if necessary
+     * @override
+     */
+    beforeTask: function (options) {
       options.nginx.sitename = 'xtuple-{version}-{name}'.format({
         name: options.xt.name,
         version: String(options.xt.version).replace(/\./g, '')
       });
-      // format domain argument
       options.nginx.domain = String(options.nginx.domain.format(options.nginx));
+      options.nginx.port = require('../xt').serverconfig.getServerPort(options);
+      options.hostname = os.hostname();
     },
 
     /**
@@ -48,28 +57,25 @@
      *  - auto-redirect http -> https
      *  - set up SSL
      */
-    run: function (options) {
+    doTask: function (options) {
       var pg = options.pg,
-        sitename = 'xtuple-{version}-{name}'.format({
-          name: options.xt.name,
-          version: String(options.xt.version).replace(/\./g, '')
-        });
+        nginx_site_template = fs.readFileSync(site_template_path).toString(),
 
-
-      var nginx_site_template = fs.readFileSync(site_template_path),
+      
+        /*
         nginx_formatter = _.extend({
           version: options.xt.version,
           sitename: sitename,
-          hostname: os.hostname(),
           port: parseInt(pg.cluster.port) + 3011,   // XXX magic
           name: options.xt.name,
           params: JSON.stringify(_.extend({
             generated: new Date().valueOf()
           }, options.nginx)),
         }, options.nginx),
-        nginx_conf = nginx_site_template.format(nginx_formatter).trim(),
-        nginx_conf_path = path.resolve('/etc/nginx/sites-available', sitename),
-        nginx_enabled_path = path.resolve('/etc/nginx/sites-enabled', sitename),
+        */
+        nginx_conf = nginx_site_template.format(options).trim(),
+        nginx_conf_path = path.resolve('/etc/nginx/sites-available', options.nginx.sitename),
+        nginx_enabled_path = path.resolve('/etc/nginx/sites-enabled', options.nginx.sitename),
         nginx_default_enabled = path.resolve('/etc/nginx/sites-enabled', 'default'),
         nginx_default_available = path.resolve('/etc/nginx/sites-available', 'default'),
         etc_hosts_current;
