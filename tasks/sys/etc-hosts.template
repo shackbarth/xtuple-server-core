@@ -1,0 +1,5 @@
+
+# (auto-generated entry)
+# host mappings for: domain={name}
+127.0.0.1 {sitename}.{hostname}
+127.0.0.1 {domain}

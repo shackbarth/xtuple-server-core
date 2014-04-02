@@ -1,0 +1,21 @@
+[{
+  "name": "{xt.version}-{xt.name}",
+  "script": "/usr/sbin/{xt.name}/{xt.version}/backupservice.js",
+  "args": "[ 'start-service', -t0  ]",
+  "env": {
+    "NODE_ENV": "production",
+    "XT_PROCESS": "xt-pg-snapshot",
+    "XT_NAME": "{xt.name}",
+    "XT_VERSION": "{xt.version}",
+    "XT_DOMAIN": "{nginx.domain}",
+    "XT_URL": "{nginx.domain}",
+    "XT_PG_PORT": "{pg.port}",
+    "XT_SCHEDULE": "{schedule}"
+  },
+  "exec_mode": "fork_mode",
+  "out_file": "/var/log/xtuple/{xt.version}/{xt.name}/pg-snapshot.log",
+  "error_file": "/var/log/xtuple/{xt.version}/{xt.name}/pg-snapshot-error.log",
+  "pid_file": "/var/run/xtuple/{xt.name}-{xt.version}-pg-snapshot.pid",
+  "min_uptime": 30000
+}]
+

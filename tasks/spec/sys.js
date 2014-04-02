@@ -1,0 +1,10 @@
+var assert = require('chai').assert,
+  m = require('mstring'),
+  _ = require('underscore');
+
+_.mixin(require('congruence'));
+
+describe('sys', function () {
+  var options = global.options;
+
+});
