@@ -1,0 +1,44 @@
+[
+  {
+    "name": "pg",
+    "tasks": [
+      "config",
+      "cluster",
+      "tuner",
+      "hba"
+    ]
+  },
+  {
+    "name": "xt",
+    "tasks": [
+      "database",
+      "serverconfig",
+      "testconfig",
+      "build_common",
+      "build_main"
+    ]
+  },
+  {
+    "name": "nginx",
+    "tasks": [
+      "site",
+      "ssl"
+    ]
+  },
+  {
+    "name": "sys",
+    "tasks": [
+      "accounts",
+      "cups",
+      "service"
+    ]
+  },
+  {
+    "name": "policy",
+    "tasks": [
+      "sudoers",
+      "ssh",
+      "filepermissions"
+    ]
+  }
+]
