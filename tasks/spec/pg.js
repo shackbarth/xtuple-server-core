@@ -6,66 +6,27 @@ var assert = require('chai').assert,
   moment = require('moment'),
   _ = require('underscore'),
   nginx = require('../nginx'),
-  pgcli = require('../../lib/pg-cli'),
-  pghba = require('../pg/hba');
+  pgcli = require('../../lib/pg-cli');
 
 _.mixin(require('congruence'));
 
 describe('phase: pg', function () {
-  var pgPhase = require('../pg');
+  var pgPhase = require('../pg'),
+    options = global.options;
 
-  describe('sanity', function () {
-    it('should exist', function () {
-      assert(pgPhase);
-    });
-    it('should export tasks', function () {
-      assert(pgPhase.config);
-      assert(pgPhase.tuner);
-      assert(pgPhase.hba);
-      assert(pgPhase.snapshotmgr);
-      assert(pgPhase.cluster);
-    });
+  it('should be sane', function () {
+    assert(pgPhase);
+    assert(pgPhase.config);
+    assert(pgPhase.tuner);
+    assert(pgPhase.hba);
+    assert(pgPhase.snapshotmgr);
+    assert(pgPhase.cluster);
   });
 
   describe('task: tuner', function () {
-    var $k = Math.round((Math.random() * 2e16)).toString(16),
-      tuner = pgPhase.tuner,
-      testcluster = {
-        version: 9.1,
-        name: $k
-      };
-
-    before(function () {
-      pgcli.createcluster(testcluster);
-      pgcli.ctlcluster(_.extend({ action: 'start' }, testcluster));
-    });
-
     describe('#run', function () {
-      it('should generate a postgres config', function () {
-        var options = {
-          pg: {
-            version: 9.1,
-            name: $k,
-            cluster: {
-              version: 9.1,
-              name: $k,
-              port: 5432,
-              config: '/etc/postgresql/9.1/' + $k,
-              data: '/var/lib/postgresql/9.1/' + $k
-            },
-            config: {
-              slots: 2,
-              shared_buffers: 384,
-              temp_buffers: 16,
-              max_connections: 10,
-              work_mem: 1,
-              maintenance_work_mem: 16,
-              locale: 'en_US.UTF-8'
-            }
-          }
-        };
-
-        var postgresql_conf = tuner.run(options).string;
+      it('should generate a correct postgres config', function () {
+        var postgresql_conf = pgPhase.tuner.run(options).string;
 
         assert.match(postgresql_conf, /shared_buffers = \d+MB/);
         assert.match(postgresql_conf, /temp_buffers = \d+MB/);
@@ -75,71 +36,50 @@ describe('phase: pg', function () {
         assert.match(postgresql_conf, /max_stack_depth = \d+MB/);
         assert.match(postgresql_conf, /effective_cache_size = \d+MB/);
       });
-      after(function () {
-        pgcli.dropcluster(testcluster);
-      });
     });
+  });
 
-    describe('task: hba', function () {
-      var $k = Math.round((Math.random() * 2e16)).toString(16),
-        testcluster = {
-          version: 9.1,
-          name: $k
-        };
+  describe('task: hba', function () {
+    describe('#run()', function () {
+      it('can parse a pristine pg_hba', function () {
+        var hba_conf = m(function () {
+          /***
+            local   all             postgres                                peer
+            local   all             all                                     peer
+            host    all             all             127.0.0.1/32            trust
+    
+            host    all             all             10/8                    md5
+            host    all             all             172.16/12               md5
+            host    all             all             192.168/16              md5
+    
+            host    all             all             .xtuple.com             md5
+            host    all             all             ::1/128                 md5
+          ***/
+          }),
+          parsed = pgcli.parse(hba_conf, 'pg_hba');
 
-      before(function () {
-        pgcli.createcluster(testcluster);
+        assert(_.findWhere(parsed, { address: '.xtuple.com' }));
+        assert.equal(parsed[0].user, 'postgres');
       });
+      it('should generate correct pg_hba.conf', function () {
+        pgPhase.hba.beforeTask(options);
+        var hba_conf = pgPhase.hba.run(options);
 
-      describe('#run()', function () {
-        it('can parse a pristine pg_hba', function () {
-          var hba_conf = m(function () {
-            /***
-              local   all             postgres                                peer
-              local   all             all                                     peer
-              host    all             all             127.0.0.1/32            trust
-      
-              host    all             all             10/8                    md5
-              host    all             all             172.16/12               md5
-              host    all             all             192.168/16              md5
-      
-              host    all             all             .xtuple.com             md5
-              host    all             all             ::1/128                 md5
-            ***/
-            }),
-            parsed = pgcli.parse(hba_conf, 'pg_hba');
-
-          assert(_.findWhere(parsed, { address: '.xtuple.com' }));
-          assert.equal(parsed[0].user, 'postgres');
-        });
-        it('should generate correct pg_hba.conf', function () {
-          var hba_conf = pghba.run({
-            dry: true,
-            pg: {
-              version: 9.1,
-              name: $k,
-              port: 5432,
-              config: '/etc/postgresql/9.1/' + $k,
-              data: '/var/lib/postgresql/9.1/' + $k
-            }
-          }).string;
-
-          assert.match(hba_conf, /xtuple.com/);
-          assert.match(hba_conf, /local \s+ all \s+ all \s+ peer/);
-          assert.match(hba_conf, /all \s+ all \s+ 10\.0\.0\.0\/8 \s+ md5/);
-          assert.match(hba_conf, /all \s+ all \s+ 172\.16\.0\.0\/12 \s+ md5/);
-          assert.match(hba_conf, /all \s+ all \s+ 192\.168\.0\.0\/16 \s+ md5/);
-          assert.match(hba_conf, /all \s+ all \s+ .xtuple.com \s+ md5/);
-        });
-      });
-      after(function () {
-        pgcli.dropcluster(testcluster);
+        assert.match(hba_conf.string, /all \s+ all \s+ 10\.0\.0\.0\/8 \s+ md5/);
+        assert.match(hba_conf.string, /all \s+ all \s+ 172\.16\.0\.0\/12 \s+ md5/);
+        assert.match(hba_conf.string, /all \s+ all \s+ 192\.168\.0\.0\/16 \s+ md5/);
       });
     });
   });
 
   describe('task: snapshotmgr', function () {
-    var snap = pgPhase.snapshotmgr;
+    var snap = pgPhase.snapshotmgr,
+      snapshot_path;
+
+    beforeEach(function () {
+      pgPhase.snapshotmgr.beforeTask(options);
+      snapshot_path = snap.getSnapshotRoot(options.pg.version, options.xt.name);
+    });
 
     describe('cli', function () {
       it.skip('should start a service when invoked from the command line', function () {
@@ -148,25 +88,18 @@ describe('phase: pg', function () {
     });
 
     describe('#rotateSnapshot', function () {
-      var $k = Math.round((Math.random() * 2e16)).toString(16),
-        snapshot_path = snap.getSnapshotRoot('0.0.0', $k),
-        options = {
-          xt: {
-            name: $k,
-            version: '0.0.0',
-          },
-          pg: {
-            snapshotcount: 7
-          }
-        },
-        setupSnapshots = function (n) {
+      /**
+       * Create some not even remotely believable snapshots only for the
+       * purpose of testing whether we can correctly count and rotate them.
+       */
+      var setupSnapshots = function (n) {
           _.each(_.range(n), function (i) {
             fs.writeFileSync(
-              path.resolve(snapshot_path, $k + '_rotatetest_031'+ i + '2014.dir.gz'),
+              path.resolve(snapshot_path, options.xt.name + '_rotatetest_031'+ i + '2014.dir.gz'),
               'hi I am backup file i='+ i +' created by mocha'
             );
             fs.writeFileSync(
-              path.resolve(snapshot_path, $k + '_globals_031'+ i + '2014.sql.gz'),
+              path.resolve(snapshot_path, options.xt.name + '_globals_031'+ i + '2014.sql.gz'),
               'hi I am backup file i='+ i +' created by mocha'
             );
           });
@@ -179,8 +112,8 @@ describe('phase: pg', function () {
       });
 
       it('should delete expired snapshots', function () {
-        // working in 'more' randomness would require a lot more string building
-        // logic for the filenames; this will do
+        options.pg.snapshot = snap.createSnapshot(options);
+
         var n = Math.floor(Math.random() * 2) + 7;
         setupSnapshots(n);
 
@@ -192,13 +125,11 @@ describe('phase: pg', function () {
       });
       it('should do nothing if all snapshots are current', function () {
         var n = Math.floor(Math.random() * 6) + 1;
-        
         setupSnapshots(n);
 
-        var initial = fs.readdirSync(snapshot_path);
-
-        var expired = snap.rotateSnapshot(options),
-          extant = fs.readdirSync(snapshot_path);
+        var initial = fs.readdirSync(snapshot_path),
+        expired = snap.rotateSnapshot(options),
+        extant = fs.readdirSync(snapshot_path);
 
         assert.equal(expired.length, 0);
         assert.equal(extant.length, 2 * n);
@@ -225,49 +156,19 @@ describe('phase: pg', function () {
     });
 
     describe('#createSnapshot', function () {
-      var xt = require('../xt'),
-        $k = Math.round((Math.random() * 2e16)).toString(16),
-        snapshotcluster = {
-          version: 9.1,
-          name: $k
-        },
-        options = {
-          nginx: {
-            outcrt: path.resolve('/srv/ssl/', 'localhost' + $k +'.crt'),
-            outkey: path.resolve('/srv/ssl/', 'localhost' + $k +'.key')
-          },
-          xt: {
-            name: $k,
-            version: '1.8.1',
-            appdir: path.resolve('/tmp/', 'xtmocha', '1.8.1', $k),
-            adminpw: '123',
-            setupdemos: true
-          },
-          pg: {
-            version: '9.1',
-            host: 'localhost'
-          }
-        },
-        snapshot_path = snap.getSnapshotRoot(options.pg.version, $k);
+      var xt = require('../xt');
 
-      before(function () {
-        nginx.ssl.generate('/srv/ssl/', 'localhost' + $k);
+      beforeEach(function () {
+        pgPhase.snapshotmgr.beforeTask(options);
+        nginx.ssl.generate('/srv/ssl/', 'localhost' + options.xt.name);
         exec('mkdir -p '+ options.xt.appdir);
 
-        options.pg.cluster = pgcli.createcluster(snapshotcluster);
-        pgcli.ctlcluster({
-          version: options.pg.version,
-          name: options.xt.name,
-          action: 'start'
-        });
-        options.pg.config = pgPhase.config.run(options);
         pgPhase.tuner.run(options);
-        pgPhase.hba.prelude(options);
+        pgPhase.hba.beforeTask(options);
         pgPhase.hba.run(options);
         pgPhase.cluster.initCluster(options);
 
         options.xt.database = xt.database.run(options);
-        snap.prelude(options);
         options.pg.snapshot = snap.createSnapshot(options);
       });
 
@@ -277,7 +178,6 @@ describe('phase: pg', function () {
       });
 
       after(function () {
-        pgcli.dropcluster(snapshotcluster);
         _.each([
           'rm -rf '+ options.xt.appdir,
           'rm -rf '+ snapshot_path,

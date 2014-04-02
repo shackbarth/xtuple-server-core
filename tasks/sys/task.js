@@ -39,7 +39,7 @@
      * @memberof task
      * @return true if ready to install, false otherwise
      */
-    prelude: function (options) {
+    beforeTask: function (options) {
       return true;
     },
 

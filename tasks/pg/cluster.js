@@ -5,7 +5,7 @@
    * Create a new postgres cluster and prime it to the point of being able
    * to receive import of xtuple databases.
    */
-  var cluster = exports;
+  var Cluster = exports;
 
   var task = require('../sys/task'),
     pgcli = require('../../lib/pg-cli'),
@@ -13,7 +13,7 @@
     _ = require('underscore'),
     knex;
 
-  _.extend(cluster, task, /** @exports cluster */ {
+  _.extend(Cluster, task, /** @exports Cluster */ {
 
     options: {
       slots: {
@@ -24,24 +24,15 @@
     },
 
     /** @override */
-    validate: function (options) {
-      return _.all([
-        _.isString(options.xt.name),
-        _.isNumber(options.pg.version) || _.isString(options.pg.version)
-      ]);
-    },
-
-    /** @override */
     run: function (options) {
-      var cluster = {
+      var newCluster = {
           name: options.xt.name,
           version: options.pg.version
-        },
-        result = pgcli.createcluster(cluster),
-        started = pgcli.pgctlcluster(_.extend({ action: 'start' }, cluster));
+        };
+      options.pg.cluster = _.defaults(pgcli.createcluster(newCluster), newCluster);
+      options.pg.cluster.start = pgcli.ctlcluster(_.extend({ action: 'start' }, newCluster));
 
-      cluster.initCluster(options);
-      return result;
+      Cluster.initCluster(options);
     },
 
     /**
@@ -67,7 +58,7 @@
           ].join(' ')
         ];
 
-      return _.map(queries, _.partial(pgcli.psql, options));
+      _.each(queries, _.partial(pgcli.psql, options));
     }
   });
 

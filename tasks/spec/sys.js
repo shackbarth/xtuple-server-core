@@ -5,5 +5,6 @@ var assert = require('chai').assert,
 _.mixin(require('congruence'));
 
 describe('sys', function () {
+  var options = global.options;
 
 });

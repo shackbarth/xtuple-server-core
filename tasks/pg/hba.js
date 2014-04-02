@@ -44,17 +44,12 @@
   
   _.extend(hba, task, /** @exports hba */ {
 
-    /** @override */
-    prelude: function (options) {
-      var version = options.pg.version,
-        name = options.xt.name,
-        pgpath = path.resolve('/etc/postgresql/', version, name, 'pg_hba.conf');
-
+    /**
+     * @override
+     */
+    beforeTask: function (options) {
+      options.pg.version = (options.pg.version).toString();
       exec('usermod -a -G www-data postgres');
-
-      return _.all([
-        fs.existsSync(pgpath)
-      ]);
     },
 
     /** @override */
@@ -63,7 +58,7 @@
         xt = options.xt,
         hba_src = fs.readFileSync(path.resolve(__dirname, filename_template.format(pg))),
         hba_target = path.resolve('/etc/postgresql/', pg.version, xt.name, 'pg_hba.conf'),
-        hba_extant = fs.readFileSync(hba_target).toString('ascii'),
+        hba_extant = fs.readFileSync(hba_target).toString(),
         hba_conf = hba_extant.split('\n').concat(xtuple_hba_entries).join('\n').format({
           xtdaemon_ssl: (pg.host === 'localhost') ? '#' : ''
         });
