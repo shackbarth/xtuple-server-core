@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "xtuple-scripts",
   "version": "4.4.0",
   "description": "xtuple-scripts",
@@ -31,11 +32,18 @@
   "scripts": {
     "test": "sudo -E ./node_modules/.bin/mocha tasks/spec/index.js -R spec"
   },
+  "engineStrict": true,
+  "preferGlobal": true,
+  "os": [ "!win32" ],
+  "engines": {
+    "node": "0.8.26",
+    "npm": ">1.3.0"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/xtuple/xtuple-scripts.git"
   },
-  "author": "",
+  "author": "Travis Webb <travis@xtuple.com>",
   "license": "CPAL",
   "bugs": {
     "url": "https://github.com/xtuple/xtuple-scripts/issues"
