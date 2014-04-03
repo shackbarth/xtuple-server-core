@@ -8,6 +8,15 @@ describe('phase: xt', function () {
   var xtPhase = require('../xt'),
     options = global.options;
 
+  it('is sane', function () {
+    assert(xtPhase);
+    assert(xtPhase.database);
+    assert(xtPhase.build_main);
+    assert(xtPhase.build_common);
+    assert(xtPhase.serverconfig);
+    assert(xtPhase.testconfig);
+  });
+
   describe.skip('task: testconfig', function () {
 
   });
