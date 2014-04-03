@@ -10,6 +10,7 @@ xtversion=1.8.2
 pgversion=9.1
 plv8version=1.4.0
 nginxversion=1.4.6
+nodeversion=0.8.26
 
 install_xtuple () {
   xtversion=$1
@@ -28,25 +29,25 @@ install_xtuple () {
 
   rm -rf installer xtuple-extensions private-extensions xtuple
 
-  git config --global credential.helper 'cache --timeout=1800'
+  git config --global credential.helper 'cache --timeout=3600'
 
-  log "Downloading installers...\n"
+  log "Downloading installer...\n"
   git clone --recursive https://github.com/xtuple/xtuple-scripts.git installer
   cd installer
   #git checkout $tag
   sudo npm install
   cd ..
 
-  git clone --recursive https://github.com/xtuple/xtuple-extensions.git
-  git clone https://github.com/xtuple/private-extensions.git
-  cd private-extensions
+  #git clone --recursive https://github.com/xtuple/xtuple-extensions.git
+  #git clone https://github.com/xtuple/private-extensions.git
+  #cd private-extensions
   #npm install
-  cd ..
+  #cd ..
 
-  git clone --recursive https://github.com/xtuple/xtuple.git
-  cd xtuple
-  tag="v$xtversion"
-  git checkout $tag
+  #git clone --recursive https://github.com/xtuple/xtuple.git
+  #cd xtuple
+  #tag="v$xtversion"
+  #git checkout $tag
   sudo npm install
   cd ../installer
 
@@ -96,7 +97,7 @@ install_debian () {
     postgresql-9.3 postgresql-server-dev-9.3 postgresql-contrib-9.3 \
     postgresql-9.3-plv8=$plv8version.ds-2.pgdg12.4+1 \
     nginx-full=$nginxversion-1+${dist}0 \
-    nodejs=0.8.26-1chl1~${dist}1 \
+    nodejs=$nodeversion-1chl1~${dist}1 \
     npm=1.3.0-1chl1~${dist}1 \
   | tee -a $logfile
 }
