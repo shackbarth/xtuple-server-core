@@ -5,24 +5,22 @@ var assert = require('chai').assert,
   _ = require('underscore');
 
 describe('phase: xt', function () {
-  var options = global.options;
+  var xtPhase = require('../xt'),
+    options = global.options;
 
   describe.skip('task: testconfig', function () {
-    var testconfig = require('../xt/testconfig');
 
   });
 
   describe.skip('task: serverconfig', function () {
-    var serverconfig = require('../xt').serverconfig;
-
     beforeEach(function () {
-      exec('mkdir -p __config ' + options.xt.name);
-      exec('mkdir -p __log ' + options.xt.name);
-      serverconfig.beforeTask(options);
+      exec('mkdir -p __config- ' + options.xt.name);
+      exec('mkdir -p __log- ' + options.xt.name);
+      xtPhase.serverconfig.beforeTask(options);
     });
 
     it('can parse and generate a correct config.js', function () {
-      var result = serverconfig.run(options);
+      var result = xtPhase.serverconfig.run(options);
 
       assert.match(result.string, /"testDatabase": "demo"/);
       assert.match(result.string, /"password": "123"/);
@@ -30,8 +28,7 @@ describe('phase: xt', function () {
     });
 
     after(function () {
-      // XXX weird name testkey
-      exec('rm -rf *{testkey}'.format({ testkey: options.xt.name }));
+      exec('rm -rf *-{xt.name}*'.format(options));
     });
   });
 
