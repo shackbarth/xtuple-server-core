@@ -106,7 +106,7 @@
    * <http://www.postgresql.org/docs/current/static/runtime-config-resource.html#GUC-SHARED-BUFFERS>
    */
   function shared_buffers (cluster, config, env) {
-    return Math.ceil(config.shared_buffers) * config.slots;
+    return Math.ceil(config.shared_buffers * config.slots);
   }
 
   /**
@@ -120,6 +120,6 @@
    * <http://www.postgresql.org/docs/current/static/runtime-config-resource.html#GUC-MAX-STACK-DEPTH>
    */
   function max_stack_depth (cluster, config, env) {
-    return Math.ceil((7/8) * env.stacklimit) / env.MB;
+    return Math.ceil((7/8) * env.stacklimit / env.MB);
   }
 })();
