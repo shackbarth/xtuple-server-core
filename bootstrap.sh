@@ -42,6 +42,9 @@ install_debian () {
 clone_installer () {
   git config --global credential.helper 'cache --timeout=3600'
 
+  log "npm version: $(npm -v)"
+  log "node version: $(node -v)"
+
   rm -rf xtuple-scripts
   rm -rf /usr/lib/node_modules/xtuple-scripts
   log "Downloading installer...\n"
