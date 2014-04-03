@@ -18,6 +18,27 @@
 
   _.extend(database, /** @exports database */ {
 
+    /**
+     * Map edition -> extension[]. These lists of extensions are in addition
+     * to the 'core' extensions already installed by default.
+     */
+    editions: {
+      core: [ ],
+      manufacturing: [
+        'inventory',
+        'manufacturing'
+      ],
+      distribution: [
+        'inventory',
+        'distribution'
+      ],
+      enterprise: [
+        'inventory',
+        'distribution',
+        'manufacturing'
+      ]
+    },
+
     options: {
       name: {
         required: '<name>',

@@ -78,7 +78,7 @@ describe('phase: pg', function () {
 
     beforeEach(function () {
       pgPhase.snapshotmgr.beforeTask(options);
-      snapshot_path = snap.getSnapshotRoot(options.pg.version, options.xt.name);
+      snapshot_path = snap.getSnapshotRoot(options.xt.version, options.xt.name);
     });
 
     describe('cli', function () {
@@ -96,11 +96,11 @@ describe('phase: pg', function () {
           _.each(_.range(n), function (i) {
             fs.writeFileSync(
               path.resolve(snapshot_path, options.xt.name + '_rotatetest_031'+ i + '2014.dir.gz'),
-              'hi I am backup file i='+ i +' created by mocha'
+              'hi I am database snapshot file i='+ i +' created by mocha'
             );
             fs.writeFileSync(
               path.resolve(snapshot_path, options.xt.name + '_globals_031'+ i + '2014.sql.gz'),
-              'hi I am backup file i='+ i +' created by mocha'
+              'hi I am globals snapshot i='+ i +' created by mocha'
             );
           });
         };
@@ -112,8 +112,6 @@ describe('phase: pg', function () {
       });
 
       it('should delete expired snapshots', function () {
-        options.pg.snapshot = snap.createSnapshot(options);
-
         var n = Math.floor(Math.random() * 2) + 7;
         setupSnapshots(n);
 
@@ -149,9 +147,9 @@ describe('phase: pg', function () {
           };
 
         assert.equal(parsed.db.name, 'xtuple');
-        assert.equal(parsed.db.database, 'dogfood');
+        assert.equal(parsed.db.dbname, 'dogfood');
         assert.equal(parsed.db.ts, moment('03142014', 'MMDDYYYY').toDate().valueOf());
-        assert.equal(parsed.globals.database, 'globals');
+        assert.equal(parsed.globals.dbname, 'globals');
       });
     });
 
@@ -159,9 +157,11 @@ describe('phase: pg', function () {
       var xt = require('../xt');
 
       beforeEach(function () {
-        pgPhase.snapshotmgr.beforeTask(options);
-        nginx.ssl.generate('/srv/ssl/', 'localhost' + options.xt.name);
         exec('mkdir -p '+ options.xt.appdir);
+        exec('rm -rf '+ snapshot_path);
+        exec('mkdir -p '+ snapshot_path);
+        nginx.ssl.generate('/srv/ssl/', 'localhost' + options.xt.name);
+        pgPhase.snapshotmgr.beforeTask(options);
 
         pgPhase.tuner.run(options);
         pgPhase.hba.beforeTask(options);
