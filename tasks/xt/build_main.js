@@ -18,16 +18,16 @@
         description: 'Additionally create a pilot area using a copy of the main database',
         value: true
       },
-      extensions: {
-        optional: '[csv]',
-        description: 'Comma-delimited list of extensions to install',
-        value: ''
+      edition: {
+        optional: '[string]',
+        description: 'The xTuple Edition to install',
+        value: 'core'
       }
     },
 
     run: function (options) {
       var xt = options.xt,
-        extensions = _.compact(xt.extensions.split(',')),
+        extensions = require('./database').editions[xt.edition],
         databases = _.where(xt.database.list, { main: true }),
 
         // build the main database and pilot, if specified
