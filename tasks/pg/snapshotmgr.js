@@ -70,18 +70,19 @@
     /**
      * Return path of a snapshot file
      * @param options - typical options object
-     * @param options.database - name of database [globals]
+     * @param options.dbname - name of dbname [globals]
      * @param options.daysago - day of backup to restore [0]
      * @public
      */
     getSnapshotPath: function (options) {
+      options.dbname || (options.dbname = 'globals');
       return path.resolve(
         snapshotmgr.getSnapshotRoot(options.xt.version, options.xt.name),
-        '{name}_{database}_{ts}.{ext}'.format({
+        '{name}_{dbname}_{ts}.{ext}'.format({
           name: options.xt.name,
-          database: options.database || 'globals',
+          dbname: options.dbname,
           ts: moment().subtract('days', options.daysago || 0).format('MMDDYYYY'),
-          ext: options.database ? 'sql' : 'dir.gz'
+          ext: options.dbname === 'globals' ? 'sql' : 'dir.gz'
         })
       );
     },
@@ -106,7 +107,7 @@
           name: name,
         },
         pg_dump = 'sudo -u postgres /usr/lib/postgresql/9.3/bin/pg_dump',
-        cmd_template = pg_dump + ' -U postgres -w -p {port} -Fd -f {out} --no-synchronized-snapshots {database}';
+        cmd_template = pg_dump + ' -U postgres -w -p {port} -Fd -f {out} --no-synchronized-snapshots {dbname}';
 
       // backup globals (users, roles, etc) separately
       var globals_snapshot = exec('sudo -u postgres pg_dumpall -U postgres -w -p {port} -g > {out}.sql'.format({
@@ -117,11 +118,14 @@
       // snapshot each database. possibly huge files, may take many minutes
       // e.g. kelhay 2.5G gzip pg_dump with -j4 takes 4min on my laptop. 8m with -j 1. -tjw
       return _.map(_.compact(all_databases), function (_db) {
-        var db = _db.trim();
+        var db = _db.trim(),
+          snap = snapshotmgr.getSnapshotPath(_.extend({ dbname: db }, options));
+        exec('rm -rf '+ snap);
+
         return exec(cmd_template.format({
           port: options.pg.cluster.port,
-          database: db,
-          out: snapshotmgr.getSnapshotPath(_.extend({ database: db }, options)),
+          dbname: db,
+          out: snap,
           jobs: Math.ceil(os.cpus().length / 2)
         }));
       }).concat([globals_snapshot]);
@@ -132,35 +136,35 @@
      *
      * @public
      * @param options.pg.version
-     * @param options.pg.database
+     * @param options.dbname
      * @param options.xt.name
      * @param options.snapshotmgr.include_globals [true]
      * @param options.daysago [0]
      */
     restoreSnapshot: function (options) {
       var globals_snapshot = snapshotmgr.getSnapshotPath(
-          _.extend({ database: 'globals' }, options)
+          _.extend({ dbname: 'globals' }, options)
         ),
         db_snapshot = snapshotmgr.getSnapshotPath(options),
         deprecated_format = {
-          database: options.database,
+          dbname: options.dbname,
           version: options.xt.version.split('.').join(''),
           ts: moment().format('MMDDYYY')
         },
-        deprecated_db = '{database}_{version}_{ts}'.format(deprecated_format),
+        deprecated_db = '{dbname}_{version}_{ts}'.format(deprecated_format),
         pg_restore = '/usr/lib/postgresql/9.3/bin/pg_restore',
         queries = [
       
           // disconnect all users and lock database
           'select pg_terminate_backend(procpid) from pg_stat_activity',
-          'revoke connect on database {database} from public'.format(options),
+          'revoke connect on database {dbname} from public'.format(options),
 
           // rename database
-          ['rename', options.database, 'to', deprecated_db].join(' ')
+          ['rename', options.dbname, 'to', deprecated_db].join(' ')
         ];
 
       // initiate restore process... and wait. could take awhile
-      pgcli.createdb({ owner: 'admin', dbname: options.database });
+      pgcli.createdb({ owner: 'admin', dbname: options.dbname });
       pgcli.restore({
         filename: snapshotmgr.getSnapshotPath(options),
         dbname: options.dbname
@@ -172,7 +176,7 @@
      * @public
      * @returns {
      *    name: STRING [kelhay],
-     *    database: VERSION [1.8.1],
+     *    dbname: VERSION [1.8.1],
      *    ts: DATE [{Date}]
      * }
      */
@@ -183,31 +187,35 @@
       return {
         original: filename,
         name: tokens[0],
-        database: tokens[1],
+        dbname: tokens[1],
         ts: moment(tokens[2], 'MMDDYYYY').valueOf()
       };
     },
 
     /**
-     * Rotate or delete local snapshots.
+     * Rotate local snapshots; This function will either delete old snapshots
+     * or do nothing.
+     *
      * @public
      */
     rotateSnapshot: function (options) {
       var maxlen = options.pg.snapshotcount,
         name = options.xt.name,
         version = options.xt.version,
+        root = snapshotmgr.getSnapshotRoot(version, name),
+        ls = fs.readdirSync(root),
         db_groups = _.groupBy(
-          _.map(fs.readdirSync(snapshotmgr.getSnapshotRoot(version, name)), function (file) {
+          _.map(ls, function (file) {
             return snapshotmgr.parseFilename(file);
           }),
-          'database'
+          'dbname'
         ),
         expired = _.flatten(_.map(db_groups, function (snapshots, name) {
           return _.first(_.sortBy(snapshots, 'ts'), (snapshots.length - maxlen));
         }));
 
       return _.map(expired, function (file) {
-        fs.unlink(path.resolve(snapshotmgr.getSnapshotRoot(version, name), file.original));
+        fs.unlinkSync(path.resolve(root, file.original));
         return file;
       });
     }
