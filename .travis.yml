@@ -11,3 +11,6 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install build-essential cups libssl-dev
   - sudo apt-get install postgresql-9.1-plv8 postgresql-9.1-plv8
+
+script:
+  - sudo npm test
