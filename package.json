@@ -8,7 +8,7 @@
     "mstring": "~0.1.2",
     "underscore": "~1.6.0",
     "string-format": "~0.2.1",
-    "commander": "~2.1.0",
+    "commander": "2.0.0",
     "cli-color": "~0.2.3",
     "prompt": "~0.2.12",
     "string": "~1.8.0",
