@@ -14,7 +14,7 @@ describe('phase: pg', function () {
   var pgPhase = require('../pg'),
     options = global.options;
 
-  it('should be sane', function () {
+  it('is sane', function () {
     assert(pgPhase);
     assert(pgPhase.config);
     assert(pgPhase.tuner);

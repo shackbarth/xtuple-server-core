@@ -6,7 +6,7 @@
   var tuner = require('./tuner'),
     pghba = require('./hba'),
     pgcli = require('../../lib/pg-cli'),
-    exec = require('execSync'),
+    exec = require('execSync').exec,
     format = require('string-format'),
     defaults = require('./defaults'),
     _ = require('underscore');
@@ -36,7 +36,7 @@
     },
 
     beforeTask: function (options) {
-
+      exec('usermod -a -G ssl-cert postgres');
     },
 
     /**

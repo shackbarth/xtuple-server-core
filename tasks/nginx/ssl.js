@@ -14,82 +14,88 @@
     path = require('path');
 
   _.extend(ssl, /** @exports ssl */ {
+
+    outpath: path.resolve('/etc/ssl/private'),
     
     options: {
       'inzip': {
         optional: '[file]',
-        description: 'Path to SSL trust chain archive'
+        description: 'Path to SSL trust chain archive',
+        value: null
       },
       'incrt': {
         optional: '[file]',
         description: 'Path to SSL certificate (.crt)',
-        value: '/srv/ssl/localhost.crt'
+        value: null
       },
       'inkey': {
         optional: '[file]',
         description: 'Path to SSL private key (.key)',
-        value: '/srv/ssl/localhost.key'
+        value: null
       }
     },
 
     /**
-     * Store the certificate basename in the options map.
      * @override
      */
     beforeTask: function (options) {
-      var chain = path.resolve(options.nginx.inzip);
-      if (_.isString(options.nginx.inzip)) {
-        options.nginx.incrt = ssl.createBundle(chain);
+      var nginx = options.nginx;
+
+      nginx.outcrt = path.resolve(ssl.getBasename(options) + '.crt');
+      nginx.outkey = path.resolve(ssl.getBasename(options) + '.key');
+
+      // correctly permission outpath. should be owned by ssl-cert group if not already
+      exec('mkdir -p '+ ssl.outpath);
+      exec('chown -R :ssl-cert '+ ssl.outpath);
+      exec('chmod -R o-rwx,g=rx,u=rwx /etc/ssl/private/');
+
+      if (_.isString(nginx.inzip) && fs.existsSync(nginx.inzip)) {
+        nginx.inzip = path.resolve(nginx.inzip);
+        ssl.createBundle(options);
       }
-      else {
-        options.nginx.incrt = path.resolve(options.nginx.incrt);
+      else if (/localhost/.test(nginx.domain)) {
+        if (_.isString(nginx.incrt) && _.isString(nginx.inkey)) {
+          nginx.incrt = path.resolve(nginx.incrt);
+          nginx.inkey = path.resolve(nginx.inkey);
+        }
+        else {
+          throw new Error('nginx.incrt and nginx.inkey are required for non-localhost domains');
+        }
+
+        ssl.generate(options);
       }
-      options.nginx.inkey = path.resolve(options.nginx.inkey);
-      options.nginx.outcrt = path.resolve(ssl.getCertBasename(options) + '.crt');
-      options.nginx.outkey = path.resolve(ssl.getCertBasename(options) + '.key');
     },
 
     /** @override */
     run: function (options) {
-      var nginx = options.nginx;
-
-      exec('mkdir -p /srv/ssl');
-      if (!fs.existsSync(nginx.outcrt) && /localhost/.test(nginx.domain)) {
-        ssl.generate('/srv/ssl', nginx.domain);
-      }
-
-      if (!fs.existsSync(nginx.outcrt)) {
-        exec('cp {incrt} {outcrt}'.format(nginx));
-        exec('cp {inkey} {outkey}'.format(nginx));
-      }
-
-      exec('chown -R www-data /srv/ssl');
-      exec('chmod o-rwx /srv/ssl/{domain}.*'.format(nginx));
-
-      return options;
+      exec('cp {nginx.incrt} {nginx.outcrt}'.format(options));
+      exec('cp {nginx.inkey} {nginx.outkey}'.format(options));
     },
 
     /**
-     * Return basename of SSL cert
+     * Return basename of SSL cert. This in itself will *not* be a valid path
+     * since it doesn't include the file extension.
+     *
      * "basename" = <http://nodejs.org/api/path.html#path_path_basename_p_ext>
      * @public
      */
-    getCertBasename: function (options) {
-      return path.resolve('/srv/ssl/', options.nginx.domain);
+    getBasename: function (options) {
+      return path.resolve(ssl.outpath, options.nginx.domain);
     },
 
     /**
-     * Generate a self-signed SSL keypair in 'out_path'
+     * Generate and write a self-signed SSL keypair.
      * @static
      */
-    generate: function (out_path, domain) {
+    generate: function (options) {
       return exec([
         'openssl req',
         '-x509 -newkey rsa:2048',
-        '-keyout', path.resolve(out_path, domain + '.key'),
-        '-out', path.resolve(out_path, domain + '.crt'),
-        '-subj \'/C=US/CN='+ domain + '/O=xTuple\'',
-        '-days 10000 -nodes'
+        '-subj \'/C=US/CN='+ options.nginx.domain + '/O=xTuple\'',
+        '-days 365',
+        '-nodes',
+        '-keyout', path.resolve(options.nginx.inkey),
+        '-out', path.resolve(options.nginx.incrt)
       ].join(' ')).stdout;
     },
 
@@ -97,10 +103,7 @@
      * Create a .crt bundle from a Comodo zip archive
      */
     createBundle: function (options) {
-      var inzip = new Zip(path.resolve(options.nginx.inzip)),
-        inkey = path.resolve(options.nginx.inkey),
-        inkey_path = path.resolve(path.dirname(inkey)),
-        inkey_basename = path.basename(inkey, path.extname(inkey)),
+      var inzip = new Zip(options.nginx.inzip),
         entries = inzip.getEntries(),
         sort = function (entry) {
           return {
@@ -112,13 +115,11 @@
         // cat mydomain.crt PositiveSSLCA2.crt AddTrustExternalCARoot.crt >> sslbundle.crt
         bundleStr = _.reduce(_.sortBy(entries, sort), function (memo, entry) {
           return memo + inzip.readAsText(entry);
-        }, ''),
-        bundlePath = path.resolve(inkey_path, inkey_basename + '.crt');
+        }, '');
 
       // TODO switch to camelcase. I don't know what it is about writing sysadmin
       // scripts that makes me want to use underscores everywhere
-      fs.writeFileSync(bundlePath, bundleStr);
-
+      fs.writeFileSync(options.nginx.incrt, bundleStr);
       return true;
     },
 
@@ -136,10 +137,10 @@
         incrt = path.resolve(options.nginx.incrt);
 
       if (!fs.existsSync(incrt)) {
-        throw new Error('Provided .crt file does not exist');
+        throw new Error('Provided .crt file does not exist: '+ incrt);
       }
       if (!fs.existsSync(inkey)) {
-        throw new Error('Provided .key file does not exist');
+        throw new Error('Provided .key file does not exist: '+ inkey);
       }
 
       // verify x509 certificate
