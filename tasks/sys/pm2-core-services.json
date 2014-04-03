@@ -1,0 +1,43 @@
+[
+  {
+    "name": "{xt.version} {xt.name}",
+    "script": "/usr/sbin/{xt.name}/{xt.version}/main.js",
+    "args": "[ '-c /etc/xtuple/{xt.version}/{xt.name}/config.js' ]",
+    "env": {
+      "NODE_ENV": "production",
+      "XT_PROCESS": "xt-web-server",
+      "XT_NAME": "{xt.name}",
+      "XT_VERSION": "{xt.version}",
+      "XT_DOMAIN": "{nginx.domain}",
+      "XT_URL": "{nginx.domain}",
+      "XT_PG_PORT": "{pg.port}",
+      "XT_SCHEDULE": "Always On"
+    },
+    "exec_mode": "fork_mode",
+    "out_file": "/var/log/xtuple/{xt.version}/{xt.name}/access.log",
+    "error_file": "/var/log/xtuple/{xt.version}/{xt.name}/error.log",
+    "pid_file": "/var/run/xtuple/{xt.name}-{xt.version}.pid",
+    "min_uptime": 30000
+  },
+  {
+    "name": "xt-web-panel",
+    "script": "/usr/bin/pm2-web",
+    "args": "[]",
+    "env": {
+      "NODE_ENV": "production",
+      "XT_PROCESS": "xt-web-panel",
+      "XT_NAME": "system",
+      "XT_VERSION": "{xt.version}",
+      "XT_DOMAIN": "{nginx.domain}",
+      "XT_URL": "{nginx.domain}",
+      "XT_PG_PORT": "{pg.port}",
+      "XT_SCHEDULE": "Always On"
+    },
+    "exec_mode": "fork_mode",
+    "out_file": "/var/log/xtuple/{xt.version}/{xt.name}/access.log",
+    "error_file": "/var/log/xtuple/{xt.version}/{xt.name}/error.log",
+    "pid_file": "/var/run/xtuple/{xt.name}-{xt.version}.pid",
+    "min_uptime": 30000
+  }
+]
+

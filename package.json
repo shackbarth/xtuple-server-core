@@ -1,6 +1,6 @@
 {
   "name": "xtuple-scripts",
-  "version": "1.7.2",
+  "version": "4.4.0",
   "description": "xtuple-scripts",
   "main": "index.js",
   "dependencies": {
@@ -14,15 +14,22 @@
     "string": "~1.8.0",
     "sync": "~0.2.2",
     "posix": "~1.0.3",
-    "node-linux": "~0.1.2",
-    "execSync": "~1.0.1-pre"
+    "execSync": "~1.0.1-pre",
+    "cron": "~1.0.4",
+    "zip": "~1.1.1",
+    "npmlog": "0.0.6",
+    "node-schedule": "~0.1.13",
+    "moment": "~2.5.1",
+    "knex": "~0.5.11",
+    "pg": "~2.11.1",
+    "adm-zip": "~0.4.4"
   },
   "devDependencies": {
     "chai": "~1.9.0",
     "mocha": "~1.17.1"
   },
   "scripts": {
-    "test-sudo": "mocha lib/spec -R spec"
+    "test": "mocha tasks/spec/index.js -R spec"
   },
   "repository": {
     "type": "git",
