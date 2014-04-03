@@ -1,6 +1,8 @@
 xtuple-scripts
 ==============
 
+[![Build Status](https://magnum.travis-ci.com/xtuple/xtuple-scripts.svg?token=gns5sJtFWu8Pk688aPh7)](https://magnum.travis-ci.com/xtuple/xtuple-scripts)
+
 ## New Server Installation
 1. Place `/lib/sys/bootstrap.sh` on the filesystem.
 1. Place database backup file on filesystem, if applicable.
