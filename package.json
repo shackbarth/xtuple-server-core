@@ -29,7 +29,7 @@
     "mocha": "~1.17.1"
   },
   "scripts": {
-    "test": "mocha tasks/spec/index.js -R spec"
+    "test": "sudo mocha tasks/spec/index.js -R spec"
   },
   "repository": {
     "type": "git",
