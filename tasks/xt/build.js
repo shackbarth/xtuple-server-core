@@ -12,11 +12,11 @@
   _.extend(build, /** @exports build_common */ {
 
     // extension path mapping
-    // TODO finish
     extension_prefixes: {
       'private': [
         'manufacturing',
-        'inventory'
+        'inventory',
+        'distribution'
       ],
       'xtuple': [
 
