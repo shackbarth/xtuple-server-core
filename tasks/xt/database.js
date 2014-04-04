@@ -70,18 +70,10 @@
       }
     },
 
-    // XXX silliness. remove after 4.4
     versions: {
       '1.8.0': '4.3.0',
       '1.8.1': '4.3.0',
-      '1.8.2': '4.3.0',
-      '1.8.3': '4.3.0',
-      '1.8.4': '4.3.0',
-      '1.8.5': '4.3.0',
-      '1.8.6': '4.3.0',
-      '1.8.7': '4.3.0',
-      '1.8.8': '4.3.0',
-      '1.8.9': '4.3.0'
+      '1.8.2': '4.4.0'
     },
     download: [ 'quickstart', 'demo' ],
     masterref: 'masterref-4.3.0.backup',
@@ -90,7 +82,7 @@
     run: function (options) {
       var xt = options.xt,
         download_format = {
-          version: database.versions[xt.version]
+          version: database.versions[xt.version] || xt.version
         },
         // schedule postbooks demo database files for installation
         databases = !xt.setupdemos ? [ ] : _.map(database.download, function (dbname) {
