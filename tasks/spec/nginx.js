@@ -8,43 +8,31 @@ var assert = require('chai').assert,
 _.mixin(require('congruence'));
 
 describe('phase: nginx', function () {
-  var nginx = require('../nginx'),
+  var nginxPhase = require('../nginx'),
     options = global.options;
 
-  describe('sanity', function () {
-    it('should exist', function () {
-      assert(nginx);
-    });
-    it('should export tasks', function () {
-      assert(nginx.ssl);
-      assert(nginx.site);
-    });
+  it('is sane', function () {
+    assert(nginxPhase);
+    assert(nginxPhase.ssl);
+    assert(nginxPhase.site);
   });
 
   describe('task: ssl', function () {
-    var ssl = require('../nginx/ssl'),
-      $k = Math.round((Math.random() * 2e16)).toString(16),
-      options = {
-        nginx: {
-          incrt: path.resolve('/srv/ssl/', 'localhost' + $k +'.crt'),
-          inkey: path.resolve('/srv/ssl/', 'localhost' + $k +'.key')
-        }
-      };
-
     beforeEach(function () {
-      ssl.generate('/srv/ssl/', 'localhost' + $k);
+      nginxPhase.ssl.beforeTask(options);
     });
     afterEach(function () {
-      exec('rm -rf /srv/ssl/localhost' + $k + '*');
+      exec('rm -f '+ options.nginx.outcrt);
+      exec('rm -f '+ options.nginx.outkey);
     });
 
     describe('#verifyCertificate', function () {
       it('should verify a legit cert', function () {
-        assert(ssl.verifyCertificate(options));
+        assert(nginxPhase.ssl.verifyCertificate(options));
       });
       it('should reject a non-existent .crt', function () {
         assert.throws(function () {
-            ssl.verifyCertificate({
+            nginxPhase.ssl.verifyCertificate({
               nginx: {
                 incrt: 'akjdakjdn',
                 inkey: options.nginx.incrt
@@ -54,7 +42,7 @@ describe('phase: nginx', function () {
       });
       it('should reject a non-existent .key', function () {
         assert.throws(function () {
-            ssl.verifyCertificate({
+            nginxPhase.ssl.verifyCertificate({
               nginx: {
                 incrt: options.nginx.incrt,
                 inkey: 'akjdakjdn'
@@ -66,87 +54,69 @@ describe('phase: nginx', function () {
         fs.writeFileSync(options.nginx.incrt, 'OHAI');
 
         assert.throws(function () {
-          ssl.verifyCertificate(options);
+          nginxPhase.ssl.verifyCertificate(options);
         }, Error, /x509 verify/);
 
       });
       it('should reject wrong private key', function () {
-        ssl.generate('/srv/ssl/', 'localhost' + $k + '-2');
-        var badkey = '/srv/ssl/localhost' + $k + '-2.key';
+        nginxPhase.ssl.generate(options);
         assert.throws(function () {
-            ssl.verifyCertificate({
+            nginxPhase.ssl.verifyCertificate({
               nginx: {
                 incrt: options.nginx.incrt,
-                inkey: badkey
+                inkey: path.resolve(__filename)
               }
             });
           }, Error, /moduli inconsistent/);
 
       });
     });
-    describe('#bundleCertificate', function () {
+    describe('#createBundle', function () {
       if (!fs.existsSync(path.resolve('test_chain.zip'))) {
         this.pending = true;
 
         console.log();
-        console.log('>> '+ this.title + ': copy a real trust chain archive + key to:');
+        console.log('>> '+ this.title + ': Skipping');
+        console.log('>> '+ this.title + ': to run this suite, copy a real trust chain archive + key to:');
         console.log('>> '+ this.title + ': '+ path.resolve('test_chain.zip'));
         console.log('>> '+ this.title + ': '+ path.resolve('test_chain.key'));
       }
 
-      var options = {
-        nginx: {
+      var nginxOptions = _.clone(options.nginx);
+
+      beforeEach(function () {
+        _.extend(options.nginx, {
           inzip: path.resolve('test_chain.zip'),
           inkey: path.resolve('test_chain.key'),
           incrt: path.resolve('test_chain.crt')
-        }
-      };
-      it('should bundle a trusted chain [see output above if skipped]', function () {
-        assert(ssl.createBundle(options));
+        });
       });
-      it('should verify a legit cert', function () {
-        assert(ssl.verifyCertificate(options));
+      after(function () {
+        _.extend(options.nginx, nginxOptions);
+        delete options.nginx.inzip;
+      });
+
+      it('should bundle a trusted chain', function () {
+        assert(nginxPhase.ssl.createBundle(options), 'createBundle did not return true');
+      });
+      it('should verify a legit bundle', function () {
+        assert(nginxPhase.ssl.verifyCertificate(options), 'verifyCertificate did not return true');
       });
     });
   });
 
   describe('task: site', function () {
     describe('#run', function () {
-      var $k = Math.round((Math.random() * 2e16)).toString(16),
-        options = {
-          xt: {
-            name: $k,
-            version: '4.4.0'
-          },
-          nginx: {
-            domain: 'example.com',
-            incrt: '~/nginx.crt',
-            inkey: '~/nginx.key',
-            // mock; generated by nginx.ssl#beforeTask
-            outcrt: '/srv/ssl/example.com.crt',
-            outkey: '/srv/ssl/example.com.key'
-          },
-          pg: {
-            version: 9.1,
-            cluster: {
-              name: $k,
-              port: 5999,
-              config: '/etc/postgresql/9.1/' + $k,
-              data: '/var/lib/postgresql/9.1/' + $k
-            }
-          }
-        };
-
       beforeEach(function () {
-        nginx.ssl.beforeTask(options);
-        nginx.site.beforeTask(options);
+        nginxPhase.ssl.beforeTask(options);
+        nginxPhase.site.beforeTask(options);
       });
 
       it('should generate a correct nginx config', function () {
-        var conf = nginx.site.doTask(options).string;
+        var conf = nginxPhase.site.doTask(options).string;
 
-        assert.match(conf, /ssl_certificate_key \/srv\/ssl\/example.com.key/);
-        assert.match(conf, /ssl_certificate \/srv\/ssl\/example.com.crt/);
+        assert.match(conf, new RegExp('ssl_certificate_key '+ options.nginx.outkey));
+        assert.match(conf, new RegExp('ssl_certificate '+ options.nginx.outcrt));
       });
     });
   });

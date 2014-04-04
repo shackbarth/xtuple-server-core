@@ -60,33 +60,29 @@
       passwords = _.map(_.range(100), function (i) {
         return exec('openssl rand 6 | base64').stdout;
       }),
-      xtuple_path_suffix = '{version}/{name}/'.format(xt),
-      postgres_path_suffix = '{version}/{name}/'.format({
-        version: options.pg.version,
-        name: xt.name
-      }),
+      xtuple_path_suffix = '{xt.version}/{xt.name}/'.format(options),
+      postgres_path_suffix = '{pg.version}/{xt.name}/'.format(options),
       set_passwd = 'echo {password} | passwd {name} --stdin',
       expire_passwd = 'chage -d 0 {name}',
       system_users = [
         'addgroup xtuser',
         'addgroup xtadmin',
-        'adduser xtuple --system',
+        'adduser xtdaemon --system',
         'adduser xtremote --ingroup xtadmin --disabled-login',
         'adduser xtadmin --disabled-login',
-        'usermod -a -G xtadmin xtuple',
+        'usermod -a -G sudo xtdaemon',
         'usermod -a -G xtadmin,www-data,postgres,lpadmin xtremote',
-        //set_passwd.format({ name: 'xtremote' })
       ],
       xtuple_users = [
-        'adduser {name} --ingroup xtuple --disabled-login'.format(xt),
-        'usermod -a -G xtuple {name}'.format(xt),
-        //set_passwd.format(xt)
+        'adduser {name} --ingroup xtuser --disabled-login'.format(xt),
+        'usermod -a -G xtadmin {name}'.format(xt),
       ],
       system_ownership = [
-        'chown -R xtuple:xtadmin /etc/xtuple',
-        'chown -R xtuple:xtadmin /var/lib/xtuple',
-        'chown -R xtuple:xtadmin /usr/sbin/xtuple',
-        'chown -R xtuple:xtadmin /usr/local/xtuple'
+        'chown -R root:ssl-cert /etc/ssl/private',
+        'chown -R root:xtadmin /etc/xtuple',
+        'chown -R root:xtadmin /var/lib/xtuple',
+        'chown -R root:xtadmin /usr/sbin/xtuple',
+        'chown -R root:xtadmin /usr/local/xtuple'
       ],
       user_ownership = [
         'chown -R {name}:xtuser ' + path.resolve('/etc/xtuple/', xt.version, xt.name),
