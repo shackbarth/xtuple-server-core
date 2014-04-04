@@ -11,6 +11,18 @@ var assert = require('chai').assert,
 _.mixin(require('congruence'));
 
 describe('phase: pg', function () {
+
+  /** Create clean cluster for each test */
+  beforeEach(function () {
+    pgPhase.config.beforeTask(global.options);
+    pgPhase.config.run(global.options);
+    pgPhase.cluster.validate(global.options);
+    pgPhase.cluster.run(global.options);
+  });
+  afterEach(function () {
+    pgcli.dropcluster(global.options.pg.cluster);
+  });
+
   var pgPhase = require('../pg'),
     options = global.options;
 

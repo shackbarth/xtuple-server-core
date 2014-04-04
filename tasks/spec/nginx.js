@@ -3,12 +3,14 @@ var assert = require('chai').assert,
   _ = require('underscore'),
   exec = require('execSync').exec,
   path = require('path'),
-  fs = require('fs');
+  fs = require('fs'),
+  pgcli = require('../../lib/pg-cli');
 
 _.mixin(require('congruence'));
 
 describe('phase: nginx', function () {
-  var nginxPhase = require('../nginx'),
+  var pgPhase = require('../pg'),
+    nginxPhase = require('../nginx'),
     options = global.options;
 
   it('is sane', function () {
@@ -106,6 +108,18 @@ describe('phase: nginx', function () {
   });
 
   describe('task: site', function () {
+    /** Create clean cluster for each test */
+    beforeEach(function () {
+      pgPhase.config.beforeTask(global.options);
+      pgPhase.config.run(global.options);
+      pgPhase.cluster.validate(global.options);
+      pgPhase.cluster.run(global.options);
+
+      pgPhase.snapshotmgr.beforeTask(options);
+    });
+    afterEach(function () {
+      pgcli.dropcluster(global.options.pg.cluster);
+    });
     describe('#run', function () {
       beforeEach(function () {
         nginxPhase.ssl.beforeTask(options);
