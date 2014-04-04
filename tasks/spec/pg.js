@@ -160,7 +160,7 @@ describe('phase: pg', function () {
         exec('mkdir -p '+ options.xt.appdir);
         exec('rm -rf '+ snapshot_path);
         exec('mkdir -p '+ snapshot_path);
-        nginx.ssl.generate('/srv/ssl/', 'localhost' + options.xt.name);
+        nginx.ssl.generate(options);
         pgPhase.snapshotmgr.beforeTask(options);
 
         pgPhase.tuner.run(options);
