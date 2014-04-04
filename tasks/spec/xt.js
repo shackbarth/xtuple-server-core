@@ -21,6 +21,41 @@ describe('phase: xt', function () {
 
   });
 
+  describe('task: clone', function () {
+    it('should clone only public repos if instlaling a free edition', function () {
+      var repoList = xtPhase.clone.getRepositoryList(options);
+
+      assert.include(repoList, 'xtuple');
+      assert.include(repoList, 'xtuple-extensions');
+      assert.notInclude(repoList, 'private-extensions');
+    });
+    it('should clone all repos if installing a premium edition', function () {
+      options.xt.edition = 'manufacturing';
+      var repoList = xtPhase.clone.getRepositoryList(options);
+
+      assert.include(repoList, 'xtuple');
+      assert.include(repoList, 'xtuple-extensions');
+      assert.include(repoList, 'private-extensions');
+
+      options.xt.edition = 'distribution';
+      repoList = xtPhase.clone.getRepositoryList(options);
+
+      assert.include(repoList, 'xtuple');
+      assert.include(repoList, 'xtuple-extensions');
+      assert.include(repoList, 'private-extensions');
+
+      options.xt.edition = 'enterprise';
+      repoList = xtPhase.clone.getRepositoryList(options);
+
+      assert.include(repoList, 'xtuple');
+      assert.include(repoList, 'xtuple-extensions');
+      assert.include(repoList, 'private-extensions');
+    });
+    afterEach(function () {
+      options.xt.edition = 'core';
+    });
+  });
+
   describe.skip('task: serverconfig', function () {
     beforeEach(function () {
       exec('mkdir -p __config- ' + options.xt.name);
@@ -28,7 +63,7 @@ describe('phase: xt', function () {
       xtPhase.serverconfig.beforeTask(options);
     });
 
-    it('can parse and generate a correct config.js', function () {
+    it('should parse and generate a correct config.js', function () {
       var result = xtPhase.serverconfig.run(options);
 
       assert.match(result.string, /"testDatabase": "demo"/);

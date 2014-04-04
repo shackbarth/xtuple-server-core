@@ -11,6 +11,7 @@ describe('xTuple Installer', function () {
       return {
         xt: {
           version: '4.4.0',
+          edition: 'core',
           name: $k,
           setupdemos: true,
           appdir: path.resolve('/tmp/', 'xtmocha', '4.4.0', $k),
@@ -50,20 +51,8 @@ describe('xTuple Installer', function () {
     );
   });
 
-  /**
-   * Create clean cluster for each test
-   */
   beforeEach(function () {
     _.extend(global.options, getOptions(Math.round((Math.random() * 2e16)).toString(16)));
-
-    pgPhase.config.beforeTask(global.options);
-    pgPhase.config.run(global.options);
-    pgPhase.cluster.validate(global.options);
-    pgPhase.cluster.run(global.options);
-  });
-
-  afterEach(function () {
-    pgcli.dropcluster(global.options.pg.cluster);
   });
 
   require('./sys');
