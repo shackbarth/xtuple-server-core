@@ -1,17 +1,20 @@
 (function () {
   'use strict';
 
-  var format = require('string-format'),
+  /**
+   * Mobile-ize the main databases
+   */
+  var build_main = exports;
+
+  var task = require('../../lib/task'),
+    format = require('string-format'),
     path = require('path'),
     _ = require('underscore'),
     exec = require('execSync').exec,
     sync = require('sync'),
-    build = require('./build'),
-    task = require('../sys/task');
+    build = require('../../lib/xt/build');
 
-  var build_main = exports;
-
-  _.extend(build_main, /** @exports build_main */ {
+  _.extend(build_main, task, /** @exports build_main */ {
 
     options: {
       pilot: {

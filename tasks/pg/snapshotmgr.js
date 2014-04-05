@@ -6,7 +6,7 @@
    */
   var snapshotmgr = exports;
 
-  var task = require('../sys/task'),
+  var task = require('../../lib/task'),
     service = require('../sys/service'),
     scheduler = require('node-schedule'),
     pgcli = require('../../lib/pg-cli'),
@@ -45,7 +45,7 @@
     },
 
     /** @override */
-    run: function (options) {
+    doTask: function (options) {
       var version = options.xt.version,
         name = options.xt.name,
         t0 = options.pg.snapshott0,

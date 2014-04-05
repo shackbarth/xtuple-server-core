@@ -21,7 +21,7 @@ describe('phase: xt', function () {
 
   });
 
-  describe('task: clone', function () {
+  describe.skip('task: clone', function () {
     it('should clone and npm install public repos without prompting for password', function () {
       xtPhase.clone.beforeTask(options);
       xtPhase.clone.doTask(options);
@@ -87,7 +87,7 @@ describe('phase: xt', function () {
     });
 
     it('should parse and generate a correct config.js', function () {
-      var result = xtPhase.serverconfig.run(options);
+      var result = xtPhase.serverconfig.doTask(options);
 
       assert.match(result.string, /"testDatabase": "demo"/);
       assert.match(result.string, /"password": "123"/);

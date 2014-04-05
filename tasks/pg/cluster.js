@@ -5,15 +5,15 @@
    * Create a new postgres cluster and prime it to the point of being able
    * to receive import of xtuple databases.
    */
-  var Cluster = exports;
+  var cluster = exports;
 
-  var task = require('../sys/task'),
+  var task = require('../../lib/task'),
     pgcli = require('../../lib/pg-cli'),
     exec = require('execSync').exec,
     _ = require('underscore'),
     knex;
 
-  _.extend(Cluster, task, /** @exports Cluster */ {
+  _.extend(cluster, task, /** @exports cluster */ {
 
     options: {
       slots: {
@@ -24,7 +24,7 @@
     },
 
     /** @override */
-    run: function (options) {
+    doTask: function (options) {
       var newCluster = {
           name: options.xt.name,
           version: options.pg.version
@@ -32,7 +32,7 @@
       options.pg.cluster = _.defaults(pgcli.createcluster(newCluster), newCluster);
       options.pg.cluster.start = pgcli.ctlcluster(_.extend({ action: 'start' }, newCluster));
 
-      Cluster.initCluster(options);
+      cluster.initCluster(options);
     },
 
     /**
