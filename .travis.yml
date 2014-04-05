@@ -11,7 +11,7 @@ before_install:
   - sudo -E bash bootstrap.sh --no-installer
 
 # travis-ci tries to be way too helpful with their node setup
-install: /usr/bin/npm npm install
+install: /usr/bin/npm install
 
 script: /usr/bin/npm test
 
