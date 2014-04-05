@@ -18,27 +18,6 @@
 
   _.extend(database, /** @exports database */ {
 
-    /**
-     * Map edition -> extension[]. These lists of extensions are in addition
-     * to the 'core' extensions already installed by default.
-     */
-    editions: {
-      core: [ ],
-      manufacturing: [
-        'inventory',
-        'manufacturing'
-      ],
-      distribution: [
-        'inventory',
-        'distribution'
-      ],
-      enterprise: [
-        'inventory',
-        'distribution',
-        'manufacturing'
-      ]
-    },
-
     options: {
       name: {
         required: '<name>',
@@ -89,7 +68,7 @@
           var dbname_format = _.extend({ dbname: dbname }, download_format),
             wget_format = {
               dbname: dbname,
-              file: path.resolve(options.xt.appdir, '..', dbname + '.backup'),
+              file: path.resolve(options.xt.srcdir, dbname + '.backup'),
               url: url_template.format(dbname_format),
               common: true
             };
@@ -100,8 +79,8 @@
           }
           return wget_format;
         }),
-        maindb_path = path.resolve(options.xt.maindb),
-        asset_path = path.resolve(__dirname, '../../', 'assets');
+        asset_path = path.resolve(__dirname, '../../', 'assets'),
+        maindb_path;
 
       // schedule asset files for installation
       if (options.xt.masterref) {
@@ -113,7 +92,8 @@
       }
 
       // schedule main database file for installation
-      if (options.xt.maindb) {
+      if (_.isString(options.xt.maindb)) {
+        maindb_path = path.resolve(options.xt.maindb);
         if (fs.existsSync(maindb_path)) {
           databases.push({
             file: maindb_path,
