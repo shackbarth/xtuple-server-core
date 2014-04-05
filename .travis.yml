@@ -1,6 +1,17 @@
-language: node_js
-node_js:
-  - "0.8"
+language: c
+
+env:
+  global:
+    - XT_NODE_VERSION=0.8.26
+  matrix:
+    - XT_PG_VERSION=9.1
+    - XT_PG_VERSION=9.3
 
 before_install:
   - sudo -E bash bootstrap.sh --no-installer
+
+# travis-ci tries to be way too helpful with their node setup
+install: /usr/bin/npm install
+
+script: /usr/bin/npm test
+
