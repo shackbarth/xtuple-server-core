@@ -6,22 +6,23 @@
    */
   var etchosts = exports;
 
-  var nginx = require('../nginx'),
+  var task = require('../../lib/task'),
+    nginx = require('../nginx'),
     fs = require('fs'),
     path = require('path'),
     os = require('os'),
 
     hosts_template_path = path.resolve(__dirname, 'etc-hosts.template');
 
-  _.extend(etchosts, /** @exports etchosts */ {
+  _.extend(etchosts, task, /** @exports etchosts */ {
 
     /** @override */
-    prelude: function (options) {
+    beforeTask: function (options) {
       return nginx.site.prelude(options);
     },
 
     /** @override */
-    run: function (options) {
+    doTask: function (options) {
       var etc_hosts_template = fs.readFileSync(hosts_template_path),
         etc_hosts_current = fs.readFileSync(path.resolve('/etc/hosts')),
         formatter = _.extend({ }, options.xt, options.nginx);

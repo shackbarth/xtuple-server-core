@@ -1,21 +1,24 @@
 (function () {
   'use strict';
 
-  var format = require('string-format'),
+  /**
+   * Configure the cups server needed for automated printing
+   */
+  var configure = exports;
+
+  var task = require('../../lib/task'),
+    format = require('string-format'),
     _ = require('underscore'),
     path = require('path'),
     exec = require('execSync').exec,
     fs = require('fs');
 
-  var configure = exports;
-
-  _.extend(configure, /** @exports configure */ {
-
-    options: { },
+  _.extend(configure, task, /** @exports configure */ {
 
     cups_conf_path: path.resolve('/etc/cups/cupsd.conf'),
 
-    run: function (options) {
+    /** @override */
+    doTask: function (options) {
       var cups_conf = fs.readFileSync(configure.cups_conf_path, 'ascii'),
         new_conf = cups_conf.replace(/^Browsing Off/g, 'Browsing On');
 
@@ -28,8 +31,7 @@
       // TODO autodetect with lpstat -v
       // TODO write selection to config.js
 
-      exec('sudo service cups restart');
+      exec('service cups restart');
     }
   });
-
 })();

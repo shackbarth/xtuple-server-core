@@ -7,7 +7,8 @@
    */
   var database = exports;
 
-  var format = require('string-format'),
+  var task = require('../../lib/task'),
+    format = require('string-format'),
     path = require('path'),
     fs = require('fs'),
     _ = require('underscore'),
@@ -16,7 +17,7 @@
     url_template = 'http://sourceforge.net/projects/postbooks/files/' +
       '03%20PostBooks-databases/{version}/postbooks_{dbname}-{version}.backup/download';
 
-  _.extend(database, /** @exports database */ {
+  _.extend(database, task, /** @exports database */ {
 
     options: {
       name: {
@@ -38,14 +39,9 @@
         description: 'Set to additionally install the demo databases',
         value: true
       },
-      masterref: {
-        optional: '[boolean]',
-        description: '@deprecated. Set this flag to install masterref from assets/',
-        value: false
-      },
       adminpw: {
         required: '<password>',
-        description: 'Password for the database "admin" user'
+        description: 'Password for the database "admin" user for a new database'
       }
     },
 
@@ -55,10 +51,9 @@
       '1.8.2': '4.4.0'
     },
     download: [ 'quickstart', 'demo' ],
-    masterref: 'masterref-4.3.0.backup',
 
-    /** @static */
-    run: function (options) {
+    /** @override */
+    doTask: function (options) {
       var xt = options.xt,
         download_format = {
           version: database.versions[xt.version] || xt.version
@@ -81,15 +76,6 @@
         }),
         asset_path = path.resolve(__dirname, '../../', 'assets'),
         maindb_path;
-
-      // schedule asset files for installation
-      if (options.xt.masterref) {
-        databases.push({
-          file: path.resolve(asset_path, database.masterref),
-          dbname: 'masterref',
-          common: true
-        });
-      }
 
       // schedule main database file for installation
       if (_.isString(options.xt.maindb)) {
@@ -140,5 +126,4 @@
       };
     }
   });
-
 })();

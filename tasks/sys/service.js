@@ -6,20 +6,21 @@
    */
   var service = exports;
 
-  var format = require('string-format'),
+  var task = require('../../lib/task'),
+    format = require('string-format'),
     _ = require('underscore'),
     exec = require('execSync').exec,
     fs = require('fs'),
     path = require('path');
 
-  _.extend(service, /** @exports service */ {
+  _.extend(service, task, /** @exports service */ {
 
     /**
      * Inject custom location into nginx config
      * @override
      */
     /*
-    prelude: function (options) {
+    beforeTask: function (options) {
       options.nginx.locations['xpanel'] = {
         upstream: {
           server: local
@@ -28,8 +29,8 @@
     },
     */
 
-    /** @static */
-    run: function (options) {
+    /** @override */
+    doTask: function (options) {
       var install_format = {
           service_src: path.resolve(__dirname, 'xtuple.sh'),
           service_target: path.resolve('/etc/init.d/xtuple')

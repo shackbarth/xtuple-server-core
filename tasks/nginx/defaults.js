@@ -1,5 +1,0 @@
-/** @module defaults */
-module.exports = {
-
-};
-

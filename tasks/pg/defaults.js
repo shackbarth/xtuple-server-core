@@ -73,5 +73,4 @@ module.exports = {
       maintenance_work_mem: 4
     }
   }
-
 };

@@ -6,7 +6,8 @@
    */
   var site = exports;
 
-  var os = require('os'),
+  var task = require('../../lib/task'),
+    os = require('os'),
     exec = require('execSync').exec,
     format = require('string-format'),
     fs = require('fs'),
@@ -16,7 +17,7 @@
     // nginx site template file path
     site_template_path = path.resolve(__dirname, 'xtuple-site.template');
 
-  _.extend(site, /** @exports site */ {
+  _.extend(site, task, /** @exports site */ {
 
     options: {
       domain: {
@@ -56,23 +57,11 @@
      *  - proxy requests to the node server
      *  - auto-redirect http -> https
      *  - set up SSL
+     *  @override
      */
     doTask: function (options) {
       var pg = options.pg,
         nginx_site_template = fs.readFileSync(site_template_path).toString(),
-
-      
-        /*
-        nginx_formatter = _.extend({
-          version: options.xt.version,
-          sitename: sitename,
-          port: parseInt(pg.cluster.port) + 3011,   // XXX magic
-          name: options.xt.name,
-          params: JSON.stringify(_.extend({
-            generated: new Date().valueOf()
-          }, options.nginx)),
-        }, options.nginx),
-        */
         nginx_conf = nginx_site_template.format(options).trim(),
         nginx_conf_path = path.resolve('/etc/nginx/sites-available', options.nginx.sitename),
         nginx_enabled_path = path.resolve('/etc/nginx/sites-enabled', options.nginx.sitename),
@@ -98,7 +87,6 @@
         available: nginx_conf_path,
         enabled: nginx_enabled_path
       }));
-
 
       return {
         json: options,

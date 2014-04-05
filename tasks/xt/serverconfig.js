@@ -1,15 +1,18 @@
 (function () {
   'use strict';
 
-  var format = require('string-format'),
+  /**
+   * Generate the config.js file
+   */
+  var serverconfig = exports;
+
+  var task = require('../../lib/task'),
+    format = require('string-format'),
     path = require('path'),
     fs = require('fs'),
     exec = require('execSync').exec,
     _ = require('underscore'),
-    m = require('mstring'),
-    task = require('../sys/task');
-
-  var serverconfig = exports;
+    m = require('mstring');
 
   _.extend(serverconfig, task, /** @exports serverconfig */ {
 
