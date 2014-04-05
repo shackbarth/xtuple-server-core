@@ -8,6 +8,10 @@ env:
     - XT_PG_VERSION=9.3
 
 before_install:
+  # travis-ci tries to be way too helpful with their node setup
+  - sudo rm -rf $(which node)
+  - sudo rm -rf $(which npm)
+  - sudo rm -rf ~/.nvm
   - sudo -E bash bootstrap.sh --no-installer
   - npm -v
   - node -v
