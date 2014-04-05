@@ -21,6 +21,64 @@ describe('phase: xt', function () {
 
   });
 
+  describe('task: clone', function () {
+    it('should clone and npm install public repos without prompting for password', function () {
+      xtPhase.clone.beforeTask(options);
+      xtPhase.clone.doTask(options);
+
+      var xtupleRepo = fs.existsSync(options.xt.srcdir, 'xtuple'),
+        extensionsRepo = fs.existsSync(options.xt.srcdir, 'xtuple-extensions');
+
+      assert.isTrue(xtupleRepo);
+      assert.isTrue(extensionsRepo);
+    });
+    it.skip('should clone and npm install all repos and require password', function () {
+      options.xt.edition = 'distribution';
+      xtPhase.clone.beforeTask(options);
+      xtPhase.clone.doTask(options);
+
+      var xtupleRepo = fs.existsSync(options.xt.srcdir, 'xtuple'),
+        extensionsRepo = fs.existsSync(options.xt.srcdir, 'xtuple-extensions'),
+        privateRepo = fs.existsSync(options.xt.srcdir, 'private-extensions');
+
+      assert.isTrue(xtupleRepo);
+      assert.isTrue(extensionsRepo);
+      assert.isTrue(privateRepo);
+    });
+    it('should clone only public repos if instlaling a free edition', function () {
+      var repoList = xtPhase.clone.getRepositoryList(options);
+
+      assert.include(repoList, 'xtuple');
+      assert.include(repoList, 'xtuple-extensions');
+      assert.notInclude(repoList, 'private-extensions');
+    });
+    it('should clone all repos if installing a premium edition', function () {
+      options.xt.edition = 'manufacturing';
+      var repoList = xtPhase.clone.getRepositoryList(options);
+
+      assert.include(repoList, 'xtuple');
+      assert.include(repoList, 'xtuple-extensions');
+      assert.include(repoList, 'private-extensions');
+
+      options.xt.edition = 'distribution';
+      repoList = xtPhase.clone.getRepositoryList(options);
+
+      assert.include(repoList, 'xtuple');
+      assert.include(repoList, 'xtuple-extensions');
+      assert.include(repoList, 'private-extensions');
+
+      options.xt.edition = 'enterprise';
+      repoList = xtPhase.clone.getRepositoryList(options);
+
+      assert.include(repoList, 'xtuple');
+      assert.include(repoList, 'xtuple-extensions');
+      assert.include(repoList, 'private-extensions');
+    });
+    afterEach(function () {
+      options.xt.edition = 'core';
+    });
+  });
+
   describe.skip('task: serverconfig', function () {
     beforeEach(function () {
       exec('mkdir -p __config- ' + options.xt.name);
@@ -28,7 +86,7 @@ describe('phase: xt', function () {
       xtPhase.serverconfig.beforeTask(options);
     });
 
-    it('can parse and generate a correct config.js', function () {
+    it('should parse and generate a correct config.js', function () {
       var result = xtPhase.serverconfig.run(options);
 
       assert.match(result.string, /"testDatabase": "demo"/);

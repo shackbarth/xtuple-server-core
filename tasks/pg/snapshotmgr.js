@@ -107,28 +107,36 @@
           name: name,
         },
         pg_dump = 'sudo -u postgres /usr/lib/postgresql/9.3/bin/pg_dump',
-        cmd_template = pg_dump + ' -U postgres -w -p {port} -Fd -f {out} --no-synchronized-snapshots {dbname}';
+        pg_dumpall = 'sudo -u postgres /usr/lib/postgresql/9.3/bin/pg_dumpall',
+        cmd_template = pg_dump + ' -U postgres -w -p {port} -Fd -f {out} --no-synchronized-snapshots {dbname}',
 
-      // backup globals (users, roles, etc) separately
-      var globals_snapshot = exec('sudo -u postgres pg_dumpall -U postgres -w -p {port} -g > {out}.sql'.format({
-        port: options.pg.cluster.port,
-        out: snapshotmgr.getSnapshotPath(options)
-      }));
-
-      // snapshot each database. possibly huge files, may take many minutes
-      // e.g. kelhay 2.5G gzip pg_dump with -j4 takes 4min on my laptop. 8m with -j 1. -tjw
-      return _.map(_.compact(all_databases), function (_db) {
-        var db = _db.trim(),
-          snap = snapshotmgr.getSnapshotPath(_.extend({ dbname: db }, options));
-        exec('rm -rf '+ snap);
-
-        return exec(cmd_template.format({
+        // backup globals (users, roles, etc) separately
+        globals_snapshot = exec(pg_dumpall + ' -U postgres -w -p {port} -g > {out}.sql'.format({
           port: options.pg.cluster.port,
-          dbname: db,
-          out: snap,
-          jobs: Math.ceil(os.cpus().length / 2)
-        }));
-      }).concat([globals_snapshot]);
+          out: snapshotmgr.getSnapshotPath(options)
+        })),
+
+        // snapshot each database. possibly huge files, may take many minutes
+        // e.g. kelhay 2.5G gzip pg_dump with -j4 takes 4min on my laptop. 8m with -j 1. -tjw
+        snapshot = _.map(_.compact(all_databases), function (_db) {
+          var db = _db.trim(),
+            snap = snapshotmgr.getSnapshotPath(_.extend({ dbname: db }, options));
+          exec('rm -rf '+ snap);
+
+          return exec(cmd_template.format({
+            port: options.pg.cluster.port,
+            dbname: db,
+            out: snap,
+            jobs: Math.ceil(os.cpus().length / 2)
+          }));
+        }).concat([globals_snapshot]),
+        errors = _.where(snapshot, { code: 1 });
+
+      if (errors.length > 0) {
+        throw new Error(_.pluck(errors, 'stdout'));
+      }
+
+      return snapshot;
     },
 
     /**
