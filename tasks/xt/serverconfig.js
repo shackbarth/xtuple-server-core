@@ -6,12 +6,14 @@
     fs = require('fs'),
     exec = require('execSync').exec,
     _ = require('underscore'),
-    m = require('mstring');
+    m = require('mstring'),
+    task = require('../sys/task');
 
   var serverconfig = exports;
 
-  _.extend(serverconfig, /** @exports serverconfig */ {
+  _.extend(serverconfig, task, /** @exports serverconfig */ {
 
+    // TODO turn into .json
     config_template: m(function () {
       /***
       // {params}
@@ -40,16 +42,7 @@
      */
     statedir: null,
 
-    options: {
-      appdir: {
-        required: '<path>',
-        description: 'Path to the xtuple application directory'
-      },
-    },
-
-    /**
-     * @override
-     */
+    /** @override */
     beforeTask: function (options) {
       var version = options.xt.version,
         name = options.xt.name;
@@ -64,11 +57,12 @@
       exec('mkdir -p ' + options.xt.statedir);
     },
 
-    run: function (options) {
+    /** @override */
+    doTask: function (options) {
       var xt = options.xt,
         pg = options.pg,
         domain = options.nginx.domain,
-        sample_path = path.resolve(xt.appdir, 'node-datasource/sample_config'),
+        sample_path = path.resolve(xt.coredir, 'node-datasource/sample_config'),
         config_path = path.resolve('/etc/xtuple', xt.version, pg.name),
         config_js = path.resolve(config_path, 'config.js'),
         encryption_key_path = path.resolve(config_path, 'encryption_key.txt'),
@@ -79,7 +73,7 @@
 
         // replace default config.js values
         derived_config_obj = _.extend(sample_obj, {
-          processName: 'xt-web-' + domain,
+          processName: 'xt-web-' + options.xt.name,
           datasource: _.extend(sample_config.datasource, {
             name: domain,
             keyFile: options.nginx.outkey,
@@ -129,10 +123,10 @@
       exec('chown -R xtuple:xtadmin /var/lib/xtuple');
       exec('chown -R xtuple:xtadmin /usr/local/xtuple');
 
-      exec('sudo chmod -R +r    /etc/xtuple');
-      exec('sudo chmod -R +rw   /var/log/xtuple');
-      exec('sudo chmod -R +rw   /var/lib/xtuple');
-      exec('sudo chmod -R +rwx  /usr/local/xtuple');
+      exec('sudo chmod -R ug+r    /etc/xtuple');
+      exec('sudo chmod -R ug+rw   /var/log/xtuple');
+      exec('sudo chmod -R ug+rw   /var/lib/xtuple');
+      exec('sudo chmod -R ug+rwx  /usr/local/xtuple');
 
       return {
         string: output_conf,

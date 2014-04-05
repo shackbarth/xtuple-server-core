@@ -3,6 +3,7 @@
 
   /** @exports xt */
   module.exports = {
+    clone: require('./clone'),
     database: require('./database'),
     build: require('./build'),
     build_common: require('./build_common'),
@@ -10,5 +11,4 @@
     serverconfig: require('./serverconfig'),
     testconfig: require('./testconfig')
   };
-
 })();

@@ -12,7 +12,20 @@ _.mixin(require('congruence'));
 
 describe('phase: pg', function () {
   var pgPhase = require('../pg'),
+    xtPhase = require('../xt'),
     options = global.options;
+
+  /** Create clean cluster for each test */
+  beforeEach(function () {
+    pgPhase.config.beforeTask(global.options);
+    pgPhase.config.run(global.options);
+    pgPhase.cluster.validate(global.options);
+    pgPhase.cluster.run(global.options);
+  });
+  afterEach(function () {
+    pgcli.dropcluster(global.options.pg.cluster);
+  });
+
 
   it('is sane', function () {
     assert(pgPhase);
@@ -157,10 +170,11 @@ describe('phase: pg', function () {
       var xt = require('../xt');
 
       beforeEach(function () {
-        exec('mkdir -p '+ options.xt.appdir);
+        exec('mkdir -p '+ options.xt.srcdir);
         exec('rm -rf '+ snapshot_path);
         exec('mkdir -p '+ snapshot_path);
         nginx.ssl.generate(options);
+        xtPhase.clone.beforeTask(options);
         pgPhase.snapshotmgr.beforeTask(options);
 
         pgPhase.tuner.run(options);
@@ -179,7 +193,7 @@ describe('phase: pg', function () {
 
       after(function () {
         _.each([
-          'rm -rf '+ options.xt.appdir,
+          'rm -rf '+ options.xt.srcdir,
           'rm -rf '+ snapshot_path,
           'rm -rf '+ options.xt.database.list[0].config,
           'rm -rf '+ options.xt.database.list[0].data,

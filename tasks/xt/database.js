@@ -18,27 +18,6 @@
 
   _.extend(database, /** @exports database */ {
 
-    /**
-     * Map edition -> extension[]. These lists of extensions are in addition
-     * to the 'core' extensions already installed by default.
-     */
-    editions: {
-      core: [ ],
-      manufacturing: [
-        'inventory',
-        'manufacturing'
-      ],
-      distribution: [
-        'inventory',
-        'distribution'
-      ],
-      enterprise: [
-        'inventory',
-        'distribution',
-        'manufacturing'
-      ]
-    },
-
     options: {
       name: {
         required: '<name>',
@@ -70,18 +49,10 @@
       }
     },
 
-    // XXX silliness. remove after 4.4
     versions: {
       '1.8.0': '4.3.0',
       '1.8.1': '4.3.0',
-      '1.8.2': '4.3.0',
-      '1.8.3': '4.3.0',
-      '1.8.4': '4.3.0',
-      '1.8.5': '4.3.0',
-      '1.8.6': '4.3.0',
-      '1.8.7': '4.3.0',
-      '1.8.8': '4.3.0',
-      '1.8.9': '4.3.0'
+      '1.8.2': '4.4.0'
     },
     download: [ 'quickstart', 'demo' ],
     masterref: 'masterref-4.3.0.backup',
@@ -90,14 +61,14 @@
     run: function (options) {
       var xt = options.xt,
         download_format = {
-          version: database.versions[xt.version]
+          version: database.versions[xt.version] || xt.version
         },
         // schedule postbooks demo database files for installation
         databases = !xt.setupdemos ? [ ] : _.map(database.download, function (dbname) {
           var dbname_format = _.extend({ dbname: dbname }, download_format),
             wget_format = {
               dbname: dbname,
-              file: path.resolve(options.xt.appdir, '..', dbname + '.backup'),
+              file: path.resolve(options.xt.srcdir, dbname + '.backup'),
               url: url_template.format(dbname_format),
               common: true
             };
@@ -108,8 +79,8 @@
           }
           return wget_format;
         }),
-        maindb_path = path.resolve(options.xt.maindb),
-        asset_path = path.resolve(__dirname, '../../', 'assets');
+        asset_path = path.resolve(__dirname, '../../', 'assets'),
+        maindb_path;
 
       // schedule asset files for installation
       if (options.xt.masterref) {
@@ -121,7 +92,8 @@
       }
 
       // schedule main database file for installation
-      if (options.xt.maindb) {
+      if (_.isString(options.xt.maindb)) {
+        maindb_path = path.resolve(options.xt.maindb);
         if (fs.existsSync(maindb_path)) {
           databases.push({
             file: maindb_path,

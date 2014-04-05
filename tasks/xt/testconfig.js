@@ -22,8 +22,8 @@
 
     run: function (options) {
       var xt = options.xt,
-        input_path = path.resolve(xt.appdir, 'test/lib/sample_login_data'),
-        output_path = path.resolve(xt.appdir, 'test/lib/login_data.js'),
+        input_path = path.resolve(xt.coredir, 'test/lib/sample_login_data'),
+        output_path = path.resolve(xt.coredir, 'test/lib/login_data.js'),
         test_config = require(input_path),
         test_obj = JSON.parse(JSON.stringify(test_config)),
         output_obj = {
