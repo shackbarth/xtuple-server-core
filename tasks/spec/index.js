@@ -24,7 +24,7 @@ describe('xTuple Installer', function () {
           inkey: '/tmp/mocha-'+ $k +'.key'
         },
         pg: {
-          version: '9.1',
+          version: process.env.XT_PG_VERSION || '9.1',
           host: 'localhost',
           mode: 'test',
           snapshotcount: 7,
@@ -41,18 +41,22 @@ describe('xTuple Installer', function () {
       };
     };
 
+  beforeEach(function () {
+    _.extend(global.options, getOptions(Math.round((Math.random() * 2e16)).toString(16)));
+  });
+
+
   /**
    * Require root prvileges
    */
-  before(function () {
+  it('should be run with root privileges', function () {
     assert(
       exec('id -u').stdout.indexOf('0') === 0,
       'installer tests must be run with sudo'
     );
   });
-
-  beforeEach(function () {
-    _.extend(global.options, getOptions(Math.round((Math.random() * 2e16)).toString(16)));
+  it('should be run with XT_PG_VERSION environment variable set', function () {
+    assert.include([ '9.1', '9.3' ], process.env.XT_PG_VERSION);
   });
 
   require('./sys');
