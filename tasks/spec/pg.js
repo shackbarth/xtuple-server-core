@@ -18,9 +18,9 @@ describe('phase: pg', function () {
   /** Create clean cluster for each test */
   beforeEach(function () {
     pgPhase.config.beforeTask(global.options);
-    pgPhase.config.run(global.options);
+    pgPhase.config.doTask(global.options);
     pgPhase.cluster.validate(global.options);
-    pgPhase.cluster.run(global.options);
+    pgPhase.cluster.doTask(global.options);
   });
   afterEach(function () {
     pgcli.dropcluster(global.options.pg.cluster);
@@ -39,7 +39,7 @@ describe('phase: pg', function () {
   describe('task: tuner', function () {
     describe('#run', function () {
       it('should generate a correct postgres config', function () {
-        var postgresql_conf = pgPhase.tuner.run(options).string;
+        var postgresql_conf = pgPhase.tuner.doTask(options).string;
 
         assert.match(postgresql_conf, /shared_buffers = \d+MB/);
         assert.match(postgresql_conf, /temp_buffers = \d+MB/);
@@ -76,7 +76,7 @@ describe('phase: pg', function () {
       });
       it('should generate correct pg_hba.conf', function () {
         pgPhase.hba.beforeTask(options);
-        var hba_conf = pgPhase.hba.run(options);
+        var hba_conf = pgPhase.hba.doTask(options);
 
         assert.match(hba_conf.string, /all \s+ all \s+ 10\.0\.0\.0\/8 \s+ md5/);
         assert.match(hba_conf.string, /all \s+ all \s+ 172\.16\.0\.0\/12 \s+ md5/);
@@ -177,12 +177,12 @@ describe('phase: pg', function () {
         xtPhase.clone.beforeTask(options);
         pgPhase.snapshotmgr.beforeTask(options);
 
-        pgPhase.tuner.run(options);
+        pgPhase.tuner.doTask(options);
         pgPhase.hba.beforeTask(options);
-        pgPhase.hba.run(options);
+        pgPhase.hba.doTask(options);
         pgPhase.cluster.initCluster(options);
 
-        options.xt.database = xt.database.run(options);
+        options.xt.database = xt.database.doTask(options);
         options.pg.snapshot = snap.createSnapshot(options);
       });
 

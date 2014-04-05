@@ -10,7 +10,7 @@
    */
   var hba = exports;
 
-  var task = require('../sys/task'),
+  var task = require('../../lib/task'),
     _ = require('underscore'),
     fs = require('fs'),
     path = require('path'),
@@ -44,16 +44,14 @@
   
   _.extend(hba, task, /** @exports hba */ {
 
-    /**
-     * @override
-     */
+    /** @override */
     beforeTask: function (options) {
       options.pg.version = (options.pg.version).toString();
       exec('usermod -a -G www-data postgres');
     },
 
     /** @override */
-    run: function (options) {
+    doTask: function (options) {
       var pg = options.pg,
         xt = options.xt,
         hba_src = fs.readFileSync(path.resolve(__dirname, filename_template.format(pg))),
@@ -98,7 +96,7 @@
     },
 
     /** @override */
-    coda: function (options) {
+    afterTask: function (options) {
       // verify xtdaemon ssl client cert
       var verified = exec([
         'openssl verify',

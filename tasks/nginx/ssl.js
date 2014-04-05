@@ -6,14 +6,15 @@
    */
   var ssl = exports;
 
-  var format = require('string-format'),
+  var task = require('../../lib/task'),
+    format = require('string-format'),
     _ = require('underscore'),
     exec = require('execSync').exec,
     fs = require('fs'),
     Zip = require('adm-zip'),
     path = require('path');
 
-  _.extend(ssl, /** @exports ssl */ {
+  _.extend(ssl, task, /** @exports ssl */ {
 
     outpath: path.resolve('/etc/ssl/private'),
     
@@ -35,9 +36,7 @@
       }
     },
 
-    /**
-     * @override
-     */
+    /** @override */
     beforeTask: function (options) {
       var nginx = options.nginx;
 

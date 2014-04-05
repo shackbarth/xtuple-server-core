@@ -8,7 +8,7 @@
    */
   var tuner = exports;
 
-  var task = require('../sys/task'),
+  var task = require('../../lib/task'),
     format = require('string-format'),
     _ = require('underscore'),
     env = require('./defaults').env,
@@ -42,7 +42,7 @@
      *
      * @override
      */
-    run: function (options) {
+    doTask: function (options) {
       var pg = options.pg,
         cluster = options.pg.cluster,
         config = options.pg.config,

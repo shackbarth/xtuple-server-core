@@ -1,24 +1,28 @@
 (function () {
   'use strict';
 
-  var format = require('string-format'),
-    _ = require('underscore'),
-    exec = require('execSync').exec,
-    build = require('./build');
-
+  /**
+   * Build test/demo databases
+   */
   var build_common = exports;
 
-  _.extend(build_common, /** @exports build_common */ {
+  var task = require('../../lib/task'),
+    format = require('string-format'),
+    _ = require('underscore'),
+    exec = require('execSync').exec,
+    build = require('../../lib/xt/build');
 
-    /** @static */
-    run: function (options) {
+  _.extend(build_common, task, /** @exports build_common */ {
+
+    /** @override */
+    doTask: function (options) {
       var xt = options.xt,
         databases = _.where(xt.database.list, { common: true });
 
       // build the common/demo databases
       return _.map(databases, function (db) {
         var result = exec(build.getCoreBuildCommand(db, options));
-        if (result.code) {
+        if (result.code !== 0) {
           throw new Error(result.stdout);
         }
 
