@@ -6,13 +6,13 @@
    */
   var clone = exports;
 
-  var format = require('string-format'),
+  var task = require('../../lib/task'),
+    format = require('string-format'),
     path = require('path'),
     fs = require('fs'),
     _ = require('underscore'),
     exec = require('execSync').exec,
-    task = require('../sys/task'),
-    build = require('./build'),
+    build = require('../../lib/xt/build'),
     rimraf = require('rimraf');
 
   _.extend(clone, task, /** @exports clone */ {
@@ -70,6 +70,11 @@
       exec('chmod o-rwx,u=rwx,g=rx '+ options.xt.coredir);
       exec('chmod o-rwx,u=rwx,g=rx '+ options.xt.extdir);
       exec('chmod o-rwx,u=rwx,g=rx '+ options.xt.privatedir);
+    },
+
+    /** @override */
+    doFinish: function (options) {
+      rimraf.sync(options.xt.privatedir);
     },
 
     /**

@@ -5,7 +5,6 @@
   module.exports = {
     clone: require('./clone'),
     database: require('./database'),
-    build: require('./build'),
     build_common: require('./build_common'),
     build_main: require('./build_main'),
     serverconfig: require('./serverconfig'),

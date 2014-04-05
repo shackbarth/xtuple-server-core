@@ -111,9 +111,9 @@ describe('phase: nginx', function () {
     /** Create clean cluster for each test */
     beforeEach(function () {
       pgPhase.config.beforeTask(global.options);
-      pgPhase.config.run(global.options);
+      pgPhase.config.doTask(global.options);
       pgPhase.cluster.validate(global.options);
-      pgPhase.cluster.run(global.options);
+      pgPhase.cluster.doTask(global.options);
 
       pgPhase.snapshotmgr.beforeTask(options);
     });

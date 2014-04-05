@@ -1,15 +1,19 @@
 (function () {
   'use strict';
 
-  var format = require('string-format'),
+  /**
+   * Generate the config file for the testing framework.
+   */
+  var testconfig = exports;
+
+  var task = require('../../lib/task'),
+    format = require('string-format'),
     path = require('path'),
     fs = require('fs'),
     _ = require('underscore'),
     m = require('mstring');
 
-  var testconfig = exports;
-
-  _.extend(testconfig, /** @exports testconfig */ {
+  _.extend(testconfig, task, /** @exports testconfig */ {
 
     config_template: m(function () {
       /***
@@ -20,7 +24,8 @@
       ***/
     }),
 
-    run: function (options) {
+    /** @override */
+    doTask: function (options) {
       var xt = options.xt,
         input_path = path.resolve(xt.coredir, 'test/lib/sample_login_data'),
         output_path = path.resolve(xt.coredir, 'test/lib/login_data.js'),

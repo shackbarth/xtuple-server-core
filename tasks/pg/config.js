@@ -1,9 +1,13 @@
 (function () {
   'use strict';
 
+  /**
+   * Compile config vars for postgres setup
+   */
   var pgconfig = exports;
 
-  var tuner = require('./tuner'),
+  var task = require('../../lib/task'),
+    tuner = require('./tuner'),
     pghba = require('./hba'),
     pgcli = require('../../lib/pg-cli'),
     exec = require('execSync').exec,
@@ -11,7 +15,7 @@
     defaults = require('./defaults'),
     _ = require('underscore');
   
-  _.extend(pgconfig, /** @exports pgconfig */ {
+  _.extend(pgconfig, task, /** @exports pgconfig */ {
 
     options: {
       host: {
@@ -35,6 +39,7 @@
       }
     },
 
+    /** @override */
     beforeTask: function (options) {
       exec('usermod -a -G ssl-cert postgres');
     },
@@ -47,8 +52,9 @@
      *    slots: 1,
      *    ...
      *  }
+     *  @override
      */
-    run: function (options) {
+    doTask: function (options) {
       var mode = options.pg.mode,
         slot = defaults.slot;
         //config = pg.configure(mode, options);

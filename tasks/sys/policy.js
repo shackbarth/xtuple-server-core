@@ -17,7 +17,7 @@
    */
   var policy = exports;
 
-  var archetype = require('./archetype'),
+  var task = require('../../lib/task'),
     log = require('npmlog'),
     fs = require('fs'),
     exec = require('execSync').exec,
@@ -26,10 +26,10 @@
     user_policy_filename = 'XT10-xtuple-user-policy',
     sudoers_d = path.resolve('/etc/sudoers.d');
 
-  _.extend(policy, archetype, /** @exports policy */ {
+  _.extend(policy, task, /** @exports policy */ {
 
     /** @override */
-    install: function (options) {
+    doTask: function (options) {
       var xt = options.xt;
 
       createUsers(options);
@@ -39,7 +39,12 @@
     },
 
     /** @override */
-    coda: function (options) {
+    doFinish: function (options) {
+      exec('rm -f ~/.pgpass');
+    },
+
+    /** @override */
+    afterTask: function (options) {
       exec('service ssh reload');
     }
   });
