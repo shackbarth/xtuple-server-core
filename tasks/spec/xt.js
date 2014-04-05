@@ -22,6 +22,29 @@ describe('phase: xt', function () {
   });
 
   describe('task: clone', function () {
+    it('should clone and npm install public repos without prompting for password', function () {
+      xtPhase.clone.beforeTask(options);
+      xtPhase.clone.doTask(options);
+
+      var xtupleRepo = fs.existsSync(options.xt.srcdir, 'xtuple'),
+        extensionsRepo = fs.existsSync(options.xt.srcdir, 'xtuple-extensions');
+
+      assert.isTrue(xtupleRepo);
+      assert.isTrue(extensionsRepo);
+    });
+    it.skip('should clone and npm install all repos and require password', function () {
+      options.xt.edition = 'distribution';
+      xtPhase.clone.beforeTask(options);
+      xtPhase.clone.doTask(options);
+
+      var xtupleRepo = fs.existsSync(options.xt.srcdir, 'xtuple'),
+        extensionsRepo = fs.existsSync(options.xt.srcdir, 'xtuple-extensions'),
+        privateRepo = fs.existsSync(options.xt.srcdir, 'private-extensions');
+
+      assert.isTrue(xtupleRepo);
+      assert.isTrue(extensionsRepo);
+      assert.isTrue(privateRepo);
+    });
     it('should clone only public repos if instlaling a free edition', function () {
       var repoList = xtPhase.clone.getRepositoryList(options);
 

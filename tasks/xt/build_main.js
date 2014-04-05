@@ -6,7 +6,8 @@
     _ = require('underscore'),
     exec = require('execSync').exec,
     sync = require('sync'),
-    build = require('./build');
+    build = require('./build'),
+    task = require('../sys/task');
 
   var build_main = exports;
 
@@ -25,9 +26,10 @@
       }
     },
 
-    run: function (options) {
+    /** @override */
+    doTask: function (options) {
       var xt = options.xt,
-        extensions = require('./database').editions[xt.edition],
+        extensions = build.editions[xt.edition],
         databases = _.where(xt.database.list, { main: true }),
 
         // build the main database and pilot, if specified

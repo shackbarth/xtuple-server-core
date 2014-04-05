@@ -14,7 +14,7 @@ describe('xTuple Installer', function () {
           edition: 'core',
           name: $k,
           setupdemos: true,
-          appdir: path.resolve('/tmp/', 'xtmocha', '4.4.0', $k),
+          srcdir: path.resolve('/tmp/xtmocha/src', '4.4.0'),
           adminpw: '123'
         },
         nginx: {

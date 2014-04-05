@@ -50,7 +50,7 @@
       pm2.conf = pm2.template.format(_.extend({ port: options.xt.serverconfig.port }, options.xt)),
           
       // symlink main.js to sbin
-      fs.symlinkSync(path.resolve(options.xt.appdir, 'node-datasource/main.js'), sbin_js);
+      fs.symlinkSync(path.resolve(options.xt.coredir, 'node-datasource/main.js'), sbin_js);
 
       // download/install pm2 service
       exec('npm install -g https://github.com/xtuple/pm2/tarball/master');
