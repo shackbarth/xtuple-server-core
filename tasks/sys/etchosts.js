@@ -11,6 +11,7 @@
     fs = require('fs'),
     path = require('path'),
     os = require('os'),
+    _ = require('underscore'),
 
     hosts_template_path = path.resolve(__dirname, 'etc-hosts.template');
 
