@@ -45,7 +45,6 @@ describe('xTuple Installer', function () {
     _.extend(global.options, getOptions(Math.round((Math.random() * 2e16)).toString(16)));
   });
 
-
   /**
    * Require root prvileges
    */

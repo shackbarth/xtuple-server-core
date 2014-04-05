@@ -40,8 +40,9 @@
         value: true
       },
       adminpw: {
-        required: '<password>',
-        description: 'Password for the database "admin" user for a new database'
+        optional: '[password]',
+        description: 'Password for the database "admin" user for a new database',
+        value: 'admin'
       }
     },
 
