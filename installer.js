@@ -93,33 +93,6 @@
       installer.log({ msg: clc.red.bold(payload.msg), prefix: payload.prefix }, true);
       console.log();
       process.exit(1);
-    },
-
-    run: function (options) {
-
-      var plan = options.sys.plan,
-        stepdata = options;
-
-      _.each(plan, function (step) {
-        var stepmodule = require(path.resolve('./lib/', step)),
-          taskdata = { };
-          
-        stepdata[step.name] = _.extend(taskdata, options[step.name]);
-
-        _.each(step.tasks, function (task) {
-          var taskmodule = stepmodule[task];
-
-          try {
-            installer.log_progress({ step: step.name, task: task });
-            taskdata[task] = _.extend({ }, taskmodule.run(stepdata));
-          }
-          catch (e) {
-            installer.log({ msg: e.stack, prefix: format_prefix(step, task) });
-            installer.log({ msg: 'See log for error details.', prefix: format_prefix(step, task) }, true);
-            installer.die({ msg: e.message, prefix: format_prefix(step, task) });
-          }
-        }, { });
-      }, { });
     }
   });
 
@@ -198,10 +171,38 @@
 
   prompt.get('Press Enter to Continue', function(err, result) {
     process.emit('init', options);
+
+    var plan = options.sys.plan,
+      stepdata = options;
+
+  /*
+    _.each(plan, function (step) {
+      var stepmodule = require(path.resolve('./lib/', step)),
+        taskdata = { };
+        
+      stepdata[step.name] = _.extend(taskdata, options[step.name]);
+
+      _.each(step.tasks, function (task) {
+        var taskmodule = stepmodule[task];
+
+        try {
+          installer.log_progress({ step: step.name, task: task });
+          taskdata[task] = _.extend({ }, taskmodule.run(stepdata));
+        }
+        catch (e) {
+          installer.log({ msg: e.stack, prefix: format_prefix(step, task) });
+          installer.log({ msg: 'See log for error details.', prefix: format_prefix(step, task) }, true);
+          installer.die({ msg: e.message, prefix: format_prefix(step, task) });
+        }
+      });
+    });
+  */
+    /*
     installer.run(_.extend(options, {
       logfile: installer.logfile,
       sys: { plan: plan }
     }), true);
+    */
     current = logo_lines.length;
     installer.log_progress({ step: 'installer', task: 'installer', msg: 'Done!'});
     process.exit(0);
