@@ -25,7 +25,8 @@
       },
       mode: {
         required: '<mode>',
-        description: 'Installation mode (dedicated|cloud|testing). Dedicated implies one slot.'
+        description: 'Installation mode (dedicated|cloud|testing). Dedicated implies one slot.',
+        value: 'testing'
       },
       version: {
         optional: '[version]',
@@ -57,9 +58,12 @@
     doTask: function (options) {
       var mode = options.pg.mode,
         slot = defaults.slot;
-        //config = pg.configure(mode, options);
 
-      return _.extend({ mode: mode, slots: options.pg.slots || 1}, slot.base, slot[mode]);
+      options.pg.config = _.extend(
+        { mode: mode, slots: options.pg.slots || 1},
+        slot.base,
+        slot[mode]
+      );
     },
 
     /**

@@ -14,16 +14,17 @@
     path = require('path'),
     format = require('string-format'),
     os = require('os'),
+    exec = require('execSync').exec,
     prompt = require('prompt'),
-    Commander = require('installer'),
+    Commander = require('commander'),
     clc = require('cli-color'),
     S = require('string'),
     _ = require('underscore'),
     install = Commander.version('1.8.0').command('install'),
     options = { },
-    logo_orange = fs.readFileSync(path.resolve(__dirname, './x-orange.ascii'), 'ascii').trim(),
-    logo_blue = fs.readFileSync(path.resolve(__dirname, './x-blue.ascii'), 'ascii').trim(),
-    logo_mono = fs.readFileSync(path.resolve(__dirname, './x.ascii'), 'ascii').trim(),
+    logo_orange = fs.readFileSync(path.resolve(__dirname, './lib/x-orange.ascii'), 'ascii').trim(),
+    logo_blue = fs.readFileSync(path.resolve(__dirname, './lib/x-blue.ascii'), 'ascii').trim(),
+    logo_mono = fs.readFileSync(path.resolve(__dirname, './lib/x.ascii'), 'ascii').trim(),
     logo_lines= _.map(
       _.object(logo_orange.split('\n'), logo_blue.split('\n')),
       function (blue_line, orange_line) {
@@ -36,7 +37,8 @@
         task: task
       });
     },
-    plan = require(path.resolve(__dirname, 'plan')),
+    plan = require('./plan'),
+    tasks = { },
     current = 1;
 
   _.extend(installer, /** @exports installer */ {
@@ -48,7 +50,7 @@
      * @protected
      */
     log_progress: function (state) {
-      console.log(clc.reset);
+      //console.log(clc.reset);
       _.each(_.range(current), function (i) {
         console.log(logo_lines[i]);
       });
@@ -89,24 +91,27 @@
      * Log an error and kill the process
      */
     die: function (payload) {
-      console.log(clc.reset);
+      //console.log(clc.reset);
       installer.log({ msg: clc.red.bold(payload.msg), prefix: payload.prefix }, true);
       console.log();
       process.exit(1);
     }
   });
 
+  // self-tests
+  if (exec('id -u').stdout.indexOf('0') !== 0) {
+    installer.die({ msg: 'Installer must be run as root', prefix: 'xtuple' });
+  }
+
   fs.writeFileSync(installer.logfile, os.EOL);
   
   // compile Commander's options list. I wish it accepted a json object; instead
   // we must populate it via api calls
   _.each(plan, function (step) {
+    tasks[step.name] = require('./tasks/' + step.name);
     _.each(step.tasks, function (task) {
       try {
-        var module_path = path.resolve(__dirname, '..', step.name, task),
-          taskmodule = require(module_path),
-          options = _.defaults({ }, taskmodule.options);
-        _.each(options, function (option_details, option_name) {
+        _.each(tasks[step.name][task].options, function (option_details, option_name) {
           var flag = '--{module}-{option} {optional}{required}'.format(_.extend({
             option: option_name,
             module: step.name,
@@ -151,9 +156,7 @@
   // verify required options
   _.each(plan, function (step) {
     _.each(step.tasks, function (task) {
-      var taskmodule = require(path.resolve(__dirname, '..', step.name, task));
-
-      _.each(taskmodule.options, function (option, key) {
+      _.each(tasks[step.name][task].options, function (option, key) {
         if (_.isString(option.required) && _.isUndefined(options[step.name][key])) {
           installer.log({ msg: 'Missing required argument: ' + key }, true);
           installer.die({ msg: JSON.stringify(option, null, 2) });
@@ -172,39 +175,31 @@
   prompt.get('Press Enter to Continue', function(err, result) {
     process.emit('init', options);
 
-    var plan = options.sys.plan,
-      stepdata = options;
+    //var stepdata = options;
 
-  /*
     _.each(plan, function (step) {
-      var stepmodule = require(path.resolve('./lib/', step)),
-        taskdata = { };
-        
-      stepdata[step.name] = _.extend(taskdata, options[step.name]);
+      //var taskdata = { };
+      //stepdata[step.name] = _.extend(taskdata, options[step.name]);
 
-      _.each(step.tasks, function (task) {
-        var taskmodule = stepmodule[task];
-
+      _.each(step.tasks, function (taskName) {
+        var task = tasks[step.name][taskName];
         try {
-          installer.log_progress({ step: step.name, task: task });
-          taskdata[task] = _.extend({ }, taskmodule.run(stepdata));
+          //installer.log_progress({ step: step.name, task: task });
+          console.log(JSON.stringify(options, null, 2));
+          task.beforeTask(options);
+          task.doTask(options);
+          task.afterTask(options);
         }
         catch (e) {
-          installer.log({ msg: e.stack, prefix: format_prefix(step, task) });
-          installer.log({ msg: 'See log for error details.', prefix: format_prefix(step, task) }, true);
-          installer.die({ msg: e.message, prefix: format_prefix(step, task) });
+          installer.log({ msg: e.stack, prefix: format_prefix(step, taskName) });
+          installer.log({ msg: 'See log for error details.', prefix: format_prefix(step, taskName) }, true);
+          installer.die({ msg: e.message, prefix: format_prefix(step, taskName) });
         }
       });
     });
-  */
-    /*
-    installer.run(_.extend(options, {
-      logfile: installer.logfile,
-      sys: { plan: plan }
-    }), true);
-    */
+
     current = logo_lines.length;
-    installer.log_progress({ step: 'installer', task: 'installer', msg: 'Done!'});
+    //installer.log_progress({ step: 'installer', task: 'installer', msg: 'Done!'});
     process.exit(0);
   });
 })();
