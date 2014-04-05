@@ -1,6 +1,16 @@
-language: node_js
-node_js:
-  - "0.8"
+env:
+  global:
+    - XT_NODE_VERSION=0.8.26
+  matrix:
+    - XT_PG_VERSION=9.1
+    - XT_PG_VERSION=9.3
 
 before_install:
   - sudo -E bash bootstrap.sh --no-installer
+
+install:
+  - npm install
+
+script:
+  - npm test
+

@@ -24,7 +24,7 @@ describe('xTuple Installer', function () {
           inkey: '/tmp/mocha-'+ $k +'.key'
         },
         pg: {
-          version: '9.1',
+          version: process.env.XT_PG_VERSION || '9.1',
           host: 'localhost',
           mode: 'test',
           snapshotcount: 7,
