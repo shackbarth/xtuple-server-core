@@ -120,7 +120,7 @@ describe('phase: nginx', function () {
     afterEach(function () {
       pgcli.dropcluster(global.options.pg.cluster);
     });
-    describe('#run', function () {
+    describe('#doTask', function () {
       beforeEach(function () {
         nginxPhase.ssl.beforeTask(options);
         nginxPhase.site.beforeTask(options);
