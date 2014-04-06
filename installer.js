@@ -174,11 +174,11 @@
   });
 
   // verify required options
-  installer.eachTask(function (task, taskName, phaseName) {
+  installer.eachTask(function (task, phaseName, taskName) {
     var invalidOptions = _.filter(task.options, function (option, key) {
       return _.any([
         _.isString(option.required) && _.isUndefined(options[phaseName][key]),
-        task.validate(options)
+        //task.validate(options)
       ]);
     });
 
@@ -191,14 +191,14 @@
   _.each(plan, function (phase) {
     installer.log({ msg: 'Module: {name}'.format(phase) }, true);
     installer.log({ msg: '  Tasks: ' + JSON.stringify(phase.tasks) }, true);
-    installer.log({ msg: '  Arguments: '+ JSON.stringify(options[phaseName], null, 2) }, true);
+    installer.log({ msg: '  Arguments: '+ JSON.stringify(options[phase.name], null, 2) }, true);
   });
 
   prompt.get('Press Enter to confirm the Installation Plan:', function(err, result) {
     //process.emit('init', options);
 
     // run installer tasks
-    installer.eachTask(function (task, taskName, phaseName) {
+    installer.eachTask(function (task, phaseName, taskName) {
       task.beforeTask(options);
       task.doTask(options);
       task.afterTask(options);
