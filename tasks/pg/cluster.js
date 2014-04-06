@@ -56,21 +56,25 @@
           // create xtrole
           'CREATE ROLE xtrole',
 
-          // create 'admin' user (default xtuple client superuser)
-          [ 'CREATE USER admin WITH',
-            'PASSWORD \'{adminpw}\' CREATEUSER CREATEDB',
-            'IN ROLE xtrole'
+          // create 'admin' user (default xtuple client admin)
+          [ 'CREATE ROLE admin LOGIN',
+            'PASSWORD \'{adminpw}\' CREATEUSER CREATEDB'
           ].join(' ').format(options.xt),
 
           // create xtdaemon user (used by node server)
-          [ 'CREATE USER xtdaemon WITH',
-            'CREATEUSER CREATEDB',
-            'PASSWORD NULL',
-            'IN ROLE xtrole'
-          ].join(' ')
-        ];
+          [ 'CREATE ROLE xtdaemon LOGIN',
+            'SUPERUSER PASSWORD NULL'
+          ].join(' '),
 
-      _.each(queries, _.partial(pgcli.psql, options));
+          'GRANT xtrole TO admin',
+          'GRANT xtrole TO xtdaemon'
+        ],
+        results = _.map(queries, _.partial(pgcli.psql, options)),
+        failed = _.difference(results, _.where(results, { code: 0 }));
+
+      if (failed.length > 0) {
+        throw new Error(JSON.stringify(failed, null, 2));
+      }
     }
   });
 
