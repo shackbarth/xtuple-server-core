@@ -43,6 +43,8 @@
       };
       _.extend(options.pg.cluster, pgcli.createcluster(newCluster), newCluster);
       options.pg.cluster.start = pgcli.ctlcluster(_.extend({ action: 'start' }, newCluster));
+      console.log(newCluster);
+      console.log(options.pg.cluster);
 
       cluster.initCluster(options);
     },

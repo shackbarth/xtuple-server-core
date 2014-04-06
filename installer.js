@@ -12,6 +12,7 @@
 
   var fs = require('fs'),
     path = require('path'),
+    pgcli = require('./lib/pg-cli'),
     format = require('string-format'),
     os = require('os'),
     exec = require('execSync').exec,
@@ -103,9 +104,6 @@
         var phaseName = phase.name;
         _.map(phase.tasks, function (taskName) {
           try {
-            console.log(JSON.stringify(options, null, 2));
-            console.log('phase: '+ phaseName);
-            console.log('task: '+ taskName);
             if (!tasks[phaseName]) {
               tasks[phaseName] = require('./tasks/' + phaseName);
             }
@@ -131,6 +129,9 @@
   // compile Commander's options list. I wish it accepted a json object; instead
   // we must populate it via api calls
   installer.eachTask(function (task, phaseName, taskName) {
+    options[phaseName] || (options[phaseName] = { });
+    options[phaseName][taskName] = { };
+
     _.each(task.options, function (option_details, option_name) {
       try {
         var flag = '--{module}-{option} {optional}{required}'.format(_.extend({
@@ -140,8 +141,7 @@
 
         install.option(flag, option_details.description);
 
-        // set default argument value
-        (options[phaseName] || (options[phaseName] = { }));
+        // set default values
         options[phaseName][option_name] = option_details.value;
       }
       catch (e) {
@@ -176,10 +176,7 @@
   // verify required options
   installer.eachTask(function (task, phaseName, taskName) {
     var invalidOptions = _.filter(task.options, function (option, key) {
-      return _.any([
-        _.isString(option.required) && _.isUndefined(options[phaseName][key]),
-        //task.validate(options)
-      ]);
+      return _.isString(option.required) && _.isUndefined(options[phaseName][key]);
     });
 
     if (invalidOptions.length > 0) {
