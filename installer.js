@@ -197,11 +197,21 @@
   prompt.get('Press Enter to confirm the Installation Plan:', function(err, result) {
     //process.emit('init', options);
 
+    // beforeInstall
+    installer.eachTask(function (task, phaseName, taskName) {
+      task.beforeInstall(options);
+    });
+
     // run installer tasks
     installer.eachTask(function (task, phaseName, taskName) {
       task.beforeTask(options);
       task.doTask(options);
       task.afterTask(options);
+    });
+
+    // afterInstall
+    installer.eachTask(function (task, phaseName, taskName) {
+      task.afterInstall(options);
     });
 
     current = logo_lines.length;

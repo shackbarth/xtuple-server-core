@@ -73,7 +73,7 @@
     },
 
     /** @override */
-    doFinish: function (options) {
+    afterInstall: function (options) {
       rimraf.sync(options.xt.privatedir);
     },
 

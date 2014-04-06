@@ -63,7 +63,7 @@
 
       fs.writeFileSync(hba_target, hba_conf);
   
-      options.pg.hba = { path: hba_target, string: hba_conf };
+      _.defaults(options.pg.hba, { path: hba_target, string: hba_conf });
     },
 
     /**
