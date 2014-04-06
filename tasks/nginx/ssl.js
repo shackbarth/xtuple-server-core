@@ -16,8 +16,6 @@
 
   _.extend(ssl, task, /** @exports ssl */ {
 
-    outpath: path.resolve('/etc/ssl/private'),
-    
     options: {
       'inzip': {
         optional: '[file]',
@@ -39,14 +37,10 @@
     /** @override */
     beforeTask: function (options) {
       var nginx = options.nginx;
+      console.log(options.nginx);
 
-      nginx.outcrt = path.resolve(ssl.getBasename(options) + '.crt');
-      nginx.outkey = path.resolve(ssl.getBasename(options) + '.key');
-
-      // correctly permission outpath. should be owned by ssl-cert group if not already
-      exec('mkdir -p '+ ssl.outpath);
-      exec('chown -R :ssl-cert '+ ssl.outpath);
-      exec('chmod -R o-rwx,g=rx,u=rwx /etc/ssl/private/');
+      nginx.outcrt = path.resolve(options.xt.ssldir, 'server.crt');
+      nginx.outkey = path.resolve(options.xt.ssldir, 'server.key');
 
       if (_.isString(nginx.inzip) && fs.existsSync(nginx.inzip)) {
         nginx.inzip = path.resolve(nginx.inzip);
@@ -58,28 +52,23 @@
           nginx.inkey = path.resolve(nginx.inkey);
         }
         else {
-          throw new Error('nginx.incrt and nginx.inkey are required for non-localhost domains');
-        }
+          var result = ssl.generate(options);
 
-        ssl.generate(options);
+          if (result.code !== 0) {
+            throw new Error(JSON.stringify(result, null, 2));
+          }
+        }
+      }
+      else if (!_.isString(nginx.incrt) || !_.isString(nginx.inkey)) {
+        throw new Error('nginx.incrt and nginx.inkey are required for non-localhost domains');
       }
     },
 
     /** @override */
     doTask: function (options) {
+      console.log(options.nginx);
       exec('cp {nginx.incrt} {nginx.outcrt}'.format(options));
       exec('cp {nginx.inkey} {nginx.outkey}'.format(options));
-    },
-
-    /**
-     * Return basename of SSL cert. This in itself will *not* be a valid path
-     * since it doesn't include the file extension.
-     *
-     * "basename" = <http://nodejs.org/api/path.html#path_path_basename_p_ext>
-     * @public
-     */
-    getBasename: function (options) {
-      return path.resolve(ssl.outpath, options.nginx.domain);
     },
 
     /**
@@ -93,9 +82,9 @@
         '-subj \'/C=US/CN='+ options.nginx.domain + '/O=xTuple\'',
         '-days 365',
         '-nodes',
-        '-keyout', path.resolve(options.nginx.inkey),
-        '-out', path.resolve(options.nginx.incrt)
-      ].join(' ')).stdout;
+        '-keyout {nginx.outkey}',
+        '-out {nginx.outcrt}',
+      ].join(' ').format(options));
     },
 
     /**

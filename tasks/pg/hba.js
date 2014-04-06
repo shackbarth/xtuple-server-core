@@ -48,6 +48,11 @@
     beforeTask: function (options) {
       options.pg.version = (options.pg.version).toString();
       exec('usermod -a -G www-data postgres');
+      exec('usermod -a -G ssl-cert postgres');
+
+      hba.createClientCert(options);
+
+      exec('chown -R postgres:postgres /etc/postgresql');
     },
 
     /** @override */
@@ -56,57 +61,61 @@
         xt = options.xt,
         hba_src = fs.readFileSync(path.resolve(__dirname, filename_template.format(pg))),
         hba_target = path.resolve('/etc/postgresql/', pg.version, xt.name, 'pg_hba.conf'),
-        hba_extant = fs.readFileSync(hba_target).toString(),
-        hba_conf = hba_extant.split('\n').concat(xtuple_hba_entries).join('\n').format({
+        hba_boilerplate = fs.readFileSync(
+          path.resolve(__dirname, 'pg_hba-'+ options.pg.version + '.conf.template')
+        ).toString(),
+        hba_conf = hba_boilerplate.split('\n').concat(xtuple_hba_entries).join('\n').format({
           xtdaemon_ssl: (pg.host === 'localhost') ? '#' : ''
         });
 
+      fs.unlinkSync(hba_target);
       fs.writeFileSync(hba_target, hba_conf);
   
-      _.defaults(options.pg.hba, { path: hba_target, string: hba_conf });
+      _.extend(options.pg.hba, { path: hba_target, string: hba_conf });
     },
 
     /**
      * Sign a new client cert against the provided one for this domain.
      */
     createClientCert: function (options) {
-      exec('mkdir -p {xt.configdir}/ssl'.format(options));
+      exec('mkdir -p '+ options.pg.hba.ssldir);
 
       // create a client key and a signing request against the installed domain
       // cert
-      return {
-        csr: exec([
-          'openssl req -new -nodes',
-          '-keyout xtdaemon.key',
-          '-out xtdaemon.csr',
-          '-subj \'O=xTuple/OU=postgres/CN=xtdaemon\''
-        ].join(' ')),
+      var commands = [
+          [
+            'openssl req -new -nodes',
+            '-keyout {xt.ssldir}/xtdaemon.key',
+            '-out {xt.ssldir}/xtdaemon.csr',
+            '-subj \'/O=xTuple/OU=postgres/CN=xtdaemon\''
+          ].join(' ').format(options),
 
-        crt: exec([
-          'openssl x509 -req -CAcreateserial',
-          '-in xtdaemon.csr',
-          '-CAkey {outkey}'.format(options.nginx),
-          '-CA {outcrt}.crt'.format(options.nginx),
-          '-out xtdaemon.crt'
-        ].join(' '))
-      };
-    },
+          [
+            'openssl x509 -req -CAcreateserial',
+            '-in {xt.ssldir}/xtdaemon.csr',
+            '-CAkey {nginx.outkey}',
+            '-CA {nginx.outcrt}',
+            '-out {xt.ssldir}/xtdaemon.crt'
+          ].join(' ').format(options),
 
-    /** @override */
-    afterTask: function (options) {
-      // verify xtdaemon ssl client cert
-      var verified = exec([
-        'openssl verify',
-        '-CAfile root.crt',
-        '-purpose sslclient',
-        'client.crt'
-      ].join(' '));
+          [
+            'openssl verify',
+            '-CAfile {nginx.outcrt}',
+            '-purpose sslclient',
+            '{xt.ssldir}/xtdaemon.crt'
+          ].join(' ').format(options),
+        ],
+        results = _.map(commands, exec),
+        failed = _.difference(results, _.where(results, { code: 0 }));
 
-      if (verified !== 0) {
-        throw new Error('Failed to verify client certificate for xtdaemon');
+      if (failed.length > 0) {
+        throw new Error(JSON.stringify(failed, null, 2));
       }
+      exec('usermod -a -G ssl-cert postgres');
+      exec('chown -R root:ssl-cert '+ options.xt.ssldir);
+      exec('chmod -R o-rwx,g=rx,u=wrx '+ options.xt.ssldir);
 
-      exec('chown -R postgres:postgres /etc/postgresql');
+      options.pg.hba.certs = results;
     }
   });
 

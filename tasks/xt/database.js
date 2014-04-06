@@ -10,6 +10,7 @@
   var task = require('../../lib/task'),
     format = require('string-format'),
     path = require('path'),
+    build = require('../../lib/xt/build'),
     fs = require('fs'),
     _ = require('underscore'),
     exec = require('execSync').exec,
@@ -25,9 +26,9 @@
         description: 'Name of the installation'
       },
       version: {
-        required: '<version>',
+        optional: '[version]',
         description: 'xTuple Mobile App Version',
-        value: '1.8.1'
+        value: '1.8.2'
       },
       maindb: {
         optional: '[path]',
