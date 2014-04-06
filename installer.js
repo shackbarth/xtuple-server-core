@@ -35,7 +35,7 @@
     format_prefix = function(phaseName, taskName) {
       return phaseName + '.' + taskName;
     },
-    plan = require('./plan'),
+    plan = require(process.env.XT_INSTALLER_PLAN || './plan'),
     tasks = { },
     current = 1;
 
@@ -49,6 +49,7 @@
      */
     log_progress: function (state) {
       //console.log(clc.reset);
+      /*
       _.each(_.range(current), function (i) {
         console.log(logo_lines[i]);
       });
@@ -56,6 +57,7 @@
       _.each(_.tail(logo_lines, current), function (i) {
         console.log();
       });
+      */
 
       console.log();
       installer.log({
@@ -191,28 +193,35 @@
     installer.log({ msg: '  Arguments: '+ JSON.stringify(options[phase.name], null, 2) }, true);
   });
 
-  prompt.get('Press Enter to confirm the Installation Plan:', function(err, result) {
+  prompt.get('Press Enter to confirm the Installation Plan', function(err, result) {
     //process.emit('init', options);
 
     // beforeInstall
     installer.eachTask(function (task, phaseName, taskName) {
+      installer.log_progress({ phase: phaseName, task: taskName, msg: 'Before Install...' });
       task.beforeInstall(options);
     });
 
     // run installer tasks
     installer.eachTask(function (task, phaseName, taskName) {
+      installer.log_progress({ phase: phaseName, task: taskName, msg: 'Before Task...' });
       task.beforeTask(options);
+
+      installer.log_progress({ phase: phaseName, task: taskName, msg: 'Install...' });
       task.doTask(options);
+
+      installer.log_progress({ phase: phaseName, task: taskName, msg: 'After Task...' });
       task.afterTask(options);
     });
 
     // afterInstall
     installer.eachTask(function (task, phaseName, taskName) {
+      installer.log_progress({ phase: phaseName, task: taskName, msg: 'After Install...' });
       task.afterInstall(options);
     });
 
     current = logo_lines.length;
-    //installer.log_progress({ phase: 'installer', task: 'installer', msg: 'Done!'});
+    installer.log_progress({ phase: 'installer', task: 'installer', msg: 'Done!'});
     process.exit(0);
   });
 })();
