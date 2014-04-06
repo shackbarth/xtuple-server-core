@@ -1,11 +1,17 @@
 [
   {
+    "name": "nginx",
+    "tasks": [
+      "ssl"
+    ]
+  },
+  {
     "name": "pg",
     "tasks": [
       "config",
       "cluster",
-      "tuner",
       "hba",
+      "tuner",
       "snapshotmgr"
     ]
   },
@@ -23,8 +29,7 @@
   {
     "name": "nginx",
     "tasks": [
-      "site",
-      "ssl"
+      "site"
     ]
   },
   {

@@ -22,6 +22,11 @@
   _.extend(snapshotmgr, task, /** @exports snapshotmgr */ {
 
     options: {
+      restore: {
+        optional: '[boolean]',
+        description: 'Restore the most recent backup',
+        value: false
+      },
       snapshott0: {
         optional: '[integer]',
         description: 'Hour of day at which to run the backup',
@@ -51,7 +56,8 @@
         t0 = options.pg.snapshott0,
         schedule_display = 'Daily at '+ moment(t0, 'H').format('HH:mm'),
         out_path = path.resolve('/etc/xtuple/', version, name, 'pm2-backup-service.json'),
-        conf_template = fs.readFileSync(path.resolve(__dirname, 'pm2-backup-service.json')),
+        conf_template = fs.readFileSync(
+          path.resolve(__dirname, 'pm2-backup-service.json')).toString(),
         conf_formatter = _.extend({ }, options, {
           schedule: schedule_display
         });

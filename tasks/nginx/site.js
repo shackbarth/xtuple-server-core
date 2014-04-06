@@ -23,12 +23,7 @@
       domain: {
         optional: '[domain]',
         description: 'The public domain name that will point to this web server',
-        value: '{sitename}.localhost'
-      },
-      locations: {
-        optional: '[json map]',
-        description: 'location->upstream mappings (json)',
-        value: { }
+        value: 'localhost'
       }
     },
 

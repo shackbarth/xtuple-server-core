@@ -12,6 +12,7 @@ _.mixin(require('congruence'));
 
 describe('phase: pg', function () {
   var pgPhase = require('../pg'),
+    nginxPhase = require('../nginx'),
     xtPhase = require('../xt'),
     options = global.options;
 
@@ -50,8 +51,17 @@ describe('phase: pg', function () {
 
   describe('task: tuner', function () {
     describe('#doTask', function () {
-      it('should generate a correct postgres config', function () {
+      beforeEach(function () {
+        xtPhase.serverconfig.beforeInstall(options);
+        nginxPhase.ssl.beforeInstall(options);
+        nginxPhase.ssl.beforeTask(options);
+        nginxPhase.ssl.doTask(options);
+        pgPhase.hba.beforeTask(options);
+        pgPhase.hba.doTask(options);
+        pgPhase.tuner.beforeTask(options);
         pgPhase.tuner.doTask(options);
+      });
+      it('should generate correct values', function () {
         var postgresql_conf = options.pg.tuner.string;
 
         assert.match(postgresql_conf, /shared_buffers = \d+MB/);
@@ -61,6 +71,9 @@ describe('phase: pg', function () {
         assert.match(postgresql_conf, /maintenance_work_mem = \d+MB/);
         assert.match(postgresql_conf, /max_stack_depth = \d+MB/);
         assert.match(postgresql_conf, /effective_cache_size = \d+MB/);
+      });
+      it('should generate a verifiably-correct postgresql.conf', function () {
+        pgcli.ctlcluster(_.extend({ action: 'restart' }, options.pg.cluster));
       });
     });
   });
@@ -92,6 +105,7 @@ describe('phase: pg', function () {
         pgPhase.hba.doTask(options);
         var hba_conf = options.pg.hba;
 
+        assert.match(hba_conf.string, /all \s+ all \s+ 127\.0\.0\.1\/32 \s+ trust/);
         assert.match(hba_conf.string, /all \s+ all \s+ 10\.0\.0\.0\/8 \s+ md5/);
         assert.match(hba_conf.string, /all \s+ all \s+ 172\.16\.0\.0\/12 \s+ md5/);
         assert.match(hba_conf.string, /all \s+ all \s+ 192\.168\.0\.0\/16 \s+ md5/);

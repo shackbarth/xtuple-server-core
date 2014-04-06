@@ -8,6 +8,7 @@
 
   var task = require('../../lib/task'),
     format = require('string-format'),
+    pgcli = require('../../lib/pg-cli'),
     path = require('path'),
     fs = require('fs'),
     _ = require('underscore'),
@@ -32,6 +33,20 @@
       options.xt.extdir = path.resolve(options.xt.srcdir, 'xtuple-extensions');
       options.xt.privatedir = path.resolve(options.xt.srcdir, 'private-extensions');
 
+      // yes this is for real.
+      // https://github.com/xtuple/xtuple-scripts/issues/68
+      exec('umount /root');
+
+      if (build.isTaggedVersion(options)) {
+        options.xt.repoHash = 'v' + options.xt.version;
+      }
+      else {
+        options.xt.repoHash = options.xt.version.slice(0, 6);
+      }
+
+      pgcli.ctlcluster(_.extend({ action: 'restart' }, options.pg.cluster));
+
+      /*
       try {
         rimraf.sync(options.xt.coredir);
         rimraf.sync(options.xt.extdir);
@@ -41,12 +56,16 @@
       catch (e) {
         
       }
+      */
     },
 
     /** @override */
     doTask: function (options) {
       if (build.hasPrivateExtensions(options)) {
         exec('git config --global credential.helper \'cache --timeout=3600\'');
+      }
+      if (fs.existsSync(options.xt.coredir)) {
+        return;
       }
 
       _.each(clone.getRepositoryList(options), function (repo) {
@@ -56,8 +75,9 @@
         }, options);
           
         exec('git clone --recursive https://github.com/xtuple/{repo}.git {path}'.format(template));
-        exec('npm install ./{path} --production -g'.format(template));
-        exec('npm install ./{path}'.format(template));
+        exec('cd {path} && git checkout '+ options.xt.repoHash);
+        exec('cd {path} && npm install --production -g'.format(template));
+        exec('cd {path} && npm install'.format(template));
       });
     },
 
