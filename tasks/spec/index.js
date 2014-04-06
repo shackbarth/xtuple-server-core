@@ -32,7 +32,7 @@ describe('xTuple Installer', function () {
           ssl: { }
         },
         pg: {
-          version: process.env.XT_PG_VERSION || '9.1',
+          version: process.env.XT_PG_VERSION,
           host: 'localhost',
           mode: 'test',
           snapshotcount: 7,
