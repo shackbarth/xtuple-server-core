@@ -18,11 +18,6 @@
   _.extend(etchosts, task, /** @exports etchosts */ {
 
     /** @override */
-    beforeTask: function (options) {
-      return nginx.site.prelude(options);
-    },
-
-    /** @override */
     doTask: function (options) {
       var etc_hosts_template = fs.readFileSync(hosts_template_path),
         etc_hosts_current = fs.readFileSync(path.resolve('/etc/hosts')),

@@ -31,11 +31,8 @@
         return orange_line + blue_line;
       }
     ),
-    format_prefix = function(step, task) {
-      return '{step}.{task}'.format({
-        step: step.name,
-        task: task
-      });
+    format_prefix = function(phaseName, taskName) {
+      return phaseName + '.' + taskName;
     },
     plan = require('./plan'),
     tasks = { },
@@ -61,11 +58,11 @@
 
       console.log();
       installer.log({
-        prefix: '{step}.{task}'.format(state),
+        prefix: '{phase}.{task}'.format(state),
         msg: state.msg || 'Installing... '
       }, true);
 
-      if (/xt/.test(state.step)) {
+      if (/xt/.test(state.phase)) {
         current += 2;
       }
       else {
@@ -95,6 +92,32 @@
       installer.log({ msg: clc.red.bold(payload.msg), prefix: payload.prefix }, true);
       console.log();
       process.exit(1);
+    },
+
+    /**
+     * Invoke a function on each task
+     * @callback (task, phaseName, taskName);
+     */
+    eachTask: function (func) {
+      _.map(plan, function (phase) {
+        var phaseName = phase.name;
+        _.map(phase.tasks, function (taskName) {
+          try {
+            console.log(JSON.stringify(options, null, 2));
+            console.log('phase: '+ phaseName);
+            console.log('task: '+ taskName);
+            if (!tasks[phaseName]) {
+              tasks[phaseName] = require('./tasks/' + phaseName);
+            }
+            return func(tasks[phaseName][taskName], phaseName, taskName);
+          }
+          catch (e) {
+            installer.log({ msg: e.stack, prefix: format_prefix(phaseName, taskName) });
+            installer.log({ msg: 'See log for error details.', prefix: format_prefix(phaseName, taskName) }, true);
+            installer.die({ msg: e.message, prefix: format_prefix(phaseName, taskName) });
+          }
+        });
+      });
     }
   });
 
@@ -104,34 +127,31 @@
   }
 
   fs.writeFileSync(installer.logfile, os.EOL);
-  
+
   // compile Commander's options list. I wish it accepted a json object; instead
   // we must populate it via api calls
-  _.each(plan, function (step) {
-    tasks[step.name] = require('./tasks/' + step.name);
-    _.each(step.tasks, function (task) {
+  installer.eachTask(function (task, phaseName, taskName) {
+    _.each(task.options, function (option_details, option_name) {
       try {
-        _.each(tasks[step.name][task].options, function (option_details, option_name) {
-          var flag = '--{module}-{option} {optional}{required}'.format(_.extend({
-            option: option_name,
-            module: step.name,
-          }, option_details));
+        var flag = '--{module}-{option} {optional}{required}'.format(_.extend({
+          option: option_name,
+          module: phaseName,
+        }, option_details));
 
-          install.option(flag, option_details.description);
+        install.option(flag, option_details.description);
 
-          // set default argument value
-          (options[step.name] || (options[step.name] = { }));
-          options[step.name][option_name] = option_details.value;
-        });
+        // set default argument value
+        (options[phaseName] || (options[phaseName] = { }));
+        options[phaseName][option_name] = option_details.value;
       }
       catch (e) {
-        installer.log({ msg: e.stack, prefix: format_prefix(step, task) });
-        installer.log({ msg: 'See log for error details.', prefix: format_prefix(step, task) }, true);
-        installer.die({ msg: e.message, prefix: format_prefix(step, task) });
+        installer.log({ msg: e.stack, prefix: format_prefix(phaseName, taskName) });
+        installer.log({ msg: 'See log for error details.', prefix: format_prefix(phaseName, taskName) }, true);
+        installer.die({ msg: e.message, prefix: format_prefix(phaseName, taskName) });
       }
     });
   });
-
+  
   install.parse(process.argv);
   install.usage(
     _.reduce(_.where(install.options, { optional: 0 }), function (memo, option) {
@@ -154,52 +174,48 @@
   });
 
   // verify required options
-  _.each(plan, function (step) {
-    _.each(step.tasks, function (task) {
-      _.each(tasks[step.name][task].options, function (option, key) {
-        if (_.isString(option.required) && _.isUndefined(options[step.name][key])) {
-          installer.log({ msg: 'Missing required argument: ' + key }, true);
-          installer.die({ msg: JSON.stringify(option, null, 2) });
-        }
-      });
+  installer.eachTask(function (task, phaseName, taskName) {
+    var invalidOptions = _.filter(task.options, function (option, key) {
+      return _.any([
+        _.isString(option.required) && _.isUndefined(options[phaseName][key]),
+        //task.validate(options)
+      ]);
     });
+
+    if (invalidOptions.length > 0) {
+      installer.die({ msg: JSON.stringify(invalidOptions, null, 2) });
+    }
   });
 
-  _.each(plan, function (step) {
-    installer.log({ msg: 'Module: {name}'.format(step) }, true);
-    installer.log({ msg: '  Tasks: ' + JSON.stringify(step.tasks) }, true);
-    installer.log({ msg: '  Arguments: '+ JSON.stringify(options[step.name], null, 2) }, true);
+  // print plan
+  _.each(plan, function (phase) {
+    installer.log({ msg: 'Module: {name}'.format(phase) }, true);
+    installer.log({ msg: '  Tasks: ' + JSON.stringify(phase.tasks) }, true);
+    installer.log({ msg: '  Arguments: '+ JSON.stringify(options[phase.name], null, 2) }, true);
   });
-  installer.log({ msg: 'Confirm that the above Installation Plan is Correct'}, true);
 
-  prompt.get('Press Enter to Continue', function(err, result) {
-    process.emit('init', options);
+  prompt.get('Press Enter to confirm the Installation Plan:', function(err, result) {
+    //process.emit('init', options);
 
-    //var stepdata = options;
+    // beforeInstall
+    installer.eachTask(function (task, phaseName, taskName) {
+      task.beforeInstall(options);
+    });
 
-    _.each(plan, function (step) {
-      //var taskdata = { };
-      //stepdata[step.name] = _.extend(taskdata, options[step.name]);
+    // run installer tasks
+    installer.eachTask(function (task, phaseName, taskName) {
+      task.beforeTask(options);
+      task.doTask(options);
+      task.afterTask(options);
+    });
 
-      _.each(step.tasks, function (taskName) {
-        var task = tasks[step.name][taskName];
-        try {
-          //installer.log_progress({ step: step.name, task: task });
-          console.log(JSON.stringify(options, null, 2));
-          task.beforeTask(options);
-          task.doTask(options);
-          task.afterTask(options);
-        }
-        catch (e) {
-          installer.log({ msg: e.stack, prefix: format_prefix(step, taskName) });
-          installer.log({ msg: 'See log for error details.', prefix: format_prefix(step, taskName) }, true);
-          installer.die({ msg: e.message, prefix: format_prefix(step, taskName) });
-        }
-      });
+    // afterInstall
+    installer.eachTask(function (task, phaseName, taskName) {
+      task.afterInstall(options);
     });
 
     current = logo_lines.length;
-    //installer.log_progress({ step: 'installer', task: 'installer', msg: 'Done!'});
+    //installer.log_progress({ phase: 'installer', task: 'installer', msg: 'Done!'});
     process.exit(0);
   });
 })();

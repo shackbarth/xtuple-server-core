@@ -66,7 +66,7 @@
     },
 
     /** @override */
-    run: function (options) {
+    doTask: function (options) {
       exec('cp {nginx.incrt} {nginx.outcrt}'.format(options));
       exec('cp {nginx.inkey} {nginx.outkey}'.format(options));
     },
