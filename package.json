@@ -32,7 +32,9 @@
     "mocha": "~1.17.1"
   },
   "scripts": {
-    "test": "sudo -E ./node_modules/.bin/mocha tasks/spec/index.js -R spec"
+    "test": "sudo -E ./node_modules/.bin/mocha tasks/spec/index.js -R spec",
+    "test-9.1": "XT_PG_VERSION=9.1 sudo -E ./node_modules/.bin/mocha tasks/spec/index.js -R spec",
+    "test-9.3": "XT_PG_VERSION=9.3 sudo -E ./node_modules/.bin/mocha tasks/spec/index.js -R spec"
   },
   "engineStrict": true,
   "preferGlobal": true,
