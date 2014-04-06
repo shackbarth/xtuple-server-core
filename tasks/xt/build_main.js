@@ -54,8 +54,6 @@
 
       exec('sudo -u postgres psql -q -p {port} -c "alter user admin with password {adminpw}"'
         .format(_.extend({ }, options.xt, options.pg.cluster)));
-
-      return results;
     }
   });
 })();

@@ -43,8 +43,6 @@
         });
 
       fs.writeFileSync(output_path, output_config);
-
-      return options;
     }
   });
 })();

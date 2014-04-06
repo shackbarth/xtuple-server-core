@@ -110,9 +110,9 @@ describe('phase: nginx', function () {
   describe('task: site', function () {
     /** Create clean cluster for each test */
     beforeEach(function () {
+      pgPhase.cluster.beforeInstall(global.options);
       pgPhase.config.beforeTask(global.options);
       pgPhase.config.doTask(global.options);
-      pgPhase.cluster.validate(global.options);
       pgPhase.cluster.doTask(global.options);
 
       pgPhase.snapshotmgr.beforeTask(options);
@@ -127,7 +127,8 @@ describe('phase: nginx', function () {
       });
 
       it('should generate a correct nginx config', function () {
-        var conf = nginxPhase.site.doTask(options).string;
+        nginxPhase.site.doTask(options);
+        var conf = options.nginx.site.string;
 
         assert.match(conf, new RegExp('ssl_certificate_key '+ options.nginx.outkey));
         assert.match(conf, new RegExp('ssl_certificate '+ options.nginx.outcrt));

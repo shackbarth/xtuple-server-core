@@ -106,25 +106,23 @@
         throw new Error('No databases have been found for installation');
       }
 
-      return {
-        list: _.map(databases, function (db) {
-          var psql_template = _.extend({ owner: 'admin' }, db, options),
-            // create database
-            createdb = pgcli.createdb(psql_template),
+      options.xt.database.list = _.map(databases, function (db) {
+        var psql_template = _.extend({ owner: 'admin' }, db, options),
+          // create database
+          createdb = pgcli.createdb(psql_template),
 
-            // enable plv8 extension
-            plv8 = pgcli.psql(psql_template, 'CREATE EXTENSION plv8');
+          // enable plv8 extension
+          plv8 = pgcli.psql(psql_template, 'CREATE EXTENSION plv8');
 
-          if (createdb.code !== 0) {
-            throw new Error('Database creation failed: '+ JSON.stringify(createdb, null, 2));
-          }
-          if (plv8.code !== 0) {
-            throw new Error('PLV8 installation failed: '+ JSON.stringify(plv8, null, 2));
-          }
+        if (createdb.code !== 0) {
+          throw new Error('Database creation failed: '+ JSON.stringify(createdb, null, 2));
+        }
+        if (plv8.code !== 0) {
+          throw new Error('PLV8 installation failed: '+ JSON.stringify(plv8, null, 2));
+        }
 
-          return db;
-        })
-      };
+        return db;
+      });
     }
   });
 })();
