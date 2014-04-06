@@ -17,15 +17,14 @@ describe('phase: pg', function () {
 
   /** Create clean cluster for each test */
   beforeEach(function () {
+    pgPhase.cluster.beforeInstall(global.options);
     pgPhase.config.beforeTask(global.options);
     pgPhase.config.doTask(global.options);
-    pgPhase.cluster.validate(global.options);
     pgPhase.cluster.doTask(global.options);
   });
   afterEach(function () {
     pgcli.dropcluster(global.options.pg.cluster);
   });
-
 
   it('is sane', function () {
     assert(pgPhase);
@@ -36,10 +35,24 @@ describe('phase: pg', function () {
     assert(pgPhase.cluster);
   });
 
+  describe('task: cluster', function () {
+    describe('#beforeInstall', function () {
+      it('should throw an error if specified cluster already exists', function () {
+        // the cluster in 'options' is created in beforeEach, so we can just
+        // use that
+        assert.throws(function () {
+          pgPhase.cluster.beforeInstall(options);
+        }, Error, /cluster configuration already exists/);
+      });
+    });
+
+  });
+
   describe('task: tuner', function () {
-    describe('#run', function () {
+    describe('#doTask', function () {
       it('should generate a correct postgres config', function () {
-        var postgresql_conf = pgPhase.tuner.doTask(options).string;
+        pgPhase.tuner.doTask(options);
+        var postgresql_conf = options.pg.tuner.string;
 
         assert.match(postgresql_conf, /shared_buffers = \d+MB/);
         assert.match(postgresql_conf, /temp_buffers = \d+MB/);
@@ -53,7 +66,7 @@ describe('phase: pg', function () {
   });
 
   describe('task: hba', function () {
-    describe('#run()', function () {
+    describe('#doTask()', function () {
       it('can parse a pristine pg_hba', function () {
         var hba_conf = m(function () {
           /***
@@ -76,7 +89,8 @@ describe('phase: pg', function () {
       });
       it('should generate correct pg_hba.conf', function () {
         pgPhase.hba.beforeTask(options);
-        var hba_conf = pgPhase.hba.doTask(options);
+        pgPhase.hba.doTask(options);
+        var hba_conf = options.pg.hba;
 
         assert.match(hba_conf.string, /all \s+ all \s+ 10\.0\.0\.0\/8 \s+ md5/);
         assert.match(hba_conf.string, /all \s+ all \s+ 172\.16\.0\.0\/12 \s+ md5/);
@@ -182,7 +196,7 @@ describe('phase: pg', function () {
         pgPhase.hba.doTask(options);
         pgPhase.cluster.initCluster(options);
 
-        options.xt.database = xt.database.doTask(options);
+        xt.database.doTask(options);
         options.pg.snapshot = snap.createSnapshot(options);
       });
 

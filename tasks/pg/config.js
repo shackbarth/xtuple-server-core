@@ -59,8 +59,9 @@
       var mode = options.pg.mode,
         slot = defaults.slot;
 
-      options.pg.config = _.extend(
-        { mode: mode, slots: options.pg.slots || 1},
+      _.extend(
+        options.pg.config,
+        { mode: mode, slots: options.pg.slots || 1 },
         slot.base,
         slot[mode]
       );

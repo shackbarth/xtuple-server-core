@@ -35,12 +35,10 @@
 
       createUsers(options);
       configureSSH(options);
-
-      return { };
     },
 
     /** @override */
-    doFinish: function (options) {
+    afterInstall: function (options) {
       exec('rm -f ~/.pgpass');
     },
 

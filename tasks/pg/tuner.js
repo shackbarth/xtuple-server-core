@@ -94,11 +94,11 @@
 
       fs.writeFileSync(postgresql_conf_path, postgresql_conf);
 
-      return {
+      _.defaults(options.pg.tuner, {
         path: postgresql_conf_path,
         json: conf_values,
         string: postgresql_conf
-      };
+      });
     }
   });
 

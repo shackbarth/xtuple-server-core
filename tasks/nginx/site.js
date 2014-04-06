@@ -88,10 +88,10 @@
         enabled: nginx_enabled_path
       }));
 
-      return {
+      _.defaults(options.nginx.site, {
         json: options,
         string: nginx_conf
-      };
+      });
     }
   });
 

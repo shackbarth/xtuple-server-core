@@ -20,13 +20,11 @@
         databases = _.where(xt.database.list, { common: true });
 
       // build the common/demo databases
-      return _.map(databases, function (db) {
+      _.each(databases, function (db) {
         var result = exec(build.getCoreBuildCommand(db, options));
         if (result.code !== 0) {
           throw new Error(result.stdout);
         }
-
-        return result;
       });
     }
   });

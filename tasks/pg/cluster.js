@@ -24,12 +24,24 @@
     },
 
     /** @override */
+    beforeInstall: function (options) {
+      var exists = _.findWhere(pgcli.lsclusters(), {
+        name: options.xt.name,
+        version: parseFloat(options.pg.version)
+      });
+
+      if (exists) {
+        throw new Error('cluster configuration already exists');
+      }
+    },
+
+    /** @override */
     doTask: function (options) {
       var newCluster = {
-          name: options.xt.name,
-          version: options.pg.version
-        };
-      options.pg.cluster = _.defaults(pgcli.createcluster(newCluster), newCluster);
+        name: options.xt.name,
+        version: options.pg.version
+      };
+      _.extend(options.pg.cluster, pgcli.createcluster(newCluster), newCluster);
       options.pg.cluster.start = pgcli.ctlcluster(_.extend({ action: 'start' }, newCluster));
 
       cluster.initCluster(options);

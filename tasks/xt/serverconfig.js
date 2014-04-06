@@ -131,12 +131,12 @@
       exec('sudo chmod -R ug+rw   /var/lib/xtuple');
       exec('sudo chmod -R ug+rwx  /usr/local/xtuple');
 
-      return {
+      _.defaults(options.xt.serverconfig, {
         string: output_conf,
         json: derived_config_obj,
         config_path: config_path,
         config_js: config_js
-      };
+      });
     },
 
     /**
