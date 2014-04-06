@@ -5,12 +5,14 @@
       "config",
       "cluster",
       "tuner",
-      "hba"
+      "hba",
+      "snapshotmgr"
     ]
   },
   {
     "name": "xt",
     "tasks": [
+      "clone",
       "database",
       "serverconfig",
       "testconfig",
@@ -28,17 +30,10 @@
   {
     "name": "sys",
     "tasks": [
-      "accounts",
+      "etchosts",
+      "policy",
       "cups",
       "service"
-    ]
-  },
-  {
-    "name": "policy",
-    "tasks": [
-      "sudoers",
-      "ssh",
-      "filepermissions"
     ]
   }
 ]
