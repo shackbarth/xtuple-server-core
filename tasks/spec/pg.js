@@ -26,7 +26,6 @@ describe('phase: pg', function () {
     pgcli.dropcluster(global.options.pg.cluster);
   });
 
-
   it('is sane', function () {
     assert(pgPhase);
     assert(pgPhase.config);
@@ -37,7 +36,7 @@ describe('phase: pg', function () {
   });
 
   describe('task: tuner', function () {
-    describe('#run', function () {
+    describe('#doTask', function () {
       it('should generate a correct postgres config', function () {
         var postgresql_conf = pgPhase.tuner.doTask(options).string;
 
@@ -53,7 +52,7 @@ describe('phase: pg', function () {
   });
 
   describe('task: hba', function () {
-    describe('#run()', function () {
+    describe('#doTask()', function () {
       it('can parse a pristine pg_hba', function () {
         var hba_conf = m(function () {
           /***

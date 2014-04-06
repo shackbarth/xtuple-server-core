@@ -63,17 +63,14 @@
 
       fs.writeFileSync(hba_target, hba_conf);
   
-      return {
-        path: hba_target,
-        string: hba_conf
-      };
+      options.pg.hba = { path: hba_target, string: hba_conf };
     },
 
     /**
      * Sign a new client cert against the provided one for this domain.
      */
     createClientCert: function (options) {
-      exec('mkdir -p /etc/xtuple/{version}/{name}/ssl'.format(options.xt));
+      exec('mkdir -p {xt.configdir}/ssl'.format(options));
 
       // create a client key and a signing request against the installed domain
       // cert
