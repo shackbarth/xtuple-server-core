@@ -129,20 +129,15 @@
             snap = snapshotmgr.getSnapshotPath(_.extend({ dbname: db }, options));
           exec('rm -rf '+ snap);
 
-          console.log(db);
-
           var cmd = cmd_template.format(_.defaults({
             port: options.pg.cluster.port,
             dbname: db,
             out: snap,
             jobs: Math.ceil(os.cpus().length / 2)
           }, options));
-          console.log(cmd);
           return exec(cmd);
         }).concat([globals_snapshot]),
         errors = _.where(snapshot, { code: 1 });
-
-      console.log(snapshot);
 
       if (errors.length > 0) {
         throw new Error(_.pluck(errors, 'stdout'));

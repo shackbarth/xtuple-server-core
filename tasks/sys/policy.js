@@ -37,6 +37,7 @@
 
       exec('mkdir -p /usr/sbin/xtuple/{xt.version}/{xt.name}'.format(options));
       exec('mkdir -p /usr/local/xtuple/{xt.version}/{xt.name}'.format(options));
+      exec('mkdir -p /var/run/postgresql'.format(options));
     },
 
     /** @override */
@@ -66,7 +67,6 @@
      * @private
      */
     createUsers: function (options) {
-      console.log('sys.policy.createUsers');
       var xt = options.xt,
         global_policy_src = fs.readFileSync(path.resolve(__dirname, global_policy_filename)).toString(),
         global_policy_target = path.resolve(sudoers_d, global_policy_filename),
@@ -123,13 +123,9 @@
         failed = _.difference(results, _.where(results, { code: 0 })),
         sudoers_chmod, visudo_cmd;
 
-      console.log('After commands...');
-
       if (failed.length > 0) {
         throw new Error(JSON.stringify(failed, null, 2));
       }
-
-      console.log('About to write sudoers file...');
 
       // write sudoers file
       if (!fs.existsSync(global_policy_target)) {
@@ -139,23 +135,17 @@
         fs.writeFileSync(user_policy_target, user_policy_src.format(xt));
       }
 
-      console.log('Wrote sudoers file!');
-
       sudoers_chmod = exec('chmod 440 /etc/sudoers.d/*');
 
       if (sudoers_chmod.code !== 0) {
         throw new Error(JSON.stringify(sudoers_chmod, null, 2));
       }
 
-      console.log('About to verify sudoers files with visudo -c ...');
-
       visudo_cmd = exec('visudo -c');
 
       if (visudo_cmd.code !== 0) {
         throw new Error(JSON.stringify(visudo_cmd, null, 2));
       }
-
-      console.log('Sudoers files verified!');
     },
 
     /**
