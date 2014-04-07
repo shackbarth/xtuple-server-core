@@ -37,38 +37,42 @@
     /** @override */
     beforeTask: function (options) {
       var nginx = options.nginx;
-      console.log(options.nginx);
 
       nginx.outcrt = path.resolve(options.xt.ssldir, 'server.crt');
       nginx.outkey = path.resolve(options.xt.ssldir, 'server.key');
-
-      if (_.isString(nginx.inzip) && fs.existsSync(nginx.inzip)) {
-        nginx.inzip = path.resolve(nginx.inzip);
-        ssl.createBundle(options);
-      }
-      else if (/localhost/.test(nginx.domain)) {
-        if (_.isString(nginx.incrt) && _.isString(nginx.inkey)) {
-          nginx.incrt = path.resolve(nginx.incrt);
-          nginx.inkey = path.resolve(nginx.inkey);
-        }
-        else {
-          var result = ssl.generate(options);
-
-          if (result.code !== 0) {
-            throw new Error(JSON.stringify(result, null, 2));
-          }
-        }
-      }
-      else if (!_.isString(nginx.incrt) || !_.isString(nginx.inkey)) {
-        throw new Error('nginx.incrt and nginx.inkey are required for non-localhost domains');
-      }
     },
 
     /** @override */
     doTask: function (options) {
-      console.log(options.nginx);
-      exec('cp {nginx.incrt} {nginx.outcrt}'.format(options));
-      exec('cp {nginx.inkey} {nginx.outkey}'.format(options));
+      var nginx = options.nginx;
+      if (_.isString(nginx.inzip) && _.isString(nginx.inkey)) {
+        nginx.inzip = path.resolve(nginx.inzip);
+        ssl.createBundle(options);
+      }
+      else if (_.isString(nginx.incrt) && _.isString(nginx.inkey)) {
+        nginx.incrt = path.resolve(nginx.incrt);
+        nginx.inkey = path.resolve(nginx.inkey);
+
+        if (!fs.existsSync(nginx.incrt)) {
+          throw new Error('nginx.incrt was specified, but I cannot find file: '+ nginx.incrt);
+        }
+        if (!fs.existsSync(nginx.inkey)) {
+          throw new Error('nginx.inkey was specified, but I cannot find file: '+ nginx.inkey);
+        }
+
+        exec('cp {nginx.incrt} {nginx.outcrt}'.format(options));
+        exec('cp {nginx.inkey} {nginx.outkey}'.format(options));
+      }
+      else if (/localhost/.test(nginx.domain)) {
+        var result = ssl.generate(options);
+
+        if (result.code !== 0) {
+          throw new Error(JSON.stringify(result, null, 2));
+        }
+      }
+      else {
+        throw new Error('Missing required SSL inputs');
+      }
     },
 
     /**
@@ -107,37 +111,38 @@
 
       // TODO switch to camelcase. I don't know what it is about writing sysadmin
       // scripts that makes me want to use underscores everywhere
-      fs.writeFileSync(options.nginx.incrt, bundleStr);
+      fs.writeFileSync(options.nginx.outcrt, bundleStr);
+      exec('cp {nginx.inkey} {nginx.outkey}'.format(options));
       return true;
     },
 
     /**
      * Perform two-factor verification of the provided SSL files:
-     * 1. verify the x509-ness of the incrt
+     * 1. verify the x509-ness of the outcrt
      * 2. check crt/key modulus equality
      *
-     * @param options.nginx.inkey
-     * @param options.nginx.incrt
+     * @param options.nginx.outkey
+     * @param options.nginx.outcrt
      * @return true if both of these conditions hold
      */
     verifyCertificate: function (options) {
-      var inkey = path.resolve(options.nginx.inkey),
-        incrt = path.resolve(options.nginx.incrt);
+      var outkey = path.resolve(options.nginx.outkey),
+        outcrt = path.resolve(options.nginx.outcrt);
 
-      if (!fs.existsSync(incrt)) {
-        throw new Error('Provided .crt file does not exist: '+ incrt);
+      if (!fs.existsSync(outcrt)) {
+        throw new Error('Provided .crt file does not exist: '+ outcrt);
       }
-      if (!fs.existsSync(inkey)) {
-        throw new Error('Provided .key file does not exist: '+ inkey);
+      if (!fs.existsSync(outkey)) {
+        throw new Error('Provided .key file does not exist: '+ outkey);
       }
 
       // verify x509 certificate
-      if (exec('openssl x509 -noout -in ' + incrt).code !== 0) {
+      if (exec('openssl x509 -noout -in ' + outcrt).code !== 0) {
         throw new Error('The provided .crt failed openssl x509 verify');
       }
 
-      var key_modulus = exec('openssl rsa -noout -modulus -in '+ inkey).stdout,
-        crt_modulus = exec('openssl x509 -noout -modulus -in '+ incrt).stdout;
+      var key_modulus = exec('openssl rsa -noout -modulus -in '+ outkey).stdout,
+        crt_modulus = exec('openssl x509 -noout -modulus -in '+ outcrt).stdout;
 
       // perform modulus check
       if (key_modulus !==/*======*/ crt_modulus) {  // much equal. very modulus.

@@ -6,7 +6,11 @@ var assert = require('chai').assert,
 
 describe('phase: xt', function () {
   var xtPhase = require('../xt'),
+    options;
+
+  beforeEach(function () {
     options = global.options;
+  });
 
   it('is sane', function () {
     assert(xtPhase);
