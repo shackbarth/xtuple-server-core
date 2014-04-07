@@ -52,7 +52,7 @@
 
       hba.createClientCert(options);
 
-      exec('chown -R postgres:postgres /etc/postgresql');
+      //exec('chown -R postgres:postgres /etc/postgresql');
     },
 
     /** @override */
@@ -78,7 +78,6 @@
      * Sign a new client cert against the provided one for this domain.
      */
     createClientCert: function (options) {
-      exec('mkdir -p '+ options.pg.hba.ssldir);
 
       // create a client key and a signing request against the installed domain
       // cert
@@ -118,5 +117,4 @@
       options.pg.hba.certs = results;
     }
   });
-
 })();

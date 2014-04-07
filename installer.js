@@ -118,6 +118,35 @@
           }
         });
       });
+    },
+
+    /**
+     * Run installer with the  specified plan and options.
+     */
+    install: function (plan, options) {
+      // beforeInstall
+      installer.eachTask(function (task, phaseName, taskName) {
+        installer.log_progress({ phase: phaseName, task: taskName, msg: 'Before Install...' });
+        task.beforeInstall(options);
+      });
+
+      // run installer tasks
+      installer.eachTask(function (task, phaseName, taskName) {
+        installer.log_progress({ phase: phaseName, task: taskName, msg: 'Before Task...' });
+        task.beforeTask(options);
+
+        installer.log_progress({ phase: phaseName, task: taskName, msg: 'Install...' });
+        task.doTask(options);
+
+        installer.log_progress({ phase: phaseName, task: taskName, msg: 'After Task...' });
+        task.afterTask(options);
+      });
+
+      // afterInstall
+      installer.eachTask(function (task, phaseName, taskName) {
+        installer.log_progress({ phase: phaseName, task: taskName, msg: 'After Install...' });
+        task.afterInstall(options);
+      });
     }
   });
 
@@ -194,34 +223,9 @@
   });
 
   prompt.get('Press Enter to confirm the Installation Plan', function(err, result) {
-    //process.emit('init', options);
-
-    // beforeInstall
-    installer.eachTask(function (task, phaseName, taskName) {
-      installer.log_progress({ phase: phaseName, task: taskName, msg: 'Before Install...' });
-      task.beforeInstall(options);
-    });
-
-    // run installer tasks
-    installer.eachTask(function (task, phaseName, taskName) {
-      installer.log_progress({ phase: phaseName, task: taskName, msg: 'Before Task...' });
-      task.beforeTask(options);
-
-      installer.log_progress({ phase: phaseName, task: taskName, msg: 'Install...' });
-      task.doTask(options);
-
-      installer.log_progress({ phase: phaseName, task: taskName, msg: 'After Task...' });
-      task.afterTask(options);
-    });
-
-    // afterInstall
-    installer.eachTask(function (task, phaseName, taskName) {
-      installer.log_progress({ phase: phaseName, task: taskName, msg: 'After Install...' });
-      task.afterInstall(options);
-    });
+    installer.install(require('plan'), options);
 
     current = logo_lines.length;
     installer.log_progress({ phase: 'installer', task: 'installer', msg: 'Done!'});
-    process.exit(0);
   });
 })();
