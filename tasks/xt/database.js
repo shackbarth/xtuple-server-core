@@ -33,7 +33,7 @@
       maindb: {
         optional: '[path]',
         description: 'Path to primary database .backup file to use in production',
-        value: ''
+        value: null
       },
       setupdemos: {
         optional: '[boolean]',
