@@ -214,12 +214,12 @@ describe('phase: pg', function () {
         xtPhase.database.doTask(options);
         xtPhase.clone.beforeTask(options);
         pgPhase.snapshotmgr.beforeTask(options);
-        options.pg.snapshot = snap.createSnapshot(options);
       });
 
       it('should create a snapshot of all databases in the cluster', function () {
-        assert.lengthOf(options.pg.snapshot, options.xt.database.list.length + 1);
-        assert.notInclude(_.pluck(options.pg.snapshot, 'code'), 1);
+        assert(snap.createSnapshot(options));
+
+        // TODO check fs with readdirSync
       });
 
       after(function () {
