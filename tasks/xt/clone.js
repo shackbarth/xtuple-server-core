@@ -19,20 +19,24 @@
   _.extend(clone, task, /** @exports clone */ {
 
     options: {
-      srcdir: {
-        required: '<path>',
-        description: 'Path to the xtuple source directory',
-        value: '/usr/local/xtuple/src/4.4.0'
+      version: {
+        optional: '[version]',
+        description: 'xTuple Mobile App Version',
+        value: '1.8.2'
       }
     },
 
     /** @override */
-    beforeTask: function (options) {
+    beforeInstall: function (options) {
+      console.log(options.xt.version);
       options.xt.srcdir = path.resolve('/usr/local/xtuple/src/', options.xt.version);
       options.xt.coredir = path.resolve(options.xt.srcdir, 'xtuple');
       options.xt.extdir = path.resolve(options.xt.srcdir, 'xtuple-extensions');
       options.xt.privatedir = path.resolve(options.xt.srcdir, 'private-extensions');
+    },
 
+    /** @override */
+    beforeTask: function (options) {
       // yes this is for real.
       // https://github.com/xtuple/xtuple-scripts/issues/68
       try {

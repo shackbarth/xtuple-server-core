@@ -153,7 +153,7 @@
      * @private
      */
     configureSSH: function  (options) {
-      var src_sshd_conf = fs.readFileSync('/etc/ssh/sshd_config'),
+      var src_sshd_conf = fs.readFileSync('/etc/ssh/sshd_config').toString(),
         rules = {
           UseDNS: 'no',
           PermitRootLogin: 'no',

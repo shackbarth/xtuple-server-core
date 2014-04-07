@@ -3,7 +3,8 @@ var assert = require('chai').assert,
   _ = require('underscore'),
   fs = require('fs'),
   pgcli = require('../../lib/pg-cli'),
-  exec = require('execSync').exec;
+  exec = require('execSync').exec,
+  planner = require('../../lib/planner');
 
 _.mixin(require('congruence'));
 
@@ -40,6 +41,8 @@ describe('phase: sys', function () {
         assert.equal(exec('id '+ options.xt.name).code, 0);
       });
       it('should be able to control my personal pg cluster', function () {
+        planner.install(global.baseClusterInstallPlan, options);
+        /*
         pgPhase.cluster.beforeInstall(options);
         pgPhase.config.beforeTask(options);
         pgPhase.config.doTask(options);
@@ -59,6 +62,9 @@ describe('phase: sys', function () {
         var result = exec('sudo -u {xt.name} pg_ctlcluster {pg.version} {xt.name} start'.format(options));
 
         xtPhase.database.doTask(options);
+        */
+
+        var result = exec('sudo -u {xt.name} pg_ctlcluster {pg.version} {xt.name} reload'.format(options));
 
         assert.equal(result.code, 0, JSON.stringify(result));
         pgcli.dropcluster(options.pg.cluster);

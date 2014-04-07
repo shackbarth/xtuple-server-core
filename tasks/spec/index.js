@@ -10,11 +10,10 @@ describe('xTuple Installer', function () {
     getOptions = function ($k) {
       return {
         xt: {
-          version: '4.4.0',
+          //version: '4.4.0',
           edition: 'core',
           name: 'xt' + $k,
           setupdemos: true,
-          srcdir: path.resolve('/tmp/xtmocha/src', '4.4.0'),
           adminpw: '123',
           build_common: { },
           build_main: { },
@@ -55,6 +54,15 @@ describe('xTuple Installer', function () {
         }
       };
     };
+
+  global.baseClusterInstallPlan = [
+    {name: 'xt', tasks: [ 'clone', 'serverconfig' ]},
+    {name: 'sys', tasks: [ 'policy' ]},
+    {name: 'pg', tasks: [ 'config', 'cluster' ]},
+    {name: 'nginx', tasks: [ 'ssl' ]},
+    {name: 'pg', tasks: [ 'hba', 'tuner' ]},
+    {name: 'xt', tasks: [ 'database' ]},
+  ];
 
   beforeEach(function () {
     global.options = getOptions(

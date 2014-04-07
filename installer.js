@@ -81,23 +81,9 @@
     }
   });
 
-  // verify required options
-  planner.eachTask(plan, function (task, phaseName, taskName) {
-    var invalidOptions = _.filter(task.options, function (option, key) {
-      return _.isString(option.required) && _.isUndefined(options[phaseName][key]);
-    });
-
-    if (invalidOptions.length > 0) {
-      planner.die({ msg: JSON.stringify(invalidOptions, null, 2) });
-    }
-  });
-
-  // print plan
-  _.each(plan, function (phase) {
-    planner.log({ msg: 'Module: {name}'.format(phase) }, true);
-    planner.log({ msg: '  Tasks: ' + JSON.stringify(phase.tasks) }, true);
-    planner.log({ msg: '  Arguments: '+ JSON.stringify(options[phase.name], null, 2) }, true);
-  });
+  planner.verifyOptions(plan, options);
+  planner.compileOptions(plan, options);
+  planner.displayPlan(plan, options);
 
   prompt.get('Press Enter to confirm the Installation Plan', function(err, result) {
     planner.install(plan, options);
