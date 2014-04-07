@@ -83,8 +83,6 @@
       options.pg.outcrt = path.resolve(options.xt.ssldir, options.xt.name + '.crt');
       options.pg.outkey = path.resolve(options.xt.ssldir, options.xt.name + '.key');
 
-      console.log(exec('ls {xt.ssldir}'.format(options)));
-
       // create a client key and a signing request against the installed domain
       // cert
       var commands = [

@@ -24,11 +24,13 @@ describe('phase: sys', function () {
 
       beforeEach(function () {
         xtPhase.serverconfig.beforeInstall(options);
+        sysPhase.policy.beforeTask(options);
         sysPhase.policy.createUsers(options);
       });
       afterEach(function () {
-        //exec('deluser '+ options.xt.name);
-        //exec('rm -f /etc/sudoers.d/*'+ options.xt.name + '*');
+        exec('deluser '+ options.xt.name);
+        exec('rm -f /etc/sudoers.d/*'+ options.xt.name + '*');
+        exec('rm -rf /usr/local/'+ options.xt.name);
       });
 
       it('should write valid sudoers files', function () {
