@@ -198,7 +198,6 @@ describe('phase: pg', function () {
 
       after(function () {
         _.each([
-          'rm -rf '+ options.xt.srcdir,
           'rm -rf '+ snapshot_path,
           'rm -rf '+ options.xt.database.list[0].config,
           'rm -rf '+ options.xt.database.list[0].data,
