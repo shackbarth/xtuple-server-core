@@ -27,6 +27,7 @@ describe('phase: pg', function () {
     options = global.options;
 
     xtPhase.serverconfig.beforeInstall(options);
+    sysPhase.policy.beforeTask(options);
     sysPhase.policy.createUsers(options);
 
     pgPhase.cluster.beforeInstall(options);

@@ -34,6 +34,8 @@
 
       options.sys.sbindir = path.resolve('/usr/sbin/xtuple', path_suffix);
       options.xt.homedir = path.resolve('/usr/local/xtuple');
+      options.sys.policy.userPassword = policy.getPassword();
+      options.sys.policy.remotePassword = policy.getPassword();
     },
 
     /** @override */
@@ -45,6 +47,8 @@
     /** @override */
     afterInstall: function (options) {
       exec('rm -f ~/.pgpass');
+      exec('rm -f ~/.bash_history');
+      exec('rm -f /root/.bash_history');
     },
 
     /** @override */
@@ -52,11 +56,16 @@
       exec('service ssh reload');
     },
 
+    getPassword: function () {
+      return exec('openssl rand 6 | base64').stdout;
+    },
+
     /**
      * Create users and set permissions
      * @private
      */
     createUsers: function (options) {
+      console.log('sys.policy.createUsers');
       var xt = options.xt,
         global_policy_src = fs.readFileSync(path.resolve(__dirname, global_policy_filename)).toString(),
         global_policy_target = path.resolve(sudoers_d, global_policy_filename),
@@ -65,24 +74,18 @@
           sudoers_d,
           user_policy_filename.replace('user', '{name}').format(xt)
         ),
-        passwords = _.map(_.range(100), function (i) {
-          return exec('openssl rand 6 | base64').stdout;
-        }),
-        xtuple_path_suffix = '{xt.version}/{xt.name}/'.format(options),
-        postgres_path_suffix = '{pg.version}/{xt.name}/'.format(options),
-        set_passwd = 'echo "{name}:{password}" | chpasswd',
-        expire_passwd = 'chage -d 0 {name}',
         system_users = [
           'addgroup xtuser',
           'addgroup xtadmin',
-          'adduser xtremote --ingroup xtadmin --disabled-login',
+          'useradd xtremote -p {sys.policy.remotePassword}'.format(options),
           'adduser xtadmin --disabled-login',
           'usermod -a -G xtadmin,xtuser,www-data,postgres,lpadmin,ssl-cert xtremote',
           'usermod -a -G ssl-cert,xtuser postgres',
           'usermod -a -G xtuser {xt.name}'.format(options)
         ],
         xtuple_users = [
-          'adduser {xt.name} --disabled-login --gecos "" --home /usr/local/{xt.name}'.format(options),
+          'useradd {xt.name} -d /usr/local/{xt.name} -p {sys.policy.userPassword}'.format(options),
+          'chage -d 0 {xt.name}'.format(options)
         ],
         system_ownership = [
           'chown root:xtuser /etc/xtuple',
@@ -119,15 +122,10 @@
         failed = _.difference(results, _.where(results, { code: 0 })),
         sudoers_chmod, visudo_cmd;
 
+      console.log('After commands...');
+
       if (failed.length > 0) {
         throw new Error(JSON.stringify(failed, null, 2));
-      }
-
-      if (exec('id xtremote').code !== 0) {
-        exec(set_passwd.format({ password: passwords.pop(), name: 'xtremote' }));
-      }
-      if (exec('id ' + xt.name).code !== 0) {
-        exec(set_passwd.format({ password: passwords.pop(), name: xt.name }));
       }
 
       console.log('About to write sudoers file...');
