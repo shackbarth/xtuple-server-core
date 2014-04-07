@@ -53,6 +53,7 @@
      */
     initCluster: function (options) {
       pgcli.createdb(_.extend({ dbname: options.xt.name, owner: options.xt.name }, options));
+
       // Docs: <http://www.postgresql.org/docs/9.3/static/sql-createrole.html>
       var queries = [
           // create xtrole

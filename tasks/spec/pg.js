@@ -187,8 +187,6 @@ describe('phase: pg', function () {
         exec('rm -rf '+ snapshot_path);
         exec('mkdir -p '+ snapshot_path);
 
-        xtPhase.database.doTask(options);
-        xtPhase.clone.beforeTask(options);
         pgPhase.snapshotmgr.beforeTask(options);
       });
 

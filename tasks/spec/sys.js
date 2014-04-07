@@ -41,28 +41,9 @@ describe('phase: sys', function () {
         assert.equal(exec('id '+ options.xt.name).code, 0);
       });
       it('should be able to control my personal pg cluster', function () {
+        planner.verifyOptions(global.baseClusterInstallPlan, options);
+        planner.compileOptions(global.baseClusterInstallPlan, options);
         planner.install(global.baseClusterInstallPlan, options);
-        /*
-        pgPhase.cluster.beforeInstall(options);
-        pgPhase.config.beforeTask(options);
-        pgPhase.config.doTask(options);
-        pgPhase.cluster.doTask(options);
-
-        nginxPhase.ssl.beforeTask(options);
-        nginxPhase.ssl.doTask(options);
-
-        pgPhase.hba.beforeTask(options);
-        pgPhase.hba.doTask(options);
-
-        pgPhase.tuner.doTask(options);
-
-        pgcli.ctlcluster({ action: 'restart', version: options.pg.version, name: options.xt.name });
-
-        exec('sudo -u {xt.name} pg_ctlcluster {pg.version} {xt.name} stop'.format(options));
-        var result = exec('sudo -u {xt.name} pg_ctlcluster {pg.version} {xt.name} start'.format(options));
-
-        xtPhase.database.doTask(options);
-        */
 
         var result = exec('sudo -u {xt.name} pg_ctlcluster {pg.version} {xt.name} reload'.format(options));
 

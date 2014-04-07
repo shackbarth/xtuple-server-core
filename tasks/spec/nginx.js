@@ -127,6 +127,8 @@ describe('phase: nginx', function () {
   describe('task: site', function () {
     /** Create clean cluster for each test */
     beforeEach(function () {
+      planner.verifyOptions(global.baseClusterInstallPlan, options);
+      planner.compileOptions(global.baseClusterInstallPlan, options);
       planner.install(global.baseClusterInstallPlan, options);
 
       pgPhase.snapshotmgr.beforeTask(options);
