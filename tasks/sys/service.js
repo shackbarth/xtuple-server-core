@@ -31,15 +31,9 @@
 
     /** @override */
     doTask: function (options) {
-      var install_format = {
-          service_src: path.resolve(__dirname, 'xtuple.sh'),
-          service_target: path.resolve('/etc/init.d/xtuple')
-        },
-        sbin_js = path.resolve('/usr/sbin/xtuple', options.xt.version, options.xt.name),
-        services_conf_path = path.resolve(
-          '/etc/xtuple', options.xt.version, options.xt.name, 'services'
-        ),
-        xt_conf_target = path.resolve(services_conf_path, '..', 'config.js'),
+      var sbin_js = path.resolve('/usr/sbin/xtuple', options.xt.version, options.xt.name),
+        services_conf_path = path.resolve(options.xt.configdir, 'services'),
+        xt_conf_target = path.resolve(options.xt.configdir, 'config.js'),
         pm2 = {
           template: fs.readFileSync(path.resolve(__dirname, 'pm2-core-services.json')),
           services_conf_target: path.resolve(services_conf_path, 'pm2-core-services.json'),

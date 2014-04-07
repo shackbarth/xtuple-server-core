@@ -13,19 +13,36 @@ _.mixin(require('congruence'));
 describe('phase: pg', function () {
   var pgPhase = require('../pg'),
     nginxPhase = require('../nginx'),
+    sysPhase = require('../sys'),
     xtPhase = require('../xt'),
+    baseClusterPlan = [
+      {name: 'xt', tasks: [ 'serverconfig' ]},
+      {name: 'sys', tasks: [ 'policy' ]},
+      {name: 'pg', tasks: [ 'config', 'cluster' ]}
+    ],
     options;
 
   /** Create clean cluster for each test */
   beforeEach(function () {
     options = global.options;
+
+    xtPhase.serverconfig.beforeInstall(options);
+    sysPhase.policy.createUsers(options);
+
     pgPhase.cluster.beforeInstall(options);
     pgPhase.config.beforeTask(options);
     pgPhase.config.doTask(options);
     pgPhase.cluster.doTask(options);
+
+    nginxPhase.ssl.beforeTask(options);
+    nginxPhase.ssl.doTask(options);
+    pgPhase.hba.beforeTask(options);
+    pgPhase.hba.doTask(options);
+    pgPhase.tuner.beforeTask(options);
+    pgPhase.tuner.doTask(options);
   });
   afterEach(function () {
-    pgcli.dropcluster(options.pg.cluster);
+    //pgcli.dropcluster(options.pg.cluster);
   });
 
   it('is sane', function () {
@@ -40,7 +57,7 @@ describe('phase: pg', function () {
   describe('task: cluster', function () {
     describe('#beforeInstall', function () {
       it('should throw an error if specified cluster already exists', function () {
-        // the cluster in 'options' is created in beforeEach, so we can just
+        // the cluster in 'options' is created in beforeeach, so we can just
         // use that
         assert.throws(function () {
           pgPhase.cluster.beforeInstall(options);
@@ -52,15 +69,6 @@ describe('phase: pg', function () {
 
   describe('task: tuner', function () {
     describe('#doTask', function () {
-      beforeEach(function () {
-        xtPhase.serverconfig.beforeInstall(options);
-        nginxPhase.ssl.beforeTask(options);
-        nginxPhase.ssl.doTask(options);
-        pgPhase.hba.beforeTask(options);
-        pgPhase.hba.doTask(options);
-        pgPhase.tuner.beforeTask(options);
-        pgPhase.tuner.doTask(options);
-      });
       it('should generate correct values', function () {
         var postgresql_conf = options.pg.tuner.string;
 
@@ -121,7 +129,6 @@ describe('phase: pg', function () {
       snapshot_path;
 
     beforeEach(function () {
-      pgPhase.snapshotmgr.beforeTask(options);
       snapshot_path = snap.getSnapshotRoot(options.xt.version, options.xt.name);
     });
 
@@ -198,23 +205,15 @@ describe('phase: pg', function () {
     });
 
     describe('#createSnapshot', function () {
-      var xt = require('../xt');
 
       beforeEach(function () {
         exec('mkdir -p '+ options.xt.srcdir);
         exec('rm -rf '+ snapshot_path);
         exec('mkdir -p '+ snapshot_path);
 
-        xtPhase.serverconfig.beforeInstall(options);
-        nginxPhase.ssl.beforeTask(options);
-        nginxPhase.ssl.doTask(options);
-        pgPhase.hba.beforeTask(options);
-        pgPhase.hba.doTask(options);
-
+        xtPhase.database.doTask(options);
         xtPhase.clone.beforeTask(options);
         pgPhase.snapshotmgr.beforeTask(options);
-
-        xt.database.doTask(options);
         options.pg.snapshot = snap.createSnapshot(options);
       });
 

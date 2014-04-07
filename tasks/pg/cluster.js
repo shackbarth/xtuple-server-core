@@ -10,6 +10,7 @@
   var task = require('../../lib/task'),
     pgcli = require('../../lib/pg-cli'),
     exec = require('execSync').exec,
+    path = require('path'),
     _ = require('underscore'),
     knex;
 
@@ -34,26 +35,24 @@
         throw new Error('cluster configuration already exists');
       }
 
-      exec('mkdir -p /var/run/postgresql');
-      exec('chown -R postgres:postgres /var/run/postgresql');
+      options.pg.configdir = path.resolve('/etc/postgresql', options.pg.version, options.xt.name);
     },
 
     /** @override */
     doTask: function (options) {
-      var newCluster = {
-        name: options.xt.name,
-        version: options.pg.version
-      };
-      _.extend(options.pg.cluster, pgcli.createcluster(newCluster), newCluster);
-      options.pg.cluster.start = pgcli.ctlcluster(_.extend({ action: 'start' }, newCluster));
+      _.extend(options.pg.cluster, pgcli.createcluster(options), { name: options.xt.name });
+      pgcli.ctlcluster({ action: 'restart', version: options.pg.version, name: options.xt.name });
+      //'chown {xt.name} /var/run/postgresql/{pg.version}-{xt.name}.pid'.format(options),
 
       cluster.initCluster(options);
+      pgcli.ctlcluster({ action: 'restart', version: options.pg.version, name: options.xt.name });
     },
 
     /**
      * Setup an existing, empty-ish cluster to receive xtuple.
      */
     initCluster: function (options) {
+      pgcli.createdb(_.extend({ dbname: options.xt.name, owner: options.xt.name }, options));
       // Docs: <http://www.postgresql.org/docs/9.3/static/sql-createrole.html>
       var queries = [
           // create xtrole
@@ -64,13 +63,7 @@
             'PASSWORD \'{adminpw}\' CREATEUSER CREATEDB'
           ].join(' ').format(options.xt),
 
-          // create xtdaemon user (used by node server)
-          [ 'CREATE ROLE xtdaemon LOGIN',
-            'SUPERUSER PASSWORD NULL'
-          ].join(' '),
-
-          'GRANT xtrole TO admin',
-          'GRANT xtrole TO xtdaemon'
+          'GRANT xtrole TO admin'
         ],
         results = _.map(queries, _.partial(pgcli.psql, options)),
         failed = _.difference(results, _.where(results, { code: 0 }));

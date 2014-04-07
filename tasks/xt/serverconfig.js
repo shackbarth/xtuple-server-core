@@ -59,8 +59,8 @@
       exec('mkdir -p ' + options.xt.statedir);
 
       // correctly permission ssldir. should be owned by ssl-cert group if not already
-      exec('chown -R :ssl-cert '+ options.xt.ssldir);
-      exec('chmod -R o-rwx,g=wrx,u=rx '+ options.xt.ssldir);
+      //exec('chown -R :ssl-cert '+ options.xt.ssldir);
+      //exec('chmod -R o-rwx,g=wrx,u=rx '+ options.xt.ssldir);
       exec('usermod -a -G ssl-cert postgres');
       exec('usermod -a -G ssl-cert www-data');
       exec('usermod -a -G ssl-cert xtadmin');
@@ -118,20 +118,7 @@
       encryptionKey = exec('openssl rand 128 -hex').stdout;
       fs.writeFileSync(encryption_key_path, encryptionKey);
 
-      // ensure correct permissions
-      exec('chown xtadmin:xtadmin /etc/xtuple');
-      exec('chown xtadmin:xtadmin /var/log/xtuple');
-      exec('chown xtadmin:xtadmin /var/lib/xtuple');
-      exec('chown xtadmin:xtadmin /usr/local/xtuple');
-
-      exec('chmod -R ug+rx   /etc/xtuple');
-      exec('chmod -R ug+rw   /var/log/xtuple');
-      exec('chmod -R ug+rw   /var/lib/xtuple');
-      exec('chmod -R ug+rwx  /usr/local/xtuple');
-
-      exec('usermod -a -G xtadmin postgres');
-
-      _.defaults(options.xt.serverconfig, {
+      _.extend(options.xt.serverconfig, {
         string: output_conf,
         json: derived_config_obj,
         config_js: config_js
