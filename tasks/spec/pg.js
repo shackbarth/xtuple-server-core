@@ -42,7 +42,7 @@ describe('phase: pg', function () {
     pgPhase.tuner.doTask(options);
   });
   afterEach(function () {
-    //pgcli.dropcluster(options.pg.cluster);
+    pgcli.dropcluster(options.pg.cluster);
   });
 
   it('is sane', function () {
@@ -116,7 +116,6 @@ describe('phase: pg', function () {
         pgPhase.hba.doTask(options);
         var hba_conf = options.pg.hba;
 
-        assert.match(hba_conf.string, /all \s+ all \s+ 127\.0\.0\.1\/32 \s+ trust/);
         assert.match(hba_conf.string, /all \s+ all \s+ 10\.0\.0\.0\/8 \s+ md5/);
         assert.match(hba_conf.string, /all \s+ all \s+ 172\.16\.0\.0\/12 \s+ md5/);
         assert.match(hba_conf.string, /all \s+ all \s+ 192\.168\.0\.0\/16 \s+ md5/);

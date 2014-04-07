@@ -125,10 +125,22 @@ describe('phase: nginx', function () {
   describe('task: site', function () {
     /** Create clean cluster for each test */
     beforeEach(function () {
-      pgPhase.cluster.beforeInstall(global.options);
-      pgPhase.config.beforeTask(global.options);
-      pgPhase.config.doTask(global.options);
-      pgPhase.cluster.doTask(global.options);
+      xtPhase.serverconfig.beforeInstall(options);
+      sysPhase.policy.createUsers(options);
+
+      pgPhase.cluster.beforeInstall(options);
+      pgPhase.config.beforeTask(options);
+      pgPhase.config.doTask(options);
+      pgPhase.cluster.doTask(options);
+
+      nginxPhase.ssl.beforeTask(options);
+      nginxPhase.ssl.doTask(options);
+      pgPhase.hba.beforeTask(options);
+      pgPhase.hba.doTask(options);
+      pgPhase.tuner.beforeTask(options);
+      pgPhase.tuner.doTask(options);
+      xtPhase.database.doTask(options);
+      xtPhase.clone.beforeTask(options);
 
       pgPhase.snapshotmgr.beforeTask(options);
     });
