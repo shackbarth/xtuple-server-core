@@ -27,6 +27,7 @@ describe('phase: pg', function () {
     options = global.options;
 
     xtPhase.serverconfig.beforeInstall(options);
+    sysPhase.policy.beforeTask(options);
     sysPhase.policy.createUsers(options);
 
     pgPhase.cluster.beforeInstall(options);
@@ -42,7 +43,7 @@ describe('phase: pg', function () {
     pgPhase.tuner.doTask(options);
   });
   afterEach(function () {
-    //pgcli.dropcluster(options.pg.cluster);
+    pgcli.dropcluster(options.pg.cluster);
   });
 
   it('is sane', function () {
@@ -116,7 +117,6 @@ describe('phase: pg', function () {
         pgPhase.hba.doTask(options);
         var hba_conf = options.pg.hba;
 
-        assert.match(hba_conf.string, /all \s+ all \s+ 127\.0\.0\.1\/32 \s+ trust/);
         assert.match(hba_conf.string, /all \s+ all \s+ 10\.0\.0\.0\/8 \s+ md5/);
         assert.match(hba_conf.string, /all \s+ all \s+ 172\.16\.0\.0\/12 \s+ md5/);
         assert.match(hba_conf.string, /all \s+ all \s+ 192\.168\.0\.0\/16 \s+ md5/);
@@ -214,12 +214,12 @@ describe('phase: pg', function () {
         xtPhase.database.doTask(options);
         xtPhase.clone.beforeTask(options);
         pgPhase.snapshotmgr.beforeTask(options);
-        options.pg.snapshot = snap.createSnapshot(options);
       });
 
       it('should create a snapshot of all databases in the cluster', function () {
-        assert.lengthOf(options.pg.snapshot, options.xt.database.list.length + 1);
-        assert.notInclude(_.pluck(options.pg.snapshot, 'code'), 1);
+        assert(snap.createSnapshot(options));
+
+        // TODO check fs with readdirSync
       });
 
       after(function () {

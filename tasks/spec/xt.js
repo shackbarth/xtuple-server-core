@@ -5,11 +5,17 @@ var assert = require('chai').assert,
   _ = require('underscore');
 
 describe('phase: xt', function () {
-  var xtPhase = require('../xt'),
+  var sysPhase = require('../sys'),
+    pgPhase = require('../pg'),
+    xtPhase = require('../xt'),
+    nginxPhase = require('../nginx'),
     options;
 
   beforeEach(function () {
     options = global.options;
+    xtPhase.serverconfig.beforeInstall(options);
+    sysPhase.policy.beforeTask(options);
+    sysPhase.policy.createUsers(options);
   });
 
   it('is sane', function () {
@@ -25,31 +31,8 @@ describe('phase: xt', function () {
 
   });
 
-  describe.skip('task: clone', function () {
-    it('should clone and npm install public repos without prompting for password', function () {
-      xtPhase.clone.beforeTask(options);
-      xtPhase.clone.doTask(options);
-
-      var xtupleRepo = fs.existsSync(options.xt.srcdir, 'xtuple'),
-        extensionsRepo = fs.existsSync(options.xt.srcdir, 'xtuple-extensions');
-
-      assert.isTrue(xtupleRepo);
-      assert.isTrue(extensionsRepo);
-    });
-    it.skip('should clone and npm install all repos and require password', function () {
-      options.xt.edition = 'distribution';
-      xtPhase.clone.beforeTask(options);
-      xtPhase.clone.doTask(options);
-
-      var xtupleRepo = fs.existsSync(options.xt.srcdir, 'xtuple'),
-        extensionsRepo = fs.existsSync(options.xt.srcdir, 'xtuple-extensions'),
-        privateRepo = fs.existsSync(options.xt.srcdir, 'private-extensions');
-
-      assert.isTrue(xtupleRepo);
-      assert.isTrue(extensionsRepo);
-      assert.isTrue(privateRepo);
-    });
-    it('should clone only public repos if instlaling a free edition', function () {
+  describe('task: clone', function () {
+    it('should clone only public repos if installing a free edition', function () {
       var repoList = xtPhase.clone.getRepositoryList(options);
 
       assert.include(repoList, 'xtuple');
@@ -78,8 +61,35 @@ describe('phase: xt', function () {
       assert.include(repoList, 'xtuple-extensions');
       assert.include(repoList, 'private-extensions');
     });
+    it.skip('should clone and npm install public repos without prompting for password', function () {
+      xtPhase.clone.beforeTask(options);
+      xtPhase.clone.doTask(options);
+
+      var xtupleRepo = fs.existsSync(options.xt.srcdir, 'xtuple'),
+        extensionsRepo = fs.existsSync(options.xt.srcdir, 'xtuple-extensions');
+
+      assert.isTrue(xtupleRepo);
+      assert.isTrue(extensionsRepo);
+    });
     afterEach(function () {
       options.xt.edition = 'core';
+    });
+  });
+  describe.skip('task: clone [requires password]', function () {
+    this.pending = !!process.env.TRAVIS;
+
+    it('should clone and npm install all repos and require password', function () {
+      options.xt.edition = 'distribution';
+      xtPhase.clone.beforeTask(options);
+      xtPhase.clone.doTask(options);
+
+      var xtupleRepo = fs.existsSync(options.xt.srcdir, 'xtuple'),
+        extensionsRepo = fs.existsSync(options.xt.srcdir, 'xtuple-extensions'),
+        privateRepo = fs.existsSync(options.xt.srcdir, 'private-extensions');
+
+      assert.isTrue(xtupleRepo);
+      assert.isTrue(extensionsRepo);
+      assert.isTrue(privateRepo);
     });
   });
 
@@ -87,15 +97,14 @@ describe('phase: xt', function () {
     beforeEach(function () {
       exec('mkdir -p __config- ' + options.xt.name);
       exec('mkdir -p __log- ' + options.xt.name);
-      xtPhase.serverconfig.beforeTask(options);
     });
 
     it('should parse and generate a correct config.js', function () {
-      var result = xtPhase.serverconfig.doTask(options);
+      xtPhase.serverconfig.doTask(options);
 
-      assert.match(result.string, /"testDatabase": "demo"/);
-      assert.match(result.string, /"password": "123"/);
-      assert.equal(result.json.datasource.databases.length, 1);
+      assert.match(options.xt.serverconfig.string, /"testDatabase": "demo"/);
+      assert.match(options.xt.serverconfig.string, /"password": "123"/);
+      assert.equal(options.xt.serverconfig.json.datasource.databases.length, 1);
     });
 
     after(function () {

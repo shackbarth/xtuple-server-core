@@ -91,10 +91,6 @@
         ].join(' ').format(options),
         result = exec(cmd);
 
-      console.log(cmd);
-      console.log(result);
-      console.log(exec('ls {xt.ssldir}'.format(options)));
-
       exec('chown {xt.name}:ssl-cert {nginx.outcrt}'.format(options));
       exec('chown {xt.name}:ssl-cert {nginx.outkey}'.format(options));
       //exec('chmod -R g=wrx,u=wrx {xt.ssldir}'.format(options));

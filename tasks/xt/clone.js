@@ -35,7 +35,14 @@
 
       // yes this is for real.
       // https://github.com/xtuple/xtuple-scripts/issues/68
-      exec('umount /root');
+      try {
+        exec('umount /root');
+      }
+      catch (e) {
+        // if we can't unmount it, maybe things will still work, but there's no
+        // point in yelling too loudly about not being able to do something crazy
+        console.log(e);
+      }
 
       if (build.isTaggedVersion(options)) {
         options.xt.repoHash = 'v' + options.xt.version;
@@ -43,8 +50,6 @@
       else {
         options.xt.repoHash = options.xt.version.slice(0, 6);
       }
-
-      pgcli.ctlcluster(_.extend({ action: 'restart' }, options.pg.cluster));
 
       /*
       try {

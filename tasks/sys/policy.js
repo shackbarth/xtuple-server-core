@@ -30,10 +30,14 @@
   _.extend(policy, task, /** @exports policy */ {
 
     beforeTask: function (options) {
-      var path_suffix = '{xt.version}/{xt.name}/'.format(options);
-
-      options.sys.sbindir = path.resolve('/usr/sbin/xtuple', path_suffix);
+      options.sys.sbindir = path.resolve('/usr/sbin/xtuple/{xt.version}/{xt.name}'.format(options));
       options.xt.homedir = path.resolve('/usr/local/xtuple');
+      options.sys.policy.userPassword = policy.getPassword();
+      options.sys.policy.remotePassword = policy.getPassword();
+
+      exec('mkdir -p /usr/sbin/xtuple/{xt.version}/{xt.name}'.format(options));
+      exec('mkdir -p /usr/local/xtuple/{xt.version}/{xt.name}'.format(options));
+      exec('mkdir -p /var/run/postgresql'.format(options));
     },
 
     /** @override */
@@ -45,11 +49,17 @@
     /** @override */
     afterInstall: function (options) {
       exec('rm -f ~/.pgpass');
+      exec('rm -f ~/.bash_history');
+      exec('rm -f /root/.bash_history');
     },
 
     /** @override */
     afterTask: function (options) {
       exec('service ssh reload');
+    },
+
+    getPassword: function () {
+      return exec('openssl rand 6 | base64').stdout;
     },
 
     /**
@@ -65,24 +75,18 @@
           sudoers_d,
           user_policy_filename.replace('user', '{name}').format(xt)
         ),
-        passwords = _.map(_.range(100), function (i) {
-          return exec('openssl rand 6 | base64').stdout;
-        }),
-        xtuple_path_suffix = '{xt.version}/{xt.name}/'.format(options),
-        postgres_path_suffix = '{pg.version}/{xt.name}/'.format(options),
-        set_passwd = 'echo "{name}:{password}" | chpasswd',
-        expire_passwd = 'chage -d 0 {name}',
         system_users = [
           'addgroup xtuser',
           'addgroup xtadmin',
-          'adduser xtremote --ingroup xtadmin --disabled-login',
+          'useradd xtremote -p {sys.policy.remotePassword}'.format(options),
           'adduser xtadmin --disabled-login',
           'usermod -a -G xtadmin,xtuser,www-data,postgres,lpadmin,ssl-cert xtremote',
-          'usermod -a -G ssl-cert,xtuser postgres'
+          'usermod -a -G ssl-cert,xtuser postgres',
+          'usermod -a -G xtuser {xt.name}'.format(options)
         ],
         xtuple_users = [
-          'adduser {xt.name} --disabled-login --gecos "" '.format(options),
-          'usermod -a -G xtuser {xt.name}'.format(options),
+          'useradd {xt.name} -d /usr/local/{xt.name} -p {sys.policy.userPassword}'.format(options),
+          'chage -d 0 {xt.name}'.format(options)
         ],
         system_ownership = [
           'chown root:xtuser /etc/xtuple',
@@ -113,21 +117,14 @@
           //'chmod -R g=rwx,u=rx,o-rw  {pg.configdir}'.format(options)
         ],
         system_users_results = _.map(system_users, exec),
-        xtuple_users_reslts = _.map(xtuple_users, exec),
         results = _.map(_.flatten([
-          system_ownership, system_mode, user_ownership, user_mode
+          xtuple_users, system_ownership, system_mode, user_ownership, user_mode
         ]), exec),
-        failed = _.difference(results, _.where(results, { code: 0 }));
+        failed = _.difference(results, _.where(results, { code: 0 })),
+        sudoers_chmod, visudo_cmd;
 
       if (failed.length > 0) {
         throw new Error(JSON.stringify(failed, null, 2));
-      }
-
-      if (exec('id xtremote').code !== 0) {
-        exec(set_passwd.format({ password: passwords.pop(), name: 'xtremote' }));
-      }
-      if (exec('id ' + xt.name).code !== 0) {
-        exec(set_passwd.format({ password: passwords.pop(), name: xt.name }));
       }
 
       // write sudoers file
@@ -138,12 +135,16 @@
         fs.writeFileSync(user_policy_target, user_policy_src.format(xt));
       }
 
-      exec('chmod 440 /etc/sudoers.d/*');
+      sudoers_chmod = exec('chmod 440 /etc/sudoers.d/*');
 
-      results = exec('visudo -c');
+      if (sudoers_chmod.code !== 0) {
+        throw new Error(JSON.stringify(sudoers_chmod, null, 2));
+      }
 
-      if (results.code !== 0) {
-        throw new Error(JSON.stringify(results, null, 2));
+      visudo_cmd = exec('visudo -c');
+
+      if (visudo_cmd.code !== 0) {
+        throw new Error(JSON.stringify(visudo_cmd, null, 2));
       }
     },
 
