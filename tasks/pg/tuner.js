@@ -29,19 +29,7 @@
       }
     },
 
-    /**
-     * @example cluster {
-     *   version: {version},
-     *   port: 5432,
-     *   config: /etc/postgresql/{version}/kelhay,
-     *   data: /var/lib/postgresql/{version}/kelhay,
-     *   locale: 'en_US.UTF-8'
-     * }
-     * config {
-     *   ... anything
-     *
-     * @override
-     */
+    /** @override */
     doTask: function (options) {
       var pg = options.pg,
         cluster = options.pg.cluster,
@@ -73,18 +61,18 @@
         sysctl_conf_path = path.resolve('/etc/sysctl.d/30-postgresql-shm.conf'),
         sysctl_conf;
 
-      // postgres 9.3 claims to handle shared_buffers differently, and as a
-      // result does not require the altering of SHMMAX
-      // XXX pg 9.3 untested in practice
-      if ((+pg.version) < 9.3) {
-        sysctl_conf = sysctl_conf_template
-          .format({ shmmax: env.shmmax, shmall: env.shmall })
-          .replace(/^\s+/mg, '')
-          .trim();
+      sysctl_conf = sysctl_conf_template.format({
+          shmmax: env.shmmax,
+          shmall: env.shmall,
+          semmsl: 256,
+          semmns: 65536,
+          semopm: 64,
+          semmni: 1024
+        }).replace(/^\s+/mg, '')
+        .trim();
 
-        fs.writeFileSync(sysctl_conf_path, sysctl_conf);
-        exec(['sysctl -p', sysctl_conf_path].join(' '));
-      }
+      fs.writeFileSync(sysctl_conf_path, sysctl_conf);
+      exec(['sysctl -p', sysctl_conf_path].join(' '));
 
       // only 9.2 and above support custom ssl cert paths; < 9.1 must use
       // data_dir/server.crt.
