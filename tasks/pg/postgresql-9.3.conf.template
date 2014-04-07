@@ -51,6 +51,8 @@ ident_file = '/etc/postgresql/{version}/{name}/pg_ident.conf' # ident configurat
 external_pid_file = '/var/run/postgresql/{version}-{name}.pid'		# write an extra PID file
 					# (change requires restart)
 
+unix_socket_directories = '/var/run/postgresql'
+
 
 #------------------------------------------------------------------------------
 # CONNECTIONS AND AUTHENTICATION
@@ -78,7 +80,7 @@ superuser_reserved_connections = 1	# (change requires restart)
 # - Security and Authentication -
 
 #authentication_timeout = 1min		# 1s-600s
-ssl = true				# (change requires restart)
+ssl = on				# (change requires restart)
 #ssl_ciphers = 'DEFAULT:!LOW:!EXP:!MD5:@STRENGTH'	# allowed SSL ciphers
 					# (change requires restart)
 #ssl_renegotiation_limit = 512MB	# amount of data between renegotiations

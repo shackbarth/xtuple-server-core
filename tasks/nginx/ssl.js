@@ -80,15 +80,26 @@
      * @static
      */
     generate: function (options) {
-      return exec([
-        'openssl req',
-        '-x509 -newkey rsa:2048',
-        '-subj \'/C=US/CN='+ options.nginx.domain + '/O=xTuple\'',
-        '-days 365',
-        '-nodes',
-        '-keyout {nginx.outkey}',
-        '-out {nginx.outcrt}',
-      ].join(' ').format(options));
+      var cmd = [
+          'openssl req',
+          '-x509 -newkey rsa:2048',
+          '-subj \'/CN='+ options.nginx.domain + '\'',
+          '-days 365',
+          '-nodes',
+          '-keyout {nginx.outkey}',
+          '-out {nginx.outcrt}',
+        ].join(' ').format(options),
+        result = exec(cmd);
+
+      console.log(cmd);
+      console.log(result);
+      console.log(exec('ls {xt.ssldir}'.format(options)));
+
+      exec('chown {xt.name}:ssl-cert {nginx.outcrt}'.format(options));
+      exec('chown {xt.name}:ssl-cert {nginx.outkey}'.format(options));
+      //exec('chmod -R g=wrx,u=wrx {xt.ssldir}'.format(options));
+
+      return result;
     },
 
     /**

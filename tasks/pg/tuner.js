@@ -61,8 +61,8 @@
           shared_buffers: shared_buffers(cluster, config, env),
           max_stack_depth: max_stack_depth(cluster, config, env),
           effective_cache_size: effective_cache_size(cluster, config, env),
-          ssl_cert_file: options.nginx.outcrt,
-          ssl_key_file: options.nginx.outkey,
+          ssl_cert_file: options.pg.outcrt,
+          ssl_key_file: options.pg.outkey,
           ssl_ca_file: options.nginx.outcrt
         }),
         postgresql_conf = postgresql_conf_template
