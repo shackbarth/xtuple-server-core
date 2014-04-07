@@ -33,6 +33,9 @@ help() {
   echo -e ''
 }
 
+mkdir -p /var/run/postgresql
+chown -R postgres:postgres /var/run/postgresql
+
 NAME=xtuple
 PM2=$(which pm2)
 

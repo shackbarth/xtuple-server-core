@@ -33,6 +33,9 @@
       if (exists) {
         throw new Error('cluster configuration already exists');
       }
+
+      exec('mkdir -p /var/run/postgresql');
+      exec('chown -R postgres:postgres /var/run/postgresql');
     },
 
     /** @override */

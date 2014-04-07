@@ -14,17 +14,18 @@ describe('phase: pg', function () {
   var pgPhase = require('../pg'),
     nginxPhase = require('../nginx'),
     xtPhase = require('../xt'),
-    options = global.options;
+    options;
 
   /** Create clean cluster for each test */
   beforeEach(function () {
-    pgPhase.cluster.beforeInstall(global.options);
-    pgPhase.config.beforeTask(global.options);
-    pgPhase.config.doTask(global.options);
-    pgPhase.cluster.doTask(global.options);
+    options = global.options;
+    pgPhase.cluster.beforeInstall(options);
+    pgPhase.config.beforeTask(options);
+    pgPhase.config.doTask(options);
+    pgPhase.cluster.doTask(options);
   });
   afterEach(function () {
-    pgcli.dropcluster(global.options.pg.cluster);
+    pgcli.dropcluster(options.pg.cluster);
   });
 
   it('is sane', function () {
@@ -53,7 +54,6 @@ describe('phase: pg', function () {
     describe('#doTask', function () {
       beforeEach(function () {
         xtPhase.serverconfig.beforeInstall(options);
-        nginxPhase.ssl.beforeInstall(options);
         nginxPhase.ssl.beforeTask(options);
         nginxPhase.ssl.doTask(options);
         pgPhase.hba.beforeTask(options);
@@ -101,6 +101,9 @@ describe('phase: pg', function () {
         assert.equal(parsed[0].user, 'postgres');
       });
       it('should generate correct pg_hba.conf', function () {
+        xtPhase.serverconfig.beforeInstall(options);
+        nginxPhase.ssl.beforeTask(options);
+        nginxPhase.ssl.doTask(options);
         pgPhase.hba.beforeTask(options);
         pgPhase.hba.doTask(options);
         var hba_conf = options.pg.hba;
@@ -201,14 +204,15 @@ describe('phase: pg', function () {
         exec('mkdir -p '+ options.xt.srcdir);
         exec('rm -rf '+ snapshot_path);
         exec('mkdir -p '+ snapshot_path);
-        nginx.ssl.generate(options);
-        xtPhase.clone.beforeTask(options);
-        pgPhase.snapshotmgr.beforeTask(options);
 
-        pgPhase.tuner.doTask(options);
+        xtPhase.serverconfig.beforeInstall(options);
+        nginxPhase.ssl.beforeTask(options);
+        nginxPhase.ssl.doTask(options);
         pgPhase.hba.beforeTask(options);
         pgPhase.hba.doTask(options);
-        pgPhase.cluster.initCluster(options);
+
+        xtPhase.clone.beforeTask(options);
+        pgPhase.snapshotmgr.beforeTask(options);
 
         xt.database.doTask(options);
         options.pg.snapshot = snap.createSnapshot(options);
