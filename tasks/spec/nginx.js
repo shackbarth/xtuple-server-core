@@ -10,6 +10,7 @@ _.mixin(require('congruence'));
 
 describe('phase: nginx', function () {
   var pgPhase = require('../pg'),
+    sysPhase = require('../sys'),
     nginxPhase = require('../nginx'),
     xtPhase = require('../xt'),
     options;
