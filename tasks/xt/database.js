@@ -102,8 +102,6 @@
         throw new Error('No databases have been found for installation');
       }
 
-      console.log(options.xt.database.list);
-
       options.xt.database.list = _.map(databases, function (db) {
         var psql_template = _.extend({ owner: 'admin' }, db, options),
           // create database
