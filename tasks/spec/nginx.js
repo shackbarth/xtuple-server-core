@@ -47,10 +47,6 @@ describe('phase: nginx', function () {
     });
 
     describe('#verifyCertificate', function () {
-      beforeEach(function () {
-        nginxPhase.ssl.doTask(options);
-      });
-
       it('should verify a legit cert', function () {
         assert(nginxPhase.ssl.verifyCertificate(options));
       });

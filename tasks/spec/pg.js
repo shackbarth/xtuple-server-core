@@ -71,7 +71,7 @@ describe('phase: pg', function () {
   });
 
   describe('task: hba', function () {
-    describe('#doTask()', function () {
+    describe('#doTask', function () {
       it('can parse a pristine pg_hba', function () {
         var hba_conf = m(function () {
           /***
