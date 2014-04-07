@@ -11,7 +11,13 @@ _.mixin(require('congruence'));
 describe('phase: nginx', function () {
   var pgPhase = require('../pg'),
     nginxPhase = require('../nginx'),
+    xtPhase = require('../xt'),
+    options;
+
+  beforeEach(function () {
     options = global.options;
+    xtPhase.serverconfig.beforeInstall(options);
+  });
 
   it('is sane', function () {
     assert(nginxPhase);
@@ -28,7 +34,25 @@ describe('phase: nginx', function () {
       exec('rm -f '+ options.nginx.outkey);
     });
 
+    describe('#doTask', function () {
+      beforeEach(function () {
+        options.nginx.incrt = '/tmp/mocha-'+ options.xt.name +'.crt';
+        options.nginx.inkey = '/tmp/mocha-'+ options.xt.name +'.key';
+      });
+
+      it('should reject invalid nginx.outcrt and nginx.outkey', function () {
+        assert.throws(function () {
+          nginxPhase.ssl.doTask(options);
+        }, Error, /cannot find file/);
+
+      });
+    });
+
     describe('#verifyCertificate', function () {
+      beforeEach(function () {
+        nginxPhase.ssl.doTask(options);
+      });
+
       it('should verify a legit cert', function () {
         assert(nginxPhase.ssl.verifyCertificate(options));
       });
@@ -36,8 +60,8 @@ describe('phase: nginx', function () {
         assert.throws(function () {
             nginxPhase.ssl.verifyCertificate({
               nginx: {
-                incrt: 'akjdakjdn',
-                inkey: options.nginx.incrt
+                outcrt: 'akjdakjdn',
+                outkey: options.nginx.outcrt
               }
             });
           }, Error);
@@ -46,14 +70,14 @@ describe('phase: nginx', function () {
         assert.throws(function () {
             nginxPhase.ssl.verifyCertificate({
               nginx: {
-                incrt: options.nginx.incrt,
-                inkey: 'akjdakjdn'
+                outcrt: options.nginx.outcrt,
+                outkey: 'akjdakjdn'
               }
             });
           }, Error);
       });
       it('should reject bad cert', function () {
-        fs.writeFileSync(options.nginx.incrt, 'OHAI');
+        fs.writeFileSync(options.nginx.outcrt, 'OHAI');
 
         assert.throws(function () {
           nginxPhase.ssl.verifyCertificate(options);
@@ -65,8 +89,8 @@ describe('phase: nginx', function () {
         assert.throws(function () {
             nginxPhase.ssl.verifyCertificate({
               nginx: {
-                incrt: options.nginx.incrt,
-                inkey: path.resolve(__filename)
+                outcrt: options.nginx.outcrt,
+                outkey: path.resolve(__filename)
               }
             });
           }, Error, /moduli inconsistent/);
@@ -84,24 +108,15 @@ describe('phase: nginx', function () {
         console.log('>> '+ this.title + ': '+ path.resolve('test_chain.key'));
       }
 
-      var nginxOptions = _.clone(options.nginx);
-
       beforeEach(function () {
-        _.extend(options.nginx, {
-          inzip: path.resolve('test_chain.zip'),
-          inkey: path.resolve('test_chain.key'),
-          incrt: path.resolve('test_chain.crt')
-        });
-      });
-      after(function () {
-        _.extend(options.nginx, nginxOptions);
-        delete options.nginx.inzip;
+        options.nginx.inzip = path.resolve('test_chain.zip');
       });
 
       it('should bundle a trusted chain', function () {
         assert(nginxPhase.ssl.createBundle(options), 'createBundle did not return true');
       });
       it('should verify a legit bundle', function () {
+        nginxPhase.ssl.doTask(options);
         assert(nginxPhase.ssl.verifyCertificate(options), 'verifyCertificate did not return true');
       });
     });
