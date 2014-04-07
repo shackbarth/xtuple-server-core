@@ -75,7 +75,7 @@ describe('phase: xt', function () {
       options.xt.edition = 'core';
     });
   });
-  describe('task: clone [requires password]', function () {
+  describe.skip('task: clone [requires password]', function () {
     this.pending = !!process.env.TRAVIS;
 
     it('should clone and npm install all repos and require password', function () {
