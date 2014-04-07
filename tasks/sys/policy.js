@@ -78,11 +78,11 @@
           'adduser xtremote --ingroup xtadmin --disabled-login',
           'adduser xtadmin --disabled-login',
           'usermod -a -G xtadmin,xtuser,www-data,postgres,lpadmin,ssl-cert xtremote',
-          'usermod -a -G ssl-cert,xtuser postgres'
+          'usermod -a -G ssl-cert,xtuser postgres',
+          'usermod -a -G xtuser {xt.name}'.format(options)
         ],
         xtuple_users = [
-          'adduser {xt.name} --disabled-login --gecos "" '.format(options),
-          'usermod -a -G xtuser {xt.name}'.format(options),
+          'adduser {xt.name} --disabled-login --gecos "" --home /usr/local/{xt.name}'.format(options),
         ],
         system_ownership = [
           'chown root:xtuser /etc/xtuple',
@@ -113,11 +113,11 @@
           //'chmod -R g=rwx,u=rx,o-rw  {pg.configdir}'.format(options)
         ],
         system_users_results = _.map(system_users, exec),
-        xtuple_users_reslts = _.map(xtuple_users, exec),
         results = _.map(_.flatten([
-          system_ownership, system_mode, user_ownership, user_mode
+          xtuple_users, system_ownership, system_mode, user_ownership, user_mode
         ]), exec),
-        failed = _.difference(results, _.where(results, { code: 0 }));
+        failed = _.difference(results, _.where(results, { code: 0 })),
+        sudoers_chmod, visudo_cmd;
 
       if (failed.length > 0) {
         throw new Error(JSON.stringify(failed, null, 2));
@@ -130,6 +130,8 @@
         exec(set_passwd.format({ password: passwords.pop(), name: xt.name }));
       }
 
+      console.log('About to write sudoers file...');
+
       // write sudoers file
       if (!fs.existsSync(global_policy_target)) {
         fs.writeFileSync(global_policy_target, global_policy_src);
@@ -138,13 +140,23 @@
         fs.writeFileSync(user_policy_target, user_policy_src.format(xt));
       }
 
-      exec('chmod 440 /etc/sudoers.d/*');
+      console.log('Wrote sudoers file!');
 
-      results = exec('visudo -c');
+      sudoers_chmod = exec('chmod 440 /etc/sudoers.d/*');
 
-      if (results.code !== 0) {
-        throw new Error(JSON.stringify(results, null, 2));
+      if (sudoers_chmod.code !== 0) {
+        throw new Error(JSON.stringify(sudoers_chmod, null, 2));
       }
+
+      console.log('About to verify sudoers files with visudo -c ...');
+
+      visudo_cmd = exec('visudo -c');
+
+      if (visudo_cmd.code !== 0) {
+        throw new Error(JSON.stringify(visudo_cmd, null, 2));
+      }
+
+      console.log('Sudoers files verified!');
     },
 
     /**
