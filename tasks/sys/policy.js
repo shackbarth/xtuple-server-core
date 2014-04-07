@@ -30,12 +30,13 @@
   _.extend(policy, task, /** @exports policy */ {
 
     beforeTask: function (options) {
-      var path_suffix = '{xt.version}/{xt.name}/'.format(options);
-
-      options.sys.sbindir = path.resolve('/usr/sbin/xtuple', path_suffix);
+      options.sys.sbindir = path.resolve('/usr/sbin/xtuple/{xt.version}/{xt.name}'.format(options));
       options.xt.homedir = path.resolve('/usr/local/xtuple');
       options.sys.policy.userPassword = policy.getPassword();
       options.sys.policy.remotePassword = policy.getPassword();
+
+      exec('mkdir -p /usr/sbin/xtuple/{xt.version}/{xt.name}'.format(options));
+      exec('mkdir -p /usr/local/xtuple/{xt.version}/{xt.name}'.format(options));
     },
 
     /** @override */
