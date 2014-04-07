@@ -1,3 +1,2 @@
 kernel.shmmax = {shmmax}
 kernel.shmall = {shmall}
-

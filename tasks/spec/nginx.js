@@ -4,7 +4,8 @@ var assert = require('chai').assert,
   exec = require('execSync').exec,
   path = require('path'),
   fs = require('fs'),
-  pgcli = require('../../lib/pg-cli');
+  pgcli = require('../../lib/pg-cli'),
+  planner = require('../../lib/planner');
 
 _.mixin(require('congruence'));
 
@@ -17,7 +18,13 @@ describe('phase: nginx', function () {
 
   beforeEach(function () {
     options = global.options;
-    xtPhase.serverconfig.beforeInstall(options);
+
+    planner.verifyOptions(global.baseClusterInstallPlan, options);
+    planner.compileOptions(global.baseClusterInstallPlan, options);
+    planner.install(global.baseClusterInstallPlan, options);
+  });
+  afterEach(function () {
+    pgcli.dropcluster(options.pg.cluster);
   });
 
   it('is sane', function () {
@@ -27,33 +34,19 @@ describe('phase: nginx', function () {
   });
 
   describe('task: ssl', function () {
-    beforeEach(function () {
-      nginxPhase.ssl.beforeTask(options);
-    });
-    afterEach(function () {
-      exec('rm -f '+ options.nginx.outcrt);
-      exec('rm -f '+ options.nginx.outkey);
-    });
 
     describe('#doTask', function () {
-      beforeEach(function () {
-        options.nginx.incrt = '/tmp/mocha-'+ options.xt.name +'.crt';
-        options.nginx.inkey = '/tmp/mocha-'+ options.xt.name +'.key';
-      });
-
       it('should reject invalid nginx.outcrt and nginx.outkey', function () {
+        options.nginx.incrt = '/tmp/weeeeeeeeeeeee.crt';
+        options.nginx.inkey = '/tmp/lalalala.key';
+
         assert.throws(function () {
           nginxPhase.ssl.doTask(options);
         }, Error, /cannot find file/);
-
       });
     });
 
     describe('#verifyCertificate', function () {
-      beforeEach(function () {
-        nginxPhase.ssl.doTask(options);
-      });
-
       it('should verify a legit cert', function () {
         assert(nginxPhase.ssl.verifyCertificate(options));
       });
@@ -117,34 +110,17 @@ describe('phase: nginx', function () {
         assert(nginxPhase.ssl.createBundle(options), 'createBundle did not return true');
       });
       it('should verify a legit bundle', function () {
-        nginxPhase.ssl.doTask(options);
         assert(nginxPhase.ssl.verifyCertificate(options), 'verifyCertificate did not return true');
       });
     });
   });
 
-  describe('task: site', function () {
+  describe.skip('task: site', function () {
     /** Create clean cluster for each test */
     beforeEach(function () {
-      xtPhase.serverconfig.beforeInstall(options);
-      sysPhase.policy.beforeTask(options);
-      sysPhase.policy.createUsers(options);
-
-      pgPhase.cluster.beforeInstall(options);
-      pgPhase.config.beforeTask(options);
-      pgPhase.config.doTask(options);
-      pgPhase.cluster.doTask(options);
-
-      nginxPhase.ssl.beforeTask(options);
-      nginxPhase.ssl.doTask(options);
-      pgPhase.hba.beforeTask(options);
-      pgPhase.hba.doTask(options);
-      pgPhase.tuner.beforeTask(options);
-      pgPhase.tuner.doTask(options);
-      xtPhase.database.doTask(options);
-      xtPhase.clone.beforeTask(options);
-
-      pgPhase.snapshotmgr.beforeTask(options);
+      planner.verifyOptions(global.baseClusterInstallPlan, options);
+      planner.compileOptions(global.baseClusterInstallPlan, options);
+      planner.install(global.baseClusterInstallPlan, options);
     });
     afterEach(function () {
       pgcli.dropcluster(global.options.pg.cluster);
