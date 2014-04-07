@@ -75,6 +75,11 @@
       }
     },
 
+    /** @override */
+    afterTask: function (options) {
+      ssl.verifyCertificate(options);
+    },
+
     /**
      * Generate and write a self-signed SSL keypair.
      * @static
