@@ -3,14 +3,11 @@
 
   /**
    * Installer
-   * TODO yea, this whole process should be driven by events. each module binds
-   * to the 'run' event or something in the plan order, and once all preprocessing
-   * is done we just fire that event once and the big wheel starts turning.
-   * Another day
    */
   var installer = exports;
 
-  var fs = require('fs'),
+  var planner = require('./lib/planner'),
+    fs = require('fs'),
     path = require('path'),
     pgcli = require('./lib/pg-cli'),
     format = require('string-format'),
@@ -21,145 +18,25 @@
     clc = require('cli-color'),
     S = require('string'),
     _ = require('underscore'),
-    install = Commander.version('1.8.0').command('install'),
+    install = Commander.version('1.8.0').command('install')
+      .option('-p --plan', 'Path to planfile'),
     options = { },
-    logo_orange = fs.readFileSync(path.resolve(__dirname, './lib/x-orange.ascii'), 'ascii').trim(),
-    logo_blue = fs.readFileSync(path.resolve(__dirname, './lib/x-blue.ascii'), 'ascii').trim(),
-    logo_mono = fs.readFileSync(path.resolve(__dirname, './lib/x.ascii'), 'ascii').trim(),
-    logo_lines= _.map(
-      _.object(logo_orange.split('\n'), logo_blue.split('\n')),
-      function (blue_line, orange_line) {
-        return orange_line + blue_line;
-      }
-    ),
-    format_prefix = function(phaseName, taskName) {
-      return phaseName + '.' + taskName;
-    },
-    plan = require(process.env.XT_INSTALLER_PLAN || './plan'),
-    tasks = { },
-    current = 1;
+    plan = require('./plan');
 
-  _.extend(installer, /** @exports installer */ {
-
-    logfile: path.resolve('install.log'),
-
-    /**
-     * Advance progress bar 
-     * @protected
-     */
-    log_progress: function (state) {
-      //console.log(clc.reset);
-      /*
-      _.each(_.range(current), function (i) {
-        console.log(logo_lines[i]);
-      });
-
-      _.each(_.tail(logo_lines, current), function (i) {
-        console.log();
-      });
-      */
-
-      console.log();
-      installer.log({
-        prefix: '{phase}.{task}'.format(state),
-        msg: state.msg || 'Installing... '
-      }, true);
-
-      if (/xt/.test(state.phase)) {
-        current += 2;
-      }
-      else {
-        current++;
-      }
-    },
-
-    /**
-     * Log TODO use standard logging lib
-     */
-    log: function (payload, stdout) {
-      var output = '[{prefix}] {msg}'.format({
-        prefix: payload.prefix || 'xtuple',
-        msg: _.isObject(payload.msg) ? JSON.stringify(payload.msg, null, 2) : payload.msg
-      });
-      fs.appendFileSync(installer.logfile, output + os.EOL);
-      if (stdout) {
-        console.log(output);
-      }
-    },
-
-    /**
-     * Log an error and kill the process
-     */
-    die: function (payload) {
-      //console.log(clc.reset);
-      installer.log({ msg: clc.red.bold(payload.msg), prefix: payload.prefix }, true);
-      console.log();
-      process.exit(1);
-    },
-
-    /**
-     * Invoke a function on each task
-     * @callback (task, phaseName, taskName);
-     */
-    eachTask: function (func) {
-      _.map(plan, function (phase) {
-        var phaseName = phase.name;
-        _.map(phase.tasks, function (taskName) {
-          try {
-            if (!tasks[phaseName]) {
-              tasks[phaseName] = require('./tasks/' + phaseName);
-            }
-            return func(tasks[phaseName][taskName], phaseName, taskName);
-          }
-          catch (e) {
-            installer.log({ msg: e.stack, prefix: format_prefix(phaseName, taskName) });
-            installer.log({ msg: 'See log for error details.', prefix: format_prefix(phaseName, taskName) }, true);
-            installer.die({ msg: e.message, prefix: format_prefix(phaseName, taskName) });
-          }
-        });
-      });
-    },
-
-    /**
-     * Run installer with the  specified plan and options.
-     */
-    install: function (plan, options) {
-      // beforeInstall
-      installer.eachTask(function (task, phaseName, taskName) {
-        installer.log_progress({ phase: phaseName, task: taskName, msg: 'Before Install...' });
-        task.beforeInstall(options);
-      });
-
-      // run installer tasks
-      installer.eachTask(function (task, phaseName, taskName) {
-        installer.log_progress({ phase: phaseName, task: taskName, msg: 'Before Task...' });
-        task.beforeTask(options);
-
-        installer.log_progress({ phase: phaseName, task: taskName, msg: 'Install...' });
-        task.doTask(options);
-
-        installer.log_progress({ phase: phaseName, task: taskName, msg: 'After Task...' });
-        task.afterTask(options);
-      });
-
-      // afterInstall
-      installer.eachTask(function (task, phaseName, taskName) {
-        installer.log_progress({ phase: phaseName, task: taskName, msg: 'After Install...' });
-        task.afterInstall(options);
-      });
-    }
-  });
+  if (!_.isObject(plan)) {
+    throw new Error('No planfile found');
+  }
 
   // self-tests
   if (exec('id -u').stdout.indexOf('0') !== 0) {
-    installer.die({ msg: 'Installer must be run as root', prefix: 'xtuple' });
+    planner.die({ msg: 'Installer must be run as root', prefix: 'xtuple' });
   }
 
-  fs.writeFileSync(installer.logfile, os.EOL);
+  fs.writeFileSync(planner.logfile, os.EOL);
 
   // compile Commander's options list. I wish it accepted a json object; instead
   // we must populate it via api calls
-  installer.eachTask(function (task, phaseName, taskName) {
+  planner.eachTask(plan, function (task, phaseName, taskName) {
     options[phaseName] || (options[phaseName] = { });
     options[phaseName][taskName] = { };
 
@@ -176,9 +53,9 @@
         options[phaseName][option_name] = option_details.value;
       }
       catch (e) {
-        installer.log({ msg: e.stack, prefix: format_prefix(phaseName, taskName) });
-        installer.log({ msg: 'See log for error details.', prefix: format_prefix(phaseName, taskName) }, true);
-        installer.die({ msg: e.message, prefix: format_prefix(phaseName, taskName) });
+        planner.log({ msg: e.stack, prefix: planner.format_prefix(phaseName, taskName) });
+        planner.log({ msg: 'See log for error details.', prefix: planner.format_prefix(phaseName, taskName) }, true);
+        planner.die({ msg: e.message, prefix: planner.format_prefix(phaseName, taskName) });
       }
     });
   });
@@ -205,27 +82,27 @@
   });
 
   // verify required options
-  installer.eachTask(function (task, phaseName, taskName) {
+  planner.eachTask(plan, function (task, phaseName, taskName) {
     var invalidOptions = _.filter(task.options, function (option, key) {
       return _.isString(option.required) && _.isUndefined(options[phaseName][key]);
     });
 
     if (invalidOptions.length > 0) {
-      installer.die({ msg: JSON.stringify(invalidOptions, null, 2) });
+      planner.die({ msg: JSON.stringify(invalidOptions, null, 2) });
     }
   });
 
   // print plan
   _.each(plan, function (phase) {
-    installer.log({ msg: 'Module: {name}'.format(phase) }, true);
-    installer.log({ msg: '  Tasks: ' + JSON.stringify(phase.tasks) }, true);
-    installer.log({ msg: '  Arguments: '+ JSON.stringify(options[phase.name], null, 2) }, true);
+    planner.log({ msg: 'Module: {name}'.format(phase) }, true);
+    planner.log({ msg: '  Tasks: ' + JSON.stringify(phase.tasks) }, true);
+    planner.log({ msg: '  Arguments: '+ JSON.stringify(options[phase.name], null, 2) }, true);
   });
 
   prompt.get('Press Enter to confirm the Installation Plan', function(err, result) {
-    installer.install(require('plan'), options);
+    planner.install(plan, options);
 
-    current = logo_lines.length;
-    installer.log_progress({ phase: 'installer', task: 'installer', msg: 'Done!'});
+    //current = logo_lines.length;
+    planner.log_progress({ phase: 'installer', task: 'installer', msg: 'Done!'});
   });
 })();
