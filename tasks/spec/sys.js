@@ -24,6 +24,7 @@ describe('phase: sys', function () {
 
       beforeEach(function () {
         xtPhase.serverconfig.beforeInstall(options);
+        sysPhase.policy.beforeTask(options);
         sysPhase.policy.createUsers(options);
       });
       afterEach(function () {
