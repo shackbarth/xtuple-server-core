@@ -18,6 +18,13 @@ describe('phase: nginx', function () {
 
   beforeEach(function () {
     options = global.options;
+
+    planner.verifyOptions(global.baseClusterInstallPlan, options);
+    planner.compileOptions(global.baseClusterInstallPlan, options);
+    planner.install(global.baseClusterInstallPlan, options);
+  });
+  afterEach(function () {
+    pgcli.dropcluster(options.pg.cluster);
   });
 
   it('is sane', function () {
@@ -27,22 +34,15 @@ describe('phase: nginx', function () {
   });
 
   describe('task: ssl', function () {
-    afterEach(function () {
-      exec('rm -f '+ options.nginx.outcrt);
-      exec('rm -f '+ options.nginx.outkey);
-    });
 
     describe('#doTask', function () {
-      beforeEach(function () {
-        options.nginx.incrt = '/tmp/mocha-'+ options.xt.name +'.crt';
-        options.nginx.inkey = '/tmp/mocha-'+ options.xt.name +'.key';
-      });
-
       it('should reject invalid nginx.outcrt and nginx.outkey', function () {
+        options.nginx.incrt = '/tmp/weeeeeeeeeeeee.crt';
+        options.nginx.inkey = '/tmp/lalalala.key';
+
         assert.throws(function () {
           nginxPhase.ssl.doTask(options);
         }, Error, /cannot find file/);
-
       });
     });
 
@@ -110,20 +110,17 @@ describe('phase: nginx', function () {
         assert(nginxPhase.ssl.createBundle(options), 'createBundle did not return true');
       });
       it('should verify a legit bundle', function () {
-        //nginxPhase.ssl.doTask(options);
         assert(nginxPhase.ssl.verifyCertificate(options), 'verifyCertificate did not return true');
       });
     });
   });
 
-  describe('task: site', function () {
+  describe.skip('task: site', function () {
     /** Create clean cluster for each test */
     beforeEach(function () {
       planner.verifyOptions(global.baseClusterInstallPlan, options);
       planner.compileOptions(global.baseClusterInstallPlan, options);
       planner.install(global.baseClusterInstallPlan, options);
-
-      pgPhase.snapshotmgr.beforeTask(options);
     });
     afterEach(function () {
       pgcli.dropcluster(global.options.pg.cluster);
