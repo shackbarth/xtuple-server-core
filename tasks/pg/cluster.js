@@ -45,7 +45,7 @@
       //'chown {xt.name} /var/run/postgresql/{pg.version}-{xt.name}.pid'.format(options),
 
       cluster.initCluster(options);
-      pgcli.ctlcluster({ action: 'restart', version: options.pg.version, name: options.xt.name });
+      pgcli.ctlcluster({ action: 'reload', version: options.pg.version, name: options.xt.name });
     },
 
     /**
@@ -53,6 +53,7 @@
      */
     initCluster: function (options) {
       pgcli.createdb(_.extend({ dbname: options.xt.name, owner: options.xt.name }, options));
+
       // Docs: <http://www.postgresql.org/docs/9.3/static/sql-createrole.html>
       var queries = [
           // create xtrole

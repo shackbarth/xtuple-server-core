@@ -9,13 +9,19 @@ describe('phase: xt', function () {
     pgPhase = require('../pg'),
     xtPhase = require('../xt'),
     nginxPhase = require('../nginx'),
+    planner = require('../../lib/planner'),
+    pgcli = require('../../lib/pg-cli'),
     options;
 
   beforeEach(function () {
     options = global.options;
-    xtPhase.serverconfig.beforeInstall(options);
-    sysPhase.policy.beforeTask(options);
-    sysPhase.policy.createUsers(options);
+
+    planner.verifyOptions(global.baseClusterInstallPlan, options);
+    planner.compileOptions(global.baseClusterInstallPlan, options);
+    planner.install(global.baseClusterInstallPlan, options);
+  });
+  afterEach(function () {
+    pgcli.dropcluster(options.pg.cluster);
   });
 
   it('is sane', function () {
@@ -62,9 +68,6 @@ describe('phase: xt', function () {
       assert.include(repoList, 'private-extensions');
     });
     it.skip('should clone and npm install public repos without prompting for password', function () {
-      xtPhase.clone.beforeTask(options);
-      xtPhase.clone.doTask(options);
-
       var xtupleRepo = fs.existsSync(options.xt.srcdir, 'xtuple'),
         extensionsRepo = fs.existsSync(options.xt.srcdir, 'xtuple-extensions');
 
@@ -80,8 +83,6 @@ describe('phase: xt', function () {
 
     it('should clone and npm install all repos and require password', function () {
       options.xt.edition = 'distribution';
-      xtPhase.clone.beforeTask(options);
-      xtPhase.clone.doTask(options);
 
       var xtupleRepo = fs.existsSync(options.xt.srcdir, 'xtuple'),
         extensionsRepo = fs.existsSync(options.xt.srcdir, 'xtuple-extensions'),
@@ -100,8 +101,6 @@ describe('phase: xt', function () {
     });
 
     it('should parse and generate a correct config.js', function () {
-      xtPhase.serverconfig.doTask(options);
-
       assert.match(options.xt.serverconfig.string, /"testDatabase": "demo"/);
       assert.match(options.xt.serverconfig.string, /"password": "123"/);
       assert.equal(options.xt.serverconfig.json.datasource.databases.length, 1);
