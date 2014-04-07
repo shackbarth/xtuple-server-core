@@ -43,10 +43,10 @@
     beforeTask: function (options) {
       var root = snapshotmgr.getSnapshotRoot(options.xt.version, options.xt.name);
       exec('mkdir -p ' + root);
-      exec('chown postgres /var/lib/postgresql');
-      exec('chmod u=rwx '+ root);
+      exec(('chown {xt.name}:xtuser '+ root).format(options));
+      //exec('chmod u=rwx '+ root);
 
-      exec('chown postgres ' +  root);
+      //exec('chown postgres ' +  root);
     },
 
     /** @override */
@@ -103,24 +103,24 @@
       var version = options.xt.version,
         name = options.xt.name,
         backup_path = snapshotmgr.getSnapshotRoot(version, name),
-        list_query = "SELECT datname FROM pg_database WHERE datname NOT IN ('postgres','template0','template1')",
-        all_databases = exec('sudo -u postgres psql -U postgres -t -p {port} -c "{query};"'.format({
+        list_query = "SELECT datname FROM pg_database WHERE datname NOT IN ('postgres','template0','template1','{xt.name}')".format(options),
+        all_databases = exec('sudo -u {xt.name} psql -U {xt.name} -t -p {port} -c "{query};"'.format(_.extend({
           query: list_query,
           port: options.pg.cluster.port
-        })).stdout.split('\n'),
+        }, options))).stdout.split('\n'),
         file_formatter = {
           ts: moment().format('MMDDYYYY'),
           name: name,
         },
-        pg_dump = 'sudo -u postgres /usr/lib/postgresql/9.3/bin/pg_dump',
-        pg_dumpall = 'sudo -u postgres /usr/lib/postgresql/9.3/bin/pg_dumpall',
-        cmd_template = pg_dump + ' -U postgres -w -p {port} -Fd -f {out} --no-synchronized-snapshots {dbname}',
+        pg_dump = 'sudo -u {xt.name} /usr/lib/postgresql/9.3/bin/pg_dump',
+        pg_dumpall = 'sudo -u {xt.name} /usr/lib/postgresql/9.3/bin/pg_dumpall',
+        cmd_template = pg_dump + ' -U {xt.name} -w -p {port} -Fd -f {out} --no-synchronized-snapshots {dbname}',
 
         // backup globals (users, roles, etc) separately
-        globals_snapshot = exec(pg_dumpall + ' -U postgres -w -p {port} -g > {out}.sql'.format({
+        globals_snapshot = exec((pg_dumpall + ' -U {xt.name} -w -p {port} -g > {out}.sql').format(_.extend({
           port: options.pg.cluster.port,
           out: snapshotmgr.getSnapshotPath(options)
-        })),
+        }, options))),
 
         // snapshot each database. possibly huge files, may take many minutes
         // e.g. kelhay 2.5G gzip pg_dump with -j4 takes 4min on my laptop. 8m with -j 1. -tjw
@@ -129,14 +129,20 @@
             snap = snapshotmgr.getSnapshotPath(_.extend({ dbname: db }, options));
           exec('rm -rf '+ snap);
 
-          return exec(cmd_template.format({
+          console.log(db);
+
+          var cmd = cmd_template.format(_.defaults({
             port: options.pg.cluster.port,
             dbname: db,
             out: snap,
             jobs: Math.ceil(os.cpus().length / 2)
-          }));
+          }, options));
+          console.log(cmd);
+          return exec(cmd);
         }).concat([globals_snapshot]),
         errors = _.where(snapshot, { code: 1 });
+
+      console.log(snapshot);
 
       if (errors.length > 0) {
         throw new Error(_.pluck(errors, 'stdout'));
@@ -179,10 +185,10 @@
 
       // initiate restore process... and wait. could take awhile
       pgcli.createdb({ owner: 'admin', dbname: options.dbname });
-      pgcli.restore({
+      pgcli.restore(_.extend({
         filename: snapshotmgr.getSnapshotPath(options),
         dbname: options.dbname
-      });
+      }, options));
     },
 
     /**

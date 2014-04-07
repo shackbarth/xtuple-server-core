@@ -12,7 +12,7 @@ describe('xTuple Installer', function () {
         xt: {
           version: '4.4.0',
           edition: 'core',
-          name: $k,
+          name: 'xt' + $k,
           setupdemos: true,
           srcdir: path.resolve('/tmp/xtmocha/src', '4.4.0'),
           adminpw: '123',
@@ -57,11 +57,9 @@ describe('xTuple Installer', function () {
     };
 
   beforeEach(function () {
-    global.options = getOptions(Math.round((Math.random() * 2e16)).toString(16));
-  });
-  afterEach(function () {
-    exec('rm -f '+ global.options.nginx.outcrt);
-    exec('rm -f '+ global.options.nginx.outkey);
+    global.options = getOptions(
+      Math.round((Math.random() * 2e16)).toString(36).replace(/[0-9]/g, '')
+    );
   });
 
   /**
