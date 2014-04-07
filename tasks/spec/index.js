@@ -9,8 +9,8 @@ describe('xTuple Installer', function () {
     pgPhase = require('../pg'),
     getOptions = function ($k) {
       return {
+        quiet: true,
         xt: {
-          //version: '4.4.0',
           edition: 'core',
           name: 'xt' + $k,
           setupdemos: true,
@@ -70,16 +70,13 @@ describe('xTuple Installer', function () {
     );
   });
 
-  /**
-   * Require root prvileges
-   */
-  it('should be run with root privileges', function () {
+  it('must run with root privileges', function () {
     assert(
       exec('id -u').stdout.indexOf('0') === 0,
       'installer tests must be run with sudo'
     );
   });
-  it('should be run with XT_PG_VERSION environment variable set', function () {
+  it('must set XT_PG_VERSION environment variable', function () {
     assert.include([ '9.1', '9.3' ], process.env.XT_PG_VERSION);
   });
 

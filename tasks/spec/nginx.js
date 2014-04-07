@@ -18,7 +18,6 @@ describe('phase: nginx', function () {
 
   beforeEach(function () {
     options = global.options;
-    xtPhase.serverconfig.beforeInstall(options);
   });
 
   it('is sane', function () {
@@ -28,9 +27,6 @@ describe('phase: nginx', function () {
   });
 
   describe('task: ssl', function () {
-    beforeEach(function () {
-      nginxPhase.ssl.beforeTask(options);
-    });
     afterEach(function () {
       exec('rm -f '+ options.nginx.outcrt);
       exec('rm -f '+ options.nginx.outkey);
@@ -118,7 +114,7 @@ describe('phase: nginx', function () {
         assert(nginxPhase.ssl.createBundle(options), 'createBundle did not return true');
       });
       it('should verify a legit bundle', function () {
-        nginxPhase.ssl.doTask(options);
+        //nginxPhase.ssl.doTask(options);
         assert(nginxPhase.ssl.verifyCertificate(options), 'verifyCertificate did not return true');
       });
     });

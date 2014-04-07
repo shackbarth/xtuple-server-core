@@ -28,7 +28,6 @@
 
     /** @override */
     beforeInstall: function (options) {
-      console.log(options.xt.version);
       options.xt.srcdir = path.resolve('/usr/local/xtuple/src/', options.xt.version);
       options.xt.coredir = path.resolve(options.xt.srcdir, 'xtuple');
       options.xt.extdir = path.resolve(options.xt.srcdir, 'xtuple-extensions');
@@ -73,15 +72,14 @@
       if (build.hasPrivateExtensions(options)) {
         exec('git config --global credential.helper \'cache --timeout=3600\'');
       }
-      if (fs.existsSync(options.xt.coredir)) {
-        return;
-      }
 
       _.each(clone.getRepositoryList(options), function (repo) {
         var template = _.extend({
           repo: repo,
           path: path.resolve(options.xt.srcdir, repo)
         }, options);
+
+        if (fs.existsSync(template.path)) { return; }
           
         exec('git clone --recursive https://github.com/xtuple/{repo}.git {path}'.format(template));
         exec('cd {path} && git checkout '+ options.xt.repoHash);
