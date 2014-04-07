@@ -25,11 +25,6 @@
         required: '<name>',
         description: 'Name of the installation'
       },
-      version: {
-        optional: '[version]',
-        description: 'xTuple Mobile App Version',
-        value: '1.8.2'
-      },
       maindb: {
         optional: '[path]',
         description: 'Path to primary database .backup file to use in production',

@@ -4,7 +4,8 @@ var assert = require('chai').assert,
   exec = require('execSync').exec,
   path = require('path'),
   fs = require('fs'),
-  pgcli = require('../../lib/pg-cli');
+  pgcli = require('../../lib/pg-cli'),
+  planner = require('../../lib/planner');
 
 _.mixin(require('congruence'));
 
@@ -126,23 +127,7 @@ describe('phase: nginx', function () {
   describe('task: site', function () {
     /** Create clean cluster for each test */
     beforeEach(function () {
-      xtPhase.serverconfig.beforeInstall(options);
-      sysPhase.policy.beforeTask(options);
-      sysPhase.policy.createUsers(options);
-
-      pgPhase.cluster.beforeInstall(options);
-      pgPhase.config.beforeTask(options);
-      pgPhase.config.doTask(options);
-      pgPhase.cluster.doTask(options);
-
-      nginxPhase.ssl.beforeTask(options);
-      nginxPhase.ssl.doTask(options);
-      pgPhase.hba.beforeTask(options);
-      pgPhase.hba.doTask(options);
-      pgPhase.tuner.beforeTask(options);
-      pgPhase.tuner.doTask(options);
-      xtPhase.database.doTask(options);
-      xtPhase.clone.beforeTask(options);
+      planner.install(global.baseClusterInstallPlan, options);
 
       pgPhase.snapshotmgr.beforeTask(options);
     });

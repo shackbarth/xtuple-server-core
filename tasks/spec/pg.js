@@ -5,8 +5,8 @@ var assert = require('chai').assert,
   m = require('mstring'),
   moment = require('moment'),
   _ = require('underscore'),
-  nginx = require('../nginx'),
-  pgcli = require('../../lib/pg-cli');
+  pgcli = require('../../lib/pg-cli'),
+  planner = require('../../lib/planner');
 
 _.mixin(require('congruence'));
 
@@ -15,32 +15,15 @@ describe('phase: pg', function () {
     nginxPhase = require('../nginx'),
     sysPhase = require('../sys'),
     xtPhase = require('../xt'),
-    baseClusterPlan = [
-      {name: 'xt', tasks: [ 'serverconfig' ]},
-      {name: 'sys', tasks: [ 'policy' ]},
-      {name: 'pg', tasks: [ 'config', 'cluster' ]}
-    ],
     options;
 
   /** Create clean cluster for each test */
   beforeEach(function () {
     options = global.options;
 
-    xtPhase.serverconfig.beforeInstall(options);
-    sysPhase.policy.beforeTask(options);
-    sysPhase.policy.createUsers(options);
-
-    pgPhase.cluster.beforeInstall(options);
-    pgPhase.config.beforeTask(options);
-    pgPhase.config.doTask(options);
-    pgPhase.cluster.doTask(options);
-
-    nginxPhase.ssl.beforeTask(options);
-    nginxPhase.ssl.doTask(options);
-    pgPhase.hba.beforeTask(options);
-    pgPhase.hba.doTask(options);
-    pgPhase.tuner.beforeTask(options);
-    pgPhase.tuner.doTask(options);
+    planner.verifyOptions(global.baseClusterInstallPlan, options);
+    planner.compileOptions(global.baseClusterInstallPlan, options);
+    planner.install(global.baseClusterInstallPlan, options);
   });
   afterEach(function () {
     pgcli.dropcluster(options.pg.cluster);
@@ -110,16 +93,9 @@ describe('phase: pg', function () {
         assert.equal(parsed[0].user, 'postgres');
       });
       it('should generate correct pg_hba.conf', function () {
-        xtPhase.serverconfig.beforeInstall(options);
-        nginxPhase.ssl.beforeTask(options);
-        nginxPhase.ssl.doTask(options);
-        pgPhase.hba.beforeTask(options);
-        pgPhase.hba.doTask(options);
-        var hba_conf = options.pg.hba;
-
-        assert.match(hba_conf.string, /all \s+ all \s+ 10\.0\.0\.0\/8 \s+ md5/);
-        assert.match(hba_conf.string, /all \s+ all \s+ 172\.16\.0\.0\/12 \s+ md5/);
-        assert.match(hba_conf.string, /all \s+ all \s+ 192\.168\.0\.0\/16 \s+ md5/);
+        assert.match(options.pg.hba.string, /all \s+ all \s+ 10\.0\.0\.0\/8 \s+ md5/);
+        assert.match(options.pg.hba.string, /all \s+ all \s+ 172\.16\.0\.0\/12 \s+ md5/);
+        assert.match(options.pg.hba.string, /all \s+ all \s+ 192\.168\.0\.0\/16 \s+ md5/);
       });
     });
   });

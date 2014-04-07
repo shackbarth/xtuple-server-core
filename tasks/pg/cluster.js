@@ -45,7 +45,7 @@
       //'chown {xt.name} /var/run/postgresql/{pg.version}-{xt.name}.pid'.format(options),
 
       cluster.initCluster(options);
-      pgcli.ctlcluster({ action: 'restart', version: options.pg.version, name: options.xt.name });
+      pgcli.ctlcluster({ action: 'reload', version: options.pg.version, name: options.xt.name });
     },
 
     /**
