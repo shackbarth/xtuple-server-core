@@ -33,10 +33,6 @@ describe('phase: xt', function () {
     assert(xtPhase.testconfig);
   });
 
-  describe.skip('task: testconfig', function () {
-
-  });
-
   describe('task: clone', function () {
     it('should clone only public repos if installing a free edition', function () {
       var repoList = xtPhase.clone.getRepositoryList(options);
@@ -94,24 +90,25 @@ describe('phase: xt', function () {
     });
   });
 
-  describe.skip('task: serverconfig', function () {
-    beforeEach(function () {
-      exec('mkdir -p __config- ' + options.xt.name);
-      exec('mkdir -p __log- ' + options.xt.name);
-    });
+  describe.skip('task: testconfig', function () {
 
+  });
+
+  describe('task: serverconfig', function () {
     it('should parse and generate a correct config.js', function () {
-      assert.match(options.xt.serverconfig.string, /"testDatabase": "demo"/);
-      assert.match(options.xt.serverconfig.string, /"password": "123"/);
-      assert.equal(options.xt.serverconfig.json.datasource.databases.length, 1);
-    });
-
-    after(function () {
-      exec('rm -rf *-{xt.name}*'.format(options));
+      assert.match(options.xt.serverconfig.string, new RegExp('"user": "{xt.name}"'.format(options)));
     });
   });
 
-  after(function () {
-    exec('rm -rf __*');
+  describe('task: build_app/build_common', function () {
+    beforeEach(function () {
+      planner.verifyOptions(global.baseAppInstallPlan, options);
+      planner.compileOptions(global.baseAppInstallPlan, options);
+      planner.install(global.baseAppInstallPlan, options);
+    });
+
+    it('should build demo and postbooks databases by default', function () {
+
+    });
   });
 });

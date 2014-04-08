@@ -1,44 +1,8 @@
 [
-  {
-    "name": "nginx",
-    "tasks": [
-      "ssl"
-    ]
-  },
-  {
-    "name": "pg",
-    "tasks": [
-      "config",
-      "cluster",
-      "hba",
-      "tuner",
-      "snapshotmgr"
-    ]
-  },
-  {
-    "name": "xt",
-    "tasks": [
-      "clone",
-      "database",
-      "serverconfig",
-      "testconfig",
-      "build_common",
-      "build_main"
-    ]
-  },
-  {
-    "name": "nginx",
-    "tasks": [
-      "site"
-    ]
-  },
-  {
-    "name": "sys",
-    "tasks": [
-      "etchosts",
-      "policy",
-      "cups",
-      "service"
-    ]
-  }
+  { "name": "sys", "tasks": [ "policy" ] },
+  { "name": "xt", "tasks": [ "clone", "serverconfig" ] },
+  { "name": "pg", "tasks": [ "config", "cluster" ] },
+  { "name": "nginx", "tasks": [ "ssl" ] },
+  { "name": "pg", "tasks": [ "hba", "tuner" ] },
+  { "name": "xt", "tasks": [ "database", "build_common", "build_main" ] }
 ]
