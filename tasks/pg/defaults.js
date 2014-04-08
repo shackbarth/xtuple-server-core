@@ -38,7 +38,7 @@ module.exports = {
     base: {
       version: 9.3,
       locale: 'en_US.UTF-8',
-      max_connections: 128,
+      max_connections: 16,
       work_mem: 1,
       temp_buffers: 16,
       shared_buffers: 128,
