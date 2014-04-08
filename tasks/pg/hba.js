@@ -16,6 +16,7 @@
     path = require('path'),
     exec = require('execSync').exec,
     format = require('string-format'),
+    pgcli = require('../../lib/pg-cli'),
     filename_template = 'pg_hba-{pg.version}.conf.template',
     xtuple_hba_entries = [
 
@@ -74,6 +75,11 @@
       hba.createClientCert(options);
   
       _.extend(options.pg.hba, { path: hba_target, string: hba_conf });
+    },
+
+    /** @override */
+    afterTask: function (options) {
+      pgcli.ctlcluster({ action: 'reload', version: options.pg.version, name: options.xt.name });
     },
 
     /**
