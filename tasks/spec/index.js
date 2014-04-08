@@ -56,13 +56,23 @@ describe('xTuple Installer', function () {
     };
 
   global.baseClusterInstallPlan = [
-    {name: 'xt', tasks: [ 'clone', 'serverconfig' ]},
     {name: 'sys', tasks: [ 'policy' ]},
+    {name: 'xt', tasks: [ 'clone', 'serverconfig' ]},
     {name: 'pg', tasks: [ 'config', 'cluster' ]},
     {name: 'nginx', tasks: [ 'ssl' ]},
     {name: 'pg', tasks: [ 'hba', 'tuner' ]},
     {name: 'xt', tasks: [ 'database' ]},
+    {name: 'sys', tasks: [ 'etchosts' ]},
   ];
+
+  global.baseAppInstallPlan = global.baseClusterInstallPlan.concat([
+    {name: "xt", tasks: [ 'build_common', 'build_main' ] }
+  ]);
+
+  global.fullInstallPlan = global.baseAppInstallPlan.concat([
+    {name: 'sys', tasks: [ 'cups', 'service' ]},
+    {name: 'pg', tasks: [ 'snapshotmgr' ]}
+  ]);
 
   beforeEach(function () {
     global.options = getOptions(
