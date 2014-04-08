@@ -57,27 +57,35 @@ describe('xTuple Installer', function () {
 
   global.baseClusterInstallPlan = [
     {name: 'sys', tasks: [ 'policy' ]},
-    {name: 'xt', tasks: [ 'clone', 'serverconfig' ]},
+    {name: 'xt', tasks: [ 'clone' ]},
     {name: 'pg', tasks: [ 'config', 'cluster' ]},
     {name: 'nginx', tasks: [ 'ssl' ]},
     {name: 'pg', tasks: [ 'hba', 'tuner' ]},
-    {name: 'xt', tasks: [ 'database' ]},
+    {name: 'xt', tasks: [ 'database', 'serverconfig' ]},
     {name: 'sys', tasks: [ 'etchosts' ]},
   ];
 
-  global.baseAppInstallPlan = global.baseClusterInstallPlan.concat([
+  global.baseAppInstallPlan = [
     {name: "xt", tasks: [ 'build_common', 'build_main' ] }
-  ]);
+  ];
 
-  global.fullInstallPlan = global.baseAppInstallPlan.concat([
+  global.fullInstallPlan = [
     {name: 'sys', tasks: [ 'cups', 'service' ]},
     {name: 'pg', tasks: [ 'snapshotmgr' ]}
-  ]);
+  ];
 
   beforeEach(function () {
     global.options = getOptions(
       Math.round((Math.random() * 2e16)).toString(36).replace(/[0-9]/g, '')
     );
+  });
+  afterEach(function () {
+    try {
+      pgcli.dropcluster({ name: global.options.xt.name, version: global.options.pg.version });
+    }
+    catch (e) {
+
+    }
   });
 
   it('must run with root privileges', function () {

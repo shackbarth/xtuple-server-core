@@ -12,6 +12,7 @@
     format = require('string-format'),
     _ = require('underscore'),
     env = require('./defaults').env,
+    pgcli = require('../../lib/pg-cli'),
     exec = require('execSync').exec,
     fs = require('fs'),
     path = require('path'),
@@ -87,6 +88,11 @@
         json: conf_values,
         string: postgresql_conf
       });
+    },
+
+    /** @override */
+    afterTask: function (options) {
+      pgcli.ctlcluster({ action: 'reload', version: options.pg.version, name: options.xt.name });
     }
   });
 
