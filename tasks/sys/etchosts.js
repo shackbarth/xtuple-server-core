@@ -19,7 +19,7 @@
 
     /** @override */
     doTask: function (options) {
-      var etc_hosts_template = fs.readFileSync(hosts_template_path),
+      var etc_hosts_template = fs.readFileSync(hosts_template_path).toString(),
         etc_hosts_current = fs.readFileSync(path.resolve('/etc/hosts')),
         formatter = _.extend({ }, options.xt, options.nginx);
 
