@@ -15,7 +15,7 @@
     _ = require('underscore'),
     exec = require('execSync').exec,
     pgcli = require('../../lib/pg-cli'),
-    url_template = 'http://sourceforge.net/projects/postbooks/filenames/' +
+    url_template = 'http://sourceforge.net/projects/postbooks/files/' +
       '03%20PostBooks-databases/{version}/postbooks_{dbname}-{version}.backup/download';
 
   _.extend(database, task, /** @exports database */ {
@@ -45,7 +45,8 @@
     versions: {
       '1.8.0': '4.3.0',
       '1.8.1': '4.3.0',
-      '1.8.2': '4.4.0'
+      '1.8.2': '4.4.0',
+      '4.4.0': '4.4.0'
     },
     download: [ 'quickstart' ],
 
@@ -63,12 +64,20 @@
               filename: path.resolve(options.xt.srcdir, dbname + '.backup'),
               url: url_template.format(dbname_format),
               common: true
-            };
+            },
+            wget_result;
           
-          if (!fs.existsSync(wget_format.filename)) {
-            exec('sudo wget -qO {filename} {url}'.format(wget_format));
-            exec('sudo chown :xtuser {filename}'.format(wget_format));
+          if (fs.existsSync(wget_format.filename)) {
+            return wget_format;
           }
+
+          wget_result = exec('wget -qO {filename} {url}'.format(wget_format));
+          if (wget_result.code !== 0) {
+            throw new Error(wget_result.stdout);
+          }
+
+          exec('chown :xtuser {filename}'.format(wget_format));
+
           return wget_format;
         }),
         maindb_path;
@@ -79,7 +88,7 @@
         if (fs.existsSync(maindb_path)) {
           databases.push({
             filename: maindb_path,
-            dbname: xt.name,
+            dbname: xt.name + '-main',
             main: true
           });
         }
@@ -91,7 +100,7 @@
         if (xt.maindb && xt.pilot) {
           databases.push({
             filename: maindb_path,
-            dbname: xt.name + 'pilot',
+            dbname: xt.name + '-pilot',
             main: true
           });
         }
