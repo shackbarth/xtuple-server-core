@@ -85,6 +85,13 @@ describe('phase: xt', function () {
   });
 
   describe('task: serverconfig', function () {
+    beforeEach(function () {
+      var plan = global.baseClusterInstallPlan;
+      planner.verifyOptions(plan, options);
+      planner.compileOptions(plan, options);
+      planner.install(plan, options);
+    });
+
     it('should parse and generate a correct config.js', function () {
       assert.match(options.xt.serverconfig.string, new RegExp('"user": "{xt.name}"'.format(options)));
     });
