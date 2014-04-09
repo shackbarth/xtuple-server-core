@@ -3,6 +3,7 @@
 var assert = require('chai').assert,
   exec = require('execSync').exec,
   fs = require('fs'),
+  format = require('string-format'),
   path = require('path'),
   _ = require('underscore');
 
@@ -97,7 +98,7 @@ describe('phase: xt', function () {
     });
   });
 
-  describe('task: build_common', function () {
+  describe('task: build_app [quickstart]', function () {
     // only run this suite in CI; too time-consuming to always run locally
     //this.pending = !process.env.TRAVIS;
 
@@ -108,37 +109,54 @@ describe('phase: xt', function () {
       planner.install(plan, options);
     });
 
-    it('should build and mobilize postbooks "quickstart" database by default', function () {
+    it.skip('should build and mobilize postbooks "quickstart" database by default', function () {
       var quickstartCreate = pgcli.createdb(_.extend({ owner: options.xt.name, dbname: 'quickstart' }, options));
 
       assert.notEqual(quickstartCreate.code, 0);
       assert.match(quickstartCreate.stdout, /already exists/);
     });
-
-    it.skip('should pass core unit tests', function () {
-      exec('ln -s {xt.configfile} {xt.coredir}/node-datasource/config.js');
-      exec('ln -s {xt.configdir}/test/lib/login_data.js {xt.coredir}/test/lib/login_data.js');
-      var testResults = exec('cd {xt.coredir} && npm test');
-
-      assert.equal(testResults.code, 0);
-    });
   });
-  describe.skip('task: build_main', function () {
-    // only run this suite in CI; too time-consuming to always run locally
-    //this.pending = !process.env.TRAVIS;
+  describe('task: build_app [maindb = demo.backup]', function () {
     beforeEach(function () {
-      var plan = global.baseClusterInstallPlan.concat(global.baseAppInstallPlan).concat(global.mainAppInstallPlan);
+      var plan = global.baseClusterInstallPlan.concat(global.mainAppInstallPlan),
+        url = 'http://sourceforge.net/projects/postbooks/files/' +
+            '03%20PostBooks-databases/{xt.version}/postbooks_demo-{xt.version}.backup/download',
+        maindb_path = path.resolve('demo.backup');
+
+      options.xt.maindb = maindb_path;
+      options.xt.setupdemos = false;
+
       planner.verifyOptions(plan, options);
       planner.compileOptions(plan, options);
+
+      console.log(options.xt.version);
+      console.log(url.format(options));
+      
+      exec('wget -qO '+ maindb_path +' '+ url.format(options));
+
       planner.install(plan, options);
     });
+    it('should pass core unit tests', function () {
+      var lnConfig = exec('ln -s {xt.configfile} {xt.coredir}/node-datasource/config.js'.format(options)),
+        lnLogin = exec('ln -s {xt.configdir}/test/lib/login_data.js {xt.coredir}/test/lib/login_data.js'.format(options));
 
-    it('should build and "mobile-ize" database from .backup file if given', function () {
-      //var demoCreate = pgcli.createdb(_.extend({ owner: options.xt.name, dbname: 'demo' }, options)),
+      assert.equal(lnConfig.code, 0, lnConfig.stdout);
+      assert.equal(lnLogin.code, 0, lnLogin.stdout);
 
+      var testResults = exec('cd {xt.coredir} && npm test'.format(options));
+
+      assert.equal(testResults.code, 0, testResults.stdout);
     });
-    it('should build database from .sql file if given', function () {
+    afterEach(function () {
+      /*
+      try {
+        fs.unlinkSync(path.resolve(options.xt.coredir, 'node-datasource/config.js'));
+        fs.unlinkSync(path.resolve(options.xt.coredir, 'test/lib/login_data.js'));
+      }
+      catch (e) {
 
+      }
+      */
     });
   });
 });

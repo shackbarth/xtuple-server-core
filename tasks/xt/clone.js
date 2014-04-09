@@ -22,7 +22,7 @@
       version: {
         optional: '[version]',
         description: 'xTuple Mobile App Version',
-        value: '1.8.2'
+        value: '4.4.0'
       }
     },
 
@@ -55,16 +55,23 @@
 
       _.each(clone.getRepositoryList(options), function (repo) {
         var template = _.extend({
-          repo: repo,
-          path: path.resolve(options.xt.srcdir, repo)
-        }, options);
+            repo: repo,
+            path: path.resolve(options.xt.srcdir, repo)
+          }, options);
 
         if (fs.existsSync(template.path)) { return; }
-          
-        exec('git clone --recursive https://github.com/xtuple/{repo}.git {path}'.format(template));
-        exec('cd {path} && git checkout '+ options.xt.repoHash);
-        exec('cd {path} && npm install --production -g'.format(template));
-        exec('cd {path} && npm install'.format(template));
+
+        var cloneCommands = [
+            exec('git clone --recursive https://github.com/xtuple/{repo}.git {path}'.format(template)),
+            exec(('cd {path} && git checkout '+ options.xt.repoHash).format(template)),
+            exec('cd {path} && npm install --production -g'.format(template)),
+            exec('cd {path} && npm install'.format(template))
+          ],
+          failed = _.difference(cloneCommands, _.where(cloneCommands, { code: 0 }));
+
+        if (failed.length > 0) {
+          throw new Error(JSON.stringify(failed, null, 2));
+        }
       });
     },
 

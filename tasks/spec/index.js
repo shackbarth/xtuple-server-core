@@ -63,8 +63,7 @@ describe('xTuple Installer', function () {
     {name: 'pg', tasks: [ 'config', 'cluster' ]},
     {name: 'nginx', tasks: [ 'ssl' ]},
     {name: 'pg', tasks: [ 'hba', 'tuner' ]},
-    {name: 'xt', tasks: [ 'database', 'serverconfig' ]},
-    {name: 'sys', tasks: [ 'etchosts' ]},
+    {name: 'xt', tasks: [ 'database', 'serverconfig' ]}
   ];
 
   global.baseAppInstallPlan = [
@@ -76,7 +75,7 @@ describe('xTuple Installer', function () {
   ];
 
   global.fullInstallPlan = [
-    {name: 'sys', tasks: [ 'cups', 'service' ]},
+    {name: 'sys', tasks: [ 'etchosts', 'cups', 'service' ]},
     {name: 'pg', tasks: [ 'snapshotmgr' ]}
   ];
 
