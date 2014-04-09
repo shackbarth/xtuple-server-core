@@ -27,6 +27,11 @@
         optional: '[string]',
         value: 'en_US.UTF-8',
         description: 'Cluster locale'
+      },
+      timezone: {
+        optional: '[integer]',
+        value: 'localtime',
+        description: 'Integer offset from UTC; e.g., "-7" is PDT, "-8" is PST, etc'
       }
     },
 
@@ -46,6 +51,7 @@
             generated: new Date().valueOf()
           }, pg)),
           name: options.xt.name,
+          timezone: options.pg.timezone,
           data_directory: cluster.data,
           shared_buffers: shared_buffers(cluster, config, env),
           max_stack_depth: max_stack_depth(cluster, config, env),
