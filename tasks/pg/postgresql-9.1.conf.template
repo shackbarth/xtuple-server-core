@@ -482,7 +482,7 @@ log_line_prefix = '%t '			# special values:
 
 datestyle = 'iso, mdy'
 #intervalstyle = 'postgres'
-timezone = 'localtime'
+timezone = '{timezone}'
 #timezone_abbreviations = 'Default'     # Select the set of available time zone
 					# abbreviations.  Currently, there are
 					#   Default
