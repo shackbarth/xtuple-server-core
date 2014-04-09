@@ -92,7 +92,7 @@
 
     /** @override */
     afterTask: function (options) {
-      pgcli.ctlcluster({ action: 'reload', version: options.pg.version, name: options.xt.name });
+      pgcli.ctlcluster({ action: 'restart', version: options.pg.version, name: options.xt.name });
     }
   });
 

@@ -3,22 +3,10 @@
 
   /**
    * Setup machine access policies.
-   * + = group
-   * - = user
-   *
-   *  + sudo
-   *    - xtadmin
-   *  + xtadmin
-   *    - xtremote
-   *    - xtuple
-   *  + xtuser
-   *    - <customer>
-   *    - <customer>
    */
   var policy = exports;
 
   var task = require('../../lib/task'),
-    log = require('npmlog'),
     fs = require('fs'),
     exec = require('execSync').exec,
     path = require('path'),
@@ -73,7 +61,7 @@
         user_policy_src = fs.readFileSync(path.resolve(__dirname, user_policy_filename)).toString(),
         user_policy_target = path.resolve(
           sudoers_d,
-          user_policy_filename.replace('user', '{name}').format(xt)
+          user_policy_filename.replace('user', '{xt.name}').format(options)
         ),
         system_users = [
           'addgroup xtuser',
@@ -82,38 +70,38 @@
           'adduser xtadmin --disabled-login',
           'usermod -a -G xtadmin,xtuser,www-data,postgres,lpadmin,ssl-cert xtremote',
           'usermod -a -G ssl-cert,xtuser postgres',
-          'usermod -a -G xtuser {xt.name}'.format(options)
         ],
         xtuple_users = [
           'useradd {xt.name} -d /usr/local/{xt.name} -p {sys.policy.userPassword}'.format(options),
+          'usermod -a -G xtuser {xt.name}'.format(options),
           'chage -d 0 {xt.name}'.format(options)
         ],
         system_ownership = [
           'chown root:xtuser /etc/xtuple',
           'chown root:xtuser /etc/xtuple/*',
           'chown root:xtuser /var/lib/xtuple',
-          'chown {xt.name}:xtuser /var/lib/xtuple/{xt.version}/{xt.name}/'.format(options),
           'chown root:xtuser /usr/sbin/xtuple',
-          'chown root:xtuser /usr/local/xtuple'
+          'chown -R root:xtuser /usr/local/xtuple'
         ],
         system_mode = [
-          'chmod g+rx,o-wr /etc/xtuple/',
-          'chmod g+rx,o-wr /etc/xtuple/*',
-          'chmod g+rwx,u=rx,o-wr /var/lib/xtuple',
-          'chmod u=rwx /var/lib/xtuple/{xt.version}/{xt.name}'.format(options),
-          'chmod g+rwx,u=rx,o-wr /usr/sbin/xtuple',
-          'chmod g+rwx,u=rx,o-wr /usr/local/xtuple'
+          'chmod g=rx,o-wr /etc/xtuple/',
+          'chmod g=rx,o-wr /etc/xtuple/*',
+          'chmod g=rwx,u=rx,o-wr /var/lib/xtuple',
+          'chmod g=rwx,u=rx,o=rx /usr/sbin/xtuple',
+          'chmod -R g=rx,u=rx,o=rx /usr/local/xtuple'
         ],
         user_ownership = [
+          'chown {xt.name}:xtuser /var/lib/xtuple/{xt.version}/{xt.name}/'.format(options),
           'chown :xtuser /var/run/postgresql'.format(options),
-          'chown -R {xt.name}:ssl-cert {xt.ssldir}'.format(options),
-          'chown -R {xt.name}: {xt.configdir}'.format(options)
+          'chown {xt.name}:ssl-cert {xt.ssldir}'.format(options),
+          'chown {xt.name}: {xt.configdir}'.format(options)
           //'chown {xt.name}:xtadmin {sys.sbindir}'.format(options)
         ],
         user_mode = [
-          'chmod -R g=wrx,u=wrx,o=wrx /var/run/postgresql'.format(options),
+          'chmod -R u=rwx,g-rwx /var/lib/xtuple/{xt.version}/{xt.name}'.format(options),
+          'chmod -R g+wrx /var/run/postgresql'.format(options),
           'chmod -R g=rx,u=wrx,o-rwx {xt.ssldir}'.format(options),
-          'chmod -R g=rwx,u=wrx,o-rw  {xt.configdir}'.format(options)
+          'chmod -R g=rwx,u=wrx,o-rw {xt.configdir}'.format(options)
           //'chmod -R g=rwx,u=rx,o-rw  {pg.configdir}'.format(options)
         ],
         system_users_results = _.map(system_users, exec),
@@ -132,20 +120,24 @@
         fs.writeFileSync(global_policy_target, global_policy_src);
       }
       if (!fs.existsSync(user_policy_target)) {
-        fs.writeFileSync(user_policy_target, user_policy_src.format(xt));
+        fs.writeFileSync(user_policy_target, user_policy_src.format(options));
       }
 
+      // set correct permissions (enforced by OS)
       sudoers_chmod = exec('chmod 440 /etc/sudoers.d/*');
-
       if (sudoers_chmod.code !== 0) {
         throw new Error(JSON.stringify(sudoers_chmod, null, 2));
       }
 
+      // validate sudoers files
       visudo_cmd = exec('visudo -c');
-
       if (visudo_cmd.code !== 0) {
         throw new Error(JSON.stringify(visudo_cmd, null, 2));
       }
+
+      // if customer appears new, that is they've provided no main database
+      // or snapshot to restore from, generate a admin password
+      options.xt.adminpw = policy.getPassword();
     },
 
     /**

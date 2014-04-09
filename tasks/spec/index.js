@@ -5,6 +5,7 @@ describe('xTuple Installer', function () {
     exec = require('execSync').exec,
     _ = require('underscore'),
     path = require('path'),
+    fs = require('fs'),
     pgcli = require('../../lib/pg-cli'),
     pgPhase = require('../pg'),
     getOptions = function ($k) {
@@ -50,13 +51,14 @@ describe('xTuple Installer', function () {
         sys: {
           service: { },
           cups: { },
-          policy: { }
+          policy: { },
+          paths: { }
         }
       };
     };
 
   global.baseClusterInstallPlan = [
-    {name: 'sys', tasks: [ 'policy' ]},
+    {name: 'sys', tasks: [ 'paths', 'policy' ]},
     {name: 'xt', tasks: [ 'clone' ]},
     {name: 'pg', tasks: [ 'config', 'cluster' ]},
     {name: 'nginx', tasks: [ 'ssl' ]},
@@ -66,7 +68,11 @@ describe('xTuple Installer', function () {
   ];
 
   global.baseAppInstallPlan = [
-    {name: "xt", tasks: [ 'build_common', 'build_main' ] }
+    {name: "xt", tasks: [ 'build_common' ] }
+  ];
+
+  global.mainAppInstallPlan = [
+    {name: "xt", tasks: [ 'build_main' ] }
   ];
 
   global.fullInstallPlan = [
@@ -74,17 +80,33 @@ describe('xTuple Installer', function () {
     {name: 'pg', tasks: [ 'snapshotmgr' ]}
   ];
 
+  before(function () {
+    try {
+      fs.unlinkSync(path.resolve(process.cwd(), 'install.log'));
+    }
+    catch (e) {
+
+    }
+  });
+
+  before(function () {
+    global.options = getOptions(
+      Math.round((Math.random() * 2e16)).toString(36).replace(/[0-9]/g, '')
+    );
+  });
   beforeEach(function () {
     global.options = getOptions(
       Math.round((Math.random() * 2e16)).toString(36).replace(/[0-9]/g, '')
     );
   });
+
   afterEach(function () {
     try {
       pgcli.dropcluster({ name: global.options.xt.name, version: global.options.pg.version });
     }
     catch (e) {
-
+      // sometimes a cluster is not built, but we want to always at least try
+      // to clean it up. so ignore any errors
     }
   });
 
