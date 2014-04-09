@@ -42,7 +42,7 @@ module.exports = {
       work_mem: 1,
       temp_buffers: 16,
       shared_buffers: 128,
-      maintenance_work_mem: 8
+      maintenance_work_mem: 64
     },
 
     /** 
@@ -70,7 +70,7 @@ module.exports = {
     test: {
       shared_buffers: 128,
       max_connections: 8,
-      maintenance_work_mem: 4
+      maintenance_work_mem: 16
     }
   }
 };

@@ -5,7 +5,8 @@
     service: require('./service'),
     cups: require('./cups'),
     etchosts: require('./etchosts'),
-    policy: require('./policy')
+    policy: require('./policy'),
+    paths: require('./paths')
   };
 
 })();

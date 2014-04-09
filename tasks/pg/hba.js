@@ -77,11 +77,6 @@
       _.extend(options.pg.hba, { path: hba_target, string: hba_conf });
     },
 
-    /** @override */
-    afterTask: function (options) {
-      pgcli.ctlcluster({ action: 'reload', version: options.pg.version, name: options.xt.name });
-    },
-
     /**
      * Sign a new client cert against the provided one for this domain.
      */

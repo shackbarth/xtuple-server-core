@@ -7,6 +7,10 @@
   var build_common = exports;
 
   var task = require('../../lib/task'),
+    pgcli = require('../../lib/pg-cli'),
+    rimraf = require('rimraf'),
+    fs = require('fs'),
+    path = require('path'),
     format = require('string-format'),
     _ = require('underscore'),
     exec = require('execSync').exec,
@@ -16,14 +20,16 @@
 
     /** @override */
     doTask: function (options) {
-      var xt = options.xt,
-        databases = _.where(xt.database.list, { common: true });
+      var databases = _.where(options.xt.database.list, { common: true });
 
       // build the common/demo databases
       _.each(databases, function (db) {
-        var result = exec(build.getCoreBuildCommand(db, options));
-        if (result.code !== 0) {
-          throw new Error(result.stdout);
+        build.trapRestoreErrors(pgcli.restore(_.extend(db, options)));
+        rimraf.sync(path.resolve(options.xt.coredir, 'scripts/lib/build'));
+
+        var buildResult = exec(build.getCoreBuildCommand(db, options));
+        if (buildResult.code !== 0) {
+          throw new Error(buildResult.stdout);
         }
       });
     }

@@ -25,9 +25,6 @@ describe('phase: pg', function () {
     planner.compileOptions(global.baseClusterInstallPlan, options);
     planner.install(global.baseClusterInstallPlan, options);
   });
-  afterEach(function () {
-    pgcli.dropcluster(options.pg.cluster);
-  });
 
   it('is sane', function () {
     assert(pgPhase);
