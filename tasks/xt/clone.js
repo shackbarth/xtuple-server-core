@@ -27,14 +27,6 @@
     },
 
     /** @override */
-    beforeInstall: function (options) {
-      options.xt.srcdir = path.resolve('/usr/local/xtuple/src/', options.xt.version);
-      options.xt.coredir = path.resolve(options.xt.srcdir, 'xtuple');
-      options.xt.extdir = path.resolve(options.xt.srcdir, 'xtuple-extensions');
-      options.xt.privatedir = path.resolve(options.xt.srcdir, 'private-extensions');
-    },
-
-    /** @override */
     beforeTask: function (options) {
       // yes this is for real.
       // https://github.com/xtuple/xtuple-scripts/issues/68
@@ -53,18 +45,6 @@
       else {
         options.xt.repoHash = options.xt.version.slice(0, 6);
       }
-
-      /*
-      try {
-        rimraf.sync(options.xt.coredir);
-        rimraf.sync(options.xt.extdir);
-        rimraf.sync(options.xt.privatedir);
-        fs.mkdirSync(options.xt.srcdir);
-      }
-      catch (e) {
-        
-      }
-      */
     },
 
     /** @override */
@@ -86,22 +66,6 @@
         exec('cd {path} && npm install --production -g'.format(template));
         exec('cd {path} && npm install'.format(template));
       });
-    },
-
-    /** @override */
-    afterTask: function (options) {
-      exec('chown -R xtadmin:xtuser '+ options.xt.coredir);
-      exec('chown -R xtadmin:xtuser '+ options.xt.extdir);
-      exec('chown -R xtadmin:xtadmin '+ options.xt.privatedir);
-      
-      exec('chmod o-rwx,u=rwx,g=rx '+ options.xt.coredir);
-      exec('chmod o-rwx,u=rwx,g=rx '+ options.xt.extdir);
-      exec('chmod o-rwx,u=rwx,g=rx '+ options.xt.privatedir);
-    },
-
-    /** @override */
-    afterInstall: function (options) {
-      rimraf.sync(options.xt.privatedir);
     },
 
     /**

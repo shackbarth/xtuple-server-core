@@ -159,7 +159,7 @@
         ];
 
       // initiate restore process... and wait. could take awhile
-      pgcli.createdb({ owner: 'admin', dbname: options.dbname });
+      pgcli.createdb(options, 'admin', options.dbname);
       pgcli.restore(_.extend({
         filename: snapshotmgr.getSnapshotPath(options),
         dbname: options.dbname

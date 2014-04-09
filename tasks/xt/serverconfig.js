@@ -16,8 +16,6 @@
 
   _.extend(serverconfig, task, /** @exports serverconfig */ {
 
-
-
     // TODO turn into .json
     config_template: m(function () {
       /***
@@ -32,38 +30,9 @@
       ***/
     }),
 
-    /**
-     * Location of log files for node service
-     */
-    logdir: null,
-
-    /**
-     * Location of state files such as PIDs
-     */
-    statedir: null,
-
     /** @override */
-    beforeInstall: function (options) {
-      var version = options.xt.version,
-        name = options.xt.name;
-
-      options.xt.configdir = path.resolve('/etc/xtuple', version, name);
-      options.xt.ssldir = path.resolve('/etc/xtuple', version, name, 'ssl');
-      options.xt.logdir = path.resolve('/var/log/xtuple', version, name);
-      options.xt.statedir = path.resolve('/var/lib/xtuple', version, name);
-
-      // ensure path integrity and write config file
-      exec('mkdir -p ' + options.xt.ssldir);
-      exec('mkdir -p ' + options.xt.configdir);
-      exec('mkdir -p ' + options.xt.logdir);
-      exec('mkdir -p ' + options.xt.statedir);
-
-      // correctly permission ssldir. should be owned by ssl-cert group if not already
-      //exec('chown -R :ssl-cert '+ options.xt.ssldir);
-      //exec('chmod -R o-rwx,g=wrx,u=rx '+ options.xt.ssldir);
-      exec('usermod -a -G ssl-cert postgres');
-      exec('usermod -a -G ssl-cert www-data');
-      exec('usermod -a -G ssl-cert xtadmin');
+    beforeTask: function (options) {
+      options.xt.port = serverconfig.getServerPort(options);
     },
 
     /** @override */
@@ -72,7 +41,6 @@
         pg = options.pg,
         domain = options.nginx.domain,
         sample_path = path.resolve(xt.coredir, 'node-datasource/sample_config'),
-        config_js = path.resolve(xt.configdir, 'config.js'),
         encryption_key_path = path.resolve(xt.configdir, 'encryption_key.txt'),
         sample_config = require(sample_path),
         sample_obj = JSON.parse(JSON.stringify(sample_config)),
@@ -88,15 +56,15 @@
             encryptionKeyFile: encryption_key_path,
             hostname: domain,
             description: options.nginx.sitename,
-            port: serverconfig.getServerPort(options) - 445,
-            redirectPort: serverconfig.getServerPort(options),
+            port: options.xt.port - 445,
+            redirectPort: options.xt.port,
             databases: _.pluck(xt.database.list, 'flavor'),
             testDatabase: 'demo',
           }),
           databaseServer: _.extend(sample_config.databaseServer, {
-            hostname: 'localhost',
-            user: 'admin',
-            password: xt.adminpw,
+            hostname: options.xt.socketdir, // TODO support remote databases via SSL clientcert auth
+            user: xt.name,
+            password: undefined,
             port: parseInt(pg.cluster.port)
           })
         }),
@@ -107,7 +75,7 @@
         salt,
         encryptionKey;
 
-      fs.writeFileSync(config_js, output_conf);
+      fs.writeFileSync(options.xt.configfile, output_conf);
           
       // write salt file
       // XXX QUESTION: is this really a salt, or an actual private key?
@@ -120,8 +88,7 @@
 
       _.extend(options.xt.serverconfig, {
         string: output_conf,
-        json: derived_config_obj,
-        config_js: config_js
+        json: derived_config_obj
       });
     },
 
