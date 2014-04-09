@@ -10,6 +10,9 @@
     format = require('string-format'),
     path = require('path'),
     _ = require('underscore'),
+    rimraf = require('rimraf'),
+    fs = require('fs'),
+    pgcli = require('../../lib/pg-cli'),
     exec = require('execSync').exec,
     sync = require('sync'),
     build = require('../../lib/xt/build');
@@ -33,27 +36,30 @@
     doTask: function (options) {
       var xt = options.xt,
         extensions = build.editions[xt.edition],
-        databases = _.where(xt.database.list, { main: true }),
+        databases = _.where(xt.database.list, { main: true });
 
-        // build the main database and pilot, if specified
-        results = _.map(databases, function (db) {
-          var result = exec(build.getCoreBuildCommand(db, options));
-          if (result.code) {
+      // build the main database and pilot, if specified
+      _.each(databases, function (db) {
+        build.trapRestoreErrors(pgcli.restore(_.extend(db, options)));
+        rimraf.sync(path.resolve(options.xt.coredir, 'scripts/lib/build'));
+
+        var buildResult = exec(build.getCoreBuildCommand(db, options));
+        if (buildResult.code !== 0) {
+          throw new Error(buildResult.stdout);
+        }
+
+        // install extensions specified in --xt-extensions, if any
+        _.each(extensions, function (ext) {
+          var result = exec(build.getExtensionBuildCommand(db, options, ext));
+          if (result.code !== 0) {
             throw new Error(result.stdout);
           }
-
-          // install extensions specified in --xt-extensions, if any
-          _.each(extensions, function (ext) {
-            var result = exec(build.getExtensionBuildCommand(db, options, ext));
-            if (result.code) {
-              throw new Error(result.stdout);
-            }
-          });
-          return result;
         });
+      });
 
-      exec('sudo -u postgres psql -q -p {port} -c "alter user admin with password {adminpw}"'
-        .format(_.extend({ }, options.xt, options.pg.cluster)));
+      // XXX it is not clear to me whether this is necessary, but it doesn't
+      // hurt anything
+      pgcli.psql(options, 'ALTER USER admin WITH PASSWORD {xt.adminpw}'.format(options));
     }
   });
 })();

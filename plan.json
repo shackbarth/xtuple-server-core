@@ -1,5 +1,5 @@
 [
-  { "name": "sys", "tasks": [ "policy" ] },
+  { "name": "sys", "tasks": [ "directories", "policy" ] },
   { "name": "xt", "tasks": [ "clone", "serverconfig" ] },
   { "name": "pg", "tasks": [ "config", "cluster" ] },
   { "name": "nginx", "tasks": [ "ssl" ] },
