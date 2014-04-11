@@ -6,7 +6,7 @@
    */
   var serverconfig = exports;
 
-  var task = require('../../lib/task'),
+  var lib = require('../../lib'),
     format = require('string-format'),
     path = require('path'),
     fs = require('fs'),
@@ -14,21 +14,7 @@
     _ = require('underscore'),
     m = require('mstring');
 
-  _.extend(serverconfig, task, /** @exports serverconfig */ {
-
-    // TODO turn into .json
-    config_template: m(function () {
-      /***
-      // {params}
-      (function () {
-        'use strict';
-
-        module.exports = {json};
-
-      })();
-
-      ***/
-    }),
+  _.extend(serverconfig, lib.task, /** @exports serverconfig */ {
 
     /** @override */
     beforeTask: function (options) {
@@ -67,10 +53,7 @@
             port: parseInt(pg.cluster.port)
           })
         }),
-        output_conf = serverconfig.config_template.format({
-          json: JSON.stringify(derived_config_obj, null, 2),
-          params: JSON.stringify(xt)
-        });
+        output_conf = lib.xt.build.wrapModule(derived_config_obj);
 
       fs.writeFileSync(options.xt.configfile, output_conf);
           
