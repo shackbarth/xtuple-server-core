@@ -6,7 +6,7 @@
    */
   var testconfig = exports;
 
-  var task = require('../../lib/task'),
+  var lib = require('../../lib'),
     format = require('string-format'),
     path = require('path'),
     exec = require('execSync').exec,
@@ -14,7 +14,7 @@
     _ = require('underscore'),
     xtPhase = require('./index');
 
-  _.extend(testconfig, task, /** @exports testconfig */ {
+  _.extend(testconfig, lib.task, /** @exports testconfig */ {
 
     /** @override */
     beforeInstall: function (options) {
@@ -45,7 +45,7 @@
 
       require('./serverconfig').doTask(testOptions);
 
-      fs.writeFileSync(options.xt.testloginfile, JSON.stringify(loginObject, null, 2));
+      fs.writeFileSync(options.xt.testloginfile, lib.xt.build.wrapModule(loginObject));
     }
   });
 })();
