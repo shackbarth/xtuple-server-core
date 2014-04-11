@@ -19,19 +19,27 @@
       var version = options.xt.version,
         name = options.xt.name;
 
-      options.xt.configfile = path.resolve(options.xt.configdir, 'config.js');
+      // node server/config stuff
       options.xt.configdir = path.resolve('/etc/xtuple', version, name);
+      options.xt.configfile = path.resolve(options.xt.configdir, 'config.js');
+      options.xt.buildconfigfile = path.resolve(options.xt.configdir, 'build/config.js');
       options.xt.ssldir = path.resolve('/etc/xtuple', version, name, 'ssl');
+      options.xt.rand64file = path.resolve('/etc/xtuple', version, name, 'rand64.txt');
+      options.xt.key256file = path.resolve('/etc/xtuple', version, name, 'key256.txt');
+      options.sys.userhome = path.resolve('/usr/local/', options.xt.name);
+
+      // other system paths
       options.xt.logdir = path.resolve('/var/log/xtuple', version, name);
       options.xt.socketdir = path.resolve('/var/run/postgresql');
       options.xt.statedir = path.resolve('/var/lib/xtuple', version, name);
+
+      // repositories
       options.xt.srcdir = path.resolve('/usr/local/xtuple/src/', options.xt.version);
       options.xt.coredir = path.resolve(options.xt.srcdir, 'xtuple');
       options.xt.extdir = path.resolve(options.xt.srcdir, 'xtuple-extensions');
       options.xt.privatedir = path.resolve(options.xt.srcdir, 'private-extensions');
 
-      exec('mkdir -p ' + path.resolve(options.xt.configdir, 'test/lib'));
-
+      exec('mkdir -p ' + options.sys.userhome);
 
       exec('mkdir -p ' + options.xt.configdir);
       exec('mkdir -p ' + options.xt.ssldir);
@@ -40,7 +48,7 @@
       exec('mkdir -p ' + options.xt.statedir);
       exec('mkdir -p ' + options.xt.srcdir);
 
-      exec('chown xtadmin:xtuser '+ options.xt.srcdir);
+      exec('chown -R xtadmin:xtuser '+ options.xt.srcdir);
       exec('chown -R xtadmin:xtuser '+ options.xt.coredir);
       exec('chown -R xtadmin:xtuser '+ options.xt.extdir);
       exec('chown -R xtadmin:xtadmin '+ options.xt.privatedir);
@@ -50,6 +58,7 @@
       exec('chmod u=rwx,g=rx,o-rwx '+ options.xt.privatedir);
     },
 
+    /** @override */
     doTask: function (options) {
 
     }

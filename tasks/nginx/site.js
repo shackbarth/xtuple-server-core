@@ -37,14 +37,22 @@
      * Generate 'sitename' value and format the domain argument if necessary
      * @override
      */
-    beforeTask: function (options) {
-      options.nginx.sitename = 'xtuple-{version}-{name}'.format({
+    beforeInstall: function (options) {
+      options.nginx.sitename = 'xt-{version}-{name}'.format({
         name: options.xt.name,
-        version: String(options.xt.version).replace(/\./g, '')
+        version: site.getScalarVersion(options)
       });
-      options.nginx.domain = String(options.nginx.domain.format(options.nginx));
+      options.nginx.hostname = '{xt.sitename}.localhost'.format(options);
       options.nginx.port = require('../xt').serverconfig.getServerPort(options);
-      options.hostname = os.hostname();
+      options.nginx.lanEndpoints = (options.pg.mode === 'dedicated') && [
+        '       localhost',
+        '       (^127\\.0\\.0\\.1)',
+        '       (^10\\.)',
+        '       (^172\\.1[6-9]\\.)',
+        '       (^172\\.2[0-9]\\.)',
+        '       (^172\\.3[0-1]\\.)',
+        '       (^192\\.168\\.)'
+      ].join('\n');
     },
 
     /**
@@ -87,6 +95,14 @@
         json: options,
         string: nginx_conf
       });
+    },
+
+    /**
+     * Return a version with no dots, which makes more sense when used in a URL
+     * or a database name than having punctuation.
+     */
+    getScalarVersion: function (options) {
+      return String(options.xt.version).replace(/\./g, '');
     }
   });
 

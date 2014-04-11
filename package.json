@@ -25,7 +25,8 @@
     "pg": "~2.11.1",
     "adm-zip": "~0.4.4",
     "semver": "~2.2.1",
-    "rimraf": "^2.2.6"
+    "rimraf": "^2.2.6",
+    "sleep": "~1.1.4"
   },
   "devDependencies": {
     "chai": "~1.9.0",

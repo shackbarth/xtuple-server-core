@@ -27,7 +27,7 @@
       },
       maindb: {
         optional: '[path]',
-        description: 'Path to primary database .backup filename to use in production',
+        description: 'Path to primary database .backup/.sql filename to use in production',
         value: null
       },
       setupdemos: {
@@ -37,8 +37,7 @@
       },
       adminpw: {
         optional: '[password]',
-        description: 'Password for the database "admin" user for a new database',
-        value: 'admin'
+        description: 'Password for the database "admin" user for a new database'
       }
     },
 
@@ -46,9 +45,10 @@
       '1.8.0': '4.3.0',
       '1.8.1': '4.3.0',
       '1.8.2': '4.4.0',
-      '4.4.0': '4.4.0'
+      '4.4.0': '4.4.0',
+      '4.4.1': '4.4.1'
     },
-    download: [ 'quickstart' ],
+    download: [ 'quickstart', 'demo' ],
 
     /** @override */
     doTask: function (options) {
@@ -60,7 +60,7 @@
         databases = !xt.setupdemos ? [ ] : _.map(database.download, function (dbname) {
           var dbname_format = _.extend({ dbname: dbname }, download_format),
             wget_format = {
-              dbname: dbname,
+              dbname: 'xtuple_' + dbname,
               filename: path.resolve(options.xt.srcdir, dbname + '.backup'),
               url: url_template.format(dbname_format),
               common: true
@@ -88,7 +88,7 @@
         if (fs.existsSync(maindb_path)) {
           databases.push({
             filename: maindb_path,
-            dbname: xt.name + '-main',
+            dbname: 'main_' + xt.name,
             main: true
           });
         }
@@ -100,7 +100,7 @@
         if (xt.maindb && xt.pilot) {
           databases.push({
             filename: maindb_path,
-            dbname: xt.name + '-pilot',
+            dbname: 'pilot_' + xt.name,
             main: true
           });
         }
@@ -111,6 +111,7 @@
       }
 
       options.xt.database.list = _.map(databases, function (db) {
+        /*
         var psql_template = _.extend({ owner: 'admin' }, db, options),
           // create database
           createdb = pgcli.createdb(psql_template),
@@ -124,6 +125,7 @@
         if (plv8.code !== 0) {
           throw new Error('PLV8 installation failed: '+ plv8.stdout);
         }
+        */
 
         return db;
       });

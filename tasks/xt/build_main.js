@@ -33,6 +33,11 @@
     },
 
     /** @override */
+    beforeTask: function (options) {
+      require('./build_common').beforeTask(options);
+    },
+
+    /** @override */
     doTask: function (options) {
       var xt = options.xt,
         extensions = build.editions[xt.edition],
@@ -40,15 +45,15 @@
 
       // build the main database and pilot, if specified
       _.each(databases, function (db) {
-        build.trapRestoreErrors(pgcli.restore(_.extend(db, options)));
         rimraf.sync(path.resolve(options.xt.coredir, 'scripts/lib/build'));
 
         var buildResult = exec(build.getCoreBuildCommand(db, options));
+        console.log(buildResult);
         if (buildResult.code !== 0) {
           throw new Error(buildResult.stdout);
         }
 
-        // install extensions specified in --xt-extensions, if any
+        // install extensions specified by the edition
         _.each(extensions, function (ext) {
           var result = exec(build.getExtensionBuildCommand(db, options, ext));
           if (result.code !== 0) {
@@ -60,6 +65,11 @@
       // XXX it is not clear to me whether this is necessary, but it doesn't
       // hurt anything
       pgcli.psql(options, 'ALTER USER admin WITH PASSWORD {xt.adminpw}'.format(options));
+    },
+
+    /** @override */
+    afterTask: function (options) {
+      require('./build_common').afterTask(options);
     }
   });
 })();

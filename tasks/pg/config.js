@@ -25,7 +25,7 @@
       },
       mode: {
         required: '<mode>',
-        description: 'Installation mode (dedicated|cloud|testing). Dedicated implies one slot.',
+        description: 'Installation mode (dedicated|cloud|testing). Dedicated implies one slot per machine.',
         value: 'testing'
       },
       version: {

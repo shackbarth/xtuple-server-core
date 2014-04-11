@@ -33,15 +33,14 @@
     /** @override */
     beforeTask: function (options) {
       options.xt.port = serverconfig.getServerPort(options);
+      options.xt.sslport = serverconfig.getServerSSLPort(options);
     },
 
     /** @override */
     doTask: function (options) {
       var xt = options.xt,
         pg = options.pg,
-        domain = options.nginx.domain,
         sample_path = path.resolve(xt.coredir, 'node-datasource/sample_config'),
-        encryption_key_path = path.resolve(xt.configdir, 'encryption_key.txt'),
         sample_config = require(sample_path),
         sample_obj = JSON.parse(JSON.stringify(sample_config)),
 
@@ -49,16 +48,16 @@
         derived_config_obj = _.extend(sample_obj, {
           processName: 'xt-web-' + options.xt.name,
           datasource: _.extend(sample_config.datasource, {
-            name: domain,
+            name: options.nginx.domain,
             keyFile: options.nginx.outkey,
             certFile: options.nginx.outcrt,
-            saltFile: path.resolve(xt.configdir, 'salt.txt'),
-            encryptionKeyFile: encryption_key_path,
-            hostname: domain,
+            saltFile: options.xt.rand64file,
+            encryptionKeyFile: options.xt.key256file,
+            hostname: options.nginx.hostname,
             description: options.nginx.sitename,
-            port: options.xt.port - 445,
+            port: options.xt.sslport,
             redirectPort: options.xt.port,
-            databases: _.pluck(xt.database.list, 'flavor'),
+            databases: _.pluck(xt.database.list, 'dbname'),
             testDatabase: 'demo',
           }),
           databaseServer: _.extend(sample_config.databaseServer, {
@@ -71,20 +70,27 @@
         output_conf = serverconfig.config_template.format({
           json: JSON.stringify(derived_config_obj, null, 2),
           params: JSON.stringify(xt)
-        }),
-        salt,
-        encryptionKey;
+        });
 
       fs.writeFileSync(options.xt.configfile, output_conf);
           
       // write salt file
-      // XXX QUESTION: is this really a salt, or an actual private key?
-      salt = exec('head -c 64 /dev/urandom | base64 | sed "s/[=\\s]//g"').stdout;
-      fs.writeFileSync(path.resolve(xt.configdir, 'salt.txt'), salt);
+      // XXX QUESTION: is this really a salt, or an actual private key? is it
+      // necessary? I am ignorant of its purpose and cannot find docs on it
+      if (!fs.existsSync(options.xt.rand64file)) {
+        fs.writeFileSync(
+          options.xt.rand64file,
+          exec('head -c 64 /dev/urandom | base64 | sed "s/[=\\s]//g"').stdout
+        );
+      }
 
-      // write encryption file
-      encryptionKey = exec('openssl rand 128 -hex').stdout;
-      fs.writeFileSync(encryption_key_path, encryptionKey);
+      // write encryption file if it does not exist
+      if (!fs.existsSync(options.xt.key256file)) {
+        fs.writeFileSync(
+          options.xt.key256file,
+          exec('openssl rand 256 -hex').stdout
+        );
+      }
 
       _.extend(options.xt.serverconfig, {
         string: output_conf,
@@ -109,6 +115,14 @@
      */
     getServerPort: function (options) {
       return parseInt(options.pg.cluster.port) + serverconfig.portOffset;
-    }
+    },
+    getServerSSLPort: function (options) {
+      return parseInt(options.pg.cluster.port) + serverconfig.portOffset - 445;
+    },
+
+    getRandom: function (bitlen) {
+      return exec('openssl rand '+ bitlen +' -hex').stdout;
+    },
+    
   });
 })();

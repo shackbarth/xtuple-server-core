@@ -19,7 +19,7 @@
   #key_zone={nginx.sitename}-rest:1m;
 
 upstream node-{nginx.sitename} {
-  server 127.0.0.1:{port};
+  server 127.0.0.1:{xt.sslport};
 }
 
 # auto redirect http -> https
@@ -36,14 +36,8 @@ server {
   ssl_certificate_key {nginx.outkey};
 
   server_name {nginx.domain}
-              {nginx.sitename}.{hostname}
-              localhost
-              (^127\.0\.0\.1)
-              (^10\.)
-              (^172\.1[6-9]\.)
-              (^172\.2[0-9]\.)
-              (^172\.3[0-1]\.)
-              (^192\.168\.)
+              {nginx.hostname}
+              {nginx.lanEndpoints}
               ;
 
   index index.html index.htm;
