@@ -20,8 +20,7 @@
     /** @override */
     doTask: function (options) {
       var etc_hosts_template = fs.readFileSync(hosts_template_path).toString(),
-        etc_hosts_current = fs.readFileSync(path.resolve('/etc/hosts')),
-        formatter = _.extend({ }, options.xt, options.nginx);
+        etc_hosts_current = fs.readFileSync(path.resolve('/etc/hosts'));
 
       if (new RegExp('domain=' + options.xt.name).test(etc_hosts_current)) {
         // TODO log this event
@@ -29,7 +28,7 @@
       else {
         fs.appendFileSync(
           path.resolve('/etc/hosts'),
-          etc_hosts_template.format(formatter)
+          etc_hosts_template.format(options)
         );
       }
     }

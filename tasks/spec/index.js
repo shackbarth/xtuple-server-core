@@ -32,7 +32,7 @@ describe('xTuple Installer', function () {
         pg: {
           version: process.env.XT_PG_VERSION,
           host: 'localhost',
-          mode: 'test',
+          mode: 'dedicated',
           snapshotcount: 7,
           cluster: { },
           snapshotmgr: { },
@@ -57,25 +57,27 @@ describe('xTuple Installer', function () {
       };
     };
 
-  global.baseClusterInstallPlan = [
+  global.baseInstall = [
     {name: 'sys', tasks: [ 'paths', 'policy' ]},
     {name: 'xt', tasks: [ 'clone' ]},
     {name: 'pg', tasks: [ 'config', 'cluster' ]},
     {name: 'nginx', tasks: [ 'ssl' ]},
     {name: 'pg', tasks: [ 'hba', 'tuner' ]},
-    {name: 'xt', tasks: [ 'database', 'serverconfig' ]}
+    {name: 'xt', tasks: [ 'database', 'serverconfig' ]},
+    {name: 'nginx', tasks: [ 'site' ]},
+    {name: 'sys', tasks: [ 'etchosts' ]}
   ];
 
-  global.baseAppInstallPlan = [
-    {name: "xt", tasks: [ 'build_common' ] }
+  global.appInstall = [
+    {name: "xt", tasks: [ 'build_common', 'build_main' ] }
   ];
 
-  global.mainAppInstallPlan = [
-    {name: "xt", tasks: [ 'build_main' ] }
+  global.appInstallTest = [
+    {name: "xt", tasks: [ 'testconfig', 'runtests' ] }
   ];
 
   global.fullInstallPlan = [
-    {name: 'sys', tasks: [ 'etchosts', 'cups', 'service' ]},
+    {name: 'sys', tasks: [ 'cups', 'service' ]},
     {name: 'pg', tasks: [ 'snapshotmgr' ]}
   ];
 

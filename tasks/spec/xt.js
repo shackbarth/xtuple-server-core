@@ -3,6 +3,7 @@
 var assert = require('chai').assert,
   exec = require('execSync').exec,
   fs = require('fs'),
+  rimraf = require('rimraf'),
   format = require('string-format'),
   path = require('path'),
   _ = require('underscore');
@@ -87,7 +88,7 @@ describe('phase: xt', function () {
 
   describe('task: serverconfig', function () {
     beforeEach(function () {
-      var plan = global.baseClusterInstallPlan;
+      var plan = global.baseInstall;
       planner.verifyOptions(plan, options);
       planner.compileOptions(plan, options);
       planner.install(plan, options);
@@ -103,7 +104,7 @@ describe('phase: xt', function () {
     //this.pending = !process.env.TRAVIS;
 
     beforeEach(function () {
-      var plan = global.baseClusterInstallPlan.concat(global.baseAppInstallPlan);
+      var plan = global.baseInstall.concat(global.appInstall);
       planner.verifyOptions(plan, options);
       planner.compileOptions(plan, options);
       planner.install(plan, options);
@@ -116,9 +117,9 @@ describe('phase: xt', function () {
       assert.match(quickstartCreate.stdout, /already exists/);
     });
   });
-  describe('task: build_app [maindb = demo.backup]', function () {
+  describe('task: runtests', function () {
     beforeEach(function () {
-      var plan = global.baseClusterInstallPlan.concat(global.mainAppInstallPlan),
+      var plan = global.baseInstall.concat(global.appInstall).concat(global.appInstallTest),
         url = 'http://sourceforge.net/projects/postbooks/files/' +
             '03%20PostBooks-databases/{xt.version}/postbooks_demo-{xt.version}.backup/download',
         maindb_path = path.resolve('demo.backup');
@@ -129,34 +130,16 @@ describe('phase: xt', function () {
       planner.verifyOptions(plan, options);
       planner.compileOptions(plan, options);
 
-      console.log(options.xt.version);
-      console.log(url.format(options));
-      
       exec('wget -qO '+ maindb_path +' '+ url.format(options));
 
       planner.install(plan, options);
     });
-    it('should pass core unit tests', function () {
-      var lnConfig = exec('ln -s {xt.configfile} {xt.coredir}/node-datasource/config.js'.format(options)),
-        lnLogin = exec('ln -s {xt.configdir}/test/lib/login_data.js {xt.coredir}/test/lib/login_data.js'.format(options));
-
-      assert.equal(lnConfig.code, 0, lnConfig.stdout);
-      assert.equal(lnLogin.code, 0, lnLogin.stdout);
-
-      var testResults = exec('cd {xt.coredir} && npm test'.format(options));
-
-      assert.equal(testResults.code, 0, testResults.stdout);
+    it('should pass core unit tests on postbooks_demo database', function () {
+      assert.isTrue(options.xt.runtests.core);
     });
-    afterEach(function () {
-      /*
-      try {
-        fs.unlinkSync(path.resolve(options.xt.coredir, 'node-datasource/config.js'));
-        fs.unlinkSync(path.resolve(options.xt.coredir, 'test/lib/login_data.js'));
-      }
-      catch (e) {
 
-      }
-      */
+    after(function () {
+      rimraf.sync(options.xt.maindb);
     });
   });
 });

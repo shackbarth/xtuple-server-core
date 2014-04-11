@@ -27,6 +27,11 @@
     },
 
     /** @override */
+    beforeInstall: function (options) {
+      options.xt.scalarversion = options.xt.version.replace(/\./g, '');
+    },
+
+    /** @override */
     beforeTask: function (options) {
       // yes this is for real.
       // https://github.com/xtuple/xtuple-scripts/issues/68

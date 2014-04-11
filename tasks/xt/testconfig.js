@@ -9,37 +9,43 @@
   var task = require('../../lib/task'),
     format = require('string-format'),
     path = require('path'),
+    exec = require('execSync').exec,
     fs = require('fs'),
     _ = require('underscore'),
-    m = require('mstring');
+    xtPhase = require('./index');
 
   _.extend(testconfig, task, /** @exports testconfig */ {
 
-    config_template: m(function () {
-      /***
+    /** @override */
+    beforeInstall: function (options) {
+      options.xt.testloginfile = path.resolve(options.xt.configdir, 'test/login_data.js');
+      options.xt.testconfigfile = path.resolve(options.xt.configdir, 'test/config.js');
 
-      // {params}
-      exports.data = {json};
-
-      ***/
-    }),
+      exec('mkdir -p ' + path.resolve(options.xt.configdir, 'test'));
+    },
 
     /** @override */
     doTask: function (options) {
-      var output_path = path.resolve(options.xt.configdir, 'test/lib/login_data.js'),
-        output_obj = {
+
+      var loginObject = {
           data: {
-            webaddress: 'https://{nginx.domain}:{options.xt.port}'.format({ domain: options.nginx.domain }),
+            webaddress: 'https://{nginx.sitename}.localhost:443'.format(options),
             username: 'admin',
             pwd: options.xt.adminpw,
-            org: 'demo'
+            org: 'xtuple-demo'
           }
         },
-        output_config = testconfig.config_template.format({
-          json: JSON.stringify(output_obj, null, 2)
-        });
+        testOptions = _.clone(options);
 
-      fs.writeFileSync(output_path, output_config);
+      testOptions.xt = _.extend({ }, options.xt, {
+        name: 'admin',
+        configfile: options.xt.testconfigfile
+      });
+      testOptions.xt.serverconfig = { };
+
+      require('./serverconfig').doTask(testOptions);
+
+      fs.writeFileSync(options.xt.testloginfile, JSON.stringify(loginObject, null, 2));
     }
   });
 })();

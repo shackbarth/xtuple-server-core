@@ -1,7 +1,6 @@
 #!/bin/bash
 
 logfile=$(pwd)/install.log
-nodeversion=0.8.26
 
 install_debian () {
   log "Checking Operating System..."
@@ -32,7 +31,7 @@ install_debian () {
     nginx-full \
     postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-plv8 \
     postgresql-9.3 postgresql-server-dev-9.3 postgresql-contrib-9.3 postgresql-9.3-plv8 \
-    nodejs=$nodeversion-1chl1~${animal}1 \
+    nodejs=$XT_NODE_VERSION-1chl1~${animal}1 \
     npm=1.3.0-1chl1~${animal}1 \
   | tee -a $logfile
 

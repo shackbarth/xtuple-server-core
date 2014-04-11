@@ -24,7 +24,6 @@
       options.sys.policy.remotePassword = policy.getPassword();
 
       exec('mkdir -p /usr/sbin/xtuple/{xt.version}/{xt.name}'.format(options));
-      exec('mkdir -p /usr/local/xtuple/{xt.version}/{xt.name}'.format(options));
       exec('mkdir -p /var/run/postgresql'.format(options));
     },
 
@@ -101,7 +100,7 @@
           'chmod -R u=rwx,g-rwx /var/lib/xtuple/{xt.version}/{xt.name}'.format(options),
           'chmod -R g+wrx /var/run/postgresql'.format(options),
           'chmod -R g=rx,u=wrx,o-rwx {xt.ssldir}'.format(options),
-          'chmod -R g=rwx,u=wrx,o-rw {xt.configdir}'.format(options)
+          'chmod -R g=rwx,u=wrx,o-rw {xt.configdir}'.format(options),
           //'chmod -R g=rwx,u=rx,o-rw  {pg.configdir}'.format(options)
         ],
         system_users_results = _.map(system_users, exec),
@@ -135,9 +134,11 @@
         throw new Error(JSON.stringify(visudo_cmd, null, 2));
       }
 
-      // if customer appears new, that is they've provided no main database
-      // or snapshot to restore from, generate a admin password
-      options.xt.adminpw = policy.getPassword();
+      // if customer appears new, that is they've provided no main database,
+      // snapshot to restore from, or admin password, generate a admin password
+      if (!options.xt.adminpw && !options.pg.restore && !options.xt.maindb) {
+        options.xt.adminpw = policy.getPassword();
+      }
     },
 
     /**
