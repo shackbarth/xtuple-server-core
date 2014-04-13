@@ -22,6 +22,13 @@
       options.xt.testconfigfile = path.resolve(options.xt.configdir, 'test/config.js');
 
       exec('mkdir -p ' + path.resolve(options.xt.configdir, 'test'));
+      require('./runtests').afterTask(options);
+
+      try {
+        fs.unlinkSync(path.resolve(options.xt.coredir, 'node-datasource/config.js'));
+        fs.unlinkSync(path.resolve(options.xt.coredir, 'test/lib/login_data.js'));
+      }
+      catch (e) { }
     },
 
     /** @override */
@@ -56,19 +63,16 @@
     afterTask: function (options) {
       // cleanup first, or symlinks will fail
       //runtests.afterTask(options);
-      fs.unlinkSync(path.resolve(options.xt.coredir, 'node-datasource/config.js'));
-      fs.unlinkSync(path.resolve(options.xt.coredir, 'test/lib/login_data.js'));
 
-      console.log(fs.symlinkSync(
+      fs.symlinkSync(
         options.xt.testconfigfile,
         path.resolve(options.xt.coredir, 'node-datasource/config.js')
-      ));
-      console.log(fs.symlinkSync(
+      );
+      fs.symlinkSync(
         options.xt.testloginfile,
         path.resolve(options.xt.coredir, 'test/lib/login_data.js')
-      ));
+      );
 
-      exec('service nginx restart');
     },
   });
 })();

@@ -66,23 +66,20 @@ describe('phase: xt', function () {
       options.xt.edition = 'core';
     });
   });
-  describe.skip('task: clone [requires password]', function () {
-    this.pending = !!process.env.TRAVIS;
 
-    it('should clone and npm install all repos and require password', function () {
-      options.xt.edition = 'distribution';
+  describe('task: testconfig', function () {
+    it('should create correct login_data file in configdir', function () {
+      var login_data = require(options.xt.testloginfile);
 
-      var xtupleRepo = fs.existsSync(options.xt.srcdir, 'xtuple'),
-        extensionsRepo = fs.existsSync(options.xt.srcdir, 'xtuple-extensions'),
-        privateRepo = fs.existsSync(options.xt.srcdir, 'private-extensions');
-
-      assert.isTrue(xtupleRepo);
-      assert.isTrue(extensionsRepo);
-      assert.isTrue(privateRepo);
+      assert.equal(login_data.data.pwd, options.xt.adminpw);
+      assert.equal(login_data.data.org, 'xtuple_demo');
     });
-  });
+    it('should create correct test/config.js file in configdir', function () {
+      var config = require(options.xt.testconfigfile);
 
-  describe.skip('task: testconfig', function () {
+      assert.isUndefined(config.databaseServer.password);
+      assert.equal(config.datasource.testDatabase, 'xtuple_demo');
+    });
 
   });
 
@@ -119,11 +116,10 @@ describe('phase: xt', function () {
   });
   describe('task: runtests', function () {
     // skip this test if not in CI
-    this.pending = !process.env.TRAVIS;
+    //this.pending = !process.env.TRAVIS;
 
     beforeEach(function () {
       var plan = global.baseInstall.concat(global.appInstall).concat(global.appInstallTest);
-      console.log(plan);
 
       options.xt.quickstart = false;
       options.xt.demo = true;

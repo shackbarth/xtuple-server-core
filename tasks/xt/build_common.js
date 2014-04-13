@@ -64,11 +64,6 @@
           path.resolve(options.xt.coredir, 'test/lib/demo-test.backup')
         ].join(' '));
 
-        console.log(JSON.stringify(cp));
-        console.log(JSON.stringify(options.xt.database.list));
-        console.log(JSON.stringify(options.xt.name));
-
-
         demoBuild = exec('cd {xt.coredir} && sudo -u {xt.name} npm run-script test-build'.format(options));
 
         if (demoBuild.code !== 0) {
