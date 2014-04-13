@@ -19,9 +19,9 @@ describe('phase: nginx', function () {
   beforeEach(function () {
     options = global.options;
 
-    planner.verifyOptions(global.baseClusterInstallPlan, options);
-    planner.compileOptions(global.baseClusterInstallPlan, options);
-    planner.install(global.baseClusterInstallPlan, options);
+    planner.verifyOptions(global.baseInstall, options);
+    planner.compileOptions(global.baseInstall, options);
+    planner.install(global.baseInstall, options);
   });
   afterEach(function () {
     pgcli.dropcluster(options.pg.cluster);
@@ -118,9 +118,9 @@ describe('phase: nginx', function () {
   describe.skip('task: site', function () {
     /** Create clean cluster for each test */
     beforeEach(function () {
-      planner.verifyOptions(global.baseClusterInstallPlan, options);
-      planner.compileOptions(global.baseClusterInstallPlan, options);
-      planner.install(global.baseClusterInstallPlan, options);
+      planner.verifyOptions(global.baseInstall, options);
+      planner.compileOptions(global.baseInstall, options);
+      planner.install(global.baseInstall, options);
     });
     afterEach(function () {
       pgcli.dropcluster(global.options.pg.cluster);
