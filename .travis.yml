@@ -8,10 +8,16 @@ env:
     - XT_PG_VERSION=9.3 XT_NODE_VERSION=0.8.26
 
 before_install:
+  - sudo apt-get purge postgres*
+  - ls -l /etc/apt/sources.list.d
+  - cat /etc/apt/sources.list
   - sudo -E bash bootstrap.sh --no-installer
 
 # travis-ci tries to be way too helpful with their node setup
 install: /usr/bin/npm install
 
 script: /usr/bin/npm test
+
+after_failure:
+  - cat install.log
 
