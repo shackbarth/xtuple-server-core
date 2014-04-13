@@ -26,13 +26,12 @@
 
     /** @override */
     doTask: function (options) {
-
       var loginObject = {
           data: {
-            webaddress: 'https://{nginx.sitename}.localhost:443'.format(options),
+            webaddress: 'https://{nginx.hostname}:443'.format(options),
             username: 'admin',
             pwd: options.xt.adminpw,
-            org: 'xtuple-demo'
+            org: 'xtuple_demo'
           }
         },
         testOptions = _.clone(options);
@@ -46,6 +45,30 @@
       require('./serverconfig').doTask(testOptions);
 
       fs.writeFileSync(options.xt.testloginfile, lib.xt.build.wrapModule(loginObject));
-    }
+    },
+
+    /**
+     * Create temporary symlinks in the src directory; this is the consequence
+     * of our current design. Future work might make tests runnable from anywhere
+     *
+     * @override
+     */
+    afterTask: function (options) {
+      // cleanup first, or symlinks will fail
+      //runtests.afterTask(options);
+      fs.unlinkSync(path.resolve(options.xt.coredir, 'node-datasource/config.js'));
+      fs.unlinkSync(path.resolve(options.xt.coredir, 'test/lib/login_data.js'));
+
+      console.log(fs.symlinkSync(
+        options.xt.testconfigfile,
+        path.resolve(options.xt.coredir, 'node-datasource/config.js')
+      ));
+      console.log(fs.symlinkSync(
+        options.xt.testloginfile,
+        path.resolve(options.xt.coredir, 'test/lib/login_data.js')
+      ));
+
+      exec('service nginx restart');
+    },
   });
 })();

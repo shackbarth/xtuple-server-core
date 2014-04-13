@@ -14,7 +14,7 @@ describe('xTuple Installer', function () {
         xt: {
           edition: 'core',
           name: 'xt' + $k,
-          setupdemos: true,
+          quickstart: true,
           adminpw: '123',
           build_common: { },
           build_main: { },
@@ -69,11 +69,11 @@ describe('xTuple Installer', function () {
   ];
 
   global.appInstall = [
-    {name: "xt", tasks: [ 'build_common', 'build_main' ] }
+    {name: "xt", tasks: [ 'testconfig', 'build_common', 'build_main' ] }
   ];
 
   global.appInstallTest = [
-    {name: "xt", tasks: [ 'testconfig', 'runtests' ] }
+    {name: "xt", tasks: [ 'runtests' ] }
   ];
 
   global.fullInstallPlan = [

@@ -19,33 +19,15 @@
 
   _.extend(runtests, task, /** @exports runtests */ {
 
-    /**
-     * Create temporary symlinks in the src directory; this is the consequence
-     * of our current design. Future work might make tests runnable from anywhere
-     *
-     * @override
-     */
-    beforeTask: function (options) {
-      // cleanup first, or symlinks will fail
-      //runtests.afterTask(options);
-      rimraf.sync(path.resolve(options.xt.coredir, 'node-datasource/config.js'));
-      rimraf.sync(path.resolve(options.xt.coredir, 'test/lib/login_data.js'));
-
-      fs.symlinkSync(
-        path.resolve(options.xt.configdir, 'test/config.js'),
-        path.resolve(options.xt.coredir, 'node-datasource/config.js')
-      );
-      fs.symlinkSync(
-        path.resolve(options.xt.configdir, 'test/login_data.js'),
-        path.resolve(options.xt.coredir, 'test/lib/login_data.js')
-      );
-    },
-
     /** @override */
     doTask: function (options) {
-      var server = spawn('cd {xt.coredir} && npm start'),
+      var server = exec('cd {xt.coredir} && sudo -u {xt.name} npm start &'.format(options)),
         wait, tests;
 
+      /*
+      server.stdout.on('data', function (data) {
+        console.log(data);
+      });
       server.stderr.on('data', function (data) {
         throw new Error(data);
       });
@@ -54,11 +36,14 @@
           throw new Error('node datasource exited with code '+ code);
         }
       });
+      */
+
+      console.log(server);
 
       wait = sleep.sleep(10);
-      exec('service nginx reload');
+      console.log(wait);
 
-      tests = exec('cd {xt.coredir} && npm test'.format(options));
+      tests = exec('cd {xt.coredir} && sudo -u {xt.name} npm test'.format(options));
 
       options.xt.runtests.core = (tests.code === 0);
 
@@ -66,7 +51,7 @@
         throw new Error(tests.stdout);
       }
 
-      server.kill();
+      //server.kill();
     },
 
     /**
