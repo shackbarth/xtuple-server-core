@@ -44,7 +44,7 @@
             port: options.xt.sslport,
             redirectPort: options.xt.port,
             databases: _.pluck(xt.database.list, 'dbname'),
-            testDatabase: 'demo',
+            testDatabase: 'xtuple_demo',  // XXX magic
           }),
           databaseServer: _.extend(sample_config.databaseServer, {
             hostname: options.xt.socketdir, // TODO support remote databases via SSL clientcert auth

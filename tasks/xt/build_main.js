@@ -43,6 +43,8 @@
         extensions = build.editions[xt.edition],
         databases = _.where(xt.database.list, { main: true });
 
+      console.log('admin pw: '+ options.xt.adminpw);
+
       // build the main database and pilot, if specified
       _.each(databases, function (db) {
         rimraf.sync(path.resolve(options.xt.coredir, 'scripts/lib/build'));
@@ -64,7 +66,7 @@
 
       // XXX it is not clear to me whether this is necessary, but it doesn't
       // hurt anything
-      pgcli.psql(options, 'ALTER USER admin WITH PASSWORD {xt.adminpw}'.format(options));
+      //pgcli.psql(options, 'ALTER USER admin WITH PASSWORD {xt.adminpw}'.format(options));
     },
 
     /** @override */

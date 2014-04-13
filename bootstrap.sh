@@ -27,7 +27,7 @@ install_debian () {
   log "Installing Debian Packages..."
 
   sudo apt-get -qq update | tee -a $logfile
-  sudo apt-get -qq --force-yes install curl build-essential libssl-dev openssh-server cups git \
+  sudo apt-get --force-yes install curl build-essential libssl-dev openssh-server cups git \
     nginx-full \
     postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-plv8 \
     postgresql-9.3 postgresql-server-dev-9.3 postgresql-contrib-9.3 postgresql-9.3-plv8 \

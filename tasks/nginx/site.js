@@ -42,7 +42,7 @@
         name: options.xt.name,
         version: site.getScalarVersion(options)
       });
-      options.nginx.hostname = '{xt.sitename}.localhost'.format(options);
+      options.nginx.hostname = '{nginx.sitename}.localhost'.format(options);
       options.nginx.port = require('../xt').serverconfig.getServerPort(options);
       options.nginx.lanEndpoints = (options.pg.mode === 'dedicated') && [
         '       localhost',

@@ -44,18 +44,37 @@
 
     /** @override */
     doTask: function (options) {
-      var databases = _.where(options.xt.database.list, { common: true });
+      var quickstart = _.findWhere(options.xt.database.list, { dbname: 'xtuple_quickstart' }),
+        demo = _.findWhere(options.xt.database.list, { dbname: 'xtuple_demo' }),
+        qsBuild, demoBuild;
 
-      // build the common/demo databases
-      _.each(databases, function (db) {
+      if (quickstart) {
         rimraf.sync(path.resolve(options.xt.coredir, 'scripts/lib/build'));
+        qsBuild = exec(build.getCoreBuildCommand(quickstart, options));
 
-        var buildResult = exec(build.getCoreBuildCommand(db, options));
-        console.log(buildResult);
-        if (buildResult.code !== 0) {
-          throw new Error(buildResult.stdout);
+        if (qsBuild.code !== 0) {
+          throw new Error(qsBuild);
         }
-      });
+      }
+      if (demo) {
+        rimraf.sync(path.resolve(options.xt.coredir, 'scripts/lib/build'));
+        var cp = exec([
+          'cp',
+          path.resolve(demo.filename),
+          path.resolve(options.xt.coredir, 'test/lib/demo-test.backup')
+        ].join(' '));
+
+        console.log(JSON.stringify(cp));
+        console.log(JSON.stringify(options.xt.database.list));
+        console.log(JSON.stringify(options.xt.name));
+
+
+        demoBuild = exec('cd {xt.coredir} && sudo -u {xt.name} npm run-script test-build'.format(options));
+
+        if (demoBuild.code !== 0) {
+          throw new Error(JSON.stringify(demoBuild));
+        }
+      }
     },
 
     afterTask: function (options) {

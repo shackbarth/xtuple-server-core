@@ -16,7 +16,7 @@
     exec = require('execSync').exec,
     pgcli = require('../../lib/pg-cli'),
     url_template = 'http://sourceforge.net/projects/postbooks/files/' +
-      '03%20PostBooks-databases/{version}/postbooks_{dbname}-{version}.backup/download';
+      '03%20PostBooks-databases/{xt.version}/postbooks_{dbname}-{xt.version}.backup/download';
 
   _.extend(database, task, /** @exports database */ {
 
@@ -30,10 +30,15 @@
         description: 'Path to primary database .backup/.sql filename to use in production',
         value: null
       },
-      setupdemos: {
+      demo: {
         optional: '[boolean]',
         description: 'Set to additionally install the demo databases',
-        value: true
+        value: false
+      },
+      quickstart: {
+        optional: '[boolean]',
+        description: 'Set to additionally install the quickstart databases',
+        value: false
       },
       adminpw: {
         optional: '[password]',
@@ -41,28 +46,19 @@
       }
     },
 
-    versions: {
-      '1.8.0': '4.3.0',
-      '1.8.1': '4.3.0',
-      '1.8.2': '4.4.0',
-      '4.4.0': '4.4.0',
-      '4.4.1': '4.4.1'
-    },
-    download: [ 'quickstart', 'demo' ],
-
     /** @override */
     doTask: function (options) {
       var xt = options.xt,
-        download_format = {
-          version: database.versions[xt.version] || xt.version
-        },
+        downloads = _.compact([
+          options.xt.demo && 'demo',
+          options.xt.quickstart && 'quickstart'
+        ]),
         // schedule postbooks demo database filenames for installation
-        databases = !xt.setupdemos ? [ ] : _.map(database.download, function (dbname) {
-          var dbname_format = _.extend({ dbname: dbname }, download_format),
-            wget_format = {
+        databases = _.map(downloads, function (dbname) {
+          var wget_format = {
               dbname: 'xtuple_' + dbname,
               filename: path.resolve(options.xt.srcdir, dbname + '.backup'),
-              url: url_template.format(dbname_format),
+              url: url_template.format(_.extend({ dbname: dbname }, options)),
               common: true
             },
             wget_result;
@@ -110,25 +106,7 @@
         throw new Error('No databases have been found for installation');
       }
 
-      options.xt.database.list = _.map(databases, function (db) {
-        /*
-        var psql_template = _.extend({ owner: 'admin' }, db, options),
-          // create database
-          createdb = pgcli.createdb(psql_template),
-
-          // enable plv8 extension
-          plv8 = pgcli.psql(psql_template, 'CREATE EXTENSION plv8');
-
-        if (createdb.code !== 0) {
-          throw new Error('Database creation failed: '+ createdb.stdout);
-        }
-        if (plv8.code !== 0) {
-          throw new Error('PLV8 installation failed: '+ plv8.stdout);
-        }
-        */
-
-        return db;
-      });
+      options.xt.database.list = databases;
     }
   });
 })();

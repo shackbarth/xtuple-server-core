@@ -118,28 +118,22 @@ describe('phase: xt', function () {
     });
   });
   describe('task: runtests', function () {
-    beforeEach(function () {
-      var plan = global.baseInstall.concat(global.appInstall).concat(global.appInstallTest),
-        url = 'http://sourceforge.net/projects/postbooks/files/' +
-            '03%20PostBooks-databases/{xt.version}/postbooks_demo-{xt.version}.backup/download',
-        maindb_path = path.resolve('demo.backup');
+    // skip this test if not in CI
+    this.pending = !process.env.TRAVIS;
 
-      options.xt.maindb = maindb_path;
-      options.xt.setupdemos = false;
+    beforeEach(function () {
+      var plan = global.baseInstall.concat(global.appInstall).concat(global.appInstallTest);
+      console.log(plan);
+
+      options.xt.quickstart = false;
+      options.xt.demo = true;
 
       planner.verifyOptions(plan, options);
       planner.compileOptions(plan, options);
-
-      exec('wget -qO '+ maindb_path +' '+ url.format(options));
-
       planner.install(plan, options);
     });
     it('should pass core unit tests on postbooks_demo database', function () {
       assert.isTrue(options.xt.runtests.core);
-    });
-
-    after(function () {
-      rimraf.sync(options.xt.maindb);
     });
   });
 });

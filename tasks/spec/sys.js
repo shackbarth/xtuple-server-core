@@ -18,15 +18,19 @@ describe('phase: sys', function () {
   beforeEach(function () {
     options = global.options;
 
-    planner.verifyOptions(global.baseClusterInstallPlan, options);
-    planner.compileOptions(global.baseClusterInstallPlan, options);
-    planner.install(global.baseClusterInstallPlan, options);
+    planner.verifyOptions(global.baseInstall, options);
+    planner.compileOptions(global.baseInstall, options);
+    planner.install(global.baseInstall, options);
   });
   afterEach(function () {
     pgcli.dropcluster(options.pg.cluster);
     exec('deluser '+ options.xt.name);
     exec('rm -f /etc/sudoers.d/*'+ options.xt.name + '*');
     exec('rm -rf /usr/local/'+ options.xt.name);
+  });
+
+  describe('task: etchosts', function () {
+    
   });
 
   describe('task: policy', function () {
