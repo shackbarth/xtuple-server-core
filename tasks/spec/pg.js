@@ -21,9 +21,9 @@ describe('phase: pg', function () {
   beforeEach(function () {
     options = global.options;
 
-    planner.verifyOptions(global.baseClusterInstallPlan, options);
-    planner.compileOptions(global.baseClusterInstallPlan, options);
-    planner.install(global.baseClusterInstallPlan, options);
+    planner.verifyOptions(global.baseInstall, options);
+    planner.compileOptions(global.baseInstall, options);
+    planner.install(global.baseInstall, options);
   });
 
   it('is sane', function () {
