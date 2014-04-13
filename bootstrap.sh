@@ -35,7 +35,7 @@ install_debian () {
   | tee -a $logfile
 
   if [[ "$XT_NODE_VERSION" -eq "0.8.26" ]]; then
-    sudo apt-get -qq --force-yes install npm=1.3.0-1chl1~${animal}1
+    sudo apt-get -qq --force-yes install npm
   fi
 
   log "All dependencies installed."
