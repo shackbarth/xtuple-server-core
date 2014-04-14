@@ -1,11 +1,17 @@
-language: c
-
+language: node_js
+node_js:
+  - 0.8
+  - 0.10
 env:
-  matrix:
-    - XT_PG_VERSION="9.1" XT_NODE_VERSION="0.8.26"
-    - XT_PG_VERSION="9.1" XT_NODE_VERSION="0.10.26"
-    - XT_PG_VERSION="9.3" XT_NODE_VERSION="0.10.26"
-    - XT_PG_VERSION="9.3" XT_NODE_VERSION="0.8.26"
+  - XT_PG_VERSION=9.1
+  - XT_PG_VERSION=9.2
+  - XT_PG_VERSION=9.3
+matrix:
+  exclude:
+    - node_js: 0.8
+      env: XT_PG_VERSION=9.3
+    - node_js: 0.8
+      env: XT_PG_VERSION=9.2
 
 before_install:
   - sudo apt-get purge postgres*
@@ -20,4 +26,6 @@ script: /usr/bin/npm test
 
 after_failure:
   - cat install.log
-
+  - cat /var/log/postgresql/$XT_PG_VERSION/xtmocha
+  - cat /var/log/nginx/error.log
+  - cat /var/log/xtuple/*
