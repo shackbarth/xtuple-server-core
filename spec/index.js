@@ -34,7 +34,7 @@ describe('xTuple Installer', function () {
     {name: 'pg', tasks: [ 'snapshotmgr' ]}
   ];
 
-  if (!process.env.TRAVIS) {
+  if (!!process.env.TRAVIS) {
     global.installPlan[4].tasks.push('build_common');
     global.installPlan[4].tasks.push('build_main');
     global.installPlan[4].tasks.push('runtests');
