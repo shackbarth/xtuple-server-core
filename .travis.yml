@@ -14,10 +14,11 @@ matrix:
       env: XT_PG_VERSION=9.2
 
 before_install:
+  - export vnode=$(node --version)
+  - export XT_NODE_VERSION=${vnode:1}
+  - env
   - sudo apt-get purge postgres*
   - sudo -E bash bootstrap.sh --no-installer
-  - echo $node_js
-  - env
 
 # travis-ci tries to be way too helpful with their node setup
 install: /usr/bin/npm install
