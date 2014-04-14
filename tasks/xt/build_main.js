@@ -19,19 +19,6 @@
 
   _.extend(build_main, task, /** @exports build_main */ {
 
-    options: {
-      pilot: {
-        optional: '[boolean]',
-        description: 'Additionally create a pilot area using a copy of the main database',
-        value: true
-      },
-      edition: {
-        optional: '[string]',
-        description: 'The xTuple Edition to install',
-        value: 'core'
-      }
-    },
-
     /** @override */
     beforeTask: function (options) {
       require('./build_common').beforeTask(options);
@@ -41,13 +28,28 @@
     doTask: function (options) {
       var xt = options.xt,
         extensions = build.editions[xt.edition],
-        databases = _.where(xt.database.list, { main: true });
+        databases = _.where(xt.database.list, { main: true }),
+        repos = require('./clone').getRepositoryList(options);
 
-      console.log('admin pw: '+ options.xt.adminpw);
+      _.each(repos, function (repo) {
+        var template = {
+            repo: repo,
+            path: path.resolve(options.xt.srcdir, repo),
+            out: path.resolve(options.xt.usersrc, '..')
+          },
+          rsync = exec('rsync -ar --exclude=".git" {path} {out}'.format(template));
+
+        if (rsync.code !== 0) {
+          throw new Error(JSON.stringify(rsync, null, 2));
+        }
+
+        exec('chown -R {xt.name}:{xt.name} {xt.userhome}'.format(options));
+        exec('chmod -R 700 {xt.userhome}'.format(options));
+      });
 
       // build the main database and pilot, if specified
       _.each(databases, function (db) {
-        rimraf.sync(path.resolve(options.xt.coredir, 'scripts/lib/build'));
+        rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
 
         var buildResult = exec(build.getCoreBuildCommand(db, options));
         console.log(buildResult);
@@ -72,6 +74,7 @@
     /** @override */
     afterTask: function (options) {
       require('./build_common').afterTask(options);
+      //rimraf.sync('
     }
   });
 })();

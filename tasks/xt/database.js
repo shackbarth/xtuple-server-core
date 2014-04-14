@@ -25,10 +25,20 @@
         required: '<name>',
         description: 'Name of the installation'
       },
+      pilot: {
+        optional: '[boolean]',
+        description: 'Additionally create a pilot area using a copy of the main database',
+        value: true
+      },
       maindb: {
         optional: '[path]',
         description: 'Path to primary database .backup/.sql filename to use in production',
         value: null
+      },
+      edition: {
+        optional: '[string]',
+        description: 'The xTuple Edition to install',
+        value: 'core'
       },
       demo: {
         optional: '[boolean]',

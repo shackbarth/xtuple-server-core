@@ -43,7 +43,6 @@
         version: site.getScalarVersion(options)
       });
       options.nginx.hostname = '{nginx.sitename}.localhost'.format(options);
-      options.nginx.port = require('../xt').serverconfig.getServerPort(options);
       options.nginx.lanEndpoints = (options.pg.mode === 'dedicated') && [
         '       localhost',
         '       (^127\\.0\\.0\\.1)',
@@ -53,6 +52,11 @@
         '       (^172\\.3[0-1]\\.)',
         '       (^192\\.168\\.)'
       ].join('\n');
+    },
+
+    /** @override */
+    beforeTask: function (options) {
+      options.nginx.port = require('../xt').serverconfig.getServerSSLPort(options);
     },
 
     /**

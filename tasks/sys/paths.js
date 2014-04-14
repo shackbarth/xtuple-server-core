@@ -6,16 +6,16 @@
    */
   var paths = exports;
 
-  var task = require('../../lib/task'),
+  var lib = require('../../lib'),
     fs = require('fs'),
     exec = require('execSync').exec,
     path = require('path'),
     _ = require('underscore');
 
-  _.extend(paths, task, /** @exports paths */ {
+  _.extend(paths, lib.task, /** @exports paths */ {
 
     /** @override */
-    beforeInstall: function (options) {
+    doTask: function (options) {
       var version = options.xt.version,
         name = options.xt.name;
 
@@ -26,12 +26,17 @@
       options.xt.ssldir = path.resolve('/etc/xtuple', version, name, 'ssl');
       options.xt.rand64file = path.resolve('/etc/xtuple', version, name, 'rand64.txt');
       options.xt.key256file = path.resolve('/etc/xtuple', version, name, 'key256.txt');
-      options.sys.userhome = path.resolve('/usr/local/', options.xt.name);
+      options.xt.userhome = path.resolve('/usr/local/', options.xt.name);
+      options.xt.usersrc = path.resolve(options.xt.userhome, options.xt.version, 'xtuple');
+      options.xt.testloginfile = path.resolve(options.xt.usersrc, 'test/lib/login_data.js');
+      options.xt.testconfigfile = path.resolve(options.xt.usersrc, 'node-datasource/config.js');
 
       // other system paths
       options.xt.logdir = path.resolve('/var/log/xtuple', version, name);
       options.xt.socketdir = path.resolve('/var/run/postgresql');
       options.xt.statedir = path.resolve('/var/lib/xtuple', version, name);
+      options.sys.sbindir = path.resolve('/usr/sbin/xtuple/{xt.version}/{xt.name}'.format(options));
+      options.sys.servicedir = path.resolve(options.xt.configdir, 'services');
 
       // repositories
       options.xt.srcdir = path.resolve('/usr/local/xtuple/src/', options.xt.version);
@@ -39,7 +44,9 @@
       options.xt.extdir = path.resolve(options.xt.srcdir, 'xtuple-extensions');
       options.xt.privatedir = path.resolve(options.xt.srcdir, 'private-extensions');
 
-      exec('mkdir -p ' + options.sys.userhome);
+      //exec('mkdir -p ' + path.resolve(options.xt.configdir, 'test'));
+      exec('mkdir -p ' + options.xt.userhome);
+      exec('mkdir -p ' + options.xt.usersrc);
 
       exec('mkdir -p ' + options.xt.configdir);
       exec('mkdir -p ' + options.xt.ssldir);
@@ -47,6 +54,8 @@
       exec('mkdir -p ' + options.xt.socketdir);
       exec('mkdir -p ' + options.xt.statedir);
       exec('mkdir -p ' + options.xt.srcdir);
+      exec('mkdir -p ' + options.sys.servicedir);
+      exec('mkdir -p ' + options.sys.sbindir);
 
       exec('chown -R xtadmin:xtuser '+ options.xt.srcdir);
       exec('chown -R xtadmin:xtuser '+ options.xt.coredir);
@@ -58,8 +67,7 @@
       exec('chmod u=rwx,g=rx,o-rwx '+ options.xt.privatedir);
     },
 
-    /** @override */
-    doTask: function (options) {
+    uninstall: function (options) {
 
     }
 

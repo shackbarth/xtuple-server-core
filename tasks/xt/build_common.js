@@ -35,11 +35,13 @@
         configfile: options.xt.buildconfigfile
       });
       buildOptions.xt.serverconfig = { };
+      buildOptions.xt.testdb = 'xtuple_demo';
 
       require('./serverconfig').doTask(buildOptions);
 
-      // we need to be able to write files in the src directory temporarily
-      exec('chmod -R g+w,u+w {xt.srcdir}'.format(options));
+      exec('chown {xt.name}:{xt.name} {xt.buildconfigfile}'.format(options));
+      exec('chmod 700 {xt.buildconfigfile}'.format(options));
+
     },
 
     /** @override */
@@ -49,7 +51,7 @@
         qsBuild, demoBuild;
 
       if (quickstart) {
-        rimraf.sync(path.resolve(options.xt.coredir, 'scripts/lib/build'));
+        rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
         qsBuild = exec(build.getCoreBuildCommand(quickstart, options));
 
         if (qsBuild.code !== 0) {
@@ -57,24 +59,19 @@
         }
       }
       if (demo) {
-        rimraf.sync(path.resolve(options.xt.coredir, 'scripts/lib/build'));
+        rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
         var cp = exec([
           'cp',
           path.resolve(demo.filename),
-          path.resolve(options.xt.coredir, 'test/lib/demo-test.backup')
+          path.resolve(options.xt.usersrc, 'test/lib/demo-test.backup')
         ].join(' '));
 
-        demoBuild = exec('cd {xt.coredir} && sudo -u {xt.name} npm run-script test-build'.format(options));
+        demoBuild = exec('cd {xt.usersrc} && sudo -u {xt.name} npm run-script test-build'.format(options));
 
         if (demoBuild.code !== 0) {
-          throw new Error(JSON.stringify(demoBuild));
+          throw new Error(JSON.stringify(demoBuild, null, 2));
         }
       }
-    },
-
-    afterTask: function (options) {
-      // revert permissions
-      exec('chmod -R g-w,u-w {xt.srcdir}'.format(options));
     }
   });
 })();

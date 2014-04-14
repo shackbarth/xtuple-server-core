@@ -40,10 +40,14 @@
     },
 
     /** @override */
+    beforeInstall: function (options) {
+      options.pg.snapshotdir = path.resolve('/var/lib/xtuple', options.xt.version, options.xt.name, 'snapshots');
+    },
+
+    /** @override */
     beforeTask: function (options) {
-      var root = snapshotmgr.getSnapshotRoot(options.xt.version, options.xt.name);
-      exec('mkdir -p ' + root);
-      exec(('chown {xt.name}:xtuser '+ root).format(options));
+      exec('mkdir -p ' + options.pg.snapshotdir);
+      exec(('chown {xt.name}:xtuser '+ options.pg.snapshotdir).format(options));
       //exec('chmod u=rwx '+ root);
 
       //exec('chown postgres ' +  root);
@@ -66,14 +70,6 @@
     },
 
     /**
-     * Return the backup path as a string.
-     * @public
-     */
-    getSnapshotRoot: function (version, name) {
-      return path.resolve('/var/lib/xtuple', version, name, 'snapshots');
-    },
-
-    /**
      * Return path of a snapshot file
      * @param options - typical options object
      * @param options.daysago - day of backup to restore [0]
@@ -82,7 +78,7 @@
      */
     getSnapshotPath: function (options, backupName) {
       return path.resolve(
-        snapshotmgr.getSnapshotRoot(options.xt.version, options.xt.name),
+        options.pg.snapshotdir,
         '{name}_{dbname}_{ts}.{ext}'.format({
           name: options.xt.name,
           dbname: backupName,
