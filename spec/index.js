@@ -40,6 +40,9 @@ describe('xTuple Installer', function () {
     global.installPlan[4].tasks.push('runtests');
   }
 
+  // https://github.com/mikeal/request/issues/418
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
   before(function () {
     planner.eachTask(global.installPlan, function (task, phaseName, taskName) {
       try {
