@@ -50,7 +50,7 @@ module.exports = {
      */
     dedicated: {
       shared_buffers:  (os.totalmem() / 2) / MB,
-      max_connections: 128,
+      max_connections: 64,
       maintenance_work_mem: 256
     },
 
