@@ -31,7 +31,6 @@
   "scripts": {
     "test": "sudo -E ./node_modules/.bin/mocha spec/index.js -R spec -b",
     "test-9.1": "sudo XT_PG_VERSION=9.1 ./node_modules/.bin/mocha spec/index.js -R spec -b",
-    "test-9.2": "sudo XT_PG_VERSION=9.2 ./node_modules/.bin/mocha spec/index.js -R spec -b",
     "test-9.3": "sudo XT_PG_VERSION=9.3 ./node_modules/.bin/mocha spec/index.js -R spec -b"
   },
   "preferGlobal": true,

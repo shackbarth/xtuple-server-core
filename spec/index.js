@@ -34,7 +34,7 @@ describe('xTuple Installer', function () {
     {name: 'pg', tasks: [ 'snapshotmgr' ]}
   ];
 
-  if (!!process.env.TRAVIS) {
+  if (!process.env.TRAVIS) {
     global.installPlan[4].tasks.push('build_common');
     global.installPlan[4].tasks.push('build_main');
     global.installPlan[4].tasks.push('runtests');
@@ -68,7 +68,7 @@ describe('xTuple Installer', function () {
     );
   });
   it('must set XT_PG_VERSION environment variable', function () {
-    assert.include([ '9.1', '9.2', '9.3' ], String(process.env.XT_PG_VERSION));
+    assert.include([ '9.1', '9.3' ], String(process.env.XT_PG_VERSION));
   });
 
   describe('planner', function () {
