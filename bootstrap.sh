@@ -29,8 +29,7 @@ install_debian () {
   sudo apt-get -qq update | tee -a $logfile
   sudo apt-get --force-yes install curl build-essential libssl-dev openssh-server cups git \
     nginx-full \
-    postgresql-9.1 postgresql-server-dev-9.1 postgresql-contrib-9.1 postgresql-9.1-plv8 \
-    postgresql-9.3 postgresql-server-dev-9.3 postgresql-contrib-9.3 postgresql-9.3-plv8 \
+    postgresql-$XT_PG_VERSION postgresql-server-dev-$XT_PG_VERSION postgresql-contrib-$XT_PG_VERSION postgresql-$XT_PG_VERSION-plv8 \
     nodejs=$XT_NODE_VERSION-1chl1~${animal}1 \
   | tee -a $logfile
 
@@ -74,8 +73,18 @@ die() {
 
 trap 'CODE=$? ; log "\n\nxTuple bootstrap Aborted:\n  line: $BASH_LINENO \n  cmd: $BASH_COMMAND \n  code: $CODE\n  msg: $TRAPMSG\n" ; exit 1' ERR
 
+if [[ -z $XT_NODE_VERSION ]]; then
+  XT_NODE_VERSION=0.10.26
+fi
+if [[ -z $XT_PG_VERSION ]]; then
+  XT_PG_VERSION=9.3
+fi
+
 log "This program will setup a new machine for xTuple."
-log "Running this program on a non-dedicated machine is NOT RECOMMENDED\n"
+log "Using:"
+log "   Postgres: $XT_PG_VERSION"
+log "   nodejs:   $XT_NODE_VERSION"
+log ""
 log "         xxx     xxx"
 log "          xxx   xxx "
 log "           xxx xxx  "
