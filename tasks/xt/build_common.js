@@ -20,12 +20,6 @@
   _.extend(build_common, task, /** @exports build_common */ {
 
     /** @override */
-    beforeInstall: function (options) {
-      options.xt.buildconfigfile = path.resolve(options.xt.configdir, 'build/config.js');
-
-    },
-
-    /** @override */
     beforeTask: function (options) {
       var buildOptions = _.clone(options);
 
@@ -40,7 +34,6 @@
 
       exec('chown {xt.name}:{xt.name} {xt.buildconfigfile}'.format(options));
       exec('chmod 700 {xt.buildconfigfile}'.format(options));
-
     },
 
     /** @override */
