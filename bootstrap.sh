@@ -34,7 +34,7 @@ install_debian () {
     nodejs=$XT_NODE_VERSION-1chl1~${animal}1 \
   | tee -a $logfile
 
-  if [[ "$XT_NODE_VERSION" -eq "0.8.26" ]]; then
+  if [[ "$XT_NODE_VERSION" = "0.8.26" ]]; then
     sudo apt-get -qq --force-yes install npm
   fi
 
