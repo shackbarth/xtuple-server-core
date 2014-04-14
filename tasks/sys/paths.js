@@ -49,6 +49,7 @@
       exec('mkdir -p ' + options.xt.usersrc);
 
       exec('mkdir -p ' + options.xt.configdir);
+      exec('mkdir -p ' + path.resolve(options.xt.configdir, 'build'));
       exec('mkdir -p ' + options.xt.ssldir);
       exec('mkdir -p ' + options.xt.logdir);
       exec('mkdir -p ' + options.xt.socketdir);
