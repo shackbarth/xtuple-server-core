@@ -4,14 +4,7 @@ node_js:
   - "0.10.26"
 env:
   - XT_PG_VERSION="9.1"
-  - XT_PG_VERSION="9.2"
   - XT_PG_VERSION="9.3"
-matrix:
-  exclude:
-  - node_js: "0.8.26"
-    env: XT_PG_VERSION="9.3"
-  - node_js: "0.8.26"
-    env: XT_PG_VERSION="9.2"
 
 before_install:
   - ipcs -l
