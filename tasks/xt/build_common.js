@@ -23,7 +23,6 @@
     beforeInstall: function (options) {
       options.xt.buildconfigfile = path.resolve(options.xt.configdir, 'build/config.js');
 
-      exec('mkdir -p ' + path.resolve(options.xt.configdir, 'build'));
     },
 
     /** @override */

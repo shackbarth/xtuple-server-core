@@ -14,7 +14,6 @@
     fs = require('fs'),
     pgcli = require('../../lib/pg-cli'),
     exec = require('execSync').exec,
-    sync = require('sync'),
     build = require('../../lib/xt/build');
 
   _.extend(build_main, task, /** @exports build_main */ {
