@@ -8,13 +8,13 @@ env:
   - XT_PG_VERSION="9.3"
 matrix:
   exclude:
-    - node_js: "0.8"
+    - node_js: "0.8.26"
       env: XT_PG_VERSION="9.3"
-    - node_js: "0.8"
+    - node_js: "0.8.26"
       env: XT_PG_VERSION="9.2"
 
 before_install:
-  - export XT_NODE_VERSION=$(node --version)
+  - export XT_NODE_VERSION=$TRAVIS_NODE_VERSION
   - env
   - sudo apt-get purge postgres*
   - sudo -E bash bootstrap.sh --no-installer
