@@ -9,9 +9,9 @@ env:
 
 before_install:
   - sudo apt-get purge postgres*
-  - ls -l /etc/apt/sources.list.d
-  - cat /etc/apt/sources.list
   - sudo -E bash bootstrap.sh --no-installer
+  - echo $node_js
+  - env
 
 # travis-ci tries to be way too helpful with their node setup
 install: /usr/bin/npm install
