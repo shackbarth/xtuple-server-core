@@ -35,7 +35,7 @@ describe('xTuple Installer', function () {
   ];
 
   if (!!process.env.TRAVIS) {
-    global.installPlan[4].concat(['build_common', 'build_main', 'runtests']);
+    global.installPlan[4].tasks.concat(['build_common', 'build_main', 'runtests']);
   }
 
   before(function () {
