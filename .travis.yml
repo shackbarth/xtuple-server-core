@@ -3,15 +3,15 @@ node_js:
   - "0.8"
   - "0.10"
 env:
-  - XT_PG_VERSION=9.1
-  - XT_PG_VERSION=9.2
-  - XT_PG_VERSION=9.3
+  - XT_PG_VERSION="9.1"
+  - XT_PG_VERSION="9.2"
+  - XT_PG_VERSION="9.3"
 matrix:
   exclude:
     - node_js: "0.8"
-      env: XT_PG_VERSION=9.3
+      env: XT_PG_VERSION="9.3"
     - node_js: "0.8"
-      env: XT_PG_VERSION=9.2
+      env: XT_PG_VERSION="9.2"
 
 before_install:
   - export vnode=$(node --version)
