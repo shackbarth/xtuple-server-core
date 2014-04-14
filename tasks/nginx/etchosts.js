@@ -22,7 +22,7 @@
       var etc_hosts_template = fs.readFileSync(hosts_template_path).toString(),
         etc_hosts_current = fs.readFileSync(path.resolve('/etc/hosts'));
 
-      if (new RegExp('customer=' + options.xt.name).test(etc_hosts_current)) {
+      if (new RegExp('customer=' + options.xt.name + ',').test(etc_hosts_current)) {
         // TODO log this event
       }
       else {

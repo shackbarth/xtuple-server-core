@@ -48,6 +48,11 @@
       pgcli.ctlcluster({ action: 'reload', version: options.pg.version, name: options.xt.name });
     },
 
+    /** @override */
+    uninstall: function (options) {
+      pgcli.dropcluster(options.pg.cluster);
+    },
+
     /**
      * Setup an existing, empty-ish cluster to receive xtuple.
      */

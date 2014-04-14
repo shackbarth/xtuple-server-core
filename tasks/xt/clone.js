@@ -78,6 +78,18 @@
           throw new Error(JSON.stringify(failed, null, 2));
         }
       });
+
+      // copy main repo files to user's home directory
+      var rsync = exec('rsync -ar --exclude=".git" {xt.coredir}/* {xt.usersrc}'.format(options));
+      if (rsync.code !== 0) {
+        throw new Error(JSON.stringify(rsync, null, 2));
+      }
+    },
+
+    /** @override */
+    afterTask: function (options) {
+      exec('chown -R {xt.name}:{xt.name} {xt.userhome}'.format(options));
+      exec('chmod -R 700 {xt.userhome}'.format(options));
     },
 
     /**

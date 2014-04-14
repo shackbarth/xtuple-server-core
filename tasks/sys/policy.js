@@ -8,6 +8,7 @@
 
   var task = require('../../lib/task'),
     fs = require('fs'),
+    rimraf = require('rimraf'),
     exec = require('execSync').exec,
     path = require('path'),
     _ = require('underscore'),
@@ -18,12 +19,11 @@
   _.extend(policy, task, /** @exports policy */ {
 
     beforeTask: function (options) {
-      options.sys.sbindir = path.resolve('/usr/sbin/xtuple/{xt.version}/{xt.name}'.format(options));
       options.xt.homedir = path.resolve('/usr/local/xtuple');
+      options.sys.userHomeDir = path.resolve('/usr/local', options.xt.name);
       options.sys.policy.userPassword = policy.getPassword();
       options.sys.policy.remotePassword = policy.getPassword();
 
-      exec('mkdir -p /usr/sbin/xtuple/{xt.version}/{xt.name}'.format(options));
       exec('mkdir -p /var/run/postgresql'.format(options));
     },
 
@@ -46,7 +46,7 @@
     },
 
     getPassword: function () {
-      return exec('openssl rand 6 | base64').stdout;
+      return exec('openssl rand 6 | base64').stdout.replace(/\W/g, '');
     },
 
     /**
@@ -139,6 +139,9 @@
       if (!options.xt.adminpw && !options.pg.restore && !options.xt.maindb) {
         options.xt.adminpw = policy.getPassword();
       }
+
+      // set user shell
+      exec('sudo chsh -s /bin/bash {xt.name}'.format(options));
     },
 
     /**
@@ -153,17 +156,27 @@
           AllowGroups: 'xtadmin xtuser',
           LoginGraceTime: '30s',
           X11Forwarding: 'no',
-          PubkeyAuthentication: 'no'
+          PubkeyAuthentication: 'no',
+          HostbasedAuthentication: 'no'
         },
         target_sshd_conf = _.reduce(_.keys(rules), function (memo, key) {
-          var regex = new RegExp('^' + key + '.*$'),
-            entry = key + ' ' + rules[key];
-          return regex.test(memo) ? memo.concat(entry) : memo.replace(regex, entry);
+          var regex = new RegExp('^' + key + '.*$', 'gm'),
+            entry = key + ' ' + rules[key],
+            match = regex.exec(memo);
+
+          return match ? memo.replace(match, entry) : memo.concat(entry + '\n');
         }, src_sshd_conf);
 
-      // make backup
       fs.writeFileSync('/etc/ssh/sshd_config.bak.' + new Date().valueOf(), src_sshd_conf);
       fs.writeFileSync('/etc/ssh/sshd_config', target_sshd_conf);
+    },
+
+    /** @override */
+    uninstall: function (options) {
+      exec('skill -KILL -u {xt.name}'.format(options));
+      exec('deluser {xt.name}'.format(options));
+      fs.unlinkSync(path.resolve('/etc/sudoers.d/', user_policy_filename.replace('user', '{xt.name}').format(options)));
+      rimraf.sync(path.resolve(options.sys.userHomeDir));
     }
   });
 

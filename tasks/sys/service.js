@@ -15,37 +15,34 @@
 
   _.extend(service, task, /** @exports service */ {
 
-    /**
-     * Inject custom location into nginx config
-     * @override
-     */
-    /*
+    /** @override */
     beforeTask: function (options) {
-      options.nginx.locations['xpanel'] = {
-        upstream: {
-          server: local
-        }
-      };
+      try {
+        fs.unlinkSync(path.resolve(options.sys.sbindir, 'main.js'));
+      }
+      catch (e) { }
+      try {
+        fs.unlinkSync('/etc/init.d/xtuple');
+      }
+      catch (e) { }
     },
-    */
 
     /** @override */
     doTask: function (options) {
-      var sbin_js = path.resolve('/usr/sbin/xtuple', options.xt.version, options.xt.name),
-        services_conf_path = path.resolve(options.xt.configdir, 'services'),
-        xt_conf_target = path.resolve(options.xt.configdir, 'config.js'),
-        pm2 = {
-          template: fs.readFileSync(path.resolve(__dirname, 'pm2-core-services.json')),
-          services_conf_target: path.resolve(services_conf_path, 'pm2-core-services.json'),
-          init_sh_path: path.resolve(__dirname, 'pm2-init.sh'),
-          name: 'xt-{name}-{version}'.format(options.xt)
+      var pm2 = {
+          template: fs.readFileSync(path.resolve(__dirname, 'pm2-core-services.json')).toString(),
+          services_conf_target: path.resolve(options.sys.servicedir, 'pm2-core-services.json'),
+          init_sh_path: path.resolve(__dirname, 'pm2-init.sh')
         };
 
-      pm2.init_sh = fs.readFileSync(pm2.init_sh_path),
-      pm2.conf = pm2.template.format(_.extend({ port: options.xt.serverconfig.port }, options.xt)),
+      pm2.init_sh = fs.readFileSync(pm2.init_sh_path).toString(),
+      pm2.conf = pm2.template.format(options);
           
       // symlink main.js to sbin
-      fs.symlinkSync(path.resolve(options.xt.coredir, 'node-datasource/main.js'), sbin_js);
+      fs.symlinkSync(
+        path.resolve(options.xt.usersrc, 'node-datasource/main.js'),
+        path.resolve(options.sys.sbindir, 'main.js')
+      );
 
       // download/install pm2 service
       exec('npm install -g https://github.com/xtuple/pm2/tarball/master');
@@ -60,7 +57,7 @@
       fs.writeFileSync(pm2.services_conf_target, pm2.conf);
 
       // start process manager and web service
-      exec(['pm2 start', pm2.conf_target, '-x -u xtweb -- -c', xt_conf_target].join(' '));
+      exec(['pm2 start', pm2.services_conf_target, '-x -u xtweb -- -c', options.xt.configfile].join(' '));
       service.launch(pm2.services_conf_target);
     },
 

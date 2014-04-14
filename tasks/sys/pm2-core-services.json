@@ -1,6 +1,6 @@
 [
   {
-    "name": "{xt.version} {xt.name}",
+    "name": "{xt.name} {xt.version}",
     "script": "/usr/sbin/{xt.name}/{xt.version}/main.js",
     "args": "[ '-c /etc/xtuple/{xt.version}/{xt.name}/config.js' ]",
     "env": {

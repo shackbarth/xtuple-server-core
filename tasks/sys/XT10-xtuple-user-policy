@@ -1,6 +1,6 @@
 {xt.name}    ALL = \
-      /usr/sbin/service xtuple [0-9.]* {xt.name} [A-Za-z]+, \
-      /usr/bin/pg_ctlcluster [0-9.]* {xt.name} [A-Za-z]+, \
+      /usr/sbin/service xtuple [0-9.]* {xt.name} [A-Za-z]*, \
+      /usr/bin/pg_ctlcluster [0-9.]* {xt.name} [A-Za-z]*, \
       /usr/bin/pg_restore -U {xt.name} *, \
       /usr/bin/pg_dumpall -U {xt.name} *, \
       /usr/bin/pg_dump -U {xt.name} *, \

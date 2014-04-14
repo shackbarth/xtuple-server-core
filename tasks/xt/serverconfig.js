@@ -20,6 +20,7 @@
     beforeTask: function (options) {
       options.xt.port = serverconfig.getServerPort(options);
       options.xt.sslport = serverconfig.getServerSSLPort(options);
+      //options.xt.testdb = (options.xt.demo && options.xt.runtests) ? 'xtuple_demo' : '';
     },
 
     /** @override */
@@ -35,6 +36,7 @@
           processName: 'xt-web-' + options.xt.name,
           datasource: _.extend(sample_config.datasource, {
             name: options.nginx.domain,
+            bindAddress: '127.0.0.1',
             keyFile: options.nginx.outkey,
             certFile: options.nginx.outcrt,
             saltFile: options.xt.rand64file,
@@ -44,7 +46,7 @@
             port: options.xt.sslport,
             redirectPort: options.xt.port,
             databases: _.pluck(xt.database.list, 'dbname'),
-            testDatabase: 'xtuple_demo',  // XXX magic
+            testDatabase: options.xt.testdb
           }),
           databaseServer: _.extend(sample_config.databaseServer, {
             hostname: options.xt.socketdir, // TODO support remote databases via SSL clientcert auth
@@ -79,6 +81,17 @@
         string: output_conf,
         json: derived_config_obj
       });
+    },
+
+    /** @override */
+    afterTask: function (options) {
+      exec('chown {xt.name}:{xt.name} {xt.key256file}'.format(options));
+      exec('chown {xt.name}:{xt.name} {xt.rand64file}'.format(options));
+      exec('chown {xt.name}:{xt.name} {xt.configfile}'.format(options));
+
+      exec('chmod 700 {xt.key256file}'.format(options));
+      exec('chmod 700 {xt.rand64file}'.format(options));
+      exec('chmod 700 {xt.configfile}'.format(options));
     },
 
     /**

@@ -4,6 +4,7 @@
   /** @exports nginx */
   module.exports = {
     site: require('./site'),
-    ssl:  require('./ssl')
+    ssl:  require('./ssl'),
+    etchosts: require('./etchosts')
   };
 })();
