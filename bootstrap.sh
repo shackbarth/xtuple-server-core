@@ -74,10 +74,10 @@ die() {
 trap 'CODE=$? ; log "\n\nxTuple bootstrap Aborted:\n  line: $BASH_LINENO \n  cmd: $BASH_COMMAND \n  code: $CODE\n  msg: $TRAPMSG\n" ; exit 1' ERR
 
 if [[ -z $XT_NODE_VERSION ]]; then
-  XT_NODE_VERSION="0.10.26"
+  export XT_NODE_VERSION="0.10.26"
 fi
 if [[ -z $XT_PG_VERSION ]]; then
-  XT_PG_VERSION="9.3"
+  export XT_PG_VERSION="9.3"
 fi
 
 log "This program will setup a new machine for xTuple."

@@ -68,7 +68,7 @@ describe('xTuple Installer', function () {
     );
   });
   it('must set XT_PG_VERSION environment variable', function () {
-    assert.include([ '9.1', '9.3' ], process.env.XT_PG_VERSION);
+    assert.include([ '9.1', '9.2', '9.3' ], String(process.env.XT_PG_VERSION));
   });
 
   describe('planner', function () {
