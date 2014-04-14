@@ -68,6 +68,8 @@
         sysctl_conf_path = path.resolve('/etc/sysctl.d/30-postgresql-shm.conf'),
         sysctl_conf;
 
+      console.log(exec('ipcs -l').stdout);
+
       sysctl_conf = sysctl_conf_template.format({
           shmmax: env.shmmax,
           shmall: env.shmall,
@@ -78,12 +80,14 @@
         }).replace(/^\s+/mg, '')
         .trim();
 
+      console.log(JSON.stringify(sysctl_conf));
+
       fs.writeFileSync(sysctl_conf_path, sysctl_conf);
       exec(['sysctl -p', sysctl_conf_path].join(' '));
 
       // only 9.2 and above support custom ssl cert paths; < 9.1 must use
       // data_dir/server.crt.
-      if ((+pg.version) < 9.2 && pg.host !== 'localhost') {
+      if ((+pg.version) < 9.3 && pg.host !== 'localhost') {
         throw new Error('Auto-install does not yet support remote Postgres < 9.3 with SSL');
       }
 
