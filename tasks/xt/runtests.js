@@ -11,7 +11,6 @@
     path = require('path'),
     rimraf = require('rimraf'),
     spawn = require('child_process').spawn,
-    sleep = require('sleep'),
     uidNumber = require('uid-number'),
     exec = require('execSync').exec,
     fs = require('fs'),
