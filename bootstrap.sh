@@ -16,6 +16,10 @@ install_debian () {
   sudo apt-get -qq update | tee -a $logfile
   sudo apt-get -qq autoremove --force-yes
   sudo apt-get -qq install python-software-properties --force-yes
+
+  sudo apt-get purge postgresql-${XT_PG_VERSION}*
+  sudo apt-get purge nodejs-${XT_NODE_VERSION}*
+  sudo apt-get purge npm*
   
   sudo wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
   echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null
@@ -27,14 +31,15 @@ install_debian () {
   log "Installing Debian Packages..."
 
   sudo apt-get -qq update | tee -a $logfile
-  sudo apt-get --force-yes install curl build-essential libssl-dev openssh-server cups git \
+  sudo apt-get install curl build-essential libssl-dev openssh-server cups git \
     nginx-full \
     postgresql-$XT_PG_VERSION postgresql-server-dev-$XT_PG_VERSION postgresql-contrib-$XT_PG_VERSION postgresql-$XT_PG_VERSION-plv8 \
     nodejs=$XT_NODE_VERSION-1chl1~${animal}1 \
+    --force-yes \
   | tee -a $logfile
 
   if [[ "$XT_NODE_VERSION" = "0.8.26" ]]; then
-    sudo apt-get -qq --force-yes install npm
+    sudo apt-get -qq install npm --force-yes
   fi
 
   log "All dependencies installed."
