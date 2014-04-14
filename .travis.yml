@@ -1,7 +1,7 @@
 language: node_js
 node_js:
-  - "0.8"
-  - "0.10"
+  - "0.8.26"
+  - "0.10.26"
 env:
   - XT_PG_VERSION="9.1"
   - XT_PG_VERSION="9.2"
@@ -14,8 +14,7 @@ matrix:
       env: XT_PG_VERSION="9.2"
 
 before_install:
-  - export vnode=$(node --version)
-  - export XT_NODE_VERSION=${vnode:1}
+  - export XT_NODE_VERSION=$(node --version)
   - env
   - sudo apt-get purge postgres*
   - sudo -E bash bootstrap.sh --no-installer
