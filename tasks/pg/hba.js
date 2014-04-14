@@ -73,6 +73,21 @@
       fs.writeFileSync(hba_target, hba_conf);
 
       hba.createClientCert(options);
+
+      if (parseFloat(options.pg.version) < 9.3) {
+        fs.symlinkSync(
+          path.resolve(options.xt.ssldir, 'server.crt'),
+          path.resolve('/var/lib/postgresql', options.pg.version, options.xt.name, 'server.crt')
+        );
+        fs.symlinkSync(
+          path.resolve(options.xt.ssldir, 'server.crt'),
+          path.resolve('/var/lib/postgresql', options.pg.version, options.xt.name, 'root.crt')
+        );
+        fs.symlinkSync(
+          path.resolve(options.xt.ssldir, 'server.key'),
+          path.resolve('/var/lib/postgresql', options.pg.version, options.xt.name, 'server.key')
+        );
+      }
   
       _.extend(options.pg.hba, { path: hba_target, string: hba_conf });
     },
