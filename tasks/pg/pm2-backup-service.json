@@ -3,6 +3,7 @@
   "user": "{xt.name}",
   "script": "/usr/bin/xtuple-server",
   "args": "[ 'backup', '--xt-name {xt.name}', '--xt-version {xt.version}' ]",
+  "cron": "{pg.snapschedule}",
   "env": {
     "NODE_ENV": "production",
     "PWD": "{xt.userhome}",

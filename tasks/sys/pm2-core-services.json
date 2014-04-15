@@ -24,8 +24,8 @@
   {
     "name": "xtuple-postgres-{xt.version}-{xt.name}",
     "user": "{xt.name}",
-    "interpreter": "/usr/lib/postgresql/{pg.version}/bin/postgres",
-    "script": "",
+    "interpreter": "nohup",
+    "script": "/usr/lib/postgresql/{pg.version}/bin/postgres",
     "args": "[ '-D', '/var/lib/postgresql/{pg.version}/{xt.name}', '-c', 'config_file=/etc/postgresql/{pg.version}/{xt.name}/postgresql.conf' ]",
     "env": {
       "PORT": "{pg.cluster.port}",
