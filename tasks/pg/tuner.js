@@ -68,8 +68,6 @@
         sysctl_conf_path = path.resolve('/etc/sysctl.d/30-postgresql-shm.conf'),
         sysctl_conf;
 
-      console.log(exec('ipcs -l').stdout);
-
       sysctl_conf = sysctl_conf_template.format({
           shmmax: env.shmmax,
           shmall: env.shmall,
@@ -79,8 +77,6 @@
           semmni: 1024
         }).replace(/^\s+/mg, '')
         .trim();
-
-      console.log(JSON.stringify(sysctl_conf));
 
       fs.writeFileSync(sysctl_conf_path, sysctl_conf);
       exec(['sysctl -p', sysctl_conf_path].join(' '));

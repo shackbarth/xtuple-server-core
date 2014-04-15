@@ -8,7 +8,7 @@ var assert = require('chai').assert,
 
 describe('xTuple Installer', function () {
   global.options = {
-      quiet: true,
+      plan: 'install',
       xt: {
         name: 'xtmocha',
         demo: true,
@@ -37,27 +37,33 @@ describe('xTuple Installer', function () {
   if (!!process.env.TRAVIS) {
     global.installPlan[4].tasks.push('build_common');
     global.installPlan[4].tasks.push('build_main');
-    global.installPlan[4].tasks.push('runtests');
+
+    // XXX remove this when zombie is fixed in node 0.10
+    if ((process.env.XT_NODE_VERSION || '').indexOf('0.10') === -1) {
+      global.installPlan[4].tasks.push('runtests');
+    }
   }
 
-  // https://github.com/mikeal/request/issues/418
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+  describe('#uninstall', function () {
+    before(function () {
+      planner.eachTask(global.installPlan, function (task, phaseName, taskName) {
+        try {
+          task.uninstall(_.defaults({
+            pg: _.extend({
+              cluster: {
+                version: process.env.XT_PG_VERSION,
+                name: global.options.xt.name
+              }
+            }, global.options.pg)
+          }, global.options));
+        }
+        catch (e) {
+          console.log('benign: '+ e.message);
+        }
+      });
+    });
+    it('should pre-run uninstall on any existing installation', function () {
 
-  before(function () {
-    planner.eachTask(global.installPlan, function (task, phaseName, taskName) {
-      try {
-        task.uninstall(_.defaults({
-          pg: _.extend({
-            cluster: {
-              version: process.env.XT_PG_VERSION,
-              name: global.options.xt.name
-            }
-          }, global.options.pg)
-        }, global.options));
-      }
-      catch (e) {
-        console.log('benign: '+ e.message);
-      }
     });
   });
 
@@ -71,7 +77,7 @@ describe('xTuple Installer', function () {
     assert.include([ '9.1', '9.3' ], String(process.env.XT_PG_VERSION));
   });
 
-  describe('planner', function () {
+  describe('setup', function () {
     describe('#verifyOptions, #compileOptions', function () {
       before(function () {
         planner.verifyOptions(global.installPlan, global.options);
@@ -88,20 +94,17 @@ describe('xTuple Installer', function () {
         assert.isObject(global.options.pg.config);
       });
     });
-  });
-
-  describe('installer', function () {
     describe('#beforeInstall', function () {
       before(function () {
         planner.eachTask(global.installPlan, function (task, phaseName, taskName) {
           task.beforeInstall(global.options);
         });
       });
-      it('should run all #beforeInstall methods', function () {
-
-      });
+      it('should run all #beforeInstall methods', function () { });
     });
+  });
 
+  describe('install', function () {
     describe('tasks', function () {
       // load tests for install plan
       planner.eachTask(global.installPlan, function (task, phaseName, taskName) {
@@ -132,7 +135,7 @@ describe('xTuple Installer', function () {
       });
     });
 
-    describe('#uninstall', function () {
+    describe.skip('#uninstall', function () {
       it('should run all #uninstall methods', function () {
         planner.eachTask(global.installPlan, function (task, phaseName, taskName) {
           try {

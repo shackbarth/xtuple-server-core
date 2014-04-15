@@ -12,7 +12,7 @@
   var pg = exports;
 
   var exec = require('execSync').exec,
-    Knex = require('knex'),
+    //Knex = require('knex'),
     _ = require('underscore');
 
   _.extend(pg, /** @exports pg */ {

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 logfile=$(pwd)/install.log
+wd=$(pwd)
 
 install_debian () {
   log "Checking Operating System..."
@@ -53,7 +54,10 @@ clone_installer () {
 
   rm -rf xtuple-scripts
   rm -rf /usr/lib/node_modules/xtuple-scripts
-  log "Downloading installer...\n"
+  mkdir -p /usr/local/xtuple/src
+  cd /usr/local/xtuple/src
+
+  log "Downloading xTuple Server Tools...\n"
   git clone --recursive https://github.com/xtuple/xtuple-scripts.git
   cd xtuple-scripts 
 
@@ -61,9 +65,7 @@ clone_installer () {
   npm install
 
   log "Running installer self-tests..."
-  npm test
-  rm node_modules
-  cd ..
+  npm run-script test-$XT_PG_VERSION
 }
 
 log() {
@@ -79,7 +81,7 @@ die() {
 trap 'CODE=$? ; log "\n\nxTuple bootstrap Aborted:\n  line: $BASH_LINENO \n  cmd: $BASH_COMMAND \n  code: $CODE\n  msg: $TRAPMSG\n" ; exit 1' ERR
 
 if [[ -z $XT_NODE_VERSION ]]; then
-  export XT_NODE_VERSION="0.10.26"
+  export XT_NODE_VERSION="0.8.26"
 fi
 if [[ -z $XT_PG_VERSION ]]; then
   export XT_PG_VERSION="9.3"

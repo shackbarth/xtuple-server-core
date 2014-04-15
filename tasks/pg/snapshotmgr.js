@@ -13,6 +13,7 @@
     fs = require('fs'),
     os = require('os'),
     moment = require('moment'),
+    cron = require('cron-parser'),
     exec = require('execSync').exec,
     path = require('path'),
     program = require('commander'),
@@ -27,10 +28,10 @@
         description: 'Restore the most recent backup',
         value: false
       },
-      snapshott0: {
-        optional: '[integer]',
-        description: 'Hour of day at which to run the backup',
-        value: 1
+      snapschedule: {
+        optional: '[cron]',
+        description: 'crontab entry for snapshot schedule [@daily]',
+        value: '@daily'
       },
       snapshotcount: {
         optional: '[integer]',
@@ -48,41 +49,47 @@
     beforeTask: function (options) {
       exec('mkdir -p ' + options.pg.snapshotdir);
       exec(('chown {xt.name}:xtuser '+ options.pg.snapshotdir).format(options));
-      //exec('chmod u=rwx '+ root);
 
-      //exec('chown postgres ' +  root);
+      // validate cron entry
+      cron.parseExpressionSync(options.pg.snapschedule);
     },
 
     /** @override */
     doTask: function (options) {
-      var version = options.xt.version,
-        name = options.xt.name,
-        t0 = options.pg.snapshott0,
-        schedule_display = 'Daily at '+ moment(t0, 'H').format('HH:mm'),
-        out_path = path.resolve('/etc/xtuple/', version, name, 'pm2-backup-service.json'),
-        conf_template = fs.readFileSync(
-          path.resolve(__dirname, 'pm2-backup-service.json')).toString(),
-        conf_formatter = _.extend({ }, options, {
-          schedule: schedule_display
-        });
+      if ('install' === options.plan) {
+        var pm2Template = fs.readFileSync(path.resolve(__dirname, 'pm2-backup-service.json')).toString(),
+          coreServices = JSON.parse(fs.readFileSync(options.sys.pm2.configfile).toString()),
+          combinedServices = coreServices.concat(JSON.parse(pm2Template.format(options)));
 
-      service.launch(conf_template.format(conf_formatter));
+        fs.writeFileSync(options.sys.pm2.configfile, JSON.stringify(combinedServices, null, 2));
+      }
+      else if ('backup' === options.plan) {
+        snapshotmgr.createSnapshot(options);
+      }
+      else if ('restore' === options.plan) {
+        snapshotmgr.restoreSnapshot(options);
+      }
     },
 
     /**
      * Return path of a snapshot file
      * @param options - typical options object
-     * @param options.daysago - day of backup to restore [0]
-     * @param backupName - name of dbname [globals|all]
+     * @param options.date - date of snapshot (MMDDYYYY)
+     * @param options.dbname - name of database
      * @public
      */
-    getSnapshotPath: function (options, backupName) {
+    getSnapshotPath: function (options) {
+      var ts = moment(options.datetime, 'MMDDYYYY', true);
+      if (!ts.isValid()) {
+        throw new Error('options.date not valid: '+ options.date);
+      }
+
       return path.resolve(
         options.pg.snapshotdir,
         '{name}_{dbname}_{ts}.{ext}'.format({
           name: options.xt.name,
-          dbname: backupName,
-          ts: moment().subtract('days', options.daysago || 0).format('MMDDYYYY'),
+          dbname: options.dbname,
+          ts: options.date,
           ext: options.dbname === 'globals' ? 'sql' : 'dir.gz'
         })
       );
@@ -129,8 +136,7 @@
      * @param options.pg.version
      * @param options.dbname
      * @param options.xt.name
-     * @param options.snapshotmgr.include_globals [true]
-     * @param options.daysago [0]
+     * @param options.datetime
      */
     restoreSnapshot: function (options) {
       var globals_snapshot = snapshotmgr.getSnapshotPath(
@@ -143,16 +149,14 @@
           ts: moment().format('MMDDYYY')
         },
         deprecated_db = '{dbname}_{version}_{ts}'.format(deprecated_format),
-        pg_restore = '/usr/lib/postgresql/{pg.version}/bin/pg_restore'.format(options),
-        queries = [
-      
-          // disconnect all users and lock database
-          'select pg_terminate_backend(procpid) from pg_stat_activity',
-          'revoke connect on database {dbname} from public'.format(options),
+        pg_restore = '/usr/lib/postgresql/{pg.version}/bin/pg_restore'.format(options);
 
-          // rename database
-          ['rename', options.dbname, 'to', deprecated_db].join(' ')
-        ];
+      // disconnect all users and lock database
+      pgcli.psql(options, 'select pg_terminate_backend(procpid) from pg_stat_activity');
+      pgcli.psql(options, 'revoke connect on database {dbname} from public'.format(options));
+
+      // rename database
+      pgcli.psql(options, ['rename', options.dbname, 'to', deprecated_db].join(' '));
 
       // initiate restore process... and wait. could take awhile
       pgcli.createdb(options, 'admin', options.dbname);
@@ -211,32 +215,5 @@
       });
     }
   });
-
-  /** @listens knex */
-  process.on('knex', function (_knex) { knex = _knex; });
-
-  program
-    .command('start-service')
-    .option('-t0 --snapshott0 [integer]', snapshotmgr.options.snapshott0.description)
-    .option('--xt-name <string>',         'Name of the cluster')
-    .option('--xt-version <version>',     'xTuple version')
-    .parse(process.argv)
-    .action(function (cmd) {
-      var rule = new scheduler.RecurrenceRule(),
-        options = {
-          pg: {
-            snapshott0: cmd.t0,
-          },
-          xt: {
-            name: cmd.xtName,
-            version: cmd.xtVersion
-          }
-        };
-
-      // run once per day at the specified hour (t0)
-      rule.hour = options.t0;
-
-      scheduler.scheduleJob(rule, _.partial(snapshotmgr.createSnapshot, options));
-    });
 
 })();
