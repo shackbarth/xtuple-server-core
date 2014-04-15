@@ -22,28 +22,6 @@
     "min_uptime": 30000
   },
   {
-    "name": "xtuple-postgres-{xt.version}-{xt.name}",
-    "user": "{xt.name}",
-    "interpreter": "nohup",
-    "script": "/usr/lib/postgresql/{pg.version}/bin/postgres",
-    "args": "[ '-D', '/var/lib/postgresql/{pg.version}/{xt.name}', '-c', 'config_file=/etc/postgresql/{pg.version}/{xt.name}/postgresql.conf' ]",
-    "env": {
-      "PORT": "{pg.cluster.port}",
-      "PWD": "{xt.userhome}",
-      "XT_PROCESS": "xtuple-postgres-{pg.version}",
-      "XT_NAME": "{xt.name}",
-      "XT_VERSION": "{xt.version}",
-      "XT_DOMAIN": "{nginx.domain}",
-      "XT_URL": "/var/run/postgresql/.s.PGSQL.{pg.cluster.port}",
-      "XT_SCHEDULE": "Always On"
-    },
-    "exec_mode": "fork_mode",
-    "out_file": "{pg.logdir}/postgresql-{pg.version}-{xt.name}.log",
-    "error_file": "{pg.logdir}/postgresql-{pg.version}-{xt.name}-error.log",
-    "pid_file": "/var/run/postgresql/{pg.version}-{xt.name}.pid",
-    "min_uptime": 30000
-  },
-  {
     "name": "xtuple-healthfeed-{xt.version}-{xt.name}",
     "user": "{xt.name}",
     "script": "/usr/lib/node_modules/pm2/lib/HttpInterface.js",

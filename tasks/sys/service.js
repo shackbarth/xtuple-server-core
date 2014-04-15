@@ -47,10 +47,6 @@
 
       exec('rm -rf {xt.logdir}/*'.format(options));
 
-      exec('chown -R {xt.name}:xtuser {xt.logdir}'.format(options));
-      exec('chmod -R 777 {xt.logdir}'.format(options));
-      exec('chown -R {xt.name}:xtuser {sys.servicedir}'.format(options));
-      exec('chmod -R 777 {sys.servicedir}'.format(options));
 
       // create upstart service, and rename it "xtuple"
       exec('sudo -u {xt.name} pm2 ping'.format(options));
@@ -61,6 +57,13 @@
       fs.writeFileSync(options.sys.pm2.configfile, options.sys.pm2.template.format(options));
       exec('chown -R {xt.name} {sys.servicedir}'.format(options));
       exec('chmod -R 700 {sys.servicedir}'.format(options));
+
+      exec('chown -R {xt.name}:xtuser {xt.logdir}'.format(options));
+      exec('chmod -R 700 {xt.logdir}'.format(options));
+      exec('chown -R {xt.name}:xtuser {sys.servicedir}'.format(options));
+      exec('chmod -R 700 {sys.servicedir}'.format(options));
+      exec('chown -R {xt.name}:xtuser {xt.statedir}'.format(options));
+      exec('chmod -R 700 {xt.statedir}'.format(options));
     },
     
     /** @override */
@@ -84,10 +87,10 @@
       }
 
       console.log();
-      exec('service xtuple {xt.version} {xt.name} stop'.format(options));
-      exec('service xtuple {xt.version} {xt.name} restart'.format(options));
-      lib.pgCli.ctlcluster({ name: options.xt.name, version: options.pg.version, action: 'stop' });
-      var pm2status = exec('service xtuple {xt.version} {xt.name} status'.format(options));
+      //lib.pgCli.ctlcluster({ name: options.xt.name, version: options.pg.version, action: 'restart' });
+      exec('sudo -u {xt.name} service xtuple {xt.version} {xt.name} stop'.format(options));
+      exec('sudo -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
+      var pm2status = exec('sudo -u {xt.name} service xtuple {xt.version} {xt.name} status'.format(options));
 
       if (pm2status.code !== 0) {
         throw new Error(pm2status.stdout);
@@ -105,8 +108,8 @@
       if (ping.code !== 0) {
         throw new Error(ping.stdout);
       }
-      return exec('sudo -u {xt.name} pm2 start {config} -u {xt.name}'
-        .format(_.extend({ config: config }, options)));
+      exec('pm2 start {config} -u {xt.name}'.format(_.extend({ config: config }, options)));
+      exec('pm2 dump');
     }
   });
 
