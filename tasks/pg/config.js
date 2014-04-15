@@ -19,19 +19,19 @@
 
     options: {
       host: {
-        required: '<host>',
+        required: '[host]',
         description: 'Postgres server host address',
         value: 'localhost'
       },
       mode: {
-        required: '<mode>',
+        required: '[mode]',
         description: 'Installation mode (dedicated|cloud|testing). Dedicated implies one slot per machine.',
         value: 'testing'
       },
       version: {
         optional: '[version]',
-        description: 'Version of postgres to install [' + defaults.slot.base.version + ']',
-        value: defaults.slot.base.version
+        description: 'Version of postgres to install',
+        value: '9.3'
       },
       slots: {
         optional: '[int]',

@@ -18,19 +18,17 @@
 
   _.extend(policy, task, /** @exports policy */ {
 
-    beforeTask: function (options) {
-      options.xt.homedir = path.resolve('/usr/local/xtuple');
-      options.sys.userHomeDir = path.resolve('/usr/local', options.xt.name);
-      options.sys.policy.userPassword = policy.getPassword();
-      options.sys.policy.remotePassword = policy.getPassword();
-
-      exec('mkdir -p /var/run/postgresql'.format(options));
-    },
-
     /** @override */
     doTask: function (options) {
-      policy.createUsers(options);
-      policy.configureSSH(options);
+      if (exec('id -u xtremote').code !== 0) {
+        options.sys.policy.remotePassword = policy.getPassword();
+      }
+      if (exec('id -u {xt.name}'.format(options)).code !== 0) {
+        options.sys.policy.userPassword = policy.getPassword();
+
+        policy.createUsers(options);
+        policy.configureSSH(options);
+      }
     },
 
     /** @override */
@@ -76,42 +74,57 @@
           'chage -d 0 {xt.name}'.format(options)
         ],
         system_ownership = [
-          'chown root:xtuser /etc/xtuple',
-          'chown root:xtuser /etc/xtuple/*',
-          'chown root:xtuser /var/lib/xtuple',
-          'chown root:xtuser /usr/sbin/xtuple',
-          'chown -R root:xtuser /usr/local/xtuple'
+          'chown -R xtadmin:xtuser /etc/xtuple',
+          'chown -R xtadmin:xtuser /var/log/xtuple',
+          'chown -R xtadmin:xtuser /var/lib/xtuple',
+          'chown -R xtadmin:xtuser /usr/sbin/xtuple',
+          'chown -R xtadmin:xtuser /usr/local/xtuple',
+          'chown -R postgres:xtuser /var/run/postgresql'
         ],
         system_mode = [
-          'chmod g=rx,o-wr /etc/xtuple/',
-          'chmod g=rx,o-wr /etc/xtuple/*',
-          'chmod g=rwx,u=rx,o-wr /var/lib/xtuple',
-          'chmod g=rwx,u=rx,o=rx /usr/sbin/xtuple',
-          'chmod -R g=rx,u=rx,o=rx /usr/local/xtuple'
+          'chmod -R g=x,o-wr /etc/xtuple/',
+          'chmod -R g=rx,u=rwx,o-wr /var/lib/xtuple',
+          'chmod -R g=rx,u=rwx,o=rx /usr/sbin/xtuple',
+          'chmod -R g=rx,u=rwx,o=rx /usr/local/xtuple',
+          'chmod -R g+wrx /var/run/postgresql'
         ],
         user_ownership = [
-          'chown {xt.name}:xtuser /var/lib/xtuple/{xt.version}/{xt.name}/'.format(options),
-          'chown :xtuser /var/run/postgresql'.format(options),
-          'chown {xt.name}:ssl-cert {xt.ssldir}'.format(options),
-          'chown {xt.name}: {xt.configdir}'.format(options)
-          //'chown {xt.name}:xtadmin {sys.sbindir}'.format(options)
+          'chown -R :xtuser {pg.logdir}'.format(options),
+          'chown -R {xt.name}:xtuser {xt.logdir}'.format(options),
+          'chown -R {xt.name}:xtuser {xt.configdir}'.format(options),
+          'chown -R {xt.name}:xtuser {sys.servicedir}'.format(options),
+          'chown -R {xt.name}:xtuser {xt.statedir}'.format(options),
+          'chown -R {xt.name}:xtuser {xt.rundir}'.format(options),
+          'chown -R {xt.name}:xtuser {sys.sbindir}'.format(options),
+          'chown -R {xt.name}:ssl-cert {xt.ssldir}'.format(options)
         ],
         user_mode = [
-          'chmod -R u=rwx,g-rwx /var/lib/xtuple/{xt.version}/{xt.name}'.format(options),
-          'chmod -R g+wrx /var/run/postgresql'.format(options),
+          'chmod -R u=rwx,g=wx {xt.logdir}'.format(options),
+          'chmod -R u=rwx,g=wx {pg.logdir}'.format(options),
+          'chmod -R u=rwx,g-rwx {xt.statedir}'.format(options),
           'chmod -R g=rx,u=wrx,o-rwx {xt.ssldir}'.format(options),
-          'chmod -R g=rwx,u=wrx,o-rw {xt.configdir}'.format(options),
-          //'chmod -R g=rwx,u=rx,o-rw  {pg.configdir}'.format(options)
+          'chmod -R g=rwx,u=wrx,o-rw {xt.configdir}'.format(options)
         ],
-        system_users_results = _.map(system_users, exec),
-        results = _.map(_.flatten([
-          xtuple_users, system_ownership, system_mode, user_ownership, user_mode
-        ]), exec),
-        failed = _.difference(results, _.where(results, { code: 0 })),
+        system_users_results,
+        system_access_results,
+        xtuple_users_results,
+        xtuple_access_results,
         sudoers_chmod, visudo_cmd;
 
-      if (failed.length > 0) {
-        throw new Error(JSON.stringify(failed, null, 2));
+      // create system users
+      if (options.sys.policy.remotePassword) {
+        system_users_results = _.map(system_users, exec);
+        system_access_results = _.map(_.flatten([ system_ownership, system_mode ]), exec);
+        var htpasswd = exec('htpasswd -cb {sys.htpasswdfile} xtremote {sys.policy.remotePassword}'.format(options));
+        if (htpasswd.code !== 0) {
+          throw new Error(htpasswd.stdout);
+        }
+      }
+
+      // create *this* user, and set access rules
+      if (options.sys.policy.userPassword) {
+        xtuple_users_results = _.map(xtuple_users, exec);
+        xtuple_access_results = _.map(_.flatten([ user_ownership, user_mode ]), exec);
       }
 
       // write sudoers file
@@ -140,7 +153,7 @@
         options.xt.adminpw = policy.getPassword();
       }
 
-      // set user shell
+      // set user shell to bash
       exec('sudo chsh -s /bin/bash {xt.name}'.format(options));
     },
 
@@ -174,7 +187,10 @@
     /** @override */
     uninstall: function (options) {
       exec('skill -KILL -u {xt.name}'.format(options));
+      exec('skill -KILL -u xtremote'.format(options));
       exec('deluser {xt.name}'.format(options));
+      exec('deluser xtremote');
+      fs.unlinkSync(options.sys.htpasswdfile);
       fs.unlinkSync(path.resolve('/etc/sudoers.d/', user_policy_filename.replace('user', '{xt.name}').format(options)));
       rimraf.sync(path.resolve(options.sys.userHomeDir));
     }

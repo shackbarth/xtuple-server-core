@@ -43,6 +43,10 @@
         version: site.getScalarVersion(options)
       });
       options.nginx.hostname = '{nginx.sitename}.localhost'.format(options);
+      if (options.nginx.domain === 'localhost') {
+        options.nginx.domain = options.nginx.hostname;
+      }
+      options.nginx.healthfeedurl = '{nginx.domain}/_healthfeed'.format(options);
       options.nginx.lanEndpoints = (options.pg.mode === 'dedicated') && [
         '       localhost',
         '       (^127\\.0\\.0\\.1)',
@@ -52,11 +56,15 @@
         '       (^172\\.3[0-1]\\.)',
         '       (^192\\.168\\.)'
       ].join('\n');
+
+      exec('apt-get update -qq');
+      exec('apt-get install apache2-utils -qq --force-yes');
     },
 
     /** @override */
     beforeTask: function (options) {
       options.nginx.port = require('../xt').serverconfig.getServerSSLPort(options);
+      options.nginx.healthfeedport = options.nginx.port + 5984;
     },
 
     /**

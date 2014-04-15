@@ -4,7 +4,44 @@ var assert = require('chai').assert,
   fs = require('fs'),
   path = require('path'),
   lib = require('../../lib'),
+  snap = require('../../tasks/pg/snapshotmgr'),
   options = global.options;
+
+it('should augment the pm2 services config file', function () {
+  var pm2config = JSON.parse(fs.readFileSync(options.sys.pm2.configfile).toString());
+  assert.lengthOf(pm2config, 4);
+});
+
+describe('cron', function () {
+  var lightopts;
+  
+  beforeEach(function () {
+    lightopts = {
+      pg: {
+        snapshotdir: '/tmp'
+      },
+      xt: {
+        name: 'xtmocha'
+      }
+    };
+  });
+  afterEach(function () {
+    delete lightopts.pg.snapschedule;
+  });
+
+  it('should validate default cron setting (@daily)', function () {
+    lightopts.pg.snapschedule = '@daily';
+    snap.beforeTask(lightopts);
+  });
+  it('should validate reasonable cron setting (3x per day)', function () {
+    lightopts.pg.snapschedule = '0 */4 * * *';
+    snap.beforeTask(lightopts);
+  });
+  it('should validate reasonable cron setting (@weekly)', function () {
+    lightopts.pg.snapschedule = '@weekly';
+    snap.beforeTask(lightopts);
+  });
+});
 
 describe.skip('#rotateSnapshot', function () {
 

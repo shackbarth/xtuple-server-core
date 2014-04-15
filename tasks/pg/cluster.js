@@ -16,14 +16,6 @@
 
   _.extend(cluster, task, /** @exports cluster */ {
 
-    options: {
-      slots: {
-        optional: '[slots]',
-        description: 'Number of slots to consume',
-        value: 1
-      }
-    },
-
     /** @override */
     beforeInstall: function (options) {
       var exists = _.findWhere(pgcli.lsclusters(), {

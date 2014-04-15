@@ -20,7 +20,7 @@
 
     options: {
       version: {
-        optional: '[version]',
+        optional: '<version>',
         description: 'xTuple Mobile App Version',
         value: '4.4.0'
       }

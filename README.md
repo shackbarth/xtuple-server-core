@@ -1,106 +1,47 @@
-xtuple-scripts
-==============
-
 [![Build Status](https://magnum.travis-ci.com/xtuple/xtuple-scripts.svg?token=gns5sJtFWu8Pk688aPh7)](https://magnum.travis-ci.com/xtuple/xtuple-scripts)
 
-## New Server Installation
-1. Place `/lib/sys/bootstrap.sh` on the filesystem.
-1. Place database backup file on filesystem, if applicable.
-2. Place `.key` (SSL private key) and `.crt` (SSL certificate) files on the filesystem,
-  if applicable.
-3. Bootstrap the machine.
+### Example New Server Installation
+1. `sudo bash bootstrap.sh`
+2. `sudo xtuple-server install plan.json --xt-version 4.4.1 --xt.name example-server`
 
-### bootstrap.sh
+  By default, the following variables are set by `bootstrap.sh`:
+  - `XT_NODE_VERSION=0.8.26`
+  - `XT_PG_VERSION=9.3`
+
+  Using the commands above, a simple server will be installed with a single
+  database called `xtuple_demo`.
+
+## xtuple-server CLI
 
     Usage:
-
-      bootstrap.sh [options]
-
-    Example:
-
-      Bootstrap the machine but do not install xTuple yet: (TODO)
-
-        sudo bash bootstrap.sh --clean
-      
-      Setup a fresh 1.8.1 installation with demo and quickstart:
-
-        sudo bash bootstrap.sh 1.8.1 --pg-name kelhay --nginx-domain mobile.kellyhayes.com
-
-      Setup a customer:
-
-        sudo bash bootstrap.sh 1.8.1 --pg-name kelhay --nginx-domain mobile.kellyhayes.com --xt-maindb kelhay.backup
-
-    Required Arguments:
-
-      --pg-name <name>            Name of the installation
-      --xt-appdir <path>          Path to the xtuple application directory
+    
+      sudo xtuple-server {install|run} <planfile> --xt-version <version> --xt-name <name>
 
     Options:
 
-      --pg-version [version]      Version of postgres to install
-      --pg-mode [string]          Installation mode (production|staging|demo|development) [development]
-      --pg-slots [int]            Number of provisioned "slots" to consume
-      --pg-slots [slots]          Number of slots to consume
-      --pg-locale [string]        Cluster locale
-      --nginx-domain [domain]     The public domain name that will point to this web server
-      --nginx-crt [file]          Path to SSL certificate (.crt)
-      --nginx-key [file]          Path to SSL public key (.key)
-      --xt-version [version]      xTuple Mobile App Version
-      --xt-maindb [path]          Path to primary database .backup file to use in production
-      --xt-setupdemos [boolean]   Set to additionally install the demo databases
-      --xt-masterref [boolean]    @deprecated. Set this flag to install masterref from assets/
-      --xt-configdir [path]       Location of datasource config file.
-      --xt-logdir [path]          Location of log files for node service
-      --xt-pilot [boolean]        Additionally create a pilot area using a copy of the main database
-      --xt-extensions [csv]       Comma-delimited list of extensions to install
-      --xt-verify [boolean]       Whether to require all tests to pass before certifying this installation (TODO)
+      --pg-mode [mode]              Installation mode {dedicated|cloud|testing}. [dedicated]
+      --pg-version [version]        Version of postgres to install [9.3]
+      --pg-slots [int]              Number of provisioned "slots" to consume [1]
+      --pg-locale [string]          Cluster locale [en_US]
+      --pg-timezone [integer]       Integer offset from UTC; e.g., "-7" is PDT, "-8" is PST, etc
+      --pg-restore [boolean]        Restore the most recent backup [false]
+      --pg-snapschedule [cron]      crontab entry for snapshot schedule [@daily]
+      --pg-snapshotcount [integer]  The number of backup snapshots to retain [7]
 
-### service xtuple
+      --nginx-inzip [file]          Path to SSL trust chain archive
+      --nginx-incrt [file]          Path to SSL certificate (.crt)
+      --nginx-inkey [file]          Path to SSL private key (.key)
+      --nginx-domain [domain]       The public domain name that will point to this web server [localhost]
 
-    Usage:
+      --xt-version <version>        xTuple Mobile App Version (required)
+      --xt-name <name>              Name of the installation  (required)
+      --xt-pilot [boolean]          Additionally create a pilot area using a copy of the main database [false]
+      --xt-maindb [path]            Path to primary database .backup/.sql filename to use in production
+      --xt-edition [string]         The xTuple Edition to install {core|distribution|manufacturing|enterprise} [core]
+      --xt-demo [boolean]           Set to additionally install the demo database [false]
+      --xt-quickstart [boolean]     Set to additionally install the quickstart database [false]
+      --xt-adminpw [password]       Password for the database "admin" user for a new database
 
-      service xtuple [version] [name] {install|start|stop|restart}
-      service xtuple {list|stopall|restartall}
-
-    Example:
-
-      Start or stop the "kelhay" xTupe Server:
-
-        sudo service xtuple 1.8.1 kelhay start
-        sudo service xtuple 1.8.1 kelhay stop
-
-      List all running servers:
-
-        sudo service xtuple list
-
-### service xtuple install
-
-    Usage:
-
-      service xtuple [version] [name] install [options]
-
-    Example:
-
-      sudo service xtuple 1.8.1 tesla install --pg-version 9.3 --xt-verify
-
-    Options:
-
-      --pg-version [version]      Version of postgres to install
-      --pg-env [string]           Installation mode (production|staging|demo|development) [development]
-      --pg-slots [int]            Number of provisioned "slots" to consume
-      --pg-slots [slots]          Number of slots to consume
-      --pg-locale [string]        Cluster locale [en_US.UTF-8]
-      --nginx-domain [domain]     The public domain name that will point to this web server
-      --nginx-crt [file]          Path to SSL certificate (.crt)
-      --nginx-key [file]          Path to SSL public key (.key)
-      --xt-version [version]      xTuple Mobile App Version
-      --xt-maindb [path]          Path to primary database .backup file to use in production
-      --xt-setupdemos [boolean]   Set to additionally install the demo databases
-      --xt-masterref [boolean]    @deprecated. Set this flag to install masterref from assets/
-      --xt-configdir [path]       Location of datasource config file.
-      --xt-logdir [path]          Location of log files for node service
-      --xt-pilot [boolean]        Additionally create a pilot area using a copy of the main database
-      --xt-extensions [csv]       Comma-delimited list of extensions to install
-      --xt-verify [boolean]       @todo Whether to require all tests to pass before
-                                  certifying this installation
+      // TODO
+      --pg-host [host]              Postgres server host address [localhost]
 

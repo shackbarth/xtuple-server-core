@@ -21,6 +21,9 @@
 upstream node-{nginx.sitename} {
   server 127.0.0.1:{nginx.port};
 }
+upstream pm2feed-{nginx.sitename} {
+  server 127.0.0.1:{nginx.healthfeedport};
+}
 
 # auto redirect http -> https
 server {
@@ -50,7 +53,15 @@ server {
   ssl_session_cache shared:SSL:60m;
   ssl_session_timeout 60m;
 
-  large_client_header_buffers 8 64k;
+  large_client_header_buffers 8 128k;
+
+  location /_healthfeed {
+    auth_basic "healthfeed";
+    auth_basic_user_file {sys.htpasswdfile};
+
+    proxy_pass https://pm2feed-{nginx.sitename};
+    proxy_redirect off;
+  }
 
   location / { 
     proxy_pass https://node-{nginx.sitename};

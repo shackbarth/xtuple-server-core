@@ -7,9 +7,7 @@ env:
   - XT_PG_VERSION="9.3"
 
 before_install:
-  - ipcs -l
   - export XT_NODE_VERSION=$TRAVIS_NODE_VERSION
-  - sudo apt-get purge postgres*
   - sudo -E bash bootstrap.sh --no-installer
 
 install: /usr/bin/npm install
@@ -18,5 +16,5 @@ script: /usr/bin/npm test
 after_failure:
   - cat install.log
   - cat /var/log/postgresql/$XT_PG_VERSION/xtmocha
-  - cat /var/log/nginx/error.log
-  - cat /var/log/xtuple/*
+  - cat /var/log/nginx/*
+  - cat /var/log/xtuple/*/xtmocha/*

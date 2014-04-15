@@ -1,9 +1,9 @@
+#! /usr/bin/env node
+
 (function () {
   'use strict';
 
-  /**
-   * Installer
-   */
+  /** sudo - xtdo */
   var installer = exports;
 
   var planner = require('./lib/planner'),
@@ -13,26 +13,32 @@
     format = require('string-format'),
     os = require('os'),
     exec = require('execSync').exec,
-    prompt = require('prompt'),
-    Commander = require('commander'),
     clc = require('cli-color'),
     S = require('string'),
     _ = require('underscore'),
-    install = Commander.version('1.8.0').command('install')
-      .option('-p --plan', 'Path to planfile'),
-    options = { },
-    plan = require('./plan');
+    program = require('commander'),
+    version = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'))).version,
+    options = { };
 
-  if (!_.isObject(plan)) {
+  program.command('<plan>').version(version);
+
+  if (process.argv.length < 3) {
+    console.log('Please see README for usage');
+    process.exit(0);
+  }
+
+  var versionFlagIndex = _.indexOf(process.argv, '--xt-version'),
+    versionNumber = process.argv[versionFlagIndex + 1],
+    xtupleScripts = '/usr/local/xtuple/src/'+ versionNumber + '/xtuple-scripts',
+    planFile = path.resolve(xtupleScripts, 'plans', process.argv[2] + '.json'),
+    planExists = fs.existsSync(planFile),
+    plan = planExists && require(planFile);
+
+  if (versionFlagIndex === -1 || !planExists || !_.isObject(plan)) {
     throw new Error('No planfile found');
   }
 
-  // self-tests
-  if (exec('id -u').stdout.indexOf('0') !== 0) {
-    planner.die({ msg: 'Installer must be run as root', prefix: 'xtuple' });
-  }
-
-  fs.writeFileSync(planner.logfile, os.EOL);
+  options.plan = process.argv[2];
 
   // compile Commander's options list. I wish it accepted a json object; instead
   // we must populate it via api calls
@@ -47,7 +53,7 @@
           module: phaseName,
         }, option_details));
 
-        install.option(flag, option_details.description);
+        program.option(flag, option_details.description);
 
         // set default values
         options[phaseName][option_name] = option_details.value;
@@ -59,36 +65,40 @@
       }
     });
   });
-  
-  install.parse(process.argv);
-  install.usage(
-    _.reduce(_.where(install.options, { optional: 0 }), function (memo, option) {
-      return memo + ' ' + option.flags;
-    }, ''));
+
+  // self-tests
+  if (exec('id -u').stdout.indexOf('0') !== 0) {
+    planner.die({ msg: 'Installer must be run as root', prefix: 'xtuple' });
+  }
 
   // now that installer has parsed the arguments, go back through and override
   // default values with provided values. installer's automatic camelcasing of
   // arguments, as well as its strange setting of values directly on the
   // 'Commander' object unfortunately complicate this process somewhat.
-  _.each(install.options, function (option) {
+  _.each(program.options, function (option) {
     var flag = option.long,
       cleanflag = option.long.replace('--', ''),
       prop = S(cleanflag).camelize().s,
       argpath = cleanflag.split('-');
 
-    if (!_.isUndefined(install[prop])) {
-      options[argpath[0]][argpath[1]] = install[prop];
+    if (!argpath[1]) { return; }
+
+    if (!_.isUndefined(program[prop])) {
+      options[argpath[0]][argpath[1]] = program[prop];
     }
   });
+
+  program.parse(process.argv);
+  if (_.contains(process.argv, '--help')) {
+    return program.help();
+  }
 
   planner.verifyOptions(plan, options);
   planner.compileOptions(plan, options);
   planner.displayPlan(plan, options);
 
-  prompt.get('Press Enter to confirm the Installation Plan', function(err, result) {
+  program.confirm('Press Enter to Continue...', function(err, result) {
     planner.install(plan, options);
-
-    //current = logo_lines.length;
     planner.log_progress({ phase: 'installer', task: 'installer', msg: 'Done!'});
   });
 })();

@@ -32,12 +32,18 @@
       options.xt.testconfigfile = path.resolve(options.xt.usersrc, 'node-datasource/config.js');
       options.xt.buildconfigfile = path.resolve(options.xt.configdir, 'build/config.js');
 
+      options.xt.homedir = path.resolve('/usr/local/xtuple');
+      options.sys.userHomeDir = path.resolve('/usr/local', options.xt.name);
+
       // other system paths
       options.xt.logdir = path.resolve('/var/log/xtuple', version, name);
+      options.pg.logdir = path.resolve('/var/log/postgresql/');
       options.xt.socketdir = path.resolve('/var/run/postgresql');
+      options.xt.rundir = path.resolve('/var/run/xtuple', version, name);
       options.xt.statedir = path.resolve('/var/lib/xtuple', version, name);
       options.sys.sbindir = path.resolve('/usr/sbin/xtuple/{xt.version}/{xt.name}'.format(options));
       options.sys.servicedir = path.resolve(options.xt.configdir, 'services');
+      options.sys.htpasswdfile = path.resolve('/etc/nginx/.htpasswd-xtuple');
 
       // repositories
       options.xt.srcdir = path.resolve('/usr/local/xtuple/src/', options.xt.version);
@@ -53,6 +59,7 @@
       exec('mkdir -p ' + path.resolve(options.xt.configdir, 'build'));
       exec('mkdir -p ' + options.xt.ssldir);
       exec('mkdir -p ' + options.xt.logdir);
+      exec('mkdir -p ' + options.xt.rundir);
       exec('mkdir -p ' + options.xt.socketdir);
       exec('mkdir -p ' + options.xt.statedir);
       exec('mkdir -p ' + options.xt.srcdir);
