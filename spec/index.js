@@ -34,15 +34,15 @@ describe('xTuple Installer', function () {
     {name: 'pg', tasks: [ 'snapshotmgr' ]}
   ];
 
-  if (!!process.env.TRAVIS) {
+  //if (!!process.env.TRAVIS) {
     global.installPlan[4].tasks.push('build_common');
     global.installPlan[4].tasks.push('build_main');
 
     // XXX remove this when zombie is fixed in node 0.10
-    if ((process.env.XT_NODE_VERSION || '').indexOf('0.10') === -1) {
+    //if ((process.env.XT_NODE_VERSION || '').indexOf('0.10') === -1) {
       global.installPlan[4].tasks.push('runtests');
-    }
-  }
+    //}
+  ///}
 
   describe('#uninstall', function () {
     before(function () {

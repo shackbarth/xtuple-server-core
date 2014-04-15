@@ -1,4 +1,4 @@
-{xt.name}    ALL = \
+{xt.name}    ALL = (ALL) SETENV: \
       /usr/sbin/service xtuple [0-9.]* {xt.name} [A-Za-z]*, \
       /usr/lib/postgresql/{pg.version}/bin/postgres -D /var/lib/postgresql/{pg.version}/{xt.name} -c config_file=/etc/postgresql/{pg.version}/{xt.name}/postgresql.conf, \
       /usr/bin/pg_ctlcluster [0-9.]* {xt.name} [A-Za-z]*, \
