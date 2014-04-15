@@ -9,7 +9,7 @@ var assert = require('chai').assert,
 
 it('should augment the pm2 services config file', function () {
   var pm2config = JSON.parse(fs.readFileSync(options.sys.pm2.configfile).toString());
-  assert.lengthOf(pm2config, 4);
+  assert.lengthOf(pm2config, 3);
 });
 
 describe('cron', function () {
