@@ -29,8 +29,8 @@ describe('cron', function () {
     delete lightopts.pg.snapschedule;
   });
 
-  it('should validate default cron setting (@daily)', function () {
-    lightopts.pg.snapschedule = '@daily';
+  it('should validate default cron setting (0 0 * * *)', function () {
+    lightopts.pg.snapschedule = '0 0 * * *';
     snap.beforeTask(lightopts);
   });
   it('should validate reasonable cron setting (3x per day)', function () {

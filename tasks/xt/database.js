@@ -43,7 +43,7 @@
       demo: {
         optional: '[boolean]',
         description: 'Set to additionally install the demo databases',
-        value: false
+        value: true
       },
       quickstart: {
         optional: '[boolean]',

@@ -86,6 +86,7 @@
           'chmod -R g=rx,u=rwx,o-wr /var/lib/xtuple',
           'chmod -R g=rx,u=rwx,o=rx /usr/sbin/xtuple',
           'chmod -R g=rx,u=rwx,o=rx /usr/local/xtuple',
+          'chmod -R g=rwx,u=rwx,o=rx /usr/local/xtuple/.pm2',
           'chmod -R g+wrx /var/run/postgresql'
         ],
         user_ownership = [

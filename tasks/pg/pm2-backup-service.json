@@ -1,4 +1,5 @@
-[{
+[
+{
   "name": "xtuple-snapshotmgr-{xt.version}-{xt.name}",
   "user": "{xt.name}",
   "script": "/usr/bin/xtuple-server",

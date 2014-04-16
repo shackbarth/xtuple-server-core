@@ -20,12 +20,16 @@
   _.extend(runtests, task, /** @exports runtests */ {
 
     /** @override */
-    beforeTask: function (options) {
-      exec('service nginx restart');
-    },
-
-    /** @override */
     doTask: function (options) {
+      var tests = exec('cd {xt.usersrc} && sudo -u {xt.name} npm test'.format(options));
+
+      options.xt.runtests.core = (tests.code === 0);
+
+      if (!options.xt.runtests.core) {
+        throw new Error(tests.stdout);
+      }
+
+      /*
       var server = spawn('node', ['node-datasource/main.js'], {
           cwd: options.xt.usersrc,
           uid: parseInt(exec('id -u {xt.name}'.format(options)).stdout)
@@ -38,9 +42,10 @@
       if (!options.xt.runtests.core) {
         throw new Error(tests.stdout);
       }
+      */
 
-      server.kill();
-      console.log(tests.stdout);
+      //server.kill();
+      //console.log(tests.stdout);
     }
   });
 })();
