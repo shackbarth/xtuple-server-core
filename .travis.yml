@@ -10,7 +10,10 @@ before_install:
   - export XT_NODE_VERSION=$TRAVIS_NODE_VERSION
   - sudo -E bash bootstrap.sh --no-installer
 
-install: /usr/bin/npm install
+install:
+  - /usr/bin/npm install -g --production
+  - /usr/bin/npm install
+
 script: /usr/bin/npm test
 
 after_failure:
