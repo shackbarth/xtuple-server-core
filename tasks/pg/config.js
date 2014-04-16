@@ -19,7 +19,7 @@
 
     options: {
       host: {
-        required: '[host]',
+        optional: '[host]',
         description: 'Postgres server host address',
         value: 'localhost'
       },

@@ -34,7 +34,6 @@
     doTask: function (options) {
       _.extend(options.pg.cluster, pgcli.createcluster(options), { name: options.xt.name });
       pgcli.ctlcluster({ action: 'restart', version: options.pg.version, name: options.xt.name });
-      //'chown {xt.name} /var/run/postgresql/{pg.version}-{xt.name}.pid'.format(options),
 
       cluster.initCluster(options);
       pgcli.ctlcluster({ action: 'reload', version: options.pg.version, name: options.xt.name });
@@ -42,7 +41,7 @@
 
     /** @override */
     uninstall: function (options) {
-      pgcli.dropcluster(options.pg.cluster);
+      pgcli.dropcluster({ name: options.xt.name, version: options.pg.version });
     },
 
     /**
