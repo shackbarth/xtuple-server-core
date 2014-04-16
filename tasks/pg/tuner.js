@@ -54,6 +54,7 @@
           timezone: options.pg.timezone,
           data_directory: cluster.data,
           shared_buffers: shared_buffers(cluster, config, env),
+          max_locks_per_transaction: 1024, // XXX magic number
           max_stack_depth: max_stack_depth(cluster, config, env),
           effective_cache_size: effective_cache_size(cluster, config, env),
           ssl_cert_file: options.pg.outcrt,
