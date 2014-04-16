@@ -17,7 +17,7 @@
     S = require('string'),
     _ = require('underscore'),
     program = require('commander'),
-    pkg = require('package.json'),
+    pkg = require('./package'),
     help = _.contains(process.argv, '--help'),
     options = { },
     run = function (plan, options) {
@@ -35,7 +35,7 @@
     process.exit(0);
   }
 
-  var xtupleScripts = process.env.SRCDIR || '/usr/local/xtuple/src/' + pkg.version + 'xtuple-scripts',
+  var xtupleScripts = process.env.SRCDIR || '/usr/lib/node_modules/xtuple-scripts/',
     planFile = path.resolve(xtupleScripts, 'plans', process.argv[2] + '.json'),
     planExists = fs.existsSync(planFile),
     plan = planExists && require(planFile);
