@@ -8,6 +8,5 @@
     "build_common", "build_main"
   ]},
   {"name": "sys", "tasks": [ "cups", "service" ]},
-  {"name": "pg", "tasks": [ "snapshotmgr" ]},
-  {"name": "xt", "tasks": [ "runtests" ]}
+  {"name": "pg", "tasks": [ "snapshotmgr" ]}
 ]
