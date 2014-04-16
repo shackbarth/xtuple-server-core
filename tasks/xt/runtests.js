@@ -10,7 +10,6 @@
     format = require('string-format'),
     path = require('path'),
     rimraf = require('rimraf'),
-    spawn = require('child_process').spawn,
     exec = require('execSync').exec,
     fs = require('fs'),
     _ = require('underscore');
