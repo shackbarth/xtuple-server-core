@@ -32,15 +32,15 @@ describe('xTuple Installer', function () {
     {name: 'sys', tasks: [ 'cups', 'service' ]}
   ];
 
-  //if (!!process.env.TRAVIS) {
+  if (!!process.env.TRAVIS) {
     global.installPlan[5].tasks.push('build_common');
     global.installPlan[5].tasks.push('build_main');
 
     // XXX remove this when zombie is fixed in node 0.10
-    //if ((process.env.XT_NODE_VERSION || '').indexOf('0.10') === -1) {
+    if ((process.env.XT_NODE_VERSION || '').indexOf('0.10') === -1) {
       global.installPlan.push({name: 'xt', tasks: [ 'runtests' ]});
-    //}
-  //}
+    }
+  }
 
   describe('#uninstall', function () {
     it('should pre-run uninstall on any existing installation', function () {
