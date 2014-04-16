@@ -81,7 +81,8 @@ restart() {
 }
 
 status() {
-  echo 'xTuple Mobile Web Status Dashboard'
+  echo ''
+  echo 'xTuple Server Dashboard'
   list=$(super $PM2 list)
   echo "$list" | head -n 3 && echo "$list" | grep $account -A 1
 
