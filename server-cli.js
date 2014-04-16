@@ -105,7 +105,6 @@
   console.log(clc.bold('\nInstallation Plan:\n'));
   planner.displayPlan(plan, options);
 
-
   if (program.headless) {
     run(plan, options);
   }
