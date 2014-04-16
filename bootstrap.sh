@@ -18,9 +18,9 @@ install_debian () {
   sudo apt-get -qq autoremove --force-yes
   sudo apt-get -qq install python-software-properties --force-yes
 
-  sudo apt-get purge postgresql-${XT_PG_VERSION}*
-  sudo apt-get purge nodejs-${XT_NODE_VERSION}*
-  sudo apt-get purge npm*
+  sudo apt-get -qq purge postgresql-${XT_PG_VERSION}* --force-yes
+  sudo apt-get -qq purge nodejs-${XT_NODE_VERSION}* --force-yes
+  sudo apt-get -qq purge npm* --force-yes
   
   sudo wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
   echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null
