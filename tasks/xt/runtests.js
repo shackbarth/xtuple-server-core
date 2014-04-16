@@ -11,11 +11,9 @@
     path = require('path'),
     rimraf = require('rimraf'),
     spawn = require('child_process').spawn,
-    uidNumber = require('uid-number'),
     exec = require('execSync').exec,
     fs = require('fs'),
-    _ = require('underscore'),
-    m = require('mstring');
+    _ = require('underscore');
 
   _.extend(runtests, task, /** @exports runtests */ {
 

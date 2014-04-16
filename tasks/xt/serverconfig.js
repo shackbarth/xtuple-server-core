@@ -11,8 +11,7 @@
     path = require('path'),
     fs = require('fs'),
     exec = require('execSync').exec,
-    _ = require('underscore'),
-    m = require('mstring');
+    _ = require('underscore');
 
   _.extend(serverconfig, lib.task, /** @exports serverconfig */ {
 
@@ -118,7 +117,7 @@
 
     getRandom: function (bitlen) {
       return exec('openssl rand '+ bitlen +' -hex').stdout;
-    },
+    }
     
   });
 })();
