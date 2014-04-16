@@ -64,16 +64,6 @@
           }
         });
       });
-
-      // XXX it is not clear to me whether this is necessary, but it doesn't
-      // hurt anything
-      //pgcli.psql(options, 'ALTER USER admin WITH PASSWORD {xt.adminpw}'.format(options));
-    },
-
-    /** @override */
-    afterTask: function (options) {
-      require('./build_common').afterTask(options);
-      //rimraf.sync('
     }
   });
 })();
