@@ -39,8 +39,7 @@
       },
       maindb: {
         optional: '[path]',
-        description: 'Path to primary database .backup/.sql filename to use in production',
-        value: null
+        description: 'Path to primary database .backup/.sql filename to use in production'
       },
       edition: {
         optional: '[string]',
