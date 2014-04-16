@@ -24,7 +24,7 @@
       var buildOptions = _.clone(options);
 
       buildOptions.xt = _.extend({ }, options.xt, {
-        name: 'admin',
+        //name: 'admin',
         configfile: options.xt.buildconfigfile
       });
       buildOptions.xt.serverconfig = { };
