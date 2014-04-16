@@ -17,25 +17,32 @@
     S = require('string'),
     _ = require('underscore'),
     program = require('commander'),
-    version = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'))).version,
-    options = { };
+    pkg = require('package.json'),
+    help = _.contains(process.argv, '--help'),
+    options = { },
+    run = function (plan, options) {
+      planner.install(plan, options);
+      planner.log_progress({ phase: 'installer', task: 'installer', msg: 'Done!'});
+    },
+    originalOptions,
+    resultingOptions;
 
-  program.command('<plan>').version(version);
+  program.command('<plan>').version(pkg.version)
+    .option('--headless', 'Run in headless mode; continue through all prompts');
 
   if (process.argv.length < 3) {
-    console.log('Please see README for usage');
+    console.log(clc.yellow.bold('\nNo plan specified. Please see README for usage\n'));
     process.exit(0);
   }
 
-  var versionFlagIndex = _.indexOf(process.argv, '--xt-version'),
-    versionNumber = process.argv[versionFlagIndex + 1],
-    xtupleScripts = '/usr/local/xtuple/src/'+ versionNumber + '/xtuple-scripts',
+  var xtupleScripts = process.env.SRCDIR || '/usr/local/xtuple/src/' + pkg.version + 'xtuple-scripts',
     planFile = path.resolve(xtupleScripts, 'plans', process.argv[2] + '.json'),
     planExists = fs.existsSync(planFile),
     plan = planExists && require(planFile);
 
-  if (versionFlagIndex === -1 || !planExists || !_.isObject(plan)) {
-    throw new Error('No planfile found');
+  if (!planExists || !_.isObject(plan)) {
+    console.error(clc.yellow.bold('\nNo planfile found at: '+ planFile + '\n'));
+    process.exit(2);
   }
 
   options.plan = process.argv[2];
@@ -71,7 +78,9 @@
     planner.die({ msg: 'Installer must be run as root', prefix: 'xtuple' });
   }
 
-  // now that installer has parsed the arguments, go back through and override
+  program.parse(process.argv);
+
+  // now that installer has compiled the arguments, go back through and override
   // default values with provided values. installer's automatic camelcasing of
   // arguments, as well as its strange setting of values directly on the
   // 'Commander' object unfortunately complicate this process somewhat.
@@ -88,17 +97,22 @@
     }
   });
 
-  program.parse(process.argv);
-  if (_.contains(process.argv, '--help')) {
+  if (help) {
     return program.help();
   }
 
-  planner.verifyOptions(plan, options);
-  planner.compileOptions(plan, options);
+  console.log('\nxTuple Server v'+ pkg.version);
+  console.log(clc.bold('\nInstallation Plan:\n'));
   planner.displayPlan(plan, options);
 
-  program.confirm('Press Enter to Continue...', function(err, result) {
-    planner.install(plan, options);
-    planner.log_progress({ phase: 'installer', task: 'installer', msg: 'Done!'});
-  });
+
+  if (program.headless) {
+    run(plan, options);
+  }
+  else {
+    program.confirm(clc.green.bold('\nPress Enter to Continue...'), function () {
+      run(plan, options);
+    });
+  }
+
 })();

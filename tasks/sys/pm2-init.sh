@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Description: xTuple Mobile Web Service Manager
+# Description: xTuple Service Manager
 # processname: xtuple
 #
 ### BEGIN INIT INFO
@@ -16,7 +16,7 @@
 ### END INIT INFO
 
 help() {
-  echo -e 'xTuple Service Manager'
+  echo -e 'xTuple Service'
   echo -e ''
 
   #echo -e 'Usage: sudo service xtuple {start|stop|status|restart}'
@@ -24,15 +24,19 @@ help() {
   #echo -e '   Restart all xTuple services:    sudo service xtuple restart'
   #echo -e '   Display xTuple status:          sudo service xtuple status'
   #echo -e ''
-  echo -e 'Usage: sudo service xtuple <version> <name> {restart|status}'
-  echo -e 'Examples:'
-  echo -e '   Restart xTuple Server for customer "initech":     sudo service xtuple 4.4.0 initech restart'
-  echo -e '   Show xTuple Server status for customer "initech": sudo service xtuple 4.4.0 initech status'
+  echo -e 'Usage: sudo service xtuple <version> <name> {restart|status|help}'
+  echo -e ''
+  echo -e 'xTuple Log Path: /var/log/xtuple/<version>/<name>'
+  echo -e 'xTuple Config Path: /etc/xtuple/<version>/<name>'
+  echo -e ''
+  echo -e 'Postgres Service'
+  echo -e 'Usage: pg_ctlcluster 9.3 <name> {start|stop|restart}'
+  echo -e ''
+  echo -e 'Postgres Log Path: /var/log/postgresql/'
   echo -e ''
   echo -e 'Still having trouble? Email us: <dev@xtuple.com>'
   echo -e ''
 }
-
 
 PM2=$(which pm2)
 
@@ -42,15 +46,16 @@ account=$2
 action=$3
 
 if [[ -z $action && -z $account && -z $version ]]; then
-  help
+  echo ''
 elif [[ -z $action && -z $account ]]; then
   action=$version
   account="root"
 elif [[ -z $action ]]; then
-  help
+  echo ''
 fi
 
 export PATH=$PATH:/usr/bin
+export HOME=/usr/local/xtuple
 
 super() {
   sudo -u $account PATH=$PATH $*
@@ -70,34 +75,35 @@ stop() {
 
 restart() {
   super $PM2 restart xtuple-server-$version-$account
-  super $PM2 restart xtuple-postgres-$version-$account
-  super $PM2 restart xtuple-monitor-$version-$account || true
+  super $PM2 restart xtuple-healthfeed-$version-$account || true
   super $PM2 restart xtuple-snapshotmgr-$version-$account || true
+  #super $PM2 restart xtuple-postgres-$version-$account
 }
 
 status() {
   echo 'xTuple Mobile Web Status Dashboard'
   list=$(super $PM2 list)
   echo "$list" | head -n 3 && echo "$list" | grep $account -A 1
+
   RETVAL=$?
 }
 
 case "$action" in
-    start)
-        start
-        ;;
-    stop)
-        stop
-        ;;
-    status)
-        status
-        ;;
-    restart)
-        restart
-        ;;
-    *)
-        help
-        exit 1
-        ;;
+  start)
+      start
+      ;;
+  stop)
+      stop
+      ;;
+  restart)
+      restart
+      ;;
+  status)
+      status
+      ;;
+  *)
+      help
+      exit 1
+      ;;
 esac
 exit $RETVAL

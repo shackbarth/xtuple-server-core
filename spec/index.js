@@ -11,7 +11,6 @@ describe('xTuple Installer', function () {
       plan: 'install',
       xt: {
         name: 'xtmocha',
-        demo: true,
         adminpw: 'admin',
         version: '4.4.0'
       },
@@ -22,30 +21,29 @@ describe('xTuple Installer', function () {
       }
     };
 
+  // palindromic install plans are my favorite kinds of install plans
   global.installPlan = [
     {name: 'sys', tasks: [ 'paths', 'policy' ]},
+    {name: 'xt', tasks: [ 'clone' ]},
     {name: 'pg', tasks: [ 'config', 'cluster' ]},
     {name: 'nginx', tasks: [ 'ssl', 'site', 'etchosts' ]},
-    {name: 'pg', tasks: [ 'hba', 'tuner' ]},
-    {name: 'xt', tasks: [
-      'clone', 'database', 'serverconfig', 'testconfig'
-    ]},
-    {name: 'sys', tasks: [ 'cups', 'service' ]},
-    {name: 'pg', tasks: [ 'snapshotmgr' ]}
+    {name: 'pg', tasks: [ 'hba', 'tuner', 'snapshotmgr' ]},
+    {name: 'xt', tasks: [ 'database', 'serverconfig', 'testconfig' ]},
+    {name: 'sys', tasks: [ 'cups', 'service' ]}
   ];
 
-  if (!!process.env.TRAVIS) {
-    global.installPlan[4].tasks.push('build_common');
-    global.installPlan[4].tasks.push('build_main');
+  //if (!!process.env.TRAVIS) {
+    global.installPlan[5].tasks.push('build_common');
+    global.installPlan[5].tasks.push('build_main');
 
     // XXX remove this when zombie is fixed in node 0.10
-    if ((process.env.XT_NODE_VERSION || '').indexOf('0.10') === -1) {
-      global.installPlan[4].tasks.push('runtests');
-    }
-  }
+    //if ((process.env.XT_NODE_VERSION || '').indexOf('0.10') === -1) {
+      global.installPlan.push({name: 'xt', tasks: [ 'runtests' ]});
+    //}
+  //}
 
   describe('#uninstall', function () {
-    before(function () {
+    it('should pre-run uninstall on any existing installation', function () {
       planner.eachTask(global.installPlan, function (task, phaseName, taskName) {
         try {
           task.uninstall(_.defaults({
@@ -61,8 +59,6 @@ describe('xTuple Installer', function () {
           console.log('benign: '+ e.message);
         }
       });
-    });
-    it('should pre-run uninstall on any existing installation', function () {
 
     });
   });

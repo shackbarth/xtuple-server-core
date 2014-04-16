@@ -7,7 +7,6 @@
   var paths = exports;
 
   var lib = require('../../lib'),
-    fs = require('fs'),
     exec = require('execSync').exec,
     path = require('path'),
     _ = require('underscore');
@@ -15,7 +14,7 @@
   _.extend(paths, lib.task, /** @exports paths */ {
 
     /** @override */
-    doTask: function (options) {
+    beforeInstall: function (options) {
       var version = options.xt.version,
         name = options.xt.name;
 
@@ -33,6 +32,7 @@
       options.xt.buildconfigfile = path.resolve(options.xt.configdir, 'build/config.js');
 
       options.xt.homedir = path.resolve('/usr/local/xtuple');
+      options.xt.pm2dir = path.resolve('/usr/local/xtuple/.pm2');
       options.sys.userHomeDir = path.resolve('/usr/local', options.xt.name);
 
       // other system paths
@@ -41,7 +41,7 @@
       options.xt.socketdir = path.resolve('/var/run/postgresql');
       options.xt.rundir = path.resolve('/var/run/xtuple', version, name);
       options.xt.statedir = path.resolve('/var/lib/xtuple', version, name);
-      options.sys.sbindir = path.resolve('/usr/sbin/xtuple/{xt.version}/{xt.name}'.format(options));
+      options.sys.sbindir = path.resolve('/usr/sbin/xtuple/', version, name);
       options.sys.servicedir = path.resolve(options.xt.configdir, 'services');
       options.sys.htpasswdfile = path.resolve('/etc/nginx/.htpasswd-xtuple');
 
@@ -54,6 +54,7 @@
       //exec('mkdir -p ' + path.resolve(options.xt.configdir, 'test'));
       exec('mkdir -p ' + options.xt.userhome);
       exec('mkdir -p ' + options.xt.usersrc);
+      exec('mkdir -p ' + options.xt.pm2dir);
 
       exec('mkdir -p ' + options.xt.configdir);
       exec('mkdir -p ' + path.resolve(options.xt.configdir, 'build'));
@@ -76,9 +77,9 @@
       exec('chmod u=rwx,g=rx,o-rwx '+ options.xt.privatedir);
     },
 
-    uninstall: function (options) {
+    /** @override */
+    doTask: function (options) {
 
     }
-
   });
 })();

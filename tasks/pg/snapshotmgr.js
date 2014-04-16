@@ -6,7 +6,7 @@
    */
   var snapshotmgr = exports;
 
-  var task = require('../../lib/task'),
+  var lib = require('../../lib'),
     service = require('../sys/service'),
     scheduler = require('node-schedule'),
     pgcli = require('../../lib/pg-cli'),
@@ -17,10 +17,9 @@
     exec = require('execSync').exec,
     path = require('path'),
     program = require('commander'),
-    _ = require('underscore'),
-    knex;
+    _ = require('underscore');
 
-  _.extend(snapshotmgr, task, /** @exports snapshotmgr */ {
+  _.extend(snapshotmgr, lib.task, /** @exports snapshotmgr */ {
 
     options: {
       restore: {
@@ -30,8 +29,8 @@
       },
       snapschedule: {
         optional: '[cron]',
-        description: 'crontab entry for snapshot schedule [@daily]',
-        value: '@daily'
+        description: 'crontab entry for snapshot schedule [0 0 * * *] (daily)',
+        value: '0 0 * * *'
       },
       snapshotcount: {
         optional: '[integer]',
@@ -49,19 +48,21 @@
     beforeTask: function (options) {
       exec('mkdir -p ' + options.pg.snapshotdir);
       exec(('chown {xt.name}:xtuser '+ options.pg.snapshotdir).format(options));
-
-      // validate cron entry
-      cron.parseExpressionSync(options.pg.snapschedule);
     },
 
     /** @override */
     doTask: function (options) {
       if ('install' === options.plan) {
+        // validate cron entry
+        cron.parseExpressionSync(options.pg.snapschedule);
+
+        /*
         var pm2Template = fs.readFileSync(path.resolve(__dirname, 'pm2-backup-service.json')).toString(),
           coreServices = JSON.parse(fs.readFileSync(options.sys.pm2.configfile).toString()),
           combinedServices = coreServices.concat(JSON.parse(pm2Template.format(options)));
 
         fs.writeFileSync(options.sys.pm2.configfile, JSON.stringify(combinedServices, null, 2));
+        */
       }
       else if ('backup' === options.plan) {
         snapshotmgr.createSnapshot(options);
