@@ -1,25 +1,22 @@
 var assert = require('chai').assert,
   _ = require('underscore'),
-  m = require('mstring'),
   exec = require('execSync').exec,
   lib = require('../../lib'),
   options = global.options;
 
 it('can parse a pristine pg_hba', function () {
-  var hba_conf = m(function () {
-    /***
-      local   all             postgres                                peer
-      local   all             all                                     peer
-      host    all             all             127.0.0.1/32            trust
+  var hba_conf = [
+      'local   all             postgres                                peer',
+      'local   all             all                                     peer',
+      'host    all             all             127.0.0.1/32            trust',
 
-      host    all             all             10/8                    md5
-      host    all             all             172.16/12               md5
-      host    all             all             192.168/16              md5
+      'host    all             all             10/8                    md5',
+      'host    all             all             172.16/12               md5',
+      'host    all             all             192.168/16              md5',
 
-      host    all             all             .xtuple.com             md5
-      host    all             all             ::1/128                 md5
-    ***/
-    }),
+      'host    all             all             .xtuple.com             md5',
+      'host    all             all             ::1/128                 md5'
+    ].join('\n'),
     parsed = lib.pgCli.parse(hba_conf, 'pg_hba');
 
   assert(_.findWhere(parsed, { address: '.xtuple.com' }));

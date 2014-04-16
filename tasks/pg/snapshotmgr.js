@@ -8,7 +8,6 @@
 
   var lib = require('../../lib'),
     service = require('../sys/service'),
-    scheduler = require('node-schedule'),
     pgcli = require('../../lib/pg-cli'),
     fs = require('fs'),
     os = require('os'),
