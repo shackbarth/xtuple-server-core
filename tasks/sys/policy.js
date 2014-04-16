@@ -191,9 +191,9 @@
       exec('skill -KILL -u xtremote'.format(options));
       exec('deluser {xt.name}'.format(options));
       exec('deluser xtremote');
-      fs.unlinkSync(options.sys.htpasswdfile);
-      fs.unlinkSync(path.resolve('/etc/sudoers.d/', user_policy_filename.replace('user', '{xt.name}').format(options)));
-      rimraf.sync(path.resolve(options.sys.userHomeDir));
+      exec('rm -f {sys.htpasswdfile}'.format(options));
+      exec('rm -f '+ path.resolve('/etc/sudoers.d/', user_policy_filename.replace('user', '{xt.name}').format(options)));
+      //rimraf.sync(path.resolve(options.sys.userHomeDir));
     }
   });
 

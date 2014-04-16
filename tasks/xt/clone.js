@@ -18,14 +18,6 @@
 
   _.extend(clone, task, /** @exports clone */ {
 
-    options: {
-      version: {
-        optional: '<version>',
-        description: 'xTuple Mobile App Version',
-        value: '4.4.0'
-      }
-    },
-
     /** @override */
     beforeInstall: function (options) {
       options.xt.scalarversion = options.xt.version.replace(/\./g, '');

@@ -21,9 +21,16 @@
   _.extend(database, task, /** @exports database */ {
 
     options: {
+      version: {
+        required: '<version>',
+        description: 'xTuple Version'
+      },
       name: {
         required: '<name>',
-        description: 'Name of the installation'
+        description: 'Name of the installation',
+        validate: function (arg) {
+          return !/\d/.test(arg);
+        }
       },
       pilot: {
         optional: '[boolean]',

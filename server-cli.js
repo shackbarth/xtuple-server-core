@@ -27,6 +27,10 @@
     originalOptions,
     resultingOptions;
 
+  if (exec('id -u').stdout.indexOf('0') !== 0) {
+    planner.die({ msg: 'Installer must be run as root', prefix: 'xtuple' });
+  }
+
   program.command('<plan>').version(pkg.version)
     .option('--headless', 'Run in headless mode; continue through all prompts');
 
@@ -51,7 +55,7 @@
   // we must populate it via api calls
   planner.eachTask(plan, function (task, phaseName, taskName) {
     options[phaseName] || (options[phaseName] = { });
-    options[phaseName][taskName] = { };
+    options[phaseName][taskName] || (options[phaseName][taskName] = { });
 
     _.each(task.options, function (option_details, option_name) {
       try {
@@ -73,11 +77,6 @@
     });
   });
 
-  // self-tests
-  if (exec('id -u').stdout.indexOf('0') !== 0) {
-    planner.die({ msg: 'Installer must be run as root', prefix: 'xtuple' });
-  }
-
   program.parse(process.argv);
 
   // now that installer has compiled the arguments, go back through and override
@@ -90,12 +89,18 @@
       prop = S(cleanflag).camelize().s,
       argpath = cleanflag.split('-');
 
-    if (!argpath[1]) { return; }
+    if (!argpath[1]) {
+      console.log(clc.yellow('Skipping argument: '+ option));
+      return;
+    }
 
     if (!_.isUndefined(program[prop])) {
       options[argpath[0]][argpath[1]] = program[prop];
     }
   });
+
+  planner.compileOptions(plan, options);
+  planner.verifyOptions(plan, options);
 
   if (help) {
     return program.help();
@@ -105,13 +110,18 @@
   console.log(clc.bold('\nInstallation Plan:\n'));
   planner.displayPlan(plan, options);
 
-  if (program.headless) {
+  if (_.contains(process.argv, '--force')) {
+    options.force = true;
+  }
+  if (_.contains(process.argv, '--headless')) {
     run(plan, options);
   }
   else {
-    program.confirm(clc.green.bold('\nPress Enter to Continue...'), function () {
+    program.prompt(clc.green.bold('\nPress Enter to Continue...'), function () {
       run(plan, options);
     });
   }
 
 })();
+
+

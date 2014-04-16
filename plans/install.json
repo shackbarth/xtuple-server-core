@@ -4,8 +4,10 @@
   {"name": "nginx", "tasks": [ "ssl", "site", "etchosts" ]},
   {"name": "pg", "tasks": [ "hba", "tuner" ]},
   {"name": "xt", "tasks": [
-    "clone", "database", "serverconfig", "testconfig"
+    "clone", "database", "serverconfig", "testconfig",
+    "build_common", "build_main"
   ]},
   {"name": "sys", "tasks": [ "cups", "service" ]},
-  {"name": "pg", "tasks": [ "snapshotmgr" ]}
+  {"name": "pg", "tasks": [ "snapshotmgr" ]},
+  {"name": "xt", "tasks": [ "runtests" ]}
 ]
