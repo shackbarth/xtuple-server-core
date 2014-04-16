@@ -7,11 +7,6 @@ var assert = require('chai').assert,
   snap = require('../../tasks/pg/snapshotmgr'),
   options = global.options;
 
-it('should augment the pm2 services config file', function () {
-  var pm2config = JSON.parse(fs.readFileSync(options.sys.pm2.configfile).toString());
-  assert.lengthOf(pm2config, 3);
-});
-
 describe('cron', function () {
   var lightopts;
   
