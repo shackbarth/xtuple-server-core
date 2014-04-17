@@ -38,6 +38,7 @@
 
       buildOptions.xt = _.extend({ }, options.xt, {
         name: 'admin',
+        password: options.xt.adminpw,
         configfile: options.xt.buildconfigfile
       });
       buildOptions.xt.serverconfig = { };

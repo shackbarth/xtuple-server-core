@@ -29,6 +29,7 @@
 
       testOptions.xt = _.extend({ }, options.xt, {
         name: 'admin',
+        password: options.xt.adminpw,
         configfile: options.xt.testconfigfile
       });
       testOptions.xt.serverconfig = { };
