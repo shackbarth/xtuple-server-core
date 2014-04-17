@@ -1,21 +1,67 @@
 [![Build Status](https://magnum.travis-ci.com/xtuple/xtuple-scripts.svg?token=gns5sJtFWu8Pk688aPh7)](https://magnum.travis-ci.com/xtuple/xtuple-scripts)
 
-### Example New Server Installation
+This is the xTuple Server. It installs, runs, serves, snapshots, restores, upgrades, pilots, and monitors your xTuple system.
+
+# 0. Quickstart
+
+### Server Installation Basics
 1. `sudo bash bootstrap.sh`
-2. `sudo xtuple-server install plan.json --xt-version 4.4.1 --xt.name example-server`
+2. `sudo xtuple-server install --xt-version 4.4.1 --xt.name mydemo --xt-quickstart`
 
-  By default, the following variables are set by `bootstrap.sh`:
-  - `XT_NODE_VERSION=0.8.26`
-  - `XT_PG_VERSION=9.3`
+This installs a single database called `xtuple_quickstart`. Secure credentials
+and other access info are generated for you and will be shown in a report once
+installation is finished.
 
-  Using the commands above, a simple server will be installed with a single
-  database called `xtuple_demo`.
+# 1. Info
 
-## xtuple-server CLI
+### a. System Dependencies
+
+  - `bootstrap.sh` installs all system dependencies. Here are a few of my favorites:
+    - `nginx      >  v1.4.7`
+    - `nodejs     >  v0.8.26`
+    - `npm        >  v1.3.0`
+    - `postgres   >= v9.1` (**9.3** is installed by default; see 1c)
+    - `cups       >  v1.5`
+    - `sshd       >  v1.5`
+
+### b. Self-tests
+
+  The `bootstrap.sh` will run a series of self-diagnostic tests on the machine
+  after it installed the system dependencies. You should also run these
+  yourself! They are fun.
+
+  - `sudo npm run-script test-9.1        // test against postgres 9.1`
+  - `sudo npm run-script test-9.3        // test against postgres 9.3`
+
+### c. Variables and Defaults
+
+  - By default, the following variables are set by `bootstrap.sh`:
+    - `XT_NODE_VERSION=0.8.26`
+    - `XT_PG_VERSION=9.3`
+
+### d. System Service
+
+  - **TODO document**
+
+### e. Health Monitor
+
+  - **TODO document**
+
+### f. Command Center
+
+  - **TODO document**
+
+# 2. Usage and Examples
+  
+  - **TODO document**
+
+# 3. Reference
+
+### xtuple-server CLI
 
     Usage:
     
-      sudo xtuple-server {install|run} <planfile> --xt-version <version> --xt-name <name>
+      sudo xtuple-server {install|backup|restore|upgrade|test} --xt-version <version> --xt-name <name>
 
     Options:
 
@@ -44,4 +90,3 @@
 
       // TODO
       --pg-host [host]              Postgres server host address [localhost]
-
