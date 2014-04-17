@@ -32,10 +32,6 @@ describe('cron', function () {
     lightopts.pg.snapschedule = '0 */4 * * *';
     snap.beforeTask(lightopts);
   });
-  it('should validate reasonable cron setting (@weekly)', function () {
-    lightopts.pg.snapschedule = '@weekly';
-    snap.beforeTask(lightopts);
-  });
 });
 
 describe.skip('#rotateSnapshot', function () {
