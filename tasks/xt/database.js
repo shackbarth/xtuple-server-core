@@ -88,7 +88,8 @@
         if (fs.existsSync(maindb_path)) {
           databases.push({
             filename: maindb_path,
-            dbname: options.xt.name + '_main'
+            dbname: options.xt.name + '_main',
+            foundation: false
           });
         }
         else {
@@ -99,7 +100,8 @@
         if (options.xt.maindb && options.xt.pilot) {
           databases.push({
             filename: maindb_path,
-            dbname: options.xt.name + '_pilot'
+            dbname: options.xt.name + '_pilot',
+            foundation: false
           });
         }
       }
@@ -113,6 +115,10 @@
 
     /** @override */
     doTask: function (options) {
+      if (options.xt.database.list.length === 0) {
+        throw new Error('No databases are scheduled to be installed');
+      }
+
       database.buildFoundationDatabases(options);
       database.buildMainDatabases(options);
     },
@@ -120,7 +126,7 @@
     buildMainDatabases: function (options) {
       var xt = options.xt,
         extensions = build.editions[xt.edition],
-        databases = _.where(xt.database.list, { main: true }),
+        databases = _.where(xt.database.list, { foundation: false }),
         repos = require('./clone').getRepositoryList(options);
 
       _.each(repos, function (repo) {
