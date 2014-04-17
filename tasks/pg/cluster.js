@@ -59,8 +59,9 @@
           'CREATE ROLE admin WITH LOGIN PASSWORD \'{xt.adminpw}\' SUPERUSER'
             .format(options),
 
-          // create 'postgres' user for various compatibility reasons
+          // create 'postgres' and 'root' roles for convenience
           'CREATE ROLE postgres LOGIN SUPERUSER',
+          'CREATE ROLE root LOGIN SUPERUSER',
 
           'GRANT xtrole TO admin'
         ],
@@ -72,8 +73,5 @@
       }
     }
   });
-
-  /** @listens knex */
-  process.on('knex', function (_knex) { knex = _knex; });
 
 })();

@@ -11,12 +11,11 @@
     format = require('string-format'),
     path = require('path'),
     build = require('../../lib/xt/build'),
+    rimraf = require('rimraf'),
     fs = require('fs'),
     _ = require('underscore'),
     exec = require('execSync').exec,
-    pgcli = require('../../lib/pg-cli'),
-    url_template = 'http://sourceforge.net/projects/postbooks/files/' +
-      '03%20PostBooks-databases/{xt.version}/postbooks_{dbname}-{xt.version}.backup/download';
+    pgcli = require('../../lib/pg-cli');
 
   _.extend(database, task, /** @exports database */ {
 
@@ -49,7 +48,7 @@
       demo: {
         optional: '[boolean]',
         description: 'Set to additionally install the demo databases',
-        value: true
+        value: false
       },
       quickstart: {
         optional: '[boolean]',
@@ -63,45 +62,33 @@
     },
 
     /** @override */
-    doTask: function (options) {
-      var xt = options.xt,
-        downloads = _.compact([
-          options.xt.demo && 'demo',
-          options.xt.quickstart && 'quickstart'
-        ]),
-        // schedule postbooks demo database filenames for installation
-        databases = _.map(downloads, function (dbname) {
-          var wget_format = {
-              dbname: 'xtuple_' + dbname,
-              filename: path.resolve(options.xt.srcdir, dbname + '.backup'),
-              url: url_template.format(_.extend({ dbname: dbname }, options)),
-              common: true
-            },
-            wget_result;
-          
-          if (fs.existsSync(wget_format.filename)) {
-            return wget_format;
-          }
-
-          wget_result = exec('wget -qO {filename} {url}'.format(wget_format));
-          if (wget_result.code !== 0) {
-            throw new Error(wget_result.stdout);
-          }
-
-          exec('chown :xtuser {filename}'.format(wget_format));
-
-          return wget_format;
-        }),
+    beforeInstall: function (options) {
+      var foundationPath = path.resolve(options.xt.usersrc, 'foundation-database'),
+        databases = [ ],
         maindb_path;
 
-      // schedule main database filename for installation
+      if (options.xt.demo) {
+        databases.push({
+          dbname: 'xtuple_demo',
+          filename: path.resolve(foundationPath, 'postbooks_demo_data.sql'),
+          foundation: true
+        });
+      }
+      if (options.xt.quickstart) {
+        databases.push({
+          dbname: 'xtuple_demo',
+          filename: path.resolve(foundationPath, 'quickstart_data.sql'),
+          foundation: true
+        });
+      }
+
+      // schedule main database file for installation
       if (_.isString(options.xt.maindb)) {
         maindb_path = path.resolve(options.xt.maindb);
         if (fs.existsSync(maindb_path)) {
           databases.push({
             filename: maindb_path,
-            dbname: 'main_' + xt.name,
-            main: true
+            dbname: options.xt.name + '_main'
           });
         }
         else {
@@ -109,11 +96,10 @@
         }
 
         // schedule pilot for installation
-        if (xt.maindb && xt.pilot) {
+        if (options.xt.maindb && options.xt.pilot) {
           databases.push({
             filename: maindb_path,
-            dbname: 'pilot_' + xt.name,
-            main: true
+            dbname: options.xt.name + '_pilot'
           });
         }
       }
@@ -123,6 +109,84 @@
       }
 
       options.xt.database.list = databases;
+    },
+
+    /** @override */
+    doTask: function (options) {
+      database.buildFoundationDatabases(options);
+      database.buildMainDatabases(options);
+    },
+
+    buildMainDatabases: function (options) {
+      var xt = options.xt,
+        extensions = build.editions[xt.edition],
+        databases = _.where(xt.database.list, { main: true }),
+        repos = require('./clone').getRepositoryList(options);
+
+      _.each(repos, function (repo) {
+        var template = {
+            repo: repo,
+            path: path.resolve(options.xt.srcdir, repo),
+            out: path.resolve(options.xt.usersrc, '..')
+          },
+          rsync = exec('rsync -ar --exclude=".git" {path} {out}'.format(template));
+
+        if (rsync.code !== 0) {
+          throw new Error(JSON.stringify(rsync, null, 2));
+        }
+
+        exec('chown -R {xt.name}:{xt.name} {xt.userhome}'.format(options));
+        exec('chmod -R 700 {xt.userhome}'.format(options));
+      });
+
+      // build the main database and pilot, if specified
+      _.each(databases, function (db) {
+        rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
+
+        var buildResult = exec(build.getCoreBuildCommand(db, options));
+        console.log(buildResult);
+        if (buildResult.code !== 0) {
+          throw new Error(buildResult.stdout);
+        }
+
+        // install extensions specified by the edition
+        _.each(extensions, function (ext) {
+          var result = exec(build.getExtensionBuildCommand(db, options, ext));
+          if (result.code !== 0) {
+            throw new Error(result.stdout);
+          }
+        });
+      });
+    },
+
+    buildFoundationDatabases: function (options) {
+      var quickstart = _.findWhere(options.xt.database.list, { dbname: 'xtuple_quickstart' }),
+        demo = _.findWhere(options.xt.database.list, { dbname: 'xtuple_demo' }),
+        qsBuild, demoBuild;
+
+      if (quickstart) {
+        rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
+        qsBuild = exec(build.getSourceBuildCommand(quickstart, options));
+
+        if (qsBuild.code !== 0) {
+          throw new Error(qsBuild);
+        }
+      }
+      if (demo) {
+        rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
+        var cp = exec([
+          'cp',
+          path.resolve(demo.filename),
+          path.resolve(options.xt.usersrc, 'test/lib/demo-test.backup')
+        ].join(' ')),
+        buildResult = exec(build.getCoreBuildCommand(demo, options));
+
+        demoBuild = exec('cd {xt.usersrc} && sudo -u {xt.name} npm run-script test-build'.format(options));
+
+        if (demoBuild.code !== 0) {
+          throw new Error(JSON.stringify(demoBuild, null, 2));
+        }
+      }
     }
   });
 })();

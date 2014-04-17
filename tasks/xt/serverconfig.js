@@ -24,6 +24,32 @@
 
     /** @override */
     doTask: function (options) {
+      serverconfig.writeBuildConfig(options);
+      serverconfig.writeRunConfig(options);
+    },
+
+    writeRunConfig: function (options) {
+      serverconfig.writeConfig(options);
+    },
+
+    writeBuildConfig: function (options) {
+      // TODO safer clone stringify/parse; circular ref currently
+      var buildOptions = _.clone(options);
+
+      buildOptions.xt = _.extend({ }, options.xt, {
+        name: 'admin',
+        configfile: options.xt.buildconfigfile
+      });
+      buildOptions.xt.serverconfig = { };
+      buildOptions.xt.testdb = 'xtuple_demo';
+
+      serverconfig.writeConfig(buildOptions);
+
+      exec('chown {xt.name}:{xt.name} {xt.buildconfigfile}'.format(options));
+      exec('chmod 700 {xt.buildconfigfile}'.format(options));
+    },
+
+    writeConfig: function (options) {
       var xt = options.xt,
         pg = options.pg,
         sample_path = path.resolve(xt.coredir, 'node-datasource/sample_config'),
@@ -114,7 +140,6 @@
     getServerSSLPort: function (options) {
       return parseInt(options.pg.cluster.port) + serverconfig.portOffset - 445;
     },
-
     getRandom: function (bitlen) {
       return exec('openssl rand '+ bitlen +' -hex').stdout;
     }
