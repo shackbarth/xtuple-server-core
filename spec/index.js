@@ -51,7 +51,7 @@ describe('xTuple Installer', function () {
           }, global.options));
         }
         catch (e) {
-          console.log('benign: '+ e.message);
+          //console.log('benign: '+ e.message);
         }
       });
 
@@ -122,28 +122,8 @@ describe('xTuple Installer', function () {
         planner.eachTask(global.installPlan, function (task, phaseName, taskName) {
           task.afterInstall(global.options);
         });
-
       });
     });
 
-    describe.skip('#uninstall', function () {
-      it('should run all #uninstall methods', function () {
-        planner.eachTask(global.installPlan, function (task, phaseName, taskName) {
-          try {
-            task.uninstall(_.extend({
-              pg: {
-                cluster: {
-                  version: process.env.XT_PG_VERSION,
-                  name: global.options.xt.name
-                }
-              }
-            }, global.options));
-          }
-          catch (e) {
-            throw e;
-          }
-        });
-      });
-    });
   });
 });

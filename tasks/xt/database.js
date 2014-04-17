@@ -179,7 +179,7 @@
           path.resolve(demo.filename),
           path.resolve(options.xt.usersrc, 'test/lib/demo-test.backup')
         ].join(' ')),
-        buildResult = exec(build.getCoreBuildCommand(demo, options));
+        buildResult = exec(build.getSourceBuildCommand(demo, options));
 
         demoBuild = exec('cd {xt.usersrc} && sudo -u {xt.name} npm run-script test-build'.format(options));
 
