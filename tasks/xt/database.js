@@ -76,7 +76,7 @@
       }
       if (options.xt.quickstart) {
         databases.push({
-          dbname: 'xtuple_demo',
+          dbname: 'xtuple_quickstart',
           filename: path.resolve(foundationPath, 'quickstart_data.sql'),
           foundation: true
         });
