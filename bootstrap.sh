@@ -21,7 +21,6 @@ install_debian () {
   apt-get -qq purge postgresql-${XT_PG_VERSION}* --force-yes
   apt-get -qq purge nodejs-${XT_NODE_VERSION}* --force-yes
   apt-get -qq purge npm* --force-yes
-  apt-get -qq upgrade --force-yes
   
   wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
   echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list > /dev/null
