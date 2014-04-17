@@ -23,6 +23,7 @@
     run = function (plan, options) {
       planner.install(plan, options);
       planner.log_progress({ phase: 'installer', task: 'installer', msg: 'Done!'});
+      process.exit(0);
     },
     originalOptions,
     resultingOptions;
@@ -123,5 +124,3 @@
   }
 
 })();
-
-

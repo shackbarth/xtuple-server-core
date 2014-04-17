@@ -70,7 +70,7 @@
         ],
         xtuple_users = [
           'useradd {xt.name} -d /usr/local/{xt.name} -p {sys.policy.userPassword}'.format(options),
-          'usermod -a -G xtuser {xt.name}'.format(options),
+          'usermod -a -G postgres,xtuser {xt.name}'.format(options),
           'chage -d 0 {xt.name}'.format(options)
         ],
         system_ownership = [
