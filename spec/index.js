@@ -11,13 +11,13 @@ describe('xTuple Installer', function () {
       plan: 'install',
       xt: {
         name: 'xtmocha',
-        adminpw: 'admin',
-        version: '4.4.0'
+        version: '4.4.0',
+        demo: true,
+        quickstart: true
       },
       pg: {
         version: process.env.XT_PG_VERSION,
-        mode: 'dedicated',
-        host: 'localhost'
+        mode: 'dedicated'
       }
     };
 
@@ -28,19 +28,14 @@ describe('xTuple Installer', function () {
     {name: 'pg', tasks: [ 'config', 'cluster' ]},
     {name: 'nginx', tasks: [ 'ssl', 'site', 'etchosts' ]},
     {name: 'pg', tasks: [ 'hba', 'tuner', 'snapshotmgr' ]},
-    {name: 'xt', tasks: [ 'database', 'serverconfig', 'testconfig' ]},
+    {name: 'xt', tasks: [ 'serverconfig', 'database' ]},
     {name: 'sys', tasks: [ 'cups', 'service' ]}
   ];
 
-  //if (!!process.env.TRAVIS) {
-    global.installPlan[5].tasks.push('build_common');
-    global.installPlan[5].tasks.push('build_main');
-
-    // XXX remove this when zombie is fixed in node 0.10
-    //if ((process.env.XT_NODE_VERSION || '').indexOf('0.10') === -1) {
-      global.installPlan.push({name: 'xt', tasks: [ 'runtests' ]});
-    //}
-  //}
+  // XXX remove this when zombie is fixed in node 0.10
+  if (!!process.env.TRAVIS && (process.env.XT_NODE_VERSION || '').indexOf('0.10') === -1) {
+    global.installPlan.push({name: 'xt', tasks: [ 'testconfig', 'runtests' ]});
+  }
 
   describe('#uninstall', function () {
     it('should pre-run uninstall on any existing installation', function () {
