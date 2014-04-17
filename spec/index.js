@@ -33,9 +33,9 @@ describe('xTuple Installer', function () {
   ];
 
   // XXX remove this when zombie is fixed in node 0.10
-  if (!!process.env.TRAVIS && (process.env.XT_NODE_VERSION || '').indexOf('0.10') === -1) {
-    global.installPlan.push({name: 'xt', tasks: [ 'testconfig', 'runtests' ]});
-  }
+  //if (!!process.env.TRAVIS && (process.env.XT_NODE_VERSION || '').indexOf('0.10') === -1) {
+    //global.installPlan.push({name: 'xt', tasks: [ 'testconfig', 'runtests' ]});
+  //}
 
   describe('#uninstall', function () {
     it('should pre-run uninstall on any existing installation', function () {
