@@ -125,7 +125,8 @@
       // scripts that makes me want to use underscores everywhere
       fs.writeFileSync(options.nginx.outcrt, bundleStr);
       exec('cp {nginx.inkey} {nginx.outkey}'.format(options));
-      return true;
+      exec('chown {xt.name}:ssl-cert {nginx.outcrt}'.format(options));
+      exec('chown {xt.name}:ssl-cert {nginx.outkey}'.format(options));
     },
 
     /**
