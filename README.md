@@ -51,14 +51,14 @@ The `xtuple-server` command-line program is installed by `bootstrap.sh`. It requ
     - `--xt-quickstart` instructs the installer to install the xTuple Quickstart database
   
   - Production appliance deployment example:
-    ```
-    xtuple-server install --xt-version 4.4.0 --xt-name tesla --pg-mode dedicated
-      --nginx-inzip tesla_ssl_bundle.zip
-      --nginx-inkey tesla_ssl.key
-      --xt-maindb tesla_full.backup
-      --xt-edition enterprise
-    ```
-  - `--pg-mode dedicated` tunes postgres to make maximum use of all available machine hardware resources
+      ```
+      xtuple-server install --xt-version 4.4.0 --xt-name tesla --pg-mode dedicated
+        --nginx-inzip tesla_ssl_bundle.zip
+        --nginx-inkey tesla_ssl.key
+        --xt-maindb tesla_full.backup
+        --xt-edition enterprise
+      ```
+    - `--pg-mode dedicated` tunes postgres to make maximum use of all available machine hardware resources
 
 # 2. Manage
 
