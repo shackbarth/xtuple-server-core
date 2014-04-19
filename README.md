@@ -6,13 +6,15 @@ This is the xTuple Server. It installs, runs, serves, snapshots, restores, upgra
 
 ### Server Installation Basics
 1. `sudo bash bootstrap.sh`
-2. `sudo xtuple-server install --xt-version 4.4.1 --xt.name mydemo --xt-quickstart`
+2. `sudo xtuple-server install --xt-version 4.4.0 --xt-name xtmocha --xt-quickstart`
 
-This installs a single database called `xtuple_quickstart`. Secure credentials
+This installs a single database called `xtuple_quickstart` for a user `xtmocha`. Secure credentials
 and other access info are generated for you and will be shown in a report once
 installation is finished.
 
-# 1. Info
+For more information and details on how to perform more advanced installs, keep reading.
+
+# 1. Install
 
 ### a. System Dependencies
 
@@ -20,7 +22,7 @@ installation is finished.
     - `nginx      >  v1.4.7`
     - `nodejs     >  v0.8.26`
     - `npm        >  v1.3.0`
-    - `postgres   >= v9.1` (**9.3** is installed by default; see 1c)
+    - `postgres   >= v9.3` (**9.3** is installed by default; see 1c)
     - `cups       >  v1.5`
     - `sshd       >  v1.5`
 
@@ -28,31 +30,82 @@ installation is finished.
 
   The `bootstrap.sh` will run a series of self-diagnostic tests on the machine
   after it installed the system dependencies. You should also run these
-  yourself! They are fun.
+  yourself! They are fun. Everybody's doing it.
 
   - `sudo npm run-script test-9.1        // test against postgres 9.1`
   - `sudo npm run-script test-9.3        // test against postgres 9.3`
 
 ### c. Variables and Defaults
 
-  - By default, the following variables are set by `bootstrap.sh`:
-    - `XT_NODE_VERSION=0.8.26`
-    - `XT_PG_VERSION=9.3`
+By default, the following variables are set by `bootstrap.sh`:
+  - `XT_NODE_VERSION=0.8.26`
+  - `XT_PG_VERSION=9.3`
 
-### d. System Service
+### d. Running the installer
 
-  - **TODO document**
+The `xtuple-server` command-line program is installed by `bootstrap.sh`. It requires `sudo` privileges.
 
-### e. Health Monitor
+  - Basic quickstart cloud deployment example:
+    - `xtuple-server install --xt-version 4.4.0 --xt-name initech --pg-mode cloud --xt-quickstart`
+    - `--pg-mode cloud` provisions a portion of the machine's resources for this install
+    - `--xt-quickstart` instructs the installer to install the xTuple Quickstart database
+  
+  - Production appliance deployment example:
+    ```
+    xtuple-server install --xt-version 4.4.0 --xt-name tesla --pg-mode dedicated
+      --nginx-inzip tesla_ssl_bundle.zip
+      --nginx-inkey tesla_ssl.key
+      --xt-maindb tesla_full.backup
+      --xt-edition enterprise
+    ```
+  - `--pg-mode dedicated` tunes postgres to make maximum use of all available machine hardware resources
 
-  - **TODO document**
+# 2. Manage
+
+### a. System Services
+
+The xTuple Server is comprised of a collection of system services that work together to run the application. The required services are installed automatically using the installer:
+
+  - Postgres Database Server
+  - xTuple Datasource (the mobile web application server)
+  - xTuple Health Feed (monitors system health)
+  - xTuple Snapshot Manager (auto-backups databases)
+  - pm2 Process Manager
+
+The xTuple Service can be managed using the following command template: `service xtuple <version> <name> {restart|status}`. More information on this is in the following sections.
+
+### b. Show xTuple Server Status
+
+  - `service xtuple <version> <name> status`
+    - see the status of the xTuple services.
+    - Example: `service xtuple 4.4.0 xtmocha status` will output a table like this:
+      ![xTuple Service Manager](https://s3.amazonaws.com/com.xtuple.deploy-assets/pm2-table-2.png)
+
+  - `pg_lsclusters`
+    - show Postgres server status and info.
+    ```
+    Ver Cluster  Port Status Owner    Data directory                   Log file
+    9.3 xtmocha  5437 online xtmocha  /var/lib/postgresql/9.3/xtmocha  /var/log/postgresql/postgresql-9.3-xtmocha.log
+    ```
+
+  - `service xtuple help`
+    - outputs help info
+
+#### c. Control your xTuple Server
+
+  - `pg_ctlcluster <version> <name> {restart|stop|start}`
+    - Control your Postgres server
+  
+  - `service xtuple <version> <name> restart`
+    - Restart all xTuple services
+    - Example: `service xtuple 4.4.0 xtmocha restart` will restart all the xTuple services for the user `xtmocha`
+
+### d. Health Monitor
+
+By default, the xTuple Server pro-actively monitors the health of the system on which it is installed. The `xtuple-healthfeed` process maintains a log of the server's vital signs.
 
 ### f. Command Center
 
-  - **TODO document**
-
-# 2. Usage and Examples
-  
   - **TODO document**
 
 # 3. Reference
