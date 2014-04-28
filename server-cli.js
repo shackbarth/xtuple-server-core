@@ -21,12 +21,20 @@
     help = _.contains(process.argv, '--help'),
     options = { },
     run = function (plan, options) {
-      planner.install(plan, options);
-      planner.log_progress({ phase: 'installer', task: 'installer', msg: 'Done!'});
-      process.exit(0);
+      planner.execute(plan, options)
+        .then(function () {
+          planner.log_progress({ phase: 'planner', task: 'execute', msg: 'Done!'});
+          process.exit(0);
+        })
+        .fail(function (error) {
+          console.log(error);
+          process.exit(0);
+        });
     },
     originalOptions,
     resultingOptions;
+
+  console.log('\nxTuple Server v'+ pkg.version);
 
   if (exec('id -u').stdout.indexOf('0') !== 0) {
     planner.die({ msg: 'Installer must be run as root', prefix: 'xtuple' });
@@ -101,13 +109,10 @@
   });
 
   planner.compileOptions(plan, options);
+  if (help) { return program.help(); }
+
   planner.verifyOptions(plan, options);
 
-  if (help) {
-    return program.help();
-  }
-
-  console.log('\nxTuple Server v'+ pkg.version);
   console.log(clc.bold('\nInstallation Plan:\n'));
   planner.displayPlan(plan, options);
 
@@ -118,9 +123,9 @@
     run(plan, options);
   }
   else {
-    program.prompt(clc.green.bold('\nPress Enter to Continue...'), function () {
-      run(plan, options);
-    });
+    program.prompt(
+      clc.green.bold('\nPress Enter to Continue...'),
+      _.partial(run, plan, options)
+    );
   }
-
 })();
