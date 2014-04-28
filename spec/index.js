@@ -21,6 +21,30 @@ describe('xTuple Installer', function () {
       }
     };
 
+  it('must run with root privileges', function () {
+    assert(
+      exec('id -u').stdout.indexOf('0') === 0,
+      'installer tests must be run with sudo'
+    );
+  });
+  it('must set XT_PG_VERSION environment variable', function () {
+    assert.include([ '9.1', '9.3' ], String(process.env.XT_PG_VERSION));
+  });
+
+  describe('planner', function () {
+    describe('#execute', function () {
+      it('should return resolved promise', function (done) {
+        planner.execute([ ], { })
+          .then(function () {
+            done();
+          })
+          .fail(function (e) {
+            assert.fail(e);
+          });
+      });
+    });
+  });
+
   // palindromic install plans are my favorite kinds of install plans
   global.installPlan = [
     {name: 'sys', tasks: [ 'paths', 'policy' ]},
@@ -32,7 +56,7 @@ describe('xTuple Installer', function () {
     {name: 'sys', tasks: [ 'cups', 'service' ]}
   ];
 
-  // XXX remove this when zombie is fixed in node 0.10
+  // XXX remove this check when zombie is fixed in node 0.10
   //if (!!process.env.TRAVIS && (process.env.XT_NODE_VERSION || '').indexOf('0.10') === -1) {
     //global.installPlan.push({name: 'xt', tasks: [ 'testconfig', 'runtests' ]});
   //}
@@ -51,21 +75,10 @@ describe('xTuple Installer', function () {
           }, global.options));
         }
         catch (e) {
-          //console.log('benign: '+ e.message);
+          // uninstall tasks are allowed to fail
         }
       });
-
     });
-  });
-
-  it('must run with root privileges', function () {
-    assert(
-      exec('id -u').stdout.indexOf('0') === 0,
-      'installer tests must be run with sudo'
-    );
-  });
-  it('must set XT_PG_VERSION environment variable', function () {
-    assert.include([ '9.1', '9.3' ], String(process.env.XT_PG_VERSION));
   });
 
   describe('setup', function () {
