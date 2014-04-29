@@ -15,7 +15,7 @@
     exec = require('execSync').exec,
     clc = require('cli-color'),
     S = require('string'),
-    _ = require('underscore'),
+    _ = require('lodash'),
     cli = require('commander'),
     pkg = require('./package'),
     help = _.contains(process.argv, '--help'),

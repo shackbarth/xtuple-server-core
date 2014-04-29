@@ -11,7 +11,7 @@
     path = require('path'),
     exec = require('execSync').exec,
     fs = require('fs'),
-    _ = require('underscore');
+    _ = require('lodash');
 
   _.extend(testconfig, lib.task, /** @exports testconfig */ {
 

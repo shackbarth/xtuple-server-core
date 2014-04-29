@@ -12,7 +12,7 @@
     rimraf = require('rimraf'),
     exec = require('execSync').exec,
     fs = require('fs'),
-    _ = require('underscore');
+    _ = require('lodash');
 
   _.extend(runtests, task, /** @exports runtests */ {
 

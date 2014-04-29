@@ -11,7 +11,7 @@
     fs = require('fs'),
     exec = require('execSync').exec,
     path = require('path'),
-    _ = require('underscore');
+    _ = require('lodash');
 
   _.extend(restore, lib.task, /** @exports restore */ {
 

@@ -11,7 +11,7 @@
     pgcli = require('../../lib/pg-cli'),
     exec = require('execSync').exec,
     path = require('path'),
-    _ = require('underscore'),
+    _ = require('lodash'),
     knex;
 
   _.extend(cluster, task, /** @exports cluster */ {
