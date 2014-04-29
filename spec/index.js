@@ -13,11 +13,11 @@ describe('xTuple Installer', function () {
         name: 'xtmocha',
         version: '4.4.0',
         demo: true,
-        quickstart: true
+        //quickstart: true
       },
       pg: {
         version: process.env.XT_PG_VERSION,
-        mode: 'dedicated'
+        mode: 'testing'
       }
     };
 
@@ -137,6 +137,5 @@ describe('xTuple Installer', function () {
         });
       });
     });
-
   });
 });

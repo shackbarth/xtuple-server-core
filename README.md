@@ -85,7 +85,7 @@ The xTuple Service can be managed using the following command template: `service
     - show Postgres server status and info.
     ```
     Ver Cluster  Port Status Owner    Data directory                   Log file
-    9.3 xtmocha  5437 online xtmocha  /var/lib/postgresql/9.3/xtmocha  /var/log/postgresql/postgresql-9.3-xtmocha.log
+    9.3 xtmocha  5432 online xtmocha  /var/lib/postgresql/9.3/xtmocha  /var/log/postgresql/postgresql-9.3-xtmocha.log
     ```
 
   - `service xtuple help`

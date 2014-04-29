@@ -61,7 +61,6 @@
 
           // create 'postgres' and 'root' roles for convenience
           'CREATE ROLE postgres LOGIN SUPERUSER',
-          'CREATE ROLE root LOGIN SUPERUSER',
 
           'GRANT xtrole TO admin'
         ],

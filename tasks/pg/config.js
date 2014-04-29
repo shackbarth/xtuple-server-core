@@ -67,28 +67,6 @@
     },
 
     /**
-     * derive additional info from the environment.
-     */
-    configure: function (mode, options) {
-      var config = _.extend({ mode: mode }, defaults.base, defaults[mode], options),
-        clusters = lib.pgCli.lsclusters(),
-        collection = _.compact(_.map(_.pluck(_.flatten(_.values(clusters)), 'config'),
-            function (path) {
-          var conf = path + '/postgresql.conf';
-          try {
-            return JSON.parse(exec('head -1 ' + conf).slice(1));
-          }
-          catch (e) {
-            return('%s is not readable by this tool', conf);
-          }
-        }));
-
-      // TODO check 'collection' against provisioning guidelines
-
-      return config;
-    },
-
-    /**
      * Find the existing cluster that corresponds to our options, if it exists,
      * and set options.pg.cluster
      */

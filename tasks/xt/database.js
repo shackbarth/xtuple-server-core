@@ -150,7 +150,6 @@
         rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
 
         var buildResult = exec(build.getCoreBuildCommand(db, options));
-        console.log(buildResult);
         if (buildResult.code !== 0) {
           throw new Error(buildResult.stdout);
         }
