@@ -76,7 +76,7 @@
           }),
           databaseServer: _.extend(sample_config.databaseServer, {
             hostname: options.xt.socketdir, // TODO support remote databases via SSL clientcert auth
-            user: xt.name,
+            user: 'admin',
             password: undefined,
             port: parseInt(pg.cluster.port)
           })

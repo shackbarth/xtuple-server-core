@@ -80,6 +80,7 @@
         throw new Error(start.stdout);
       }
 
+      exec('HOME={xt.userhome} pm2 ping'.format(options));
       exec('HOME={xt.userhome} sudo -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
     },
 
@@ -97,7 +98,7 @@
     /** @override */
     afterInstall: function (options) {
       console.log();
-      var dump = exec('pm2 dump all'),
+      var dump = exec('sudo -u {xt.name} pm2 dump all'.format(options)),
         statusTable = exec('sudo -u {xt.name} service xtuple {xt.version} {xt.name} status'
           .format(options)).stdout;
 
@@ -110,7 +111,7 @@
      * @public
      */
     launch: function (config, options) {
-      var ping = exec('pm2 ping'),
+      var ping = exec('HOME={xt.userhome} pm2 ping'.format(options)),
         start = exec('sudo -u {xt.name} HOME={xt.userhome} pm2 start -u {xt.name} {sys.pm2.configfile}'
             .format(options));
 
