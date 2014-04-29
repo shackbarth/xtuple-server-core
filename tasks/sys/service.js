@@ -80,15 +80,15 @@
         throw new Error(start.stdout);
       }
 
-      exec('HOME=~{xt.name} sudo -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
+      exec('sudo -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
     },
 
     /** @override */
     uninstall: function (options) {
+      exec('HOME=~{xt.name} pm2 kill');
       exec('HOME=~{xt.name} pm2 delete xtuple-server-{xt.version}-{xt.name}'.format(options));
       exec('HOME=~{xt.name} pm2 delete xtuple-healthfeed-{xt.version}-{xt.name}'.format(options));
       exec('HOME=~{xt.name} pm2 delete xtuple-snapshotmgr-{xt.version}-{xt.name}'.format(options));
-      exec('pm2 kill');
 
       exec('npm uninstall pm2 -g');
       exec('npm uninstall pm2-web -g');
@@ -97,7 +97,7 @@
     /** @override */
     afterInstall: function (options) {
       console.log();
-      var dump = exec('pm2 dump all'),
+      var dump = exec('HOME=~{xt.name} pm2 dump all'.format(options)),
         statusTable = exec('sudo -u {xt.name} service xtuple {xt.version} {xt.name} status'
           .format(options)).stdout;
 
@@ -110,8 +110,8 @@
      * @public
      */
     launch: function (config, options) {
-      var ping = exec('pm2 ping'),
-        start = exec('sudo -g xtuser HOME=/usr/local/xtuple pm2 start -u {xt.name} {sys.pm2.configfile}'
+      var ping = exec('HOME=~{xt.name} pm2 ping'.format(options)),
+        start = exec('sudo -g xtuser HOME=~{xt.name} pm2 start -u {xt.name} {sys.pm2.configfile}'
             .format(options));
 
       return start;
