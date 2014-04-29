@@ -108,24 +108,38 @@ describe('xTuple Installer', function () {
     });
   });
 
-  describe('install', function () {
-    describe('tasks', function () {
-      // load tests for install plan
+  describe('execute', function () {
+    describe('tasks', function (done) {
+      this.timeout(900 * 1000); // 15 minutes
+
       planner.eachTask(global.installPlan, function (task, phaseName, taskName) {
         describe(phaseName + '.' + taskName, function () {
-          before(function () {
-            // run installer tasks
-            task.beforeTask(global.options);
-            task.doTask(global.options);
-            task.afterTask(global.options);
-          });
-
-          it('should be sane', function () {
+          it('should be sane', function (done) {
             assert(task);
             assert(global.options);
+            done();
           });
-
-          require(path.resolve('spec', phaseName, taskName));
+          describe('#beforeTask', function (done) {
+            it('should complete without error', function (done) {
+              task.beforeTask(global.options);
+              done();
+            });
+          });
+          describe('#doTask', function (done) {
+            it('should complete without error', function (done) {
+              task.doTask(global.options);
+              done();
+            });
+          });
+          describe('#afterTask', function (done) {
+            it('should complete without error', function (done) {
+              task.afterTask(global.options);
+              done();
+            });
+          });
+          describe('spec', function () {
+            require(path.resolve('spec', phaseName, taskName));
+          });
         });
       });
     });
