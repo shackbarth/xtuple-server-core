@@ -6,16 +6,15 @@
    */
   var pgconfig = exports;
 
-  var task = require('../../lib/task'),
+  var lib = require('../../lib'),
     tuner = require('./tuner'),
     pghba = require('./hba'),
-    pgcli = require('../../lib/pg-cli'),
     exec = require('execSync').exec,
     format = require('string-format'),
     defaults = require('./defaults'),
     _ = require('underscore');
   
-  _.extend(pgconfig, task, /** @exports pgconfig */ {
+  _.extend(pgconfig, lib.task, /** @exports pgconfig */ {
 
     options: {
       host: {
@@ -72,7 +71,7 @@
      */
     configure: function (mode, options) {
       var config = _.extend({ mode: mode }, defaults.base, defaults[mode], options),
-        clusters = pgcli.lsclusters(),
+        clusters = lib.pgCli.lsclusters(),
         collection = _.compact(_.map(_.pluck(_.flatten(_.values(clusters)), 'config'),
             function (path) {
           var conf = path + '/postgresql.conf';
@@ -87,6 +86,17 @@
       // TODO check 'collection' against provisioning guidelines
 
       return config;
+    },
+
+    /**
+     * Find the existing cluster that corresponds to our options, if it exists,
+     * and set options.pg.cluster
+     */
+    discoverCluster: function (options) {
+      options.pg.cluster = _.findWhere(lib.pgCli.lsclusters(), {
+        name: options.xt.name,
+        version: options.pg.version
+      });
     }
   });
 })();

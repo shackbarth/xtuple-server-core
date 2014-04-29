@@ -53,7 +53,8 @@
     defaults: require('./defaults'),
     hba: require('./hba'),
     snapshotmgr: require('./snapshotmgr'),
-    tuner: require('./tuner')
+    tuner: require('./tuner'),
+    restore: require('./restore')
   });
 
   // setup database connection

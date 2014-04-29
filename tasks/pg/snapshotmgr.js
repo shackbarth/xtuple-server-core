@@ -148,8 +148,7 @@
           version: options.xt.version.split('.').join(''),
           ts: moment().format('MMDDYYY')
         },
-        deprecated_db = '{dbname}_{version}_{ts}'.format(deprecated_format),
-        pg_restore = '/usr/lib/postgresql/{pg.version}/bin/pg_restore'.format(options);
+        deprecated_db = '{dbname}_{version}_{ts}'.format(deprecated_format);
 
       // disconnect all users and lock database
       pgcli.psql(options, 'select pg_terminate_backend(procpid) from pg_stat_activity');
