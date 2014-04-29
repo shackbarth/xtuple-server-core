@@ -85,10 +85,10 @@
 
     /** @override */
     uninstall: function (options) {
-      exec('HOME=~{xt.name} pm2 kill');
       exec('HOME=~{xt.name} pm2 delete xtuple-server-{xt.version}-{xt.name}'.format(options));
       exec('HOME=~{xt.name} pm2 delete xtuple-healthfeed-{xt.version}-{xt.name}'.format(options));
       exec('HOME=~{xt.name} pm2 delete xtuple-snapshotmgr-{xt.version}-{xt.name}'.format(options));
+      exec('pm2 kill');
 
       exec('npm uninstall pm2 -g');
       exec('npm uninstall pm2-web -g');
