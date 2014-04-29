@@ -13,7 +13,7 @@
 
   var exec = require('execSync').exec,
     //Knex = require('knex'),
-    _ = require('underscore');
+    _ = require('lodash');
 
   _.extend(pg, /** @exports pg */ {
     

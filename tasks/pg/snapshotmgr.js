@@ -16,7 +16,7 @@
     exec = require('execSync').exec,
     path = require('path'),
     program = require('commander'),
-    _ = require('underscore');
+    _ = require('lodash');
 
   _.extend(snapshotmgr, lib.task, /** @exports snapshotmgr */ {
 

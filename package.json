@@ -6,7 +6,7 @@
   "main": "index.js",
   "dependencies": {
     "congruence": "1.2.x",
-    "underscore": "~1.6.0",
+    "lodash": "~1.6.0",
     "string-format": "~0.2.1",
     "commander": "1.3.2",
     "cli-color": "~0.2.3",

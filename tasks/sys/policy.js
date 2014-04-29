@@ -11,7 +11,7 @@
     rimraf = require('rimraf'),
     exec = require('execSync').exec,
     path = require('path'),
-    _ = require('underscore'),
+    _ = require('lodash'),
     global_policy_filename = 'XT00-xtuple-global-policy',
     user_policy_filename = 'XT10-xtuple-user-policy',
     sudoers_d = path.resolve('/etc/sudoers.d');

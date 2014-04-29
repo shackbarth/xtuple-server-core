@@ -8,7 +8,7 @@
 
   var lib = require('../../lib'),
     format = require('string-format'),
-    _ = require('underscore'),
+    _ = require('lodash'),
     exec = require('execSync').exec,
     fs = require('fs'),
     path = require('path');
@@ -80,14 +80,14 @@
         throw new Error(start.stdout);
       }
 
-      exec('HOME=~{xt.name} sudo -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
+      exec('HOME={xt.userhome} sudo -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
     },
 
     /** @override */
     uninstall: function (options) {
-      exec('HOME=~{xt.name} pm2 delete xtuple-server-{xt.version}-{xt.name}'.format(options));
-      exec('HOME=~{xt.name} pm2 delete xtuple-healthfeed-{xt.version}-{xt.name}'.format(options));
-      exec('HOME=~{xt.name} pm2 delete xtuple-snapshotmgr-{xt.version}-{xt.name}'.format(options));
+      exec('HOME={xt.userhome} pm2 delete xtuple-server-{xt.version}-{xt.name}'.format(options));
+      exec('HOME={xt.userhome} pm2 delete xtuple-healthfeed-{xt.version}-{xt.name}'.format(options));
+      exec('HOME={xt.userhome} pm2 delete xtuple-snapshotmgr-{xt.version}-{xt.name}'.format(options));
       exec('pm2 kill');
 
       exec('npm uninstall pm2 -g');
@@ -111,7 +111,7 @@
      */
     launch: function (config, options) {
       var ping = exec('pm2 ping'),
-        start = exec('sudo -u {xt.name} HOME=~{xt.name} pm2 start -u {xt.name} {sys.pm2.configfile}'
+        start = exec('sudo -u {xt.name} HOME={xt.userhome} pm2 start -u {xt.name} {sys.pm2.configfile}'
             .format(options));
 
       return start;

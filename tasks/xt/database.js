@@ -13,7 +13,7 @@
     build = require('../../lib/xt/build'),
     rimraf = require('rimraf'),
     fs = require('fs'),
-    _ = require('underscore'),
+    _ = require('lodash'),
     exec = require('execSync').exec,
     pgcli = require('../../lib/pg-cli');
 

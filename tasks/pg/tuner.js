@@ -10,7 +10,7 @@
 
   var task = require('../../lib/task'),
     format = require('string-format'),
-    _ = require('underscore'),
+    _ = require('lodash'),
     env = require('./defaults').env,
     pgcli = require('../../lib/pg-cli'),
     exec = require('execSync').exec,

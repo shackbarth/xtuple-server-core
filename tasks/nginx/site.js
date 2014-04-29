@@ -12,7 +12,7 @@
     format = require('string-format'),
     fs = require('fs'),
     path = require('path'),
-    _ = require('underscore'),
+    _ = require('lodash'),
     
     // nginx site template file path
     site_template_path = path.resolve(__dirname, 'xtuple-site.template');

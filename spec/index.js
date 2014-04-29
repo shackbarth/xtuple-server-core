@@ -1,6 +1,6 @@
 var assert = require('chai').assert,
   exec = require('execSync').exec,
-  _ = require('underscore'),
+  _ = require('lodash'),
   path = require('path'),
   fs = require('fs'),
   planner = require('../lib/planner'),

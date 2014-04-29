@@ -12,7 +12,7 @@
     exec = require('execSync').exec,
     format = require('string-format'),
     defaults = require('./defaults'),
-    _ = require('underscore');
+    _ = require('lodash');
   
   _.extend(pgconfig, lib.task, /** @exports pgconfig */ {
 
