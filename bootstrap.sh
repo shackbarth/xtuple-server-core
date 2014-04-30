@@ -48,8 +48,8 @@ install_node () {
   node_tarball=node-v$XT_NODE_VERSION-linux-x64.tar.gz
   npm_tarball=node-v$NPM_NODE_VERSION-linux-x64.tar.gz
 
-  rm -f /usr/bin/node
-  rm -f /usr/bin/npm
+  rm -f /usr/local/bin/node
+  rm -f /usr/local/bin/npm
 
   mkdir -p /usr/local/node/$XT_NODE_VERSION
   mkdir -p /usr/local/node/$NPM_NODE_VERSION
@@ -59,8 +59,8 @@ install_node () {
   tar --strip-components 1 -zxf $node_tarball -C /usr/local/node/$XT_NODE_VERSION
   tar --strip-components 1 -zxf $npm_tarball -C /usr/local/node/$NPM_NODE_VERSION
 
-  ln -s /usr/local/node/$XT_NODE_VERSION/bin/node /usr/bin/node
-  ln -s /usr/local/node/$NPM_NODE_VERSION/bin/npm /usr/bin/npm 
+  ln -s /usr/local/node/$XT_NODE_VERSION/bin/node /usr/local/bin/node
+  ln -s /usr/local/node/$NPM_NODE_VERSION/bin/npm /usr/local/bin/npm 
 }
 
 clone_installer () {
