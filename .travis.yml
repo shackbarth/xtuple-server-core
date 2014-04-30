@@ -2,10 +2,18 @@ language: node_js
 node_js:
   - "0.8.26"
   - "0.10.26"
-  - "0.11.12"
+  - "0.11.9"
+  - "0.11"
+
 env:
-  - XT_PG_VERSION="9.1"
-  - XT_PG_VERSION="9.3"
+  matrix:
+    fast_finish: true
+    allow_failures:
+      - node_js: "0.11.9"
+      - node_js: "0.11"
+    env:
+      - XT_PG_VERSION="9.1"
+      - XT_PG_VERSION="9.3"
 
 before_install:
   - export XT_NODE_VERSION=$TRAVIS_NODE_VERSION
