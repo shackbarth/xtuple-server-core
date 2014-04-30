@@ -43,17 +43,22 @@ install_debian () {
 install_node () {
   #NPM_NODE_VERSION=$(curl http://semver.io/node/stable)
 
+  log "Downloading node v$XT_NODE_VERSION..."
   node_tarball=node-v$XT_NODE_VERSION-linux-x64.tar.gz
   #npm_tarball=node-v$NPM_NODE_VERSION-linux-x64.tar.gz
 
+  rm -f /usr/bin/node
+  rm -f /usr/bin/node
   rm -f /usr/local/bin/node
   rm -f /usr/local/bin/npm
 
   mkdir -p /usr/local/node/$XT_NODE_VERSION
   #mkdir -p /usr/local/node/$NPM_NODE_VERSION
 
-  #wget http://nodejs.org/dist/v$NPM_NODE_VERSION/node-v$NPM_NODE_VERSION-linux-x64.tar.gz
-  wget http://nodejs.org/dist/v$XT_NODE_VERSION/node-v$XT_NODE_VERSION-linux-x64.tar.gz
+  wget -q http://nodejs.org/dist/v$XT_NODE_VERSION/$node_tarball
+  #wget -q http://nodejs.org/dist/v$XT_NODE_VERSION/node-v$XT_NODE_VERSION-linux-x64.tar.gz
+
+  log "Installing node v$XT_NODE_VERSION..."
   tar --strip-components 1 -zxf $node_tarball -C /usr/local/node/$XT_NODE_VERSION
   #tar --strip-components 1 -zxf $npm_tarball -C /usr/local/node/$NPM_NODE_VERSION
 
