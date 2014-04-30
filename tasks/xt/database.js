@@ -174,7 +174,7 @@
         qsBuild = exec(build.getSourceBuildCommand(quickstart, options));
 
         if (qsBuild.code !== 0) {
-          throw new Error(qsBuild);
+          throw new Error(JSON.stringify(qsBuild));
         }
       }
       if (demo) {
