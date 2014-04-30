@@ -91,6 +91,7 @@
       exec('HOME={xt.userhome} pm2 delete xtuple-snapshotmgr-{xt.version}-{xt.name}'.format(options));
       exec('pm2 kill');
 
+      exec('rm {xt.logdir}/*.log'.format(options));
       exec('npm uninstall pm2 -g');
       exec('npm uninstall pm2-web -g');
     },
@@ -112,7 +113,7 @@
      */
     launch: function (config, options) {
       var ping = exec('HOME={xt.userhome} pm2 ping'.format(options)),
-        start = exec('sudo -u {xt.name} HOME={xt.userhome} pm2 start -u {xt.name} {sys.pm2.configfile}'
+        start = exec('HOME={xt.userhome} sudo -u {xt.name} pm2 start -u {xt.name} {sys.pm2.configfile}'
             .format(options));
 
       return start;
