@@ -5,8 +5,8 @@ var assert = require('chai').assert,
   options = global.options;
 
 it('should install pm2 binaries', function () {
-  assert.equal(exec('stat /usr/bin/pm2').code, 0, 'pm2 binary not properly installed');
-  assert.equal(exec('stat /usr/bin/pm2-web').code, 0, 'pm2-web binary not properly installed');
+  assert.equal(exec('stat pm2').code, 0, 'pm2 binary not properly installed');
+  assert.equal(exec('stat pm2-web').code, 0, 'pm2-web binary not properly installed');
 });
 
 it('all pm2 services accounted for (server, healthfeed, snapshotmgr)', function () {
