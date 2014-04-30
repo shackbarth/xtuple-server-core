@@ -17,4 +17,5 @@ install:
 script: /usr/local/bin/npm test
 
 after_failure:
+  - env
   - cat install.log

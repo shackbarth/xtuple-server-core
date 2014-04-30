@@ -198,7 +198,7 @@
       exec('skill -KILL -u xtremote'.format(options));
       exec('deluser {xt.name}'.format(options));
       exec('deluser xtremote');
-      exec('rm -rf '+ options.xt.userhome);
+      exec('rm -rf /usr/local/{xt.name}'.format(options));
       exec('rm -f {sys.htpasswdfile}'.format(options));
       exec('rm -f '+ path.resolve('/etc/sudoers.d/', user_policy_filename.replace('user', '{xt.name}').format(options)));
     }

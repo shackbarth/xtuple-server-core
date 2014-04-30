@@ -44,15 +44,16 @@
         path.resolve(options.sys.sbindir, 'main.js')
       );
 
-      // download/install pm2 service
+      /*
       var pm2Install = exec('npm install -g https://github.com/xtuple/pm2/tarball/master'),
         pm2webInstall = exec('npm install -g https://github.com/xtuple/pm2-web/tarball/master');
 
       if (pm2Install.code !== 0 || pm2webInstall.code !== 0) {
         throw new Error(JSON.stringify([ pm2Install, pm2webInstall ]));
       }
+      */
 
-      exec('rm -f {xt.statedir}/*.pid'.format(options));
+      //exec('rm -f {xt.statedir}/*.pid'.format(options));
 
       // create upstart service "xtuple"
       exec('update-rc.d -f pm2-init.sh remove');
@@ -87,9 +88,9 @@
       exec('HOME={xt.userhome} pm2 delete xtuple-snapshotmgr-{xt.version}-{xt.name}'.format(options));
       exec('pm2 kill');
 
-      exec('rm {xt.logdir}/*.log'.format(options));
-      exec('npm uninstall pm2 -g');
-      exec('npm uninstall pm2-web -g');
+      //exec('rm {xt.logdir}/*.log'.format(options));
+      //exec('npm uninstall pm2 -g');
+      //exec('npm uninstall pm2-web -g');
     },
 
     /** @override */
@@ -108,7 +109,7 @@
      * @public
      */
     launch: function (options) {
-      var ping = exec('pm2 ping'.format(options)),
+      var ping = exec('HOME={xt.userhome} sudo -u {xt.name} pm2 ping'.format(options)),
         start = exec('HOME={xt.userhome} sudo -u {xt.name} pm2 start -u {xt.name} {sys.pm2.configfile}'
             .format(options));
 

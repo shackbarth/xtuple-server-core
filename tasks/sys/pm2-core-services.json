@@ -24,7 +24,7 @@
   {
     "name": "xtuple-healthfeed-{xt.version}-{xt.name}",
     "user": "{xt.name}",
-    "script": "/usr/lib/node_modules/pm2/lib/HttpInterface.js",
+    "script": "/usr/local/lib/node_modules/xtuple-scripts/node_modules/pm2/lib/HttpInterface.js",
     "env": {
       "NODE_ENV": "production",
       "HOME": "{xt.userhome}",
