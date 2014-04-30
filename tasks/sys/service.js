@@ -45,11 +45,14 @@
       );
 
       // download/install pm2 service
-      exec('npm install -g https://github.com/xtuple/pm2/tarball/master');
-      exec('npm install -g https://github.com/xtuple/pm2-web/tarball/master');
+      var pm2Install = exec('npm install -g https://github.com/xtuple/pm2/tarball/master'),
+        pm2webInstall = exec('npm install -g https://github.com/xtuple/pm2-web/tarball/master');
 
-      exec('rm -rf {xt.logdir}/*'.format(options));
-      exec('rm -rf {xt.statedir}/*'.format(options));
+      if (pm2Install.code !== 0 || pm2webInstall.code !== 0) {
+        throw new Error(JSON.stringify([ pm2Install, pm2webInstall ]));
+      }
+
+      exec('rm -f {xt.statedir}/*.pid'.format(options));
 
       // create upstart service "xtuple"
       exec('update-rc.d -f pm2-init.sh remove');
