@@ -73,14 +73,7 @@
     /** @override */
     afterTask: function (options) {
       exec('service nginx reload');
-
-      var start = service.launch(options.sys.pm2.configfile, options);
-
-      if (start.code !== 0) {
-        throw new Error(start.stdout);
-      }
-
-      exec('HOME={xt.userhome} pm2 ping'.format(options));
+      service.launch(options);
       exec('HOME={xt.userhome} sudo -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
     },
 
@@ -111,10 +104,14 @@
      * @param config  resolved path to the pm2 json config file
      * @public
      */
-    launch: function (config, options) {
-      var ping = exec('HOME={xt.userhome} pm2 ping'.format(options)),
+    launch: function (options) {
+      var ping = exec('pm2 ping'.format(options)),
         start = exec('HOME={xt.userhome} sudo -u {xt.name} pm2 start -u {xt.name} {sys.pm2.configfile}'
             .format(options));
+
+      if (start.code !== 0) {
+        throw new Error(JSON.stringify(start));
+      }
 
       return start;
     }
