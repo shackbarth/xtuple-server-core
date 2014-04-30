@@ -11,13 +11,10 @@ before_install:
   - sudo -E bash bootstrap.sh --no-installer
 
 install:
-  - /usr/bin/npm install
-  - sudo /usr/bin/npm install -g --production
+  - /usr/local/bin/npm install
+  - sudo /usr/local/bin/npm install -g --production
 
-script: /usr/bin/npm test
+script: /usr/local/bin/npm test
 
 after_failure:
   - cat install.log
-  - cat /var/log/postgresql/$XT_PG_VERSION/xtmocha
-  - cat /var/log/nginx/*
-  - cat /var/log/xtuple/*/xtmocha/*
