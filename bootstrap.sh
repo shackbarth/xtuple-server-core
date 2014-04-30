@@ -46,12 +46,13 @@ install_node () {
     NPM_NODE_VERSION=$(curl http://semver.io/node/stable)
   fi
 
-  log "Downloading node v$XT_NODE_VERSION..."
   node_tarball=node-v$XT_NODE_VERSION-linux-x64.tar.gz
   npm_tarball=node-v$NPM_NODE_VERSION-linux-x64.tar.gz
 
+  log "Installing node..."
+
   rm -f /usr/bin/node
-  rm -f /usr/bin/node
+  rm -f /usr/bin/npm
   rm -f /usr/local/bin/node
   rm -f /usr/local/bin/npm
 
@@ -60,20 +61,19 @@ install_node () {
   mkdir -p /usr/local/node/$NPM_NODE_VERSION
 
   wget -q http://nodejs.org/dist/v$XT_NODE_VERSION/$node_tarball
-  wget -q http://nodejs.org/dist/v$XT_NODE_VERSION/node-v$XT_NODE_VERSION-linux-x64.tar.gz
+  wget -q http://nodejs.org/dist/v$NPM_NODE_VERSION/$npm_tarball
 
-  log "Installing node v$XT_NODE_VERSION..."
   tar --strip-components 1 -zxf $node_tarball -C /usr/local/node/$XT_NODE_VERSION
   tar --strip-components 1 -zxf $npm_tarball -C /usr/local/node/$NPM_NODE_VERSION
 
   ln -s /usr/local/node/$XT_NODE_VERSION/bin/node /usr/local/bin/node
-  #ln -s /usr/local/node/$XT_NODE_VERSION/bin/npm /usr/local/bin/npm 
   ln -s /usr/local/node/$NPM_NODE_VERSION/bin/npm /usr/local/bin/npm 
 
   log "Installed node v$XT_NODE_VERSION"
   log "Installed npm v$(npm -v)"
 
   rm -f $node_tarball
+  rm -f $npm_tarball
 }
 
 clone_installer () {
