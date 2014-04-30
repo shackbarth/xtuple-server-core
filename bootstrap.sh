@@ -66,6 +66,9 @@ install_node () {
   ln -s /usr/local/node/$XT_NODE_VERSION/bin/npm /usr/local/bin/npm 
   #ln -s /usr/local/node/$NPM_NODE_VERSION/bin/npm /usr/local/bin/npm 
 
+  log "Installed node v$XT_NODE_VERSION"
+  log "Installed npm v$(npm -v)"
+
   rm -f $node_tarball
 }
 
