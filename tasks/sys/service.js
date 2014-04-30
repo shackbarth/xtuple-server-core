@@ -86,7 +86,7 @@
       exec('HOME={xt.userhome} pm2 delete xtuple-server-{xt.version}-{xt.name}'.format(options));
       exec('HOME={xt.userhome} pm2 delete xtuple-healthfeed-{xt.version}-{xt.name}'.format(options));
       exec('HOME={xt.userhome} pm2 delete xtuple-snapshotmgr-{xt.version}-{xt.name}'.format(options));
-      exec('pm2 kill');
+      exec('HOME={xt.userhome} sudo -u {xt.name} pm2 kill');
 
       //exec('rm {xt.logdir}/*.log'.format(options));
       //exec('npm uninstall pm2 -g');
@@ -96,7 +96,7 @@
     /** @override */
     afterInstall: function (options) {
       console.log();
-      var dump = exec('sudo -u {xt.name} pm2 dump all'.format(options)),
+      var dump = exec('HOME={xt.userhome} sudo -u {xt.name} pm2 dump all'.format(options)),
         statusTable = exec('sudo -u {xt.name} service xtuple {xt.version} {xt.name} status'
           .format(options)).stdout;
 
