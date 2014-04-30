@@ -12,7 +12,7 @@
       "XT_NAME": "{xt.name}",
       "XT_VERSION": "{xt.version}",
       "XT_DOMAIN": "{nginx.domain}",
-      "XT_URL": "/",
+      "XT_URL": "{nginx.domain}",
       "XT_SCHEDULE": "Always On"
     },
     "exec_mode": "fork_mode",
@@ -57,7 +57,7 @@
       "XT_NAME": "{xt.name}",
       "XT_VERSION": "{xt.version}",
       "XT_DOMAIN": "{nginx.domain}",
-      "XT_URL": "--",
+      "XT_URL": "N/A",
       "XT_SCHEDULE": "{pg.snapschedule}"
     },
     "exec_mode": "fork_mode",

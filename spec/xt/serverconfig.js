@@ -8,11 +8,8 @@ describe('config.js', function () {
   it.skip('should be able to read config.js file', function () {
     assert.match(fs.canRead(options.xt.configfile));
   });
-  it('should set user to the customer name', function () {
-    assert.match(options.xt.serverconfig.string, new RegExp('"user": "{xt.name}"'.format(options)));
-  });
-  it('should generate a correct config.js', function () {
-    assert.match(options.xt.serverconfig.string, new RegExp('"user": "{xt.name}"'.format(options)));
+  it('should set login user to admin', function () {
+    assert.match(options.xt.serverconfig.string, new RegExp('"user": "admin"'));
   });
 });
 it.skip('should be able to read rand64 file', function () {

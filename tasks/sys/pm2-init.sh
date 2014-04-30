@@ -70,17 +70,21 @@ stop() {
 }
 
 restart() {
-  super $PM2 restart xtuple-server-$version-$account
-  super $PM2 restart xtuple-healthfeed-$version-$account || true
-  super $PM2 restart xtuple-snapshotmgr-$version-$account || true
-  #super $PM2 restart xtuple-postgres-$version-$account
+  super $PM2 restart xtuple-server-$version-$account 2>&1
+  super $PM2 restart xtuple-healthfeed-$version-$account 2>&1
+  super $PM2 restart xtuple-snapshotmgr-$version-$account 2>&1
+  status
 }
 
 status() {
   echo ''
-  echo 'xTuple Server Dashboard'
   list=$(super $PM2 list)
-  echo "$list" | head -n 3 && echo "$list" | grep $account -A 1
+  if [[ -z $list ]]; then
+    help
+  else
+    echo 'xTuple Server Dashboard'
+    echo "$list" | head -n 3 && echo "$list" | grep $account -A 1
+  fi
 
   RETVAL=$?
 }
