@@ -46,8 +46,8 @@
   {
     "name": "xtuple-snapshotmgr-{xt.version}-{xt.name}",
     "user": "{xt.name}",
-    "script": "/usr/bin/xtuple-server",
-    "args": "[ 'backup', '--xt-name', '{xt.name}', '--xt-version', '{xt.version}' ]",
+    "script": "/usr/local/bin/xtuple-server",
+    "args": "[ 'backup', '--xt-name', '{xt.name}', '--xt-version', '{xt.version}' --headless ]",
     "cron_restart": "{pg.snapschedule}",
     "env": {
       "NODE_ENV": "production",
