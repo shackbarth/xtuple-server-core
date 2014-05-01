@@ -27,6 +27,6 @@ script: /usr/local/bin/npm test
 after_failure:
   - env
   - cat install.log
-  - cat /etc/postgresql/xtmocha/$XT_PG_VERSION/postgresql.conf
-  - cat /etc/postgresql/xtmocha/$XT_PG_VERSION/pg_hba.conf
-  - cat /etc/xtuple/xtmocha/4.4.0/config.js
+  - cat /etc/postgresql/$XT_PG_VERSION/xtmocha/postgresql.conf
+  - cat /etc/postgresql/$XT_PG_VERSION/xtmocha/pg_hba.conf
+  - cat /etc/xtuple/4.4.0/xtmocha/config.js
