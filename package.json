@@ -21,7 +21,8 @@
     "pm2": "https://github.com/xtuple/pm2/tarball/master",
     "pm2-web": "https://github.com/xtuple/pm2-web/tarball/master",
     "requireindex": "~1.1.0",
-    "prettyjson": "^1.0.0"
+    "prettyjson": "^1.0.0",
+    "sleep": "^1.1.4"
   },
   "devDependencies": {
     "chai": "~1.9.0",
