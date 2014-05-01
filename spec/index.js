@@ -49,7 +49,7 @@ describe('xTuple Installer', function () {
     {name: 'nginx', tasks: [ 'ssl', 'site', 'etchosts' ]},
     {name: 'pg', tasks: [ 'hba', 'tuner', 'config' ]},
     {name: 'xt', tasks: [ 'serverconfig', 'database' ]},
-    {name: 'sys', tasks: [ 'cups', 'service' ]}
+    {name: 'sys', tasks: [ 'cups', 'service', 'report' ]}
   ];
 
   // XXX remove this check when zombie is fixed in node 0.10
