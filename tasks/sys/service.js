@@ -78,16 +78,16 @@
     afterTask: function (options) {
       exec('service nginx reload');
       service.launch(options);
-      exec('HOME={xt.userhome} sudo -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
+      exec('sudo HOME={xt.userhome} -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
     },
 
     /** @override */
     uninstall: function (options) {
       exec('killall -u {xt.name}'.format(options));
-      exec('HOME={xt.userhome} pm2 delete xtuple-server-{xt.version}-{xt.name}'.format(options));
-      exec('HOME={xt.userhome} pm2 delete xtuple-healthfeed-{xt.version}-{xt.name}'.format(options));
-      exec('HOME={xt.userhome} pm2 delete xtuple-snapshotmgr-{xt.version}-{xt.name}'.format(options));
-      exec('HOME={xt.userhome} sudo -u {xt.name} pm2 kill');
+      exec('sudo HOME={xt.userhome} -u {xt.name} pm2 delete xtuple-server-{xt.version}-{xt.name}'.format(options));
+      exec('sudo HOME={xt.userhome} -u {xt.name} pm2 delete xtuple-healthfeed-{xt.version}-{xt.name}'.format(options));
+      exec('sudo HOME={xt.userhome} -u {xt.name} pm2 delete xtuple-snapshotmgr-{xt.version}-{xt.name}'.format(options));
+      exec('sudo HOME={xt.userhome} -u {xt.name} pm2 kill');
 
       //exec('rm {xt.logdir}/*.log'.format(options));
       //exec('npm uninstall pm2 -g');
@@ -97,7 +97,7 @@
     /** @override */
     afterInstall: function (options) {
       console.log();
-      var dump = exec('HOME={xt.userhome} sudo -u {xt.name} pm2 dump all'.format(options)),
+      var dump = exec('sudo HOME={xt.userhome} -u {xt.name} pm2 dump all'.format(options)),
         statusTable = exec('sudo -u {xt.name} service xtuple {xt.version} {xt.name} status'
           .format(options)).stdout;
 
@@ -110,8 +110,8 @@
      * @public
      */
     launch: function (options) {
-      var ping = exec('HOME={xt.userhome} sudo -u {xt.name} pm2 ping'.format(options)),
-        start = exec('HOME={xt.userhome} sudo -u {xt.name} pm2 start -u {xt.name} {sys.pm2.configfile}'
+      var ping = exec('sudo HOME={xt.userhome} -u {xt.name} pm2 ping'.format(options)),
+        start = exec('sudo HOME={xt.userhome} -u {xt.name} pm2 start -u {xt.name} {sys.pm2.configfile}'
             .format(options));
 
       if (start.code !== 0) {
