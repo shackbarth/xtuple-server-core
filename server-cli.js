@@ -50,7 +50,7 @@
     process.exit(0);
   }
 
-  var xtupleScripts = process.env.SRCDIR || '/usr/lib/node_modules/xtuple-scripts/',
+  var xtupleScripts = process.env.SRCDIR || '/usr/local/lib/node_modules/xtuple-scripts/',
     planFile = path.resolve(xtupleScripts, 'plans', process.argv[2] + '.json'),
     planExists = fs.existsSync(planFile),
     plan = planExists && require(planFile);
