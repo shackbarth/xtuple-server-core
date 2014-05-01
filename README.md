@@ -38,13 +38,19 @@ TODO
 
 # 1. Install
 
+### ~ System Requirements
+  - Ubuntu 12.04 or 14.04 Operating System
+  - > 4GB RAM
+  - Internet Access
+  - 
+
 ### a. System Dependencies
 
   - `bootstrap.sh` installs all system dependencies. Here are a few of my favorites:
     - `nginx      >  v1.4.7`
     - `nodejs     >  v0.8.26`
     - `npm        >  v1.3.0`
-    - `postgres   >= v9.3` (**9.3** is installed by default; see 1c)
+    - `postgres   >= v9.3`
     - `cups       >  v1.5`
     - `sshd       >  v1.5`
 
@@ -66,13 +72,14 @@ By default, the following variables are set by `bootstrap.sh`:
 The `xtuple-server` command-line program is installed by `bootstrap.sh`. It requires `sudo` privileges.
 
 #### 0. Prologue
-  - Postgres is installed for you. So is nginx. And everything. There is no reason to do any of this manually.
+
+  - Postgres is installed for you. So is nginx. And everything else.
   - The Installer prefers to fail for trivial reasons than to potentially install an app incorrectly. Failure is designed to be obvious. Here are some common reasons it might decide to fail:
     - An SSL bundle `.zip` that is of another format besides the Namcheap PositiveSSL email attachment. 
     - Some other slightly wrong was given; a wrong version number, a typo in the edition, etc.
     - The provided database file is not able to be automatically mobile-ized
   
-  - The Installer generates credentials. And everything else. There is no reason to edit anything by hand.
+  - The Installer generates credentials. And everything else.
     - Before running the installer, find a pen and paper. When the installer finishes, it displays credentials for a limited time. If you do not write it down, you are screwed.
     - And on that note: if you are installing over SSH, failure to follow these instructions could result in being locked out of the machine **irreversibly**, regardless of how much `sudo` you have.
     - If you think a config is wrong, [file a bug report](https://github.com/xtuple/xtuple-scripts/issues?state=open). Changing it by hand will probably break some automatically-installed thing you didn't know existed.
