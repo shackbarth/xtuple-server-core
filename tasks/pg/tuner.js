@@ -8,113 +8,128 @@
    */
   var tuner = exports;
 
-  var task = require('../../lib/task'),
+  var lib = require('../../lib'),
     format = require('string-format'),
     _ = require('lodash'),
-    env = require('./defaults').env,
-    pgcli = require('../../lib/pg-cli'),
     exec = require('execSync').exec,
     fs = require('fs'),
-    path = require('path'),
+    os = require('os'),
+    path = require('path');
 
-    sysctl_src_filename = '30-postgresql-shm.conf.template',
-    postgresql_src_filename = 'postgresql-{version}.conf.template';
-
-  _.extend(tuner, task, /** @exports tuner */ {
+  _.extend(tuner, lib.task, /** @exports tuner */ {
 
     options: {
-      locale: {
-        optional: '[string]',
-        value: 'en_US.UTF-8',
-        description: 'Cluster locale'
+      slots: {
+        optional: '[int]',
+        description: 'Number of provisioned "slots" to consume [1]',
+        value: 1
       },
-      timezone: {
-        optional: '[integer]',
-        value: 'localtime',
-        description: 'Integer offset from UTC; e.g., "-7" is PDT, "-8" is PST, etc'
+      capacity: {
+        optional: '[int]',
+        description: 'Number of provisioned "slots" available [1]',
+        value: 2
+      }
+    },
+
+    // scalar byte values are in MB
+    env: {
+      phi: (Math.sqrt(5) + 1) / 2,
+      MB: 1048576,
+      GB: Math.pow(1048576, 2),
+
+      /**
+       * <http://www.postgresql.org/docs/9.3/static/kernel-resources.html>
+       * Docs: "if pages, ceil(SHMMAX/PAGE_SIZE)" ...and "A page is almost always
+       * 4096 bytes except in unusual kernel configurations".
+       */
+      stacklimit: 8,
+      shmmax: os.totalmem(),
+      shmall: Math.ceil(os.totalmem() / 4096)
+    },
+
+    /** @override */
+    beforeInstall: function (options) {
+      options.pg.capacity = tuner.capacity[options.pg.mode];
+      options.pg.slotRatio = options.pg.slots / options.pg.capacity;
+      options.pg.tunerEnv = tuner.env;
+      options.pg.clusterCount = _.size(lib.pgCli.lsclusters());
+
+      // allow for one extra, due to potential default 'main' cluster
+      if (options.pg.clusterCount >= options.pg.capacity + 1) {
+        throw new Error('Over Capacity: Declared Capacity: {pg.capacity}; Clusters: {pg.clusterCount}');
+      }
+      // only 9.2 and above support custom ssl cert paths; < 9.1 must use
+      // data_dir/server.crt.
+      if ((+options.pg.version) < 9.3 && options.pg.host !== 'localhost') {
+        throw new Error('Auto-install does not support remote Postgres < 9.3 with SSL');
       }
     },
 
     /** @override */
     doTask: function (options) {
-      var pg = options.pg,
-        cluster = options.pg.cluster,
-        config = options.pg.config,
-        sysctl_conf_template = fs.readFileSync(
-          path.resolve(__dirname, sysctl_src_filename)
-        ).toString('ascii'),
-        postgresql_conf_template = fs.readFileSync(
-          path.resolve(__dirname, postgresql_src_filename.format(pg))
-        ).toString('ascii'),
-        conf_values = _.extend({ }, cluster, config, {
-          name: options.xt.name,
-          timezone: options.pg.timezone,
-          data_directory: cluster.data,
-          shared_buffers: shared_buffers(cluster, config, env),
-          max_locks_per_transaction: 1024, // XXX magic number
-          max_stack_depth: max_stack_depth(cluster, config, env),
-          effective_cache_size: effective_cache_size(cluster, config, env),
-          ssl_cert_file: options.pg.outcrt,
-          ssl_key_file: options.pg.outkey,
-          ssl_ca_file: options.nginx.outcrt
-        }),
-        postgresql_conf = postgresql_conf_template.format(conf_values),
-        postgresql_conf_path = path.resolve(cluster.config, 'postgresql.conf'),
-        sysctl_conf_path = path.resolve('/etc/sysctl.d/30-postgresql-shm.conf'),
-        sysctl_conf;
-
-      sysctl_conf = sysctl_conf_template.format({
-          shmmax: env.shmmax,
-          shmall: env.shmall,
-          semmsl: 256,
-          semmns: 65536,
-          semopm: 64,
-          semmni: 1024
-        }).replace(/^\s+/mg, '')
-        .trim();
-
-      fs.writeFileSync(sysctl_conf_path, sysctl_conf);
-      exec(['sysctl -p', sysctl_conf_path].join(' '));
-
-      // only 9.2 and above support custom ssl cert paths; < 9.1 must use
-      // data_dir/server.crt.
-      if ((+pg.version) < 9.3 && pg.host !== 'localhost') {
-        throw new Error('Auto-install does not yet support remote Postgres < 9.3 with SSL');
-      }
-
-      fs.writeFileSync(postgresql_conf_path, postgresql_conf);
-
-      _.defaults(options.pg.tuner, {
-        path: postgresql_conf_path,
-        json: conf_values,
-        string: postgresql_conf
+      // set tuned values; config will be written by 'config' task
+      _.extend(options.pg.config, {
+        work_mem: work_mem(options),
+        shared_buffers: shared_buffers(options),
+        max_stack_depth: max_stack_depth(options),
+        effective_cache_size: effective_cache_size(options),
+        max_connections: 128
       });
+
+      tuner.writeSysctlConfig(options);
     },
 
     /** @override */
     afterTask: function (options) {
-      pgcli.ctlcluster({ action: 'restart', version: options.pg.version, name: options.xt.name });
+      lib.pgCli.ctlcluster({ action: 'restart', version: options.pg.version, name: options.xt.name });
+    },
+
+    /**
+     * Tune the sysctl configs
+     */
+    writeSysctlConfig: function (options) {
+      var sysctl_src_filename = '30-postgresql-shm.conf.template',
+        sysctl_conf_path = path.resolve('/etc/sysctl.d/30-postgresql-shm.conf'),
+        sysctl_conf_template = fs.readFileSync(path.resolve(__dirname, sysctl_src_filename)).toString(),
+        sysctl_conf = sysctl_conf_template.format({
+          shmmax: options.pg.tunerEnv.shmmax,
+          shmall: options.pg.tunerEnv.shmall,
+          semmsl: 256,
+          semmns: 65536,
+          semopm: 64,
+          semmni: 1024
+        });
+
+      fs.writeFileSync(sysctl_conf_path, sysctl_conf);
+      exec('sysctl -p ' + sysctl_conf_path);
     }
   });
 
   /**
+   * http://www.postgresql.org/docs/current/static/runtime-config-resource.html#GUC-WORK-MEM
+   */
+  function work_mem (options) {
+    return Math.ceil(shared_buffers(options) / 32);
+  }
+
+  /**
    * <http://www.postgresql.org/docs/current/static/runtime-config-resource.html#GUC-SHARED-BUFFERS>
    */
-  function shared_buffers (cluster, config, env) {
-    return Math.ceil(config.shared_buffers * config.slots);
+  function shared_buffers (options) {
+    return Math.ceil((os.totalmem() / 4) * options.pg.slotRatio);
   }
 
   /**
    * <http://www.postgresql.org/docs/current/static/runtime-config-query.html#GUC-EFFECTIVE-CACHE-SIZE>
    */
-  function effective_cache_size (cluster, config, env) {
-    return Math.ceil(shared_buffers(cluster, config, env) * env.phi);
+  function effective_cache_size (options) {
+    return Math.ceil(os.totalmem() * options.pg.tunerEnv.phi);
   }
 
   /**
    * <http://www.postgresql.org/docs/current/static/runtime-config-resource.html#GUC-MAX-STACK-DEPTH>
    */
-  function max_stack_depth (cluster, config, env) {
-    return Math.ceil((7/8) * env.stacklimit / env.MB);
+  function max_stack_depth (options) {
+    return Math.floor((7/8) * options.pg.tunerEnv.stacklimit / options.pg.tunerEnv.MB);
   }
 })();
