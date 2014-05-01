@@ -15,12 +15,10 @@
     /** @override */
     afterInstall: function (options) {
       options.report = {
-        Credentials: {
-          'xTuple Login': {
-            domain: options.nginx.domain,
-            user: 'admin',
-            password: options.xt.adminpw
-          },
+        'xTuple Login': {
+          domain: options.nginx.domain,
+          user: 'admin',
+          password: options.xt.adminpw
         }
       };
 
@@ -37,6 +35,7 @@
         };
       }
 
+      console.log(clc.yellow.bold('Access Credentials'));
       console.log(json.render(options.report));
       console.log(clc.red.bold('Write this information down now. This report will disappear in 2 minutes.'));
     },
