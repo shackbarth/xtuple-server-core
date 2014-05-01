@@ -86,13 +86,12 @@
     writePostgresqlConfig: function (options) {
       _.defaults(options.pg.config, options.pg.cluster, {
         name: options.xt.name,
-        version: options.pg.version,
         timezone: options.pg.timezone,
         data_directory: options.pg.cluster.data,
         ssl_cert_file: options.pg.outcrt,
         ssl_key_file: options.pg.outkey,
         ssl_ca_file: options.nginx.outcrt
-      });
+      }, pgconfig.defaults);
 
       var targetPath = path.resolve(options.pg.cluster.config, 'postgresql.conf'),
         templateFile = path.resolve(__dirname, 'postgresql-{pg.version}.conf.template'.format(options)),
