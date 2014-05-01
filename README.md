@@ -1,6 +1,6 @@
 [![Build Status](https://magnum.travis-ci.com/xtuple/xtuple-scripts.svg?token=gns5sJtFWu8Pk688aPh7)](https://magnum.travis-ci.com/xtuple/xtuple-scripts)
 
-This is the **xTuple Server**. It installs, configures, runs, serves, backs up, restores, forks, upgrades, pilots, monitors and manages your xTuple appliance, cloud app, or development environment. [Now with 37% more cloud support!](http://www.theonion.com/video/hp-on-that-cloud-thing-that-everyone-else-is-talki,28789/)
+This is the **xTuple Server**. It installs, configures, runs, serves, backs up, restores, forks, upgrades, pilots, monitors and manages your xTuple appliance, demo, cloud app, or development environment. [Now with 37% more cloud support!](http://www.theonion.com/video/hp-on-that-cloud-thing-that-everyone-else-is-talki,28789/)
 
 # 0. Quickstart
 
@@ -46,11 +46,10 @@ For more information and details on how to perform more advanced installs, keep 
 ### b. Self-tests
 
   The `bootstrap.sh` will run a series of self-diagnostic tests on the machine
-  after it installed the system dependencies. You should also run these
+  after it installs the system dependencies. You should also run these
   yourself! They are fun. Everybody's doing it.
 
-  - `sudo npm run-script test-9.1        // test against postgres 9.1`
-  - `sudo npm run-script test-9.3        // test against postgres 9.3`
+  - `sudo npm test`
 
 ### c. Variables and Defaults
 
@@ -63,19 +62,19 @@ By default, the following variables are set by `bootstrap.sh`:
 The `xtuple-server` command-line program is installed by `bootstrap.sh`. It requires `sudo` privileges.
 
   - Basic quickstart cloud deployment example:
-    - `xtuple-server install --xt-version 4.4.0 --xt-name initech --pg-mode cloud --xt-quickstart`
-    - `--pg-mode cloud` provisions a portion of the machine's resources for this install
+    - `xtuple-server install --xt-version 4.4.0 --xt-name cloudinator --pg-capacity 64 --xt-quickstart`
+    - `--pg-capacity 64` declares that this server has 64 available installation slots
     - `--xt-quickstart` instructs the installer to install the xTuple Quickstart database
   
   - Production appliance deployment example:
       ```
-      xtuple-server install --xt-version 4.4.0 --xt-name tesla --pg-mode dedicated
+      xtuple-server install --xt-version 4.4.0 --xt-name tesla --pg-capacity 1
         --nginx-inzip tesla_ssl_bundle.zip
         --nginx-inkey tesla_ssl.key
         --xt-maindb tesla_full.backup
         --xt-edition enterprise
       ```
-    - `--pg-mode dedicated` tunes postgres to make maximum use of all available machine hardware resources
+    - `--pg-capacity 1` tunes xTuple to make maximum use of all available machine resources
 
 # 2. Manage
 
