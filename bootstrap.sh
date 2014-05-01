@@ -22,8 +22,10 @@ install_debian () {
   apt-get -qq purge nodejs-${XT_NODE_VERSION}* --force-yes 2>&1
   apt-get -qq purge npm* --force-yes 2>&1
   
-  wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - 2>&1
-  echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list 2>&1
+  if [[ $version =~ '12.04' ]]; then
+    wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - 2>&1
+    echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list 2>&1
+  fi
   add-apt-repository ppa:nginx/stable -y 2>&1
   add-apt-repository ppa:git-core/ppa -y 2>&1
   
