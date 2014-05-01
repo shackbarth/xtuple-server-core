@@ -8,7 +8,7 @@
 
   var task = require('../../lib/task'),
     format = require('string-format'),
-    _ = require('underscore'),
+    _ = require('lodash'),
     exec = require('execSync').exec,
     fs = require('fs'),
     Zip = require('adm-zip'),
@@ -122,7 +122,7 @@
         }, '');
 
       // TODO switch to camelcase. I don't know what it is about writing sysadmin
-      // scripts that makes me want to use underscores everywhere
+      // scripts that makes me want to use lodashs everywhere
       fs.writeFileSync(options.nginx.outcrt, bundleStr);
       exec('cp {nginx.inkey} {nginx.outkey}'.format(options));
       exec('chown {xt.name}:ssl-cert {nginx.outcrt}'.format(options));

@@ -11,7 +11,7 @@
   var hba = exports;
 
   var task = require('../../lib/task'),
-    _ = require('underscore'),
+    _ = require('lodash'),
     fs = require('fs'),
     path = require('path'),
     exec = require('execSync').exec,

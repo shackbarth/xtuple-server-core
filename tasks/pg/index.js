@@ -13,7 +13,7 @@
 
   var exec = require('execSync').exec,
     //Knex = require('knex'),
-    _ = require('underscore');
+    _ = require('lodash');
 
   _.extend(pg, /** @exports pg */ {
     
@@ -53,7 +53,8 @@
     defaults: require('./defaults'),
     hba: require('./hba'),
     snapshotmgr: require('./snapshotmgr'),
-    tuner: require('./tuner')
+    tuner: require('./tuner'),
+    restore: require('./restore')
   });
 
   // setup database connection

@@ -9,7 +9,7 @@
   var lib = require('../../lib'),
     exec = require('execSync').exec,
     path = require('path'),
-    _ = require('underscore');
+    _ = require('lodash');
 
   _.extend(paths, lib.task, /** @exports paths */ {
 
