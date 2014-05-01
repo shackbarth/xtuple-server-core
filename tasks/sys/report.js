@@ -39,6 +39,11 @@
 
       console.log(json.render(options.report));
       console.log(clc.red.bold('Write this information down now. This report will disappear in 2 minutes.'));
+    },
+
+    /** @override */
+    doTask: function (options) {
+
     }
 
   });
