@@ -1,10 +1,1 @@
-(function () {
-  'use strict';
-
-  /** @exports nginx */
-  module.exports = {
-    site: require('./site'),
-    ssl:  require('./ssl'),
-    etchosts: require('./etchosts')
-  };
-})();
+module.exports = require('requireindex')(__dirname);

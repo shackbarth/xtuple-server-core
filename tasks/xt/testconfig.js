@@ -11,7 +11,7 @@
     path = require('path'),
     exec = require('execSync').exec,
     fs = require('fs'),
-    _ = require('underscore');
+    _ = require('lodash');
 
   _.extend(testconfig, lib.task, /** @exports testconfig */ {
 
@@ -35,7 +35,8 @@
       testOptions.xt.serverconfig = { };
       testOptions.xt.testdb = 'xtuple_demo';
 
-      require('./serverconfig').doTask(testOptions);
+      require('./serverconfig').writeConfig(testOptions);
+      //require('./serverconfig').doTask(testOptions);
 
       fs.writeFileSync(options.xt.testloginfile, lib.xt.build.wrapModule(loginObject));
     }

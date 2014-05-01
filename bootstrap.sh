@@ -10,7 +10,7 @@ install_debian () {
   animal=$(lsb_release -sc)
 
   [[ $dist =~ 'Ubuntu' ]] || die "Linux distro not supported"
-  [[ $version =~ '12.04' ]] || die "Ubuntu version not supported"
+  [[ $version =~ '12.04' || $version =~ '14.04' ]] || die "Ubuntu version not supported"
 
   log "Adding Debian Repositories..."
 
@@ -18,32 +18,63 @@ install_debian () {
   apt-get -qq autoremove --force-yes
   apt-get -qq install python-software-properties --force-yes
 
-  apt-get -qq purge postgresql-${XT_PG_VERSION}* --force-yes
-  apt-get -qq purge nodejs-${XT_NODE_VERSION}* --force-yes
-  apt-get -qq purge npm* --force-yes
+  apt-get -qq purge postgresql-${XT_PG_VERSION}* --force-yes 2>&1
+  apt-get -qq purge nodejs-${XT_NODE_VERSION}* --force-yes 2>&1
+  apt-get -qq purge npm* --force-yes 2>&1
   
-  wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-  echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list > /dev/null
-  add-apt-repository ppa:nginx/stable -y
-  add-apt-repository ppa:chris-lea/node.js-legacy -y
-  add-apt-repository ppa:chris-lea/node.js -y
-  add-apt-repository ppa:git-core/ppa -y
+  if [[ $version =~ '12.04' ]]; then
+    wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - 2>&1
+    echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list 2>&1
+  fi
+  add-apt-repository ppa:nginx/stable -y 2>&1
+  add-apt-repository ppa:git-core/ppa -y 2>&1
   
   log "Installing Debian Packages..."
 
   apt-get -qq update | tee -a $logfile
-  apt-get -qq install curl build-essential libssl-dev openssh-server cups git \
-    nginx-full \
-    postgresql-$XT_PG_VERSION postgresql-server-dev-$XT_PG_VERSION postgresql-contrib-$XT_PG_VERSION postgresql-$XT_PG_VERSION-plv8 \
-    nodejs=$XT_NODE_VERSION-1chl1~${animal}1 \
-    --force-yes \
-  | tee -a $logfile
+  apt-get -qq install curl build-essential openssl libssl-dev libv8-dev openssh-server cups git-core nginx-full --force-yes | tee -a $logfile 2>&1
+  apt-get -qq install postgresql-$XT_PG_VERSION postgresql-server-dev-$XT_PG_VERSION --force-yes | tee -a $logfile 2>&1
+  apt-get -qq install postgresql-contrib-$XT_PG_VERSION postgresql-$XT_PG_VERSION-plv8 --force-yes | tee -a $logfile 2>&1
+  apt-get -qq install couchdb --force-yes 2>&1
 
-  if [[ "$XT_NODE_VERSION" = "0.8.26" ]]; then
-    apt-get -qq install npm --force-yes
-  fi
+  # fixes mysterious npm install error occuring on node 0.11 with pm2
+  apt-get -qq install libavahi-compat-libdnssd-dev --force-yes | tee -a $logfile 2>&1
 
   log "All dependencies installed."
+}
+
+install_node () {
+  XT_NODE_VERSION=$(curl http://semver.io/node/resolve/$XT_NODE_VERSION)
+  NPM_NODE_VERSION=$(curl http://semver.io/node/stable)
+
+  node_tarball=node-v$XT_NODE_VERSION-linux-x64.tar.gz
+  npm_tarball=node-v$NPM_NODE_VERSION-linux-x64.tar.gz
+
+  log "Installing node..."
+
+  rm -f /usr/bin/node
+  rm -f /usr/bin/npm
+  rm -f /usr/local/bin/node
+  rm -f /usr/local/bin/npm
+
+  rm -rf /usr/local/node/$XT_NODE_VERSION
+  mkdir -p /usr/local/node/$XT_NODE_VERSION
+  mkdir -p /usr/local/node/$NPM_NODE_VERSION
+
+  wget -q http://nodejs.org/dist/v$XT_NODE_VERSION/$node_tarball
+  wget -q http://nodejs.org/dist/v$NPM_NODE_VERSION/$npm_tarball
+
+  tar --strip-components 1 -zxf $node_tarball -C /usr/local/node/$XT_NODE_VERSION
+  tar --strip-components 1 -zxf $npm_tarball -C /usr/local/node/$NPM_NODE_VERSION
+
+  ln -s /usr/local/node/$XT_NODE_VERSION/bin/node /usr/local/bin/node
+  ln -s /usr/local/node/$NPM_NODE_VERSION/bin/npm /usr/local/bin/npm 
+
+  log "Installed node v$XT_NODE_VERSION"
+  log "Installed npm v$(npm -v)"
+
+  rm -f $node_tarball
+  rm -f $npm_tarball
 }
 
 clone_installer () {
@@ -62,11 +93,11 @@ clone_installer () {
   git clone --recursive https://github.com/xtuple/xtuple-scripts.git
   cd xtuple-scripts 
 
-  npm install
-  npm install -g --production
+  npm install --registry http://registry.npmjs.org
+  npm install -g --production --registry http://registry.npmjs.org
 
-  #log "Running installer self-tests..."
-  #npm run-script test-$XT_PG_VERSION
+  log "Running installer self-tests..."
+  npm run-script test-$XT_PG_VERSION
 }
 
 log() {
@@ -103,6 +134,7 @@ log "         xxx     xxx\n"
 
 if [[ ! -z $(which apt-get) ]]; then
   install_debian
+  install_node
   echo ''
 else
   log "apt-get not found."

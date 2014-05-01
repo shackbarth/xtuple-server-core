@@ -13,7 +13,7 @@
     build = require('../../lib/xt/build'),
     rimraf = require('rimraf'),
     fs = require('fs'),
-    _ = require('underscore'),
+    _ = require('lodash'),
     exec = require('execSync').exec,
     pgcli = require('../../lib/pg-cli');
 
@@ -150,7 +150,6 @@
         rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
 
         var buildResult = exec(build.getCoreBuildCommand(db, options));
-        console.log(buildResult);
         if (buildResult.code !== 0) {
           throw new Error(buildResult.stdout);
         }
@@ -170,15 +169,21 @@
         demo = _.findWhere(options.xt.database.list, { dbname: 'xtuple_demo' }),
         qsBuild, demoBuild;
 
+      rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
       if (quickstart) {
-        rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
         qsBuild = exec(build.getSourceBuildCommand(quickstart, options));
 
         if (qsBuild.code !== 0) {
-          throw new Error(qsBuild);
+          throw new Error(JSON.stringify(qsBuild));
         }
       }
       if (demo) {
+        demoBuild = exec(build.getSourceBuildCommand(demo, options));
+
+        if (demoBuild.code !== 0) {
+          throw new Error(JSON.stringify(demoBuild));
+        }
+        /*
         rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
         var cp = exec([
           'cp',
@@ -192,6 +197,7 @@
         if (demoBuild.code !== 0) {
           throw new Error(JSON.stringify(demoBuild, null, 2));
         }
+        */
       }
     }
   });

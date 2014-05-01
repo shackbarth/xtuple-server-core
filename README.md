@@ -1,18 +1,40 @@
+## RTFM
+By design, this program is capable of granting/revoking system-level permissions, destroying data, and other very powerful things. If you plan to run this program in any production-like arena or on any machine with personal or customer data on it, read this ENTIRE DOCUMENT first. If you do not, you will probably wish you had. **You have been warned.**
+
+# xTuple Server
 [![Build Status](https://magnum.travis-ci.com/xtuple/xtuple-scripts.svg?token=gns5sJtFWu8Pk688aPh7)](https://magnum.travis-ci.com/xtuple/xtuple-scripts)
 
-This is the xTuple Server. It installs, runs, serves, snapshots, restores, upgrades, pilots, and monitors your xTuple system.
+This is the **xTuple Server**. It installs, configures, runs, serves, secures, backs up, restores, forks, upgrades, pilots, monitors and manages your xTuple appliance, demo, cloud app, or development environment. [Now with 37% more cloud support!](http://www.theonion.com/video/hp-on-that-cloud-thing-that-everyone-else-is-talki,28789/)
 
 # 0. Quickstart
 
-### Server Installation Basics
-1. `sudo bash bootstrap.sh`
-2. `sudo xtuple-server install --xt-version 4.4.0 --xt-name xtmocha --xt-quickstart`
+### Installation
+#### 1. "bootstrap"
+  - What does it do?
+    - Installs system dependencies; its only prerequisite is a Ubuntu operating system
+    - Clones this repository and installs the `xtuple-server` CLI into the global path
+  - How do I make it do those things?
+    1. Grab the file [here](https://github.com/xtuple/xtuple-scripts/blob/master/bootstrap.sh).
+    2. `$ sudo bash bootstrap.sh`
 
-This installs a single database called `xtuple_quickstart` for a user `xtmocha`. Secure credentials
-and other access info are generated for you and will be shown in a report once
-installation is finished.
+#### 2. "xtuple-server"
+  - What does it do?
+    - Sets up users, permissions, packages, services
+    - Configures quite a lot of murky OS-level unpleasantness
+    - Install new accounts, restore databases, backup clusters, etc.
+    - Manages xTuple services
+  - How do I make it install something?
+    - `sudo xtuple-server install --xt-version 4.4.0 --xt-name something --xt-demo`
 
-For more information and details on how to perform more advanced installs, keep reading.
+This installs a single database called `xtuple_demo` for a user `something`. Secure credentials
+and other access info are generated for you, they will be shown in a report once
+installation is finished. Get a pen ready; for security, they are not saved in any file, and you 
+will have a limited amount of time to write them down.
+
+For more information and details on how to perform more serious stuff, keep reading.
+
+### Development
+TODO
 
 # 1. Install
 
@@ -29,11 +51,10 @@ For more information and details on how to perform more advanced installs, keep 
 ### b. Self-tests
 
   The `bootstrap.sh` will run a series of self-diagnostic tests on the machine
-  after it installed the system dependencies. You should also run these
+  after it installs the system dependencies. You should also run these
   yourself! They are fun. Everybody's doing it.
 
-  - `sudo npm run-script test-9.1        // test against postgres 9.1`
-  - `sudo npm run-script test-9.3        // test against postgres 9.3`
+  - `sudo npm test`
 
 ### c. Variables and Defaults
 
@@ -42,23 +63,37 @@ By default, the following variables are set by `bootstrap.sh`:
   - `XT_PG_VERSION=9.3`
 
 ### d. Running the installer
-
 The `xtuple-server` command-line program is installed by `bootstrap.sh`. It requires `sudo` privileges.
 
+#### 0. Prologue
+  - Postgres is installed for you. So is nginx. And everything. There is no reason to do any of this manually.
+  - The Installer prefers to fail for trivial reasons than to potentially install an app incorrectly. Failure is designed to be obvious. Here are some common reasons it might decide to fail:
+    - An SSL bundle `.zip` that is of another format besides the Namcheap PositiveSSL email attachment. 
+    - Some other slightly wrong was given; a wrong version number, a typo in the edition, etc.
+    - The provided database file is not able to be automatically mobile-ized
+  
+  - The Installer generates credentials. And everything else. There is no reason to edit anything by hand.
+    - Before running the installer, find a pen and paper. When the installer finishes, it displays credentials for a limited time. If you do not write it down, you are screwed.
+    - And on that note: if you are installing over SSH, failure to follow these instructions could result in being locked out of the machine **irreversibly**, regardless of how much `sudo` you have.
+    - If you think a config is wrong, [file a bug report](https://github.com/xtuple/xtuple-scripts/issues?state=open). Changing it by hand will probably break some automatically-installed thing you didn't know existed.
+    - Do not install anything else on the machine. If you need additional packages for an xTuple installation, it needs to be written as an add-on module to the installer. File an issue.
+
+#### 1. Examples
+
   - Basic quickstart cloud deployment example:
-    - `xtuple-server install --xt-version 4.4.0 --xt-name initech --pg-mode cloud --xt-quickstart`
-    - `--pg-mode cloud` provisions a portion of the machine's resources for this install
+    - `xtuple-server install --xt-version 4.4.0 --xt-name cloudinator --pg-capacity 64 --xt-quickstart`
+    - `--pg-capacity 64` declares that this server has 64 available installation slots
     - `--xt-quickstart` instructs the installer to install the xTuple Quickstart database
   
   - Production appliance deployment example:
       ```
-      xtuple-server install --xt-version 4.4.0 --xt-name tesla --pg-mode dedicated
+      xtuple-server install --xt-version 4.4.0 --xt-name tesla --pg-capacity 1
         --nginx-inzip tesla_ssl_bundle.zip
         --nginx-inkey tesla_ssl.key
         --xt-maindb tesla_full.backup
         --xt-edition enterprise
       ```
-    - `--pg-mode dedicated` tunes postgres to make maximum use of all available machine hardware resources
+    - `--pg-capacity 1` tunes xTuple to make maximum use of all available machine resources
 
 # 2. Manage
 
@@ -85,7 +120,7 @@ The xTuple Service can be managed using the following command template: `service
     - show Postgres server status and info.
     ```
     Ver Cluster  Port Status Owner    Data directory                   Log file
-    9.3 xtmocha  5437 online xtmocha  /var/lib/postgresql/9.3/xtmocha  /var/log/postgresql/postgresql-9.3-xtmocha.log
+    9.3 xtmocha  5432 online xtmocha  /var/lib/postgresql/9.3/xtmocha  /var/log/postgresql/postgresql-9.3-xtmocha.log
     ```
 
   - `service xtuple help`
@@ -114,13 +149,14 @@ By default, the xTuple Server pro-actively monitors the health of the system on 
 
     Usage:
     
-      sudo xtuple-server {install|backup|restore|upgrade|test} --xt-version <version> --xt-name <name>
+      sudo xtuple-server {install|backup|restore|fork} --xt-version <version> --xt-name <name>
 
     Options:
 
-      --pg-mode [mode]              Installation mode {dedicated|cloud|testing}. [dedicated]
       --pg-version [version]        Version of postgres to install [9.3]
-      --pg-slots [int]              Number of provisioned "slots" to consume [1]
+      --pg-slots [int]              Number of provisioned slots to consume [1]
+      --pg-capacity [int]           Number of slots available on the machine [1]
+
       --pg-locale [string]          Cluster locale [en_US]
       --pg-timezone [integer]       Integer offset from UTC; e.g., "-7" is PDT, "-8" is PST, etc
       --pg-restore [boolean]        Restore the most recent backup [false]

@@ -11,7 +11,7 @@
     path = require('path'),
     fs = require('fs'),
     exec = require('execSync').exec,
-    _ = require('underscore');
+    _ = require('lodash');
 
   _.extend(serverconfig, lib.task, /** @exports serverconfig */ {
 
@@ -37,7 +37,6 @@
       var buildOptions = _.clone(options);
 
       buildOptions.xt = _.extend({ }, options.xt, {
-        name: 'admin',
         password: options.xt.adminpw,
         configfile: options.xt.buildconfigfile
       });
@@ -76,7 +75,7 @@
           }),
           databaseServer: _.extend(sample_config.databaseServer, {
             hostname: options.xt.socketdir, // TODO support remote databases via SSL clientcert auth
-            user: xt.name,
+            user: 'admin',
             password: undefined,
             port: parseInt(pg.cluster.port)
           })
