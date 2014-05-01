@@ -22,7 +22,7 @@
     beforeTask: function (options) {
       // if customer appears new, that is they've provided no main database,
       // snapshot to restore from, or admin password, generate a admin password
-      console.log('generating adminpw: ', (!options.xt.adminpw && !options.pg.restore && !options.xt.maindb));
+      //console.log('generating adminpw: ', (!options.xt.adminpw && !options.pg.restore && !options.xt.maindb));
       if (!options.xt.adminpw && !options.pg.restore && !options.xt.maindb) {
         options.xt.adminpw = policy.getPassword();
       }
@@ -49,6 +49,8 @@
       exec('rm -f ~/.pgpass');
       exec('rm -f ~/.bash_history');
       exec('rm -f /root/.bash_history');
+
+      exec('chmod a-w {xt.configdir}/install-arguments.json'.format(options));
     },
 
     /** @override */
@@ -195,11 +197,10 @@
     /** @override */
     uninstall: function (options) {
       exec('skill -KILL -u {xt.name}'.format(options));
-      exec('skill -KILL -u xtremote'.format(options));
+      //exec('skill -KILL -u xtremote'.format(options));
       exec('deluser {xt.name}'.format(options));
       exec('deluser xtremote');
-      exec('rm -rf /usr/local/{xt.name}'.format(options));
-      exec('rm -f {sys.htpasswdfile}'.format(options));
+      exec('rm -rf /usr/local/{xt.name}/{xt.version}/xtuple*'.format(options));
       exec('rm -f '+ path.resolve('/etc/sudoers.d/', user_policy_filename.replace('user', '{xt.name}').format(options)));
     }
   });
