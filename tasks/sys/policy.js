@@ -11,7 +11,7 @@
     rimraf = require('rimraf'),
     exec = require('execSync').exec,
     path = require('path'),
-    _ = require('underscore'),
+    _ = require('lodash'),
     global_policy_filename = 'XT00-xtuple-global-policy',
     user_policy_filename = 'XT10-xtuple-user-policy',
     sudoers_d = path.resolve('/etc/sudoers.d');
@@ -19,13 +19,26 @@
   _.extend(policy, task, /** @exports policy */ {
 
     /** @override */
-    doTask: function (options) {
+    beforeTask: function (options) {
+      // if customer appears new, that is they've provided no main database,
+      // snapshot to restore from, or admin password, generate a admin password
+      console.log('generating adminpw: ', (!options.xt.adminpw && !options.pg.restore && !options.xt.maindb));
+      if (!options.xt.adminpw && !options.pg.restore && !options.xt.maindb) {
+        options.xt.adminpw = policy.getPassword();
+      }
+
       if (exec('id -u xtremote').code !== 0) {
         options.sys.policy.remotePassword = policy.getPassword();
       }
+
       if (exec('id -u {xt.name}'.format(options)).code !== 0) {
         options.sys.policy.userPassword = policy.getPassword();
+      }
+    },
 
+    /** @override */
+    doTask: function (options) {
+      if (exec('id -u {xt.name}'.format(options)).code !== 0) {
         policy.createUsers(options);
         policy.configureSSH(options);
       }
@@ -148,12 +161,6 @@
         throw new Error(JSON.stringify(visudo_cmd, null, 2));
       }
 
-      // if customer appears new, that is they've provided no main database,
-      // snapshot to restore from, or admin password, generate a admin password
-      if (!options.xt.adminpw && !options.pg.restore && !options.xt.maindb) {
-        options.xt.adminpw = policy.getPassword();
-      }
-
       // set user shell to bash
       exec('sudo chsh -s /bin/bash {xt.name}'.format(options));
     },
@@ -167,7 +174,7 @@
         rules = {
           UseDNS: 'no',
           PermitRootLogin: 'no',
-          AllowGroups: 'xtadmin xtuser',
+          // AllowGroups: 'xtadmin xtuser', TODO solve riskiness of installing over ssh
           LoginGraceTime: '30s',
           X11Forwarding: 'no',
           PubkeyAuthentication: 'no',
@@ -191,9 +198,9 @@
       exec('skill -KILL -u xtremote'.format(options));
       exec('deluser {xt.name}'.format(options));
       exec('deluser xtremote');
+      exec('rm -rf /usr/local/{xt.name}'.format(options));
       exec('rm -f {sys.htpasswdfile}'.format(options));
       exec('rm -f '+ path.resolve('/etc/sudoers.d/', user_policy_filename.replace('user', '{xt.name}').format(options)));
-      //rimraf.sync(path.resolve(options.sys.userHomeDir));
     }
   });
 

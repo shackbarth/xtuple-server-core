@@ -6,16 +6,15 @@
    */
   var pgconfig = exports;
 
-  var task = require('../../lib/task'),
+  var lib = require('../../lib'),
     tuner = require('./tuner'),
     pghba = require('./hba'),
-    pgcli = require('../../lib/pg-cli'),
     exec = require('execSync').exec,
     format = require('string-format'),
     defaults = require('./defaults'),
-    _ = require('underscore');
+    _ = require('lodash');
   
-  _.extend(pgconfig, task, /** @exports pgconfig */ {
+  _.extend(pgconfig, lib.task, /** @exports pgconfig */ {
 
     options: {
       host: {
@@ -68,25 +67,14 @@
     },
 
     /**
-     * derive additional info from the environment.
+     * Find the existing cluster that corresponds to our options, if it exists,
+     * and set options.pg.cluster
      */
-    configure: function (mode, options) {
-      var config = _.extend({ mode: mode }, defaults.base, defaults[mode], options),
-        clusters = pgcli.lsclusters(),
-        collection = _.compact(_.map(_.pluck(_.flatten(_.values(clusters)), 'config'),
-            function (path) {
-          var conf = path + '/postgresql.conf';
-          try {
-            return JSON.parse(exec('head -1 ' + conf).slice(1));
-          }
-          catch (e) {
-            return('%s is not readable by this tool', conf);
-          }
-        }));
-
-      // TODO check 'collection' against provisioning guidelines
-
-      return config;
+    discoverCluster: function (options) {
+      options.pg.cluster = _.findWhere(lib.pgCli.lsclusters(), {
+        name: options.xt.name,
+        version: options.pg.version
+      });
     }
   });
 })();

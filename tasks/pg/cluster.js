@@ -11,7 +11,7 @@
     pgcli = require('../../lib/pg-cli'),
     exec = require('execSync').exec,
     path = require('path'),
-    _ = require('underscore'),
+    _ = require('lodash'),
     knex;
 
   _.extend(cluster, task, /** @exports cluster */ {
@@ -61,7 +61,6 @@
 
           // create 'postgres' and 'root' roles for convenience
           'CREATE ROLE postgres LOGIN SUPERUSER',
-          'CREATE ROLE root LOGIN SUPERUSER',
 
           'GRANT xtrole TO admin'
         ],

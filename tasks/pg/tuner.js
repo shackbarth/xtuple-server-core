@@ -10,7 +10,7 @@
 
   var task = require('../../lib/task'),
     format = require('string-format'),
-    _ = require('underscore'),
+    _ = require('lodash'),
     env = require('./defaults').env,
     pgcli = require('../../lib/pg-cli'),
     exec = require('execSync').exec,
@@ -47,9 +47,6 @@
           path.resolve(__dirname, postgresql_src_filename.format(pg))
         ).toString('ascii'),
         conf_values = _.extend({ }, cluster, config, {
-          params: JSON.stringify(_.extend({
-            generated: new Date().valueOf()
-          }, pg)),
           name: options.xt.name,
           timezone: options.pg.timezone,
           data_directory: cluster.data,
@@ -61,10 +58,7 @@
           ssl_key_file: options.pg.outkey,
           ssl_ca_file: options.nginx.outcrt
         }),
-        postgresql_conf = postgresql_conf_template
-          .format(conf_values)
-          .replace(/^\s+/mg, '')
-          .trim(),
+        postgresql_conf = postgresql_conf_template.format(conf_values),
         postgresql_conf_path = path.resolve(cluster.config, 'postgresql.conf'),
         sysctl_conf_path = path.resolve('/etc/sysctl.d/30-postgresql-shm.conf'),
         sysctl_conf;

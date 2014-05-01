@@ -11,7 +11,7 @@
     pgcli = require('../../lib/pg-cli'),
     path = require('path'),
     fs = require('fs'),
-    _ = require('underscore'),
+    _ = require('lodash'),
     exec = require('execSync').exec,
     build = require('../../lib/xt/build'),
     rimraf = require('rimraf');

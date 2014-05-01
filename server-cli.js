@@ -15,25 +15,34 @@
     exec = require('execSync').exec,
     clc = require('cli-color'),
     S = require('string'),
-    _ = require('underscore'),
-    program = require('commander'),
+    _ = require('lodash'),
+    cli = require('commander'),
     pkg = require('./package'),
     help = _.contains(process.argv, '--help'),
     options = { },
     run = function (plan, options) {
-      planner.install(plan, options);
-      planner.log_progress({ phase: 'installer', task: 'installer', msg: 'Done!'});
-      process.exit(0);
+      planner.execute(plan, options)
+        .then(function () {
+          planner.log_progress({ phase: 'planner', task: 'execute', msg: 'Done!'});
+          process.exit(0);
+        })
+        .fail(function (error) {
+          console.log(error);
+          process.exit(0);
+        });
     },
     originalOptions,
     resultingOptions;
 
+  var program = cli.command('<plan>')
+    .option('--xt-name <name>', 'Account name')
+    .option('--xt-version <version>', 'xTuple version');
+
+  console.log('\nxTuple Server v'+ pkg.version);
+
   if (exec('id -u').stdout.indexOf('0') !== 0) {
     planner.die({ msg: 'Installer must be run as root', prefix: 'xtuple' });
   }
-
-  program.command('<plan>').version(pkg.version)
-    .option('--headless', 'Run in headless mode; continue through all prompts');
 
   if (process.argv.length < 3) {
     console.log(clc.yellow.bold('\nNo plan specified. Please see README for usage\n'));
@@ -84,16 +93,18 @@
   // default values with provided values. installer's automatic camelcasing of
   // arguments, as well as its strange setting of values directly on the
   // 'Commander' object unfortunately complicate this process somewhat.
-  _.each(program.options, function (option) {
+  _.each(program.options, function (option, key) {
     var flag = option.long,
       cleanflag = option.long.replace('--', ''),
       prop = S(cleanflag).camelize().s,
       argpath = cleanflag.split('-');
 
     if (!argpath[1]) {
-      console.log(clc.yellow('Skipping argument: '+ option));
+      //console.log(clc.yellow('Skipping argument: \n%j'), option);
       return;
     }
+
+    options[argpath[0]] || (options[argpath[0]] = { });
 
     if (!_.isUndefined(program[prop])) {
       options[argpath[0]][argpath[1]] = program[prop];
@@ -101,26 +112,20 @@
   });
 
   planner.compileOptions(plan, options);
+  if (help) { return program.help(); }
+
   planner.verifyOptions(plan, options);
 
-  if (help) {
-    return program.help();
-  }
-
-  console.log('\nxTuple Server v'+ pkg.version);
   console.log(clc.bold('\nInstallation Plan:\n'));
   planner.displayPlan(plan, options);
 
   if (_.contains(process.argv, '--force')) {
     options.force = true;
   }
-  if (_.contains(process.argv, '--headless')) {
-    run(plan, options);
-  }
   else {
-    program.prompt(clc.green.bold('\nPress Enter to Continue...'), function () {
-      run(plan, options);
-    });
+    program.prompt(
+      clc.green.bold('\nPress Enter to Continue...'),
+      _.partial(run, plan, options)
+    );
   }
-
 })();
