@@ -42,11 +42,7 @@ install_debian () {
 
 install_node () {
   XT_NODE_VERSION=$(curl http://semver.io/node/resolve/$XT_NODE_VERSION)
-
-  NPM_NODE_VERSION=$XT_NODE_VERSION
-  if [[ $XT_NODE_VERSION =~ "0.8" ]]; then
-    NPM_NODE_VERSION=$(curl http://semver.io/node/stable)
-  fi
+  NPM_NODE_VERSION=$(curl http://semver.io/node/stable)
 
   node_tarball=node-v$XT_NODE_VERSION-linux-x64.tar.gz
   npm_tarball=node-v$NPM_NODE_VERSION-linux-x64.tar.gz
