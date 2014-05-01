@@ -45,9 +45,9 @@ describe('xTuple Installer', function () {
   global.installPlan = [
     {name: 'sys', tasks: [ 'paths', 'policy' ]},
     {name: 'xt', tasks: [ 'clone' ]},
-    {name: 'pg', tasks: [ 'config', 'cluster' ]},
+    {name: 'pg', tasks: [ 'cluster' ]},
     {name: 'nginx', tasks: [ 'ssl', 'site', 'etchosts' ]},
-    {name: 'pg', tasks: [ 'hba', 'tuner', 'snapshotmgr' ]},
+    {name: 'pg', tasks: [ 'config', 'hba', 'tuner' ]},
     {name: 'xt', tasks: [ 'serverconfig', 'database' ]},
     {name: 'sys', tasks: [ 'cups', 'service' ]}
   ];
