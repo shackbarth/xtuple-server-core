@@ -15,6 +15,7 @@ install_debian () {
   log "Adding Debian Repositories..."
 
   apt-get -qq update | tee -a $logfile
+  apt-get -qq upgrade | tee -a $logfile
   apt-get -qq autoremove --force-yes
   apt-get -qq install python-software-properties --force-yes
 

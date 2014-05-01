@@ -37,7 +37,7 @@
   var program = cli.command('<plan>')
     .option('--xt-name <name>', 'Account name')
     .option('--xt-version <version>', 'xTuple version')
-    .option('--force', 'Force uninstall first');
+    .option('--sys-force', 'Force uninstall first');
 
   console.log('\nxTuple Server v'+ pkg.version);
 
@@ -50,7 +50,7 @@
     process.exit(0);
   }
 
-  var xtupleScripts = process.env.SRCDIR || '/usr/lib/node_modules/xtuple-scripts/',
+  var xtupleScripts = process.env.SRCDIR || '/usr/local/lib/node_modules/xtuple-scripts/',
     planFile = path.resolve(xtupleScripts, 'plans', process.argv[2] + '.json'),
     planExists = fs.existsSync(planFile),
     plan = planExists && require(planFile);
@@ -120,7 +120,7 @@
   console.log(clc.bold('\nInstallation Plan:\n'));
   planner.displayPlan(plan, options);
 
-  if (_.contains(process.argv, '--force')) {
+  if (_.contains(process.argv, '--sys-force')) {
     options.force = true;
   }
   else {
