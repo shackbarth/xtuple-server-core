@@ -34,6 +34,7 @@
         fs.unlinkSync('/etc/init.d/xtuple');
       }
       catch (e) { }
+      exec('sudo HOME={xt.userhome} -u {xt.name} pm2 ping'.format(options));
     },
 
     /** @override */
