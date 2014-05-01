@@ -47,7 +47,7 @@ describe('xTuple Installer', function () {
     {name: 'xt', tasks: [ 'clone' ]},
     {name: 'pg', tasks: [ 'cluster' ]},
     {name: 'nginx', tasks: [ 'ssl', 'site', 'etchosts' ]},
-    {name: 'pg', tasks: [ 'config', 'hba', 'tuner' ]},
+    {name: 'pg', tasks: [ 'hba', 'tuner', 'config' ]},
     {name: 'xt', tasks: [ 'serverconfig', 'database' ]},
     {name: 'sys', tasks: [ 'cups', 'service' ]}
   ];
