@@ -8,7 +8,8 @@
     path = require('path'),
     _ = require('lodash'),
     json = require('prettyjson'),
-    clc = require('cli-color');
+    clc = require('cli-color'),
+    sleep = require('sleep').sleep;
 
   _.extend(report, lib.task, /** @exports report */ {
 
@@ -35,9 +36,12 @@
         };
       }
 
-      console.log(clc.yellow.bold('Access Credentials'));
+      console.log();
+      console.log(clc.bold('Access Credentials'));
       console.log(json.render(options.report));
       console.log(clc.red.bold('Write this information down now. This report will disappear in 2 minutes.'));
+      sleep(120);
+      console.log(clc.reset());
     },
 
     /** @override */
