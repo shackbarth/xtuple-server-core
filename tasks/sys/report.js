@@ -14,7 +14,7 @@
   _.extend(report, lib.task, /** @exports report */ {
 
     /** @override */
-    afterInstall: function (options) {
+    doTask: function (options) {
       options.report = {
         'xTuple Login': {
           domain: options.nginx.domain,
@@ -42,13 +42,7 @@
       console.log(clc.red.bold('Write this information down now. This report will disappear in 2 minutes.'));
       sleep(120);
       console.log(clc.reset);
-    },
-
-    /** @override */
-    doTask: function (options) {
-
     }
-
   });
 })();
 

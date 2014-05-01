@@ -59,7 +59,7 @@
           // create 'admin' user (default xtuple client admin)
           'CREATE ROLE admin WITH LOGIN PASSWORD \'{xt.adminpw}\' SUPERUSER'.format(options),
 
-          // create 'postgres' and 'root' roles for convenience
+          // create 'postgres' role for convenience
           'CREATE ROLE postgres LOGIN SUPERUSER',
 
           'GRANT xtrole TO admin',
