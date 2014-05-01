@@ -19,6 +19,20 @@
   _.extend(policy, task, /** @exports policy */ {
 
     /** @override */
+    beforeInstall: function (options) {
+      var userBlacklist = [
+        'xtuple',
+        'xtadmin',
+        'xtremote',
+        'root',
+        'admin'
+      ];
+      if (_.contains(userBlacklist, options.xt.name)) {
+        throw new Error('Invalid name: '+ options.xt.name);
+      }
+    },
+
+    /** @override */
     beforeTask: function (options) {
       // if customer appears new, that is they've provided no main database,
       // snapshot to restore from, or admin password, generate a admin password
