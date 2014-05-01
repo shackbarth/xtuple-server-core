@@ -33,8 +33,9 @@ install_debian () {
   apt-get -qq install curl build-essential openssl libssl-dev libv8-dev openssh-server cups git-core nginx-full --force-yes | tee -a $logfile 2>&1
   apt-get -qq install postgresql-$XT_PG_VERSION postgresql-server-dev-$XT_PG_VERSION --force-yes | tee -a $logfile 2>&1
   apt-get -qq install postgresql-contrib-$XT_PG_VERSION postgresql-$XT_PG_VERSION-plv8 --force-yes | tee -a $logfile 2>&1
+  apt-get -qq install couchdb --force-yes 2>&1
 
-  # include to fix mysterious npm install error occuring on node 0.11 with pm2
+  # fixes mysterious npm install error occuring on node 0.11 with pm2
   apt-get -qq install libavahi-compat-libdnssd-dev --force-yes | tee -a $logfile 2>&1
 
   log "All dependencies installed."
