@@ -1,8 +1,8 @@
-## xTuple Server
-[![Build Status](https://magnum.travis-ci.com/xtuple/xtuple-scripts.svg?token=gns5sJtFWu8Pk688aPh7)](https://magnum.travis-ci.com/xtuple/xtuple-scripts)
-
-# STOP
+## RTFM
 By design, this program is capable of granting/revoking system-level permissions, destroying data, and other very powerful things. If you plan to run this program in any production-like arena or on any machine with personal or customer data on it, read this ENTIRE DOCUMENT first. If you do not, you will probably wish you had. **You have been warned.**
+
+# xTuple Server
+[![Build Status](https://magnum.travis-ci.com/xtuple/xtuple-scripts.svg?token=gns5sJtFWu8Pk688aPh7)](https://magnum.travis-ci.com/xtuple/xtuple-scripts)
 
 This is the **xTuple Server**. It installs, configures, runs, serves, secures, backs up, restores, forks, upgrades, pilots, monitors and manages your xTuple appliance, demo, cloud app, or development environment. [Now with 37% more cloud support!](http://www.theonion.com/video/hp-on-that-cloud-thing-that-everyone-else-is-talki,28789/)
 
