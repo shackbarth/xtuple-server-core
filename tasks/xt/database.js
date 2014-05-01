@@ -169,8 +169,8 @@
         demo = _.findWhere(options.xt.database.list, { dbname: 'xtuple_demo' }),
         qsBuild, demoBuild;
 
+      rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
       if (quickstart) {
-        rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
         qsBuild = exec(build.getSourceBuildCommand(quickstart, options));
 
         if (qsBuild.code !== 0) {
@@ -178,6 +178,12 @@
         }
       }
       if (demo) {
+        demoBuild = exec(build.getSourceBuildCommand(demo, options));
+
+        if (demoBuild.code !== 0) {
+          throw new Error(JSON.stringify(demoBuild));
+        }
+        /*
         rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
         var cp = exec([
           'cp',
@@ -191,6 +197,7 @@
         if (demoBuild.code !== 0) {
           throw new Error(JSON.stringify(demoBuild, null, 2));
         }
+        */
       }
     }
   });

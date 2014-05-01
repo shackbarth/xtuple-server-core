@@ -36,7 +36,8 @@
 
   var program = cli.command('<plan>')
     .option('--xt-name <name>', 'Account name')
-    .option('--xt-version <version>', 'xTuple version');
+    .option('--xt-version <version>', 'xTuple version')
+    .option('--force', 'Force uninstall first');
 
   console.log('\nxTuple Server v'+ pkg.version);
 
