@@ -12,12 +12,11 @@ describe('xTuple Installer', function () {
       xt: {
         name: 'xtmocha',
         version: '4.4.0',
-        demo: true,
-        //quickstart: true
+        demo: true
       },
       pg: {
         version: process.env.XT_PG_VERSION,
-        mode: 'testing'
+        capacity: 8
       }
     };
 

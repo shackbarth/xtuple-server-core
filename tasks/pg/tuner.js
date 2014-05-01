@@ -49,7 +49,6 @@
 
     /** @override */
     beforeInstall: function (options) {
-      options.pg.capacity = tuner.capacity[options.pg.mode];
       options.pg.slotRatio = options.pg.slots / options.pg.capacity;
       options.pg.tunerEnv = tuner.env;
       options.pg.clusterCount = _.size(lib.pgCli.lsclusters());
