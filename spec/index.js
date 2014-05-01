@@ -26,9 +26,6 @@ describe('xTuple Installer', function () {
       'installer tests must be run with sudo'
     );
   });
-  it('must set XT_PG_VERSION environment variable', function () {
-    assert.include([ '9.1', '9.3' ], String(process.env.XT_PG_VERSION));
-  });
 
   describe('planner', function () {
     describe('#execute', function () {
