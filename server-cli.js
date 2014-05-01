@@ -37,7 +37,7 @@
   var program = cli.command('<plan>')
     .option('--xt-name <name>', 'Account name')
     .option('--xt-version <version>', 'xTuple version')
-    .option('--force', 'Force uninstall first');
+    .option('--sys-force', 'Force uninstall first');
 
   console.log('\nxTuple Server v'+ pkg.version);
 
@@ -120,7 +120,7 @@
   console.log(clc.bold('\nInstallation Plan:\n'));
   planner.displayPlan(plan, options);
 
-  if (_.contains(process.argv, '--force')) {
+  if (_.contains(process.argv, '--sys-force')) {
     options.force = true;
   }
   else {
