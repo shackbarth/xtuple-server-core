@@ -10,13 +10,12 @@
    */
   var hba = exports;
 
-  var task = require('../../lib/task'),
+  var lib = require('../../lib'),
     _ = require('lodash'),
     fs = require('fs'),
     path = require('path'),
     exec = require('execSync').exec,
     format = require('string-format'),
-    pgcli = require('../../lib/pg-cli'),
     filename_template = 'pg_hba-{pg.version}.conf.template',
     xtuple_hba_entries = [
 
@@ -25,25 +24,24 @@
 
     //  'local      all             all                                     trust',
 
+      '# internal network (rfc1918)',
+      'host       all             all             10.0.0.0/8              md5',
+      'host       all             all             172.16.0.0/12           md5',
+      'host       all             all             192.168.0.0/16          md5',
+
+      '# xtuple\'s network (for remote maintenance)',
+      '#hostssl    all             all             .xtuple.com             md5',
+      'hostssl    all             all             184.179.17.0/24         md5',
+
       '# allow "{xt.name}" user access from anywhere, but require matching ssl',
       '# cert for this privilege to even be considered.',
       'hostssl    all             {xt.name}       0.0.0.0/0               cert clientcert=1',
 
-      '# internal network (rfc1918)',
-      'hostssl    all             all             10.0.0.0/8              md5',
-      'hostssl    all             all             172.16.0.0/12           md5',
-      'hostssl    all             all             192.168.0.0/16          md5',
-
-      '# xtuple\'s network (for remote maintenance)',
-      'hostssl    all             all             .xtuple.com             md5',
-      'hostssl    all             all             184.179.17.0/24         md5',
-
       '# world',
       '#hostssl   all             all             0.0.0.0/0               md5'
-
     ];
   
-  _.extend(hba, task, /** @exports hba */ {
+  _.extend(hba, lib.task, /** @exports hba */ {
 
     /** @override */
     beforeTask: function (options) {
@@ -74,21 +72,6 @@
 
       hba.createClientCert(options);
 
-      if (parseFloat(options.pg.version) < 9.3) {
-        fs.symlinkSync(
-          path.resolve(options.xt.ssldir, 'server.crt'),
-          path.resolve('/var/lib/postgresql', options.pg.version, options.xt.name, 'server.crt')
-        );
-        fs.symlinkSync(
-          path.resolve(options.xt.ssldir, 'server.crt'),
-          path.resolve('/var/lib/postgresql', options.pg.version, options.xt.name, 'root.crt')
-        );
-        fs.symlinkSync(
-          path.resolve(options.xt.ssldir, 'server.key'),
-          path.resolve('/var/lib/postgresql', options.pg.version, options.xt.name, 'server.key')
-        );
-      }
-  
       _.extend(options.pg.hba, { path: hba_target, string: hba_conf });
     },
 
