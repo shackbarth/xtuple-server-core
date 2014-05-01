@@ -14,7 +14,10 @@
     exec = require('execSync').exec,
     fs = require('fs'),
     os = require('os'),
-    path = require('path');
+    path = require('path'),
+    phi = (Math.sqrt(5) + 1) / 2,
+    MB = 1048576,
+    GB = Math.pow(1048576, 2);
 
   _.extend(tuner, lib.task, /** @exports tuner */ {
 
@@ -33,10 +36,6 @@
 
     // scalar byte values are in MB
     env: {
-      phi: (Math.sqrt(5) + 1) / 2,
-      MB: 1048576,
-      GB: Math.pow(1048576, 2),
-
       /**
        * <http://www.postgresql.org/docs/9.3/static/kernel-resources.html>
        * Docs: "if pages, ceil(SHMMAX/PAGE_SIZE)" ...and "A page is almost always
@@ -70,7 +69,7 @@
       _.extend(options.pg.config, {
         work_mem: work_mem(options),
         shared_buffers: shared_buffers(options),
-        max_stack_depth: max_stack_depth(options),
+        //max_stack_depth: max_stack_depth(options),
         effective_cache_size: effective_cache_size(options),
         max_connections: 128
       });
@@ -99,31 +98,35 @@
     }
   });
 
+  function maintenance_work_mem (options) {
+    return work_mem(options) * 2;
+  }
+
   /**
    * http://www.postgresql.org/docs/current/static/runtime-config-resource.html#GUC-WORK-MEM
    */
   function work_mem (options) {
-    return Math.ceil(shared_buffers(options) / 32);
+    return Math.ceil(shared_buffers(options) / 64);
   }
 
   /**
    * <http://www.postgresql.org/docs/current/static/runtime-config-resource.html#GUC-SHARED-BUFFERS>
    */
   function shared_buffers (options) {
-    return Math.ceil((os.totalmem() / 4) * options.pg.slotRatio);
+    return Math.ceil(((os.totalmem() / 4) * options.pg.slotRatio) / MB);
   }
 
   /**
    * <http://www.postgresql.org/docs/current/static/runtime-config-query.html#GUC-EFFECTIVE-CACHE-SIZE>
    */
   function effective_cache_size (options) {
-    return Math.ceil(os.totalmem() * options.pg.tunerEnv.phi);
+    return Math.ceil((os.totalmem() * phi) / MB);
   }
 
   /**
    * <http://www.postgresql.org/docs/current/static/runtime-config-resource.html#GUC-MAX-STACK-DEPTH>
    */
   function max_stack_depth (options) {
-    return Math.floor((7/8) * options.pg.tunerEnv.stacklimit / options.pg.tunerEnv.MB);
+    return Math.floor((7/8) * options.pg.tunerEnv.stacklimit);
   }
 })();

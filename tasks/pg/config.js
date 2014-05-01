@@ -21,6 +21,7 @@
       locale: 'en_US.UTF-8',
       max_connections: 64,
       work_mem: 1,
+      maintenance_work_mem: 16,
       temp_buffers: 16,
       shared_buffers: 64,
       effective_cache_size: 256,
