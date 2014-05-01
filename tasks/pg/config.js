@@ -69,6 +69,11 @@
       pgconfig.writePostgresqlConfig(options);
     },
 
+    /** @override */
+    afterTask: function (options) {
+      lib.pgCli.ctlcluster({ action: 'restart', version: options.pg.version, name: options.xt.name });
+    },
+
     /**
      * Find the existing cluster that corresponds to our options, if it exists,
      * and set options.pg.cluster
@@ -93,7 +98,7 @@
         ssl_ca_file: options.nginx.outcrt
       }, pgconfig.defaults);
 
-      var targetPath = path.resolve(options.pg.cluster.config, 'postgresql.conf'),
+      var targetPath = path.resolve('/etc/postgresql', options.pg.version, options.xt.name, 'postgresql.conf'),
         templateFile = path.resolve(__dirname, 'postgresql-{pg.version}.conf.template'.format(options)),
         template = fs.readFileSync(templateFile).toString(),
         conf = template.format(options.pg.config);

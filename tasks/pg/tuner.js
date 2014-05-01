@@ -78,11 +78,6 @@
       tuner.writeSysctlConfig(options);
     },
 
-    /** @override */
-    afterTask: function (options) {
-      lib.pgCli.ctlcluster({ action: 'restart', version: options.pg.version, name: options.xt.name });
-    },
-
     /**
      * Tune the sysctl configs
      */
