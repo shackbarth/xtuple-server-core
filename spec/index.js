@@ -1,6 +1,6 @@
 var assert = require('chai').assert,
   exec = require('execSync').exec,
-  _ = require('underscore'),
+  _ = require('lodash'),
   path = require('path'),
   fs = require('fs'),
   planner = require('../lib/planner'),
@@ -12,27 +12,47 @@ describe('xTuple Installer', function () {
       xt: {
         name: 'xtmocha',
         version: '4.4.0',
-        demo: true,
-        quickstart: true
+        demo: true
       },
       pg: {
         version: process.env.XT_PG_VERSION,
-        mode: 'dedicated'
+        capacity: 8
       }
     };
+
+  it('must run with root privileges', function () {
+    assert(
+      exec('id -u').stdout.indexOf('0') === 0,
+      'installer tests must be run with sudo'
+    );
+  });
+
+  describe('planner', function () {
+    describe('#execute', function () {
+      it('should return resolved promise', function (done) {
+        planner.execute([ ], { })
+          .then(function () {
+            done();
+          })
+          .fail(function (e) {
+            assert.fail(e);
+          });
+      });
+    });
+  });
 
   // palindromic install plans are my favorite kinds of install plans
   global.installPlan = [
     {name: 'sys', tasks: [ 'paths', 'policy' ]},
     {name: 'xt', tasks: [ 'clone' ]},
-    {name: 'pg', tasks: [ 'config', 'cluster' ]},
+    {name: 'pg', tasks: [ 'cluster' ]},
     {name: 'nginx', tasks: [ 'ssl', 'site', 'etchosts' ]},
-    {name: 'pg', tasks: [ 'hba', 'tuner', 'snapshotmgr' ]},
-    {name: 'xt', tasks: [ 'serverconfig', 'database' ]},
-    {name: 'sys', tasks: [ 'cups', 'service' ]}
+    {name: 'pg', tasks: [ 'hba', 'tuner', 'config' ]},
+    {name: 'xt', tasks: [ 'serverconfig', 'testconfig', 'database' ]},
+    {name: 'sys', tasks: [ 'cups', 'service', 'report' ]}
   ];
 
-  // XXX remove this when zombie is fixed in node 0.10
+  // XXX remove this check when zombie is fixed in node 0.10
   //if (!!process.env.TRAVIS && (process.env.XT_NODE_VERSION || '').indexOf('0.10') === -1) {
     //global.installPlan.push({name: 'xt', tasks: [ 'testconfig', 'runtests' ]});
   //}
@@ -51,21 +71,10 @@ describe('xTuple Installer', function () {
           }, global.options));
         }
         catch (e) {
-          //console.log('benign: '+ e.message);
+          // uninstall tasks are allowed to fail
         }
       });
-
     });
-  });
-
-  it('must run with root privileges', function () {
-    assert(
-      exec('id -u').stdout.indexOf('0') === 0,
-      'installer tests must be run with sudo'
-    );
-  });
-  it('must set XT_PG_VERSION environment variable', function () {
-    assert.include([ '9.1', '9.3' ], String(process.env.XT_PG_VERSION));
   });
 
   describe('setup', function () {
@@ -95,24 +104,38 @@ describe('xTuple Installer', function () {
     });
   });
 
-  describe('install', function () {
-    describe('tasks', function () {
-      // load tests for install plan
+  describe('execute', function () {
+    describe('tasks', function (done) {
+      this.timeout(900 * 1000); // 15 minutes
+
       planner.eachTask(global.installPlan, function (task, phaseName, taskName) {
         describe(phaseName + '.' + taskName, function () {
-          before(function () {
-            // run installer tasks
-            task.beforeTask(global.options);
-            task.doTask(global.options);
-            task.afterTask(global.options);
-          });
-
-          it('should be sane', function () {
+          it('should be sane', function (done) {
             assert(task);
             assert(global.options);
+            done();
           });
-
-          require(path.resolve('spec', phaseName, taskName));
+          describe('#beforeTask', function (done) {
+            it('should complete without error', function (done) {
+              task.beforeTask(global.options);
+              done();
+            });
+          });
+          describe('#doTask', function (done) {
+            it('should complete without error', function (done) {
+              task.doTask(global.options);
+              done();
+            });
+          });
+          describe('#afterTask', function (done) {
+            it('should complete without error', function (done) {
+              task.afterTask(global.options);
+              done();
+            });
+          });
+          describe('spec', function () {
+            require(path.resolve('spec', phaseName, taskName));
+          });
         });
       });
     });
@@ -124,6 +147,5 @@ describe('xTuple Installer', function () {
         });
       });
     });
-
   });
 });

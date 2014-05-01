@@ -8,7 +8,7 @@
 
   var task = require('../../lib/task'),
     format = require('string-format'),
-    _ = require('underscore'),
+    _ = require('lodash'),
     path = require('path'),
     exec = require('execSync').exec,
     fs = require('fs');

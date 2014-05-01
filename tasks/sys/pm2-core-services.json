@@ -12,7 +12,7 @@
       "XT_NAME": "{xt.name}",
       "XT_VERSION": "{xt.version}",
       "XT_DOMAIN": "{nginx.domain}",
-      "XT_URL": "/",
+      "XT_URL": "{nginx.domain}",
       "XT_SCHEDULE": "Always On"
     },
     "exec_mode": "fork_mode",
@@ -24,7 +24,7 @@
   {
     "name": "xtuple-healthfeed-{xt.version}-{xt.name}",
     "user": "{xt.name}",
-    "script": "/usr/lib/node_modules/pm2/lib/HttpInterface.js",
+    "script": "/usr/local/lib/node_modules/xtuple-scripts/node_modules/pm2/lib/HttpInterface.js",
     "env": {
       "NODE_ENV": "production",
       "HOME": "{xt.userhome}",
@@ -46,8 +46,8 @@
   {
     "name": "xtuple-snapshotmgr-{xt.version}-{xt.name}",
     "user": "{xt.name}",
-    "script": "/usr/bin/xtuple-server",
-    "args": "[ 'backup', '--xt-name', '{xt.name}', '--xt-version', '{xt.version}' ]",
+    "script": "/usr/local/bin/xtuple-server",
+    "args": "[ 'backup', '--xt-name', '{xt.name}', '--xt-version', '{xt.version}', '--headless' ]",
     "cron_restart": "{pg.snapschedule}",
     "env": {
       "NODE_ENV": "production",
@@ -57,7 +57,7 @@
       "XT_NAME": "{xt.name}",
       "XT_VERSION": "{xt.version}",
       "XT_DOMAIN": "{nginx.domain}",
-      "XT_URL": "--",
+      "XT_URL": "N/A",
       "XT_SCHEDULE": "{pg.snapschedule}"
     },
     "exec_mode": "fork_mode",

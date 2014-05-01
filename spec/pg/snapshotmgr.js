@@ -1,5 +1,5 @@
 var assert = require('chai').assert,
-  _ = require('underscore'),
+  _ = require('lodash'),
   exec = require('execSync').exec,
   fs = require('fs'),
   path = require('path'),
