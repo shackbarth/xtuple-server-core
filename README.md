@@ -27,12 +27,14 @@ This is the **xTuple Server**. It installs, configures, runs, serves, secures, b
     - `sudo xtuple-server install --xt-version 4.4.0 --xt-name something --xt-demo`
 
 This installs a single database called `xtuple_demo` for a user `something`. Secure credentials
-and other access info are generated for you, and if you're lucky, they will be shown in a report once
-installation is finished.
+and other access info are generated for you, they will be shown in a report once
+installation is finished. Get a pen ready; for security, they are not saved in any file, and you 
+will have a limited amount of time to write them down.
 
-For more information and details on how to perform more advanced installs, keep reading.
+For more information and details on how to perform more serious stuff, keep reading.
 
 ### Development
+TODO
 
 # 1. Install
 
@@ -61,8 +63,22 @@ By default, the following variables are set by `bootstrap.sh`:
   - `XT_PG_VERSION=9.3`
 
 ### d. Running the installer
-
 The `xtuple-server` command-line program is installed by `bootstrap.sh`. It requires `sudo` privileges.
+
+#### 0. Prologue
+  - Postgres is installed for you. So is nginx. And everything. There is no reason to do any of this manually.
+  - The Installer prefers to fail for trivial reasons than to potentially install an app incorrectly. Failure is designed to be obvious. Here are some common reasons it might decide to fail:
+    - An SSL bundle `.zip` that is of another format besides the Namcheap PositiveSSL email attachment. 
+    - Some other slightly wrong was given; a wrong version number, a typo in the edition, etc.
+    - The provided database file is not able to be automatically mobile-ized
+  
+  - The Installer generates credentials. And everything else. There is no reason to edit anything by hand.
+    - Before running the installer, find a pen and paper. When the installer finishes, it displays credentials for a limited time. If you do not write it down, you are screwed.
+    - And on that note: if you are installing over SSH, failure to follow these instructions could result in being locked out of the machine **irreversibly**, regardless of how much `sudo` you have.
+    - If you think a config is wrong, [file a bug report](https://github.com/xtuple/xtuple-scripts/issues?state=open). Changing it by hand will probably break some automatically-installed thing you didn't know existed.
+    - Do not install anything else on the machine. If you need additional packages for an xTuple installation, it needs to be written as an add-on module to the installer. File an issue.
+
+#### 1. Examples
 
   - Basic quickstart cloud deployment example:
     - `xtuple-server install --xt-version 4.4.0 --xt-name cloudinator --pg-capacity 64 --xt-quickstart`
