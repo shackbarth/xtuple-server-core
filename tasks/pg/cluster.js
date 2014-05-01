@@ -7,21 +7,20 @@
    */
   var cluster = exports;
 
-  var task = require('../../lib/task'),
-    pgcli = require('../../lib/pg-cli'),
+  var lib = require('../../lib'),
     exec = require('execSync').exec,
     path = require('path'),
-    _ = require('lodash'),
-    knex;
+    _ = require('lodash');
 
-  _.extend(cluster, task, /** @exports cluster */ {
+  _.extend(cluster, lib.task, /** @exports cluster */ {
 
     /** @override */
     beforeInstall: function (options) {
-      var exists = _.findWhere(pgcli.lsclusters(), {
-        name: options.xt.name,
-        version: parseFloat(options.pg.version)
-      });
+      var clusters = lib.pgCli.lsclusters(),
+        exists = _.findWhere(clusters, {
+          name: options.xt.name,
+          version: parseFloat(options.pg.version)
+        });
 
       if (exists) {
         throw new Error('cluster configuration already exists');
@@ -32,23 +31,23 @@
 
     /** @override */
     doTask: function (options) {
-      _.extend(options.pg.cluster, pgcli.createcluster(options), { name: options.xt.name });
-      pgcli.ctlcluster({ action: 'restart', version: options.pg.version, name: options.xt.name });
+      _.extend(options.pg.cluster, lib.pgCli.createcluster(options), { name: options.xt.name });
+      lib.pgCli.ctlcluster({ action: 'restart', version: options.pg.version, name: options.xt.name });
 
       cluster.initCluster(options);
-      pgcli.ctlcluster({ action: 'reload', version: options.pg.version, name: options.xt.name });
+      lib.pgCli.ctlcluster({ action: 'reload', version: options.pg.version, name: options.xt.name });
     },
 
     /** @override */
     uninstall: function (options) {
-      pgcli.dropcluster({ name: options.xt.name, version: options.pg.version });
+      lib.pgCli.dropcluster({ name: options.xt.name, version: options.pg.version });
     },
 
     /**
      * Setup an existing, empty-ish cluster to receive xtuple.
      */
     initCluster: function (options) {
-      pgcli.createdb(_.extend({ dbname: options.xt.name, owner: options.xt.name }, options));
+      lib.pgCli.createdb(_.extend({ dbname: options.xt.name, owner: options.xt.name }, options));
 
       // Docs: <http://www.postgresql.org/docs/9.3/static/sql-createrole.html>
       var queries = [
@@ -64,7 +63,7 @@
 
           'GRANT xtrole TO admin'
         ],
-        results = _.map(queries, _.partial(pgcli.psql, options)),
+        results = _.map(queries, _.partial(lib.pgCli.psql, options)),
         failed = _.difference(results, _.where(results, { code: 0 }));
 
       if (failed.length > 0) {
