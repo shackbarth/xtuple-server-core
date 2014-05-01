@@ -91,7 +91,7 @@ clone_installer () {
   cd xtuple-scripts 
 
   npm install --registry http://registry.npmjs.org
-  npm install -g --production http://registry.npmjs.org
+  npm install -g --production --registry http://registry.npmjs.org
 
   log "Running installer self-tests..."
   npm run-script test-$XT_PG_VERSION
