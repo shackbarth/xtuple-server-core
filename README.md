@@ -1,18 +1,35 @@
 [![Build Status](https://magnum.travis-ci.com/xtuple/xtuple-scripts.svg?token=gns5sJtFWu8Pk688aPh7)](https://magnum.travis-ci.com/xtuple/xtuple-scripts)
 
-This is the xTuple Server. It installs, runs, serves, snapshots, restores, upgrades, pilots, and monitors your xTuple system.
+This is the **xTuple Server**. It installs, configures, runs, serves, backs up, restores, forks, upgrades, pilots, monitors and manages your xTuple appliance, cloud app, or development environment. [Now with 37% more cloud support!](http://www.theonion.com/video/hp-on-that-cloud-thing-that-everyone-else-is-talki,28789/)
 
 # 0. Quickstart
 
-### Server Installation Basics
-1. `sudo bash bootstrap.sh`
-2. `sudo xtuple-server install --xt-version 4.4.0 --xt-name xtmocha --xt-quickstart`
+### Installation
+The xTuple Server has two components
+#### 1. "bootstrap"
+  - What does it do?
+    - Installs system dependencies; its only prerequisite is a Ubuntu operating system
+    - Clones this repository and installs the `xtuple-server` CLI into the global path
+  - How do I make it do those things?
+    1. Grab the file [here](https://github.com/xtuple/xtuple-scripts/blob/master/bootstrap.sh).
+    2. `$ sudo bash bootstrap.sh`
 
-This installs a single database called `xtuple_quickstart` for a user `xtmocha`. Secure credentials
-and other access info are generated for you and will be shown in a report once
+#### 2. "xtuple-server"
+  - What does it do?
+    - Sets up users, permissions, packages, services
+    - Configures quite a lot of murky OS-level unpleasantness
+    - Install new accounts, restore databases, backup clusters, etc.
+    - Manages xTuple services
+  - How do I make it install something?
+    - `sudo xtuple-server install --xt-version 4.4.0 --xt-name something --xt-demo`
+
+This installs a single database called `xtuple_demo` for a user `something`. Secure credentials
+and other access info are generated for you, and if you're lucky, they will be shown in a report once
 installation is finished.
 
 For more information and details on how to perform more advanced installs, keep reading.
+
+### Development
 
 # 1. Install
 
@@ -114,13 +131,14 @@ By default, the xTuple Server pro-actively monitors the health of the system on 
 
     Usage:
     
-      sudo xtuple-server {install|backup|restore|upgrade|test} --xt-version <version> --xt-name <name>
+      sudo xtuple-server {install|backup|restore|fork} --xt-version <version> --xt-name <name>
 
     Options:
 
-      --pg-mode [mode]              Installation mode {dedicated|cloud|testing}. [dedicated]
       --pg-version [version]        Version of postgres to install [9.3]
-      --pg-slots [int]              Number of provisioned "slots" to consume [1]
+      --pg-slots [int]              Number of provisioned slots to consume [1]
+      --pg-capacity [int]           Number of slots available on the machine [1]
+
       --pg-locale [string]          Cluster locale [en_US]
       --pg-timezone [integer]       Integer offset from UTC; e.g., "-7" is PDT, "-8" is PST, etc
       --pg-restore [boolean]        Restore the most recent backup [false]
