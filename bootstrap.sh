@@ -41,10 +41,9 @@ install_debian () {
   apt-get -qq install curl build-essential libssl-dev openssh-server cups git-core nginx-full \
     postgresql-$XT_PG_VERSION postgresql-server-dev-$XT_PG_VERSION \
     postgresql-contrib-$XT_PG_VERSION postgresql-$XT_PG_VERSION-plv8 \
+    libavahi-compat-libdnssd-dev \
     couchdb --force-yes | tee -a $logfile
 
-  # fixes mysterious npm install error occuring on node 0.11 with pm2
-  #apt-get -qq install libavahi-compat-libdnssd-dev --force-yes | tee -a $logfile 2>&1
 
   apt-get -qq autoremove --force-yes > /dev/null 2>&1
   log "All dependencies installed."
