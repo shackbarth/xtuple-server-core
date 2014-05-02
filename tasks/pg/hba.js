@@ -55,7 +55,7 @@
         options.pg.cacrt = path.resolve(options.pg.cacrt);
       }
       options.pg.version = (options.pg.version).toString();
-      options.pg.outcacrt = path.resolve('/var/lib/postgresql', options.pg.version, xt.name, 'root.crt');
+      options.pg.outcacrt = path.resolve('/var/lib/postgresql', options.pg.version, options.xt.name, 'root.crt');
     },
 
     /** @override */
