@@ -43,14 +43,26 @@
   
   _.extend(hba, lib.task, /** @exports hba */ {
 
+    /*
+    options: {
+      rootca: {
+        name: '[rootca]',
+        description: 'The root CA file for the SSL cert'
+      }
+    },
+
+    beforeInstall: function (options) {
+      if (_.isString(options.pg.rootca)) {
+        options.pg.rootca = path.resolve(options.pg.rootca);
+      }
+      options.pg.version = (options.pg.version).toString();
+    },
+    */
+
     /** @override */
     beforeTask: function (options) {
-      options.pg.version = (options.pg.version).toString();
       exec('usermod -a -G www-data postgres');
       exec('usermod -a -G ssl-cert postgres');
-
-
-      //exec('chown -R postgres:postgres /etc/postgresql');
     },
 
     /** @override */
@@ -113,11 +125,10 @@
       if (failed.length > 0) {
         throw new Error(JSON.stringify(failed, null, 2));
       }
+      // exec('chown {xt.name}:ssl-cert {pg.rootca}'.format(options));
       exec('chown {xt.name}:ssl-cert {pg.outcrt}'.format(options));
       exec('chown {xt.name}:ssl-cert {pg.outkey}'.format(options));
       exec('chmod -R g=rx,u=wrx,o-rwx {xt.ssldir}'.format(options));
-
-      options.pg.hba.certs = results;
     }
   });
 })();
