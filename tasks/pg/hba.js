@@ -45,7 +45,7 @@
 
     options: {
       cacrt: {
-        name: '[cacrt]',
+        optional: '[cacrt]',
         description: 'The root CA file for the SSL cert'
       }
     },
@@ -53,6 +53,9 @@
     beforeInstall: function (options) {
       if (_.isString(options.pg.cacrt)) {
         options.pg.cacrt = path.resolve(options.pg.cacrt);
+      }
+      else {
+        options.pg.cacrt = options.nginx.incrt;
       }
       options.pg.version = (options.pg.version).toString();
       options.pg.outcacrt = path.resolve('/var/lib/postgresql', options.pg.version, options.xt.name, 'root.crt');
@@ -93,41 +96,34 @@
 
       // create a client key and a signing request against the installed domain
       // cert
-      var commands = [
-          [
-            'openssl req -new -nodes',
-            '-keyout {pg.outkey}',
-            '-out {xt.ssldir}/{xt.name}.csr',
-            '-subj \'/CN={nginx.domain}\''
-          ].join(' ').format(options),
+      exec([
+          'openssl req -new -nodes',
+          '-keyout {pg.outkey}',
+          '-out {xt.ssldir}/{xt.name}.csr',
+          '-subj \'/CN={nginx.domain}\''
+      ].join(' ').format(options));
 
-          [
-            'openssl x509 -req -CAcreateserial',
-            '-in {xt.ssldir}/{xt.name}.csr',
-            '-CAkey {nginx.outkey}',
-            '-CA {nginx.outcrt}',
-            '-out {pg.outcrt}'
-          ].join(' ').format(options),
+      exec([
+          'openssl x509 -req -CAcreateserial',
+          '-in {xt.ssldir}/{xt.name}.csr',
+          '-CAkey {nginx.outkey}',
+          '-CA {nginx.outcrt}',
+          '-out {pg.outcrt}'
+      ].join(' ').format(options));
 
-          [
-            'openssl verify',
-            '-CAfile {nginx.outcrt}',
-            '-purpose sslclient',
-            '{pg.outcrt}'
-          ].join(' ').format(options),
-        ],
-        results = _.map(commands, exec),
-        failed = _.difference(results, _.where(results, { code: 0 }));
+      exec([
+        'openssl verify',
+        '-CAfile {nginx.outcrt}',
+        '-purpose sslclient',
+        '{pg.outcrt}'
+      ].join(' ').format(options));
 
       // copy the ca cert into the postgres data dir
       if (_.isString(options.pg.outcacrt)) {
         exec('cp {pg.cacrt} {pg.outcacrt}'.format(options));
       }
 
-      if (failed.length > 0) {
-        throw new Error(JSON.stringify(failed, null, 2));
-      }
-      // exec('chown {xt.name}:ssl-cert {pg.cacrt}'.format(options));
+      exec('chown {xt.name}:ssl-cert {pg.outcacrt}'.format(options));
       exec('chown {xt.name}:ssl-cert {pg.outcrt}'.format(options));
       exec('chown {xt.name}:ssl-cert {pg.outkey}'.format(options));
       exec('chmod -R g=rx,u=wrx,o-rwx {xt.ssldir}'.format(options));
