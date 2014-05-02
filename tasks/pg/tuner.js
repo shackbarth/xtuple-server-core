@@ -56,11 +56,6 @@
       if (options.pg.clusterCount >= options.pg.capacity + 1) {
         throw new Error('Over Capacity: Declared Capacity: {pg.capacity}; Clusters: {pg.clusterCount}');
       }
-      // only 9.2 and above support custom ssl cert paths; < 9.1 must use
-      // data_dir/server.crt.
-      if ((+options.pg.version) < 9.3 && options.pg.host !== 'localhost') {
-        throw new Error('Auto-install does not support remote Postgres < 9.3 with SSL');
-      }
     },
 
     /** @override */

@@ -12,34 +12,36 @@ install_debian () {
   [[ $dist =~ 'Ubuntu' ]] || die "Linux distro not supported"
   [[ $version =~ '12.04' || $version =~ '14.04' ]] || die "Ubuntu version not supported"
 
-  log "Adding Debian Repositories..."
+  log "Upgrading/Removing existing packages..."
 
   apt-get -qq update | tee -a $logfile
-  apt-get -qq upgrade | tee -a $logfile
-  apt-get -qq autoremove --force-yes
-  apt-get -qq install python-software-properties --force-yes
+  apt-get -qq upgrade | tee -a $logfile > /dev/null 2>&1
 
-  apt-get -qq purge postgresql-${XT_PG_VERSION}* --force-yes 2>&1
-  apt-get -qq purge nodejs-${XT_NODE_VERSION}* --force-yes 2>&1
-  apt-get -qq purge npm* --force-yes 2>&1
+  apt-get -qq remove postgresql-${XT_PG_VERSION}* --force-yes > /dev/null 2>&1
+  apt-get -qq purge nodejs* --force-yes > /dev/null 2>&1
+  apt-get -qq purge npm --force-yes > /dev/null 2>&1
+  apt-get -qq autoremove --force-yes > /dev/null 2>&1
   
+  log "Adding Debian Repositories..."
   if [[ $version =~ '12.04' ]]; then
+    apt-get -qq install python-software-properties --force-yes
+
     wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - 2>&1
     echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list 2>&1
+    add-apt-repository ppa:nginx/stable -y 2>&1
+    add-apt-repository ppa:git-core/ppa -y 2>&1
   fi
-  add-apt-repository ppa:nginx/stable -y 2>&1
-  add-apt-repository ppa:git-core/ppa -y 2>&1
   
   log "Installing Debian Packages..."
 
   apt-get -qq update | tee -a $logfile
-  apt-get -qq install curl build-essential openssl libssl-dev libv8-dev openssh-server cups git-core nginx-full --force-yes | tee -a $logfile 2>&1
+  apt-get -qq install curl build-essential libssl-dev openssh-server cups git-core nginx-full --force-yes | tee -a $logfile 2>&1
   apt-get -qq install postgresql-$XT_PG_VERSION postgresql-server-dev-$XT_PG_VERSION --force-yes | tee -a $logfile 2>&1
   apt-get -qq install postgresql-contrib-$XT_PG_VERSION postgresql-$XT_PG_VERSION-plv8 --force-yes | tee -a $logfile 2>&1
   apt-get -qq install couchdb --force-yes 2>&1
 
   # fixes mysterious npm install error occuring on node 0.11 with pm2
-  apt-get -qq install libavahi-compat-libdnssd-dev --force-yes | tee -a $logfile 2>&1
+  #apt-get -qq install libavahi-compat-libdnssd-dev --force-yes | tee -a $logfile 2>&1
 
   log "All dependencies installed."
 }
@@ -84,7 +86,7 @@ clone_installer () {
   log "npm version: $(npm -v)"
   log "node version: $(node -v)"
 
-  rm -rf /usr/lib/node_modules/xtuple-scripts
+  rm -rf /usr/local/lib/node_modules/xtuple-scripts
   mkdir -p /usr/local/xtuple/src
   cd /usr/local/xtuple/src
   rm -rf xtuple-scripts
@@ -144,7 +146,6 @@ fi
 
 if [[ $1 != '--no-installer' ]]; then
   clone_installer
-  log "See README, and xtuple-scripts/installer.js --help"
 fi
 
 log "Done!"
