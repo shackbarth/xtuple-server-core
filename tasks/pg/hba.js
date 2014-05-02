@@ -55,7 +55,7 @@
         options.pg.cacrt = path.resolve(options.pg.cacrt);
       }
       else {
-        options.pg.cacrt = options.nginx.incrt;
+        options.pg.cacrt = options.nginx.outcrt;
       }
       options.pg.version = (options.pg.version).toString();
       options.pg.outcacrt = path.resolve('/var/lib/postgresql', options.pg.version, options.xt.name, 'root.crt');
@@ -111,12 +111,15 @@
           '-out {pg.outcrt}'
       ].join(' ').format(options));
 
+      /**
+       * FIXME correctly discern pass vs. failure
       exec([
         'openssl verify',
         '-CAfile {nginx.outcrt}',
         '-purpose sslclient',
         '{pg.outcrt}'
       ].join(' ').format(options));
+      **/
 
       // copy the ca cert into the postgres data dir
       if (_.isString(options.pg.outcacrt)) {
