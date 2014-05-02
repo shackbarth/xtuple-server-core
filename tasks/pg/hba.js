@@ -24,7 +24,7 @@
 
     //  'local      all             all                                     trust',
 
-      '# internal network (rfc1918)',
+      '# internal networks (rfc1918); don\'t require ssl',
       'host       all             all             10.0.0.0/8              md5',
       'host       all             all             172.16.0.0/12           md5',
       'host       all             all             192.168.0.0/16          md5',
@@ -35,7 +35,7 @@
 
       '# allow "{xt.name}" user access from anywhere, but require matching ssl',
       '# cert for this privilege to even be considered.',
-      'hostssl    all             {xt.name}       0.0.0.0/0               cert clientcert=1',
+      '# hostssl    all             {xt.name}       0.0.0.0/0               cert clientcert=1',
 
       '# world',
       '#hostssl   all             all             0.0.0.0/0               md5'
@@ -43,24 +43,33 @@
   
   _.extend(hba, lib.task, /** @exports hba */ {
 
+    options: {
+      cacrt: {
+        name: '[cacrt]',
+        description: 'The root CA file for the SSL cert'
+      }
+    },
+
+    beforeInstall: function (options) {
+      if (_.isString(options.pg.cacrt)) {
+        options.pg.cacrt = path.resolve(options.pg.cacrt);
+      }
+      options.pg.version = (options.pg.version).toString();
+      options.pg.outcacrt = path.resolve('/var/lib/postgresql', options.pg.version, options.xt.name, 'root.crt');
+    },
+
     /** @override */
     beforeTask: function (options) {
-      options.pg.version = (options.pg.version).toString();
       exec('usermod -a -G www-data postgres');
       exec('usermod -a -G ssl-cert postgres');
-
-
-      //exec('chown -R postgres:postgres /etc/postgresql');
     },
 
     /** @override */
     doTask: function (options) {
-      var pg = options.pg,
-        xt = options.xt,
-        hba_boilerplate = fs.readFileSync(
+      var hba_boilerplate = fs.readFileSync(
           path.resolve(__dirname, filename_template.format(options))
         ),
-        hba_target = path.resolve('/etc/postgresql/', pg.version, xt.name, 'pg_hba.conf'),
+        hba_target = path.resolve('/etc/postgresql/', options.pg.version, options.xt.name, 'pg_hba.conf'),
         hba_conf = hba_boilerplate.toString()
           .split('\n')
           .concat(xtuple_hba_entries)
@@ -110,14 +119,18 @@
         results = _.map(commands, exec),
         failed = _.difference(results, _.where(results, { code: 0 }));
 
+      // copy the ca cert into the postgres data dir
+      if (_.isString(options.pg.outcacrt)) {
+        exec('cp {pg.cacrt} {pg.outcacrt}'.format(options));
+      }
+
       if (failed.length > 0) {
         throw new Error(JSON.stringify(failed, null, 2));
       }
+      // exec('chown {xt.name}:ssl-cert {pg.cacrt}'.format(options));
       exec('chown {xt.name}:ssl-cert {pg.outcrt}'.format(options));
       exec('chown {xt.name}:ssl-cert {pg.outkey}'.format(options));
       exec('chmod -R g=rx,u=wrx,o-rwx {xt.ssldir}'.format(options));
-
-      options.pg.hba.certs = results;
     }
   });
 })();
