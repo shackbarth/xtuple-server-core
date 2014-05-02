@@ -50,7 +50,11 @@
       }
     },
 
-    beforeInstall: function (options) {
+    /** @override */
+    beforeTask: function (options) {
+      exec('usermod -a -G www-data postgres');
+      exec('usermod -a -G ssl-cert postgres');
+
       if (_.isString(options.pg.cacrt)) {
         options.pg.cacrt = path.resolve(options.pg.cacrt);
       }
@@ -59,12 +63,6 @@
       }
       options.pg.version = (options.pg.version).toString();
       options.pg.outcacrt = path.resolve('/var/lib/postgresql', options.pg.version, options.xt.name, 'root.crt');
-    },
-
-    /** @override */
-    beforeTask: function (options) {
-      exec('usermod -a -G www-data postgres');
-      exec('usermod -a -G ssl-cert postgres');
     },
 
     /** @override */
@@ -122,9 +120,7 @@
       **/
 
       // copy the ca cert into the postgres data dir
-      if (_.isString(options.pg.outcacrt)) {
-        exec('cp {pg.cacrt} {pg.outcacrt}'.format(options));
-      }
+      exec('cp {pg.cacrt} {pg.outcacrt}'.format(options));
 
       exec('chown {xt.name}:ssl-cert {pg.outcacrt}'.format(options));
       exec('chown {xt.name}:ssl-cert {pg.outcrt}'.format(options));
