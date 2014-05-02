@@ -62,7 +62,7 @@
             exec('git clone --recursive https://github.com/xtuple/{repo}.git {path}'.format(template)),
             exec(('cd {path} && git checkout '+ options.xt.repoHash).format(template)),
             exec('cd {path} && npm install'.format(template)),
-            exec('cd {path} && npm install --production -g'.format(template)),
+            //exec('cd {path} && npm install --production -g'.format(template)),
           ],
           failed = _.difference(cloneCommands, _.where(cloneCommands, { code: 0 }));
 

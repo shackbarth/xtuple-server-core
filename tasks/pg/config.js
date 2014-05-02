@@ -54,9 +54,11 @@
 
     /** @override */
     beforeInstall: function (options) {
+      /*
       if (os.totalmem() < (2 * 1048576)) {
         throw new Error('This machine has insufficient RAM');
       }
+      */
       options.pg.config || (options.pg.config = { });
     },
 
@@ -96,7 +98,7 @@
         data_directory: options.pg.cluster.data,
         ssl_cert_file: options.pg.outcrt,
         ssl_key_file: options.pg.outkey,
-        ssl_ca_file: options.nginx.outcrt
+        ssl_ca_file: options.pg.outcacrt || options.nginx.outcrt
       }, pgconfig.defaults);
 
       var targetPath = path.resolve('/etc/postgresql', options.pg.version, options.xt.name, 'postgresql.conf'),
