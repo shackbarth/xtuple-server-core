@@ -15,7 +15,7 @@ install_debian () {
   log "Upgrading/Removing existing packages..."
 
   apt-get -qq update | tee -a $logfile
-  apt-get -qq upgrade | tee -a $logfile > /dev/null 2>&1
+  apt-get -qq upgrade --force-yes | tee -a $logfile > /dev/null 2>&1
 
   apt-get -qq remove postgresql-${XT_PG_VERSION}* --force-yes > /dev/null 2>&1
   apt-get -qq purge nodejs* --force-yes > /dev/null 2>&1
