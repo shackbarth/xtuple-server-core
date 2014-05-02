@@ -98,7 +98,7 @@
         data_directory: options.pg.cluster.data,
         ssl_cert_file: options.pg.outcrt,
         ssl_key_file: options.pg.outkey,
-        ssl_ca_file: options.pg.outcacrt || options.nginx.outcrt
+        ssl_ca_file: options.pg.outcacrt
       }, pgconfig.defaults);
 
       var targetPath = path.resolve('/etc/postgresql', options.pg.version, options.xt.name, 'postgresql.conf'),
