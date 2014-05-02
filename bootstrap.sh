@@ -18,7 +18,7 @@ install_debian () {
 
   # do not run upgrade in CI environment
   if [[ -z $TRAVIS ]]; then
-    apt-get -qq upgrade --force-yes --show-progress | tee -a $logfile
+    apt-get -qq upgrade --force-yes | tee -a $logfile
   fi
 
   apt-get -qq remove postgresql-${XT_PG_VERSION}* --force-yes > /dev/null 2>&1
@@ -41,7 +41,7 @@ install_debian () {
   apt-get -qq install curl build-essential libssl-dev openssh-server cups git-core nginx-full \
     postgresql-$XT_PG_VERSION postgresql-server-dev-$XT_PG_VERSION \
     postgresql-contrib-$XT_PG_VERSION postgresql-$XT_PG_VERSION-plv8 \
-    couchdb --force-yes --show-progress
+    couchdb --force-yes | tee -a $logfile
 
   # fixes mysterious npm install error occuring on node 0.11 with pm2
   #apt-get -qq install libavahi-compat-libdnssd-dev --force-yes | tee -a $logfile 2>&1
