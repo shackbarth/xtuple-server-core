@@ -15,34 +15,38 @@ install_debian () {
   log "Upgrading/Removing existing packages..."
 
   apt-get -qq update | tee -a $logfile
-  apt-get -qq upgrade --force-yes | tee -a $logfile > /dev/null 2>&1
+
+  # do not run upgrade in CI environment
+  if [[ -z $TRAVIS ]]; then
+    apt-get -qq upgrade --force-yes --show-progress | tee -a $logfile
+  fi
 
   apt-get -qq remove postgresql-${XT_PG_VERSION}* --force-yes > /dev/null 2>&1
   apt-get -qq purge nodejs* --force-yes > /dev/null 2>&1
   apt-get -qq purge npm --force-yes > /dev/null 2>&1
-  apt-get -qq autoremove --force-yes > /dev/null 2>&1
   
   log "Adding Debian Repositories..."
   if [[ $version =~ '12.04' ]]; then
     apt-get -qq install python-software-properties --force-yes
 
-    wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - 2>&1
+    wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - > /dev/null 2>&1
     echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list 2>&1
-    add-apt-repository ppa:nginx/stable -y 2>&1
-    add-apt-repository ppa:git-core/ppa -y 2>&1
+    add-apt-repository ppa:nginx/stable -y > /dev/null 2>&1
+    add-apt-repository ppa:git-core/ppa -y > /dev/null 2>&1
   fi
   
   log "Installing Debian Packages..."
 
   apt-get -qq update | tee -a $logfile
-  apt-get -qq install curl build-essential libssl-dev openssh-server cups git-core nginx-full --force-yes | tee -a $logfile 2>&1
-  apt-get -qq install postgresql-$XT_PG_VERSION postgresql-server-dev-$XT_PG_VERSION --force-yes | tee -a $logfile 2>&1
-  apt-get -qq install postgresql-contrib-$XT_PG_VERSION postgresql-$XT_PG_VERSION-plv8 --force-yes | tee -a $logfile 2>&1
-  apt-get -qq install couchdb --force-yes 2>&1
+  apt-get -qq install curl build-essential libssl-dev openssh-server cups git-core nginx-full \
+    postgresql-$XT_PG_VERSION postgresql-server-dev-$XT_PG_VERSION \
+    postgresql-contrib-$XT_PG_VERSION postgresql-$XT_PG_VERSION-plv8 \
+    couchdb --force-yes --show-progress
 
   # fixes mysterious npm install error occuring on node 0.11 with pm2
   #apt-get -qq install libavahi-compat-libdnssd-dev --force-yes | tee -a $logfile 2>&1
 
+  apt-get -qq autoremove --force-yes > /dev/null 2>&1
   log "All dependencies installed."
 }
 
