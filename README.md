@@ -14,7 +14,7 @@ This is the **xTuple Server**. It installs, configures, runs, serves, secures, b
     - Installs system dependencies; its only prerequisite is a Ubuntu operating system
     - Clones this repository and installs the `xtuple-server` CLI into the global path
   - How do I make it do those things?
-    - `$ wget git.io/eFVIDQ -qO- bootstrap.sh | sudo bash`
+    - `$ wget git.io/eFVIDQ -qO- | sudo bash`
 
 #### 2. "xtuple-server"
   - What does it do?
