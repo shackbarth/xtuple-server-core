@@ -122,7 +122,7 @@ if [[ -z $XT_PG_VERSION ]]; then
   export XT_PG_VERSION="9.3"
 fi
 
-log "This program will setup a new machine for xTuple."
+log "This program will turn your server into an xTuple Server."
 log "Using:"
 log "   postgres: $XT_PG_VERSION"
 log "   nodejs:   $XT_NODE_VERSION"
@@ -148,4 +148,5 @@ if [[ $1 != '--no-installer' ]]; then
   clone_installer
 fi
 
-log "Done!"
+log "Done! You now have yourself a bona fide xTuple Server."
+rm -f bootstrap.sh
