@@ -123,6 +123,7 @@
       exec('cp {pg.cacrt} {pg.outcacrt}'.format(options));
 
       exec('chown {xt.name}:ssl-cert {pg.outcacrt}'.format(options));
+      exec('chown {xt.name}:ssl-cert {pg.outcacrt}'.format(options));
       exec('chown {xt.name}:ssl-cert {pg.outcrt}'.format(options));
       exec('chown {xt.name}:ssl-cert {pg.outkey}'.format(options));
       exec('chmod -R g=rx,u=wrx,o-rwx {xt.ssldir}'.format(options));

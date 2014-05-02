@@ -78,6 +78,9 @@
     /** @override */
     afterTask: function (options) {
       ssl.verifyCertificate(options);
+
+      exec('chown {xt.name}:ssl-cert {nginx.outcrt}'.format(options));
+      exec('chown {xt.name}:ssl-cert {nginx.outkey}'.format(options));
     },
 
     /**
@@ -95,10 +98,6 @@
           '-out {nginx.outcrt}',
         ].join(' ').format(options),
         result = exec(cmd);
-
-      exec('chown {xt.name}:ssl-cert {nginx.outcrt}'.format(options));
-      exec('chown {xt.name}:ssl-cert {nginx.outkey}'.format(options));
-      //exec('chmod -R g=wrx,u=wrx {xt.ssldir}'.format(options));
 
       return result;
     },
@@ -125,8 +124,6 @@
       // scripts that makes me want to use lodashs everywhere
       fs.writeFileSync(options.nginx.outcrt, bundleStr);
       exec('cp {nginx.inkey} {nginx.outkey}'.format(options));
-      exec('chown {xt.name}:ssl-cert {nginx.outcrt}'.format(options));
-      exec('chown {xt.name}:ssl-cert {nginx.outkey}'.format(options));
     },
 
     /**
