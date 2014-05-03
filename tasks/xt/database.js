@@ -33,8 +33,8 @@
       },
       pilot: {
         optional: '[boolean]',
-        description: 'Additionally create a pilot area using a copy of the main database',
-        value: true
+        description: 'Additionally create a pilot using a copy of the main database',
+        value: false
       },
       maindb: {
         optional: '[path]',
