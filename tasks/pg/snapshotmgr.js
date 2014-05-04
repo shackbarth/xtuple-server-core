@@ -51,7 +51,7 @@
 
     /** @override */
     doTask: function (options) {
-      if ('install' === options.plan) {
+      if ('install' === options.planName) {
         // validate cron entry
         cron.parseExpressionSync(options.pg.snapschedule);
 
@@ -63,10 +63,10 @@
         fs.writeFileSync(options.sys.pm2.configfile, JSON.stringify(combinedServices, null, 2));
         */
       }
-      else if ('backup' === options.plan) {
+      else if ('backup' === options.planName) {
         snapshotmgr.createSnapshot(options);
       }
-      else if ('restore' === options.plan) {
+      else if ('restore' === options.planName) {
         snapshotmgr.restoreSnapshot(options);
       }
     },

@@ -60,7 +60,7 @@
     process.exit(2);
   }
 
-  options.plan = process.argv[2];
+  options.planName = process.argv[2];
 
   // compile Commander's options list. I wish it accepted a json object; instead
   // we must populate it via api calls
