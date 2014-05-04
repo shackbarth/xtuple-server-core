@@ -40,6 +40,7 @@
 
     /** @override */
     uninstall: function (options) {
+      lib.pgCli.ctlcluster({ name: options.xt.name, version: options.pg.version, action: 'stop' });
       lib.pgCli.dropcluster({ name: options.xt.name, version: options.pg.version });
     },
 
