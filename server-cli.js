@@ -11,6 +11,7 @@
     path = require('path'),
     pgcli = require('./lib/pg-cli'),
     format = require('string-format'),
+    sleep = require('sleep').sleep,
     os = require('os'),
     exec = require('execSync').exec,
     clc = require('cli-color'),
@@ -117,16 +118,11 @@
 
   planner.verifyOptions(plan, options);
 
-  console.log(clc.bold('\nInstallation Plan:\n'));
+  console.log(clc.bold('\nExecution Plan:\n'));
   planner.displayPlan(plan, options);
 
-  if (_.contains(process.argv, '--sys-force')) {
-    options.force = true;
-  }
-  else {
-    program.prompt(
-      clc.green.bold('\nPress Enter to Continue...'),
-      _.partial(run, plan, options)
-    );
-  }
+  console.log(clc.green.bold('\nPlease verify the Execution Plan. Installation will begin in 10 seconds. Press Ctrl-C to cancel.'));
+  sleep(15000);
+  _.partial(run, plan, options);
+
 })();

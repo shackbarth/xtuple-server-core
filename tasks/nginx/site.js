@@ -56,9 +56,6 @@
         '       (^172\\.3[0-1]\\.)',
         '       (^192\\.168\\.)'
       ].join('\n') || '';
-
-      exec('apt-get update -qq');
-      exec('apt-get install apache2-utils -qq --force-yes');
     },
 
     /** @override */

@@ -192,6 +192,8 @@
           PermitRootLogin: 'no',
           // AllowGroups: 'xtadmin xtuser', TODO solve riskiness of installing over ssh
           LoginGraceTime: '30s',
+          ClientAliveInterval: '60',
+          ClientAliveCountMax: '60',  // keep session alive for one hour
           X11Forwarding: 'no',
           PubkeyAuthentication: 'no',
           HostbasedAuthentication: 'no'

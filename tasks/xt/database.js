@@ -32,9 +32,9 @@
         }
       },
       pilot: {
-        optional: '[boolean]',
+        optional: '[yes|no]',
         description: 'Additionally create a pilot using a copy of the main database',
-        value: false
+        value: 'no'
       },
       maindb: {
         optional: '[path]',
@@ -51,9 +51,9 @@
         value: false
       },
       quickstart: {
-        optional: '[boolean]',
+        optional: '[yes|no]',
         description: 'Set to additionally install the quickstart databases',
-        value: false
+        value: 'no'
       },
       adminpw: {
         optional: '[password]',
@@ -67,14 +67,14 @@
         databases = [ ],
         maindb_path;
 
-      if (options.xt.demo) {
+      if (options.xt.demo === 'yes') {
         databases.push({
           dbname: 'xtuple_demo',
           filename: path.resolve(foundationPath, 'postbooks_demo_data.sql'),
           foundation: true
         });
       }
-      if (options.xt.quickstart) {
+      if (options.xt.quickstart === 'yes') {
         databases.push({
           dbname: 'xtuple_quickstart',
           filename: path.resolve(foundationPath, 'quickstart_data.sql'),
@@ -97,7 +97,7 @@
         }
 
         // schedule pilot for installation
-        if (options.xt.maindb && options.xt.pilot) {
+        if (options.xt.maindb && options.xt.pilot === 'yes') {
           databases.push({
             filename: maindb_path,
             dbname: options.xt.name + '_pilot',
