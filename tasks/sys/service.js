@@ -34,7 +34,7 @@
         fs.unlinkSync('/etc/init.d/xtuple');
       }
       catch (e) { }
-      exec('sudo HOME={xt.homedir} -u {xt.name} pm2 ping'.format(options));
+      exec('pm2 ping'.format(options));
     },
 
     /** @override */
@@ -95,7 +95,7 @@
      * @public
      */
     launch: function (options) {
-      var ping = exec('sudo HOME={xt.homedir} pm2 ping'.format(options)),
+      var ping = exec('pm2 ping'.format(options)),
         start = exec('sudo HOME={xt.homedir} pm2 start -u {xt.name} {sys.pm2.configfile}'
             .format(options));
 

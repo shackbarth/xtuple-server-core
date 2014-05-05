@@ -105,7 +105,7 @@
     options[argpath[0]] || (options[argpath[0]] = { });
 
     if (!_.isUndefined(program[prop])) {
-      options[argpath[0]][argpath[1]] = program[prop].trim();
+      options[argpath[0]][argpath[1]] = program[prop];
     }
   });
 
