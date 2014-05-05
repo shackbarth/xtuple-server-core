@@ -8,6 +8,7 @@
 
   var task = require('../../lib/task'),
     os = require('os'),
+    rimraf = require('rimraf'),
     exec = require('execSync').exec,
     format = require('string-format'),
     fs = require('fs'),
@@ -43,6 +44,15 @@
         version: site.getScalarVersion(options)
       });
       options.nginx.hostname = '{nginx.sitename}.localhost'.format(options);
+      options.nginx.sitesAvailable = path.resolve('/etc/nginx/sites-available');
+      options.nginx.sitesEnabled = path.resolve('/etc/nginx/sites-enabled');
+      options.nginx.availableSite = path.resolve(options.nginx.sitesAvailable, options.nginx.sitename);
+      options.nginx.enabledSite = path.resolve(options.nginx.sitesEnabled, options.nginx.sitename);
+
+      if (fs.existsSync(options.nginx.siteConfig)) {
+        throw new Error('nginx site already exists for this account: '+ options.nginx.siteConfig);
+      }
+
       if (options.nginx.domain === 'localhost') {
         options.nginx.domain = options.nginx.hostname;
       }
@@ -56,15 +66,14 @@
         '       (^172\\.3[0-1]\\.)',
         '       (^192\\.168\\.)'
       ].join('\n');
-
-      exec('apt-get update -qq');
-      exec('apt-get install apache2-utils -qq --force-yes');
     },
 
     /** @override */
     beforeTask: function (options) {
       options.nginx.port = require('../xt').serverconfig.getServerSSLPort(options);
       options.nginx.healthfeedport = options.nginx.port + 5984;
+      exec('rm -f '+ path.resolve(options.nginx.sitesEnabled, 'default'));
+      exec('service nginx reload');
     },
 
     /**
@@ -84,29 +93,23 @@
         nginx_default_available = path.resolve('/etc/nginx/sites-available', 'default'),
         etc_hosts_current;
 
-      // replace any existing configs
-      // TODO warn about this in logs
-      exec('rm -f {enabled}'.format({ enabled: nginx_default_enabled }));
-      exec('rm -f {available}'.format({ available: nginx_default_available }));
-
-      exec('rm -f {enabled}'.format({ enabled: nginx_enabled_path }));
-      exec('rm -f {available}'.format({ available: nginx_conf_path }));
-
-      // remove the default config, if it exists. we have no use for this
-      // TODO exec('rm -f {default}'.format({ default: path.resolve(nginx_conf_path, 'default') }));
 
       // write nginx site config file
       fs.writeFileSync(nginx_conf_path, nginx_conf);
 
-      exec('ln -s {available} {enabled}'.format({
-        available: nginx_conf_path,
-        enabled: nginx_enabled_path
-      }));
+      exec('ln -s {nginx.availableSite} {nginx.enabledSite}'.format(options));
 
       _.defaults(options.nginx.site, {
         json: options,
         string: nginx_conf
       });
+    },
+
+    /** @override */
+    uninstall: function (options) {
+      fs.unlinkSync(options.nginx.availableSite);
+      fs.unlinkSync(options.nginx.enabledSite);
+      exec('service nginx reload');
     },
 
     /**

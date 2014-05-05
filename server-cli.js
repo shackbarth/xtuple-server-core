@@ -9,6 +9,7 @@
   var planner = require('./lib/planner'),
     fs = require('fs'),
     path = require('path'),
+    json = require('prettyjson'),
     pgcli = require('./lib/pg-cli'),
     format = require('string-format'),
     os = require('os'),
@@ -36,8 +37,7 @@
 
   var program = cli.command('<plan>')
     .option('--xt-name <name>', 'Account name')
-    .option('--xt-version <version>', 'xTuple version')
-    .option('--sys-force', 'Force uninstall first');
+    .option('--xt-version <version>', 'xTuple version');
 
   console.log('\nxTuple Server v'+ pkg.version);
 
@@ -60,7 +60,7 @@
     process.exit(2);
   }
 
-  options.plan = process.argv[2];
+  options.planName = process.argv[2];
 
   // compile Commander's options list. I wish it accepted a json object; instead
   // we must populate it via api calls
@@ -100,10 +100,7 @@
       prop = S(cleanflag).camelize().s,
       argpath = cleanflag.split('-');
 
-    if (!argpath[1]) {
-      //console.log(clc.yellow('Skipping argument: \n%j'), option);
-      return;
-    }
+    if (!argpath[1]) { return; }
 
     options[argpath[0]] || (options[argpath[0]] = { });
 
@@ -112,21 +109,17 @@
     }
   });
 
-  planner.compileOptions(plan, options);
   if (help) { return program.help(); }
 
+  planner.compileOptions(plan, options);
   planner.verifyOptions(plan, options);
 
   console.log(clc.bold('\nInstallation Plan:\n'));
-  planner.displayPlan(plan, options);
+  console.log(json.render(planner.displayPlan(plan, options)));
 
-  if (_.contains(process.argv, '--sys-force')) {
-    options.force = true;
-  }
-  else {
-    program.prompt(
-      clc.green.bold('\nPress Enter to Continue...'),
-      _.partial(run, plan, options)
-    );
-  }
+  program.prompt(
+    clc.green.bold('\nPress Enter to Continue...'),
+    _.partial(run, plan, options)
+  );
+
 })();
