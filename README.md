@@ -14,7 +14,7 @@ This is the **xTuple Server**. It installs, configures, runs, serves, secures, b
     - Installs system dependencies; its only prerequisite is a Ubuntu operating system
     - Clones this repository and installs the `xtuple-server` CLI into the global path
   - How do I make it do those things?
-    - `$ wget git.io/eFVIDQ -qO- | sudo bash`
+    - `$ wget git.io/67JeUg -qO- | sudo bash`
 
 #### 2. "xtuple-server"
   - What does it do?
@@ -33,7 +33,17 @@ will have a limited amount of time to write them down.
 For more information and details on how to perform more serious stuff, keep reading.
 
 ### Development
-TODO
+  You can develop on the xTuple Server like you might develop most other node.js
+  apps. Since this app is designed to be installed globally, set the following
+  environment variable to point to your `xtuple-scripts` repository:
+  - `XTSERVER_SRCDIR`
+
+  To run your changes, you can invoke the `xtuple-server` CLI script like so:
+  - `XTSERVER_SRCDIR=. ./server-cli install ...`
+
+  It's our job at xTuple to maintain this server and keep it bug-free. Hopefully
+  you won't have to spend any time hacking in here. If you run into problems,
+  please file an issue in github.
 
 # 1. Install
 
@@ -41,7 +51,6 @@ TODO
   - Ubuntu 12.04 or 14.04 Operating System
   - > 4GB RAM
   - Internet Access
-  - 
 
 ### a. System Dependencies
 
@@ -72,13 +81,13 @@ The `xtuple-server` command-line program is installed by `bootstrap.sh`. It requ
 
 #### 0. Prologue
 
-  - Postgres is installed for you. So is nginx. And everything else.
+  - Postgres is installed for you. So are nginx and node.js. And everything else.
   - The Installer prefers to fail for trivial reasons than to potentially install an app incorrectly. Failure is designed to be obvious. Here are some common reasons it might decide to fail:
     - An SSL bundle `.zip` that is of another format besides the Namcheap PositiveSSL email attachment. 
     - Some other slightly wrong was given; a wrong version number, a typo in the edition, etc.
     - The provided database file is not able to be automatically mobile-ized
   
-  - The Installer generates credentials. And everything else.
+  - The Installer generates credentials. And users. And everything else.
     - Before running the installer, find a pen and paper. When the installer finishes, it displays credentials for a limited time. If you do not write it down, you are screwed.
     - And on that note: if you are installing over SSH, failure to follow these instructions could result in being locked out of the machine **irreversibly**, regardless of how much `sudo` you have.
     - If you think a config is wrong, [file a bug report](https://github.com/xtuple/xtuple-scripts/issues?state=open). Changing it by hand will probably break some automatically-installed thing you didn't know existed.
