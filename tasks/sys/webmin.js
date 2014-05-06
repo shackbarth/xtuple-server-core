@@ -29,15 +29,25 @@
       webmin.installNginxSite(options);
     },
 
+    afterTask: function (options) {
+      exec('service nginx reload');
+    },
+
     installCustomCommands: function (options) {
       fs.writeFileSync(options.sys.webminCustomPath, fs.readFileSync('1399142566.cmd'));
       fs.writeFileSync(options.sys.webminCustomPath, fs.readFileSync('1399145736.cmd'));
     },
 
     installNginxSite: function (options) {
+      options.nginx.outkey = path.resolve('/srv/ssl/xtremote.key');
+      options.nginx.outcrt = path.resolve('/srv/ssl/xtremote.crt');
 
+      if (!fs.existsSync(options.nginx.outcrt)) {
+        require('../nginx/ssl').generate(options);
+      }
+
+      // write site file
     }
-
   });
 
 })();
