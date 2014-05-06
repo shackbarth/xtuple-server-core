@@ -26,7 +26,7 @@
     "mocha": "~1.17.1"
   },
   "scripts": {
-    "test": "sudo -E ./node_modules/.bin/mocha spec -R spec -b"
+    "test": "sudo -E node_modules/.bin/mocha spec -R spec -b"
   },
   "bin": {
     "xtuple-server": "./server-cli.js",
@@ -37,7 +37,13 @@
     "!win32"
   ],
   "keywords": [
-    "xtuple"
+    "xtuple",
+    "server",
+    "erp",
+    "crm",
+    "inventory",
+    "distribution",
+    "manufacturing"
   ],
   "engines": {
     "node": ">=0.8.26",

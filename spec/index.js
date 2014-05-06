@@ -11,8 +11,8 @@ describe('xTuple Installer', function () {
       plan: 'install',
       xt: {
         name: 'xtmocha',
-        version: '4.4.0',
-        demo: true
+        version: require('../package').version,
+        demo: 'yes'
       },
       pg: {
         version: process.env.XT_PG_VERSION,
@@ -73,7 +73,7 @@ describe('xTuple Installer', function () {
         catch (e) {
           // uninstall tasks are allowed to fail
         }
-      });
+      }, global.options);
     });
   });
 
