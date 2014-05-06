@@ -3,7 +3,6 @@
 (function () {
   'use strict';
 
-  /** sudo - xtdo */
   var installer = exports;
 
   var planner = require('./lib/planner'),
@@ -42,7 +41,7 @@
   console.log('\nxTuple Server v'+ pkg.version);
 
   if (exec('id -u').stdout.indexOf('0') !== 0) {
-    planner.die({ msg: 'Installer must be run as root', prefix: 'xtuple' });
+    planner.die({ msg: 'Installer must be run as root', prefix: 'xtuple' }, { });
   }
 
   if (process.argv.length < 3) {
@@ -83,7 +82,7 @@
       catch (e) {
         planner.log({ msg: e.stack, prefix: planner.format_prefix(phaseName, taskName) });
         planner.log({ msg: 'See log for error details.', prefix: planner.format_prefix(phaseName, taskName) }, true);
-        planner.die({ msg: e.message, prefix: planner.format_prefix(phaseName, taskName) });
+        planner.die({ msg: e.message, prefix: planner.format_prefix(phaseName, taskName) }, options);
       }
     });
   });
