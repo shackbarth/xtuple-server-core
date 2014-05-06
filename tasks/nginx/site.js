@@ -25,12 +25,6 @@
     },
 
     /**
-     * Integer offset from the Postgres cluster port that this site connects
-     * to; used to assign the port that the nginx upstream server will listen
-     * on.
-    portOffset: 3011,
-
-    /**
      * Generate 'sitename' value and format the domain argument if necessary
      * @override
      */
