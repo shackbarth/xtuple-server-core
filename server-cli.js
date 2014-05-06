@@ -15,7 +15,6 @@
     sleep = require('sleep').sleep,
     os = require('os'),
     exec = require('execSync').exec,
-    clc = require('cli-color'),
     S = require('string'),
     _ = require('lodash'),
     cli = require('commander'),
@@ -47,17 +46,17 @@
   }
 
   if (process.argv.length < 3) {
-    console.log(clc.yellow.bold('\nNo plan specified. Please see README for usage\n'));
+    console.log('\nNo plan specified. Please see README for usage\n');
     process.exit(0);
   }
 
-  var xtupleScripts = process.env.SRCDIR || '/usr/local/lib/node_modules/xtuple-scripts/',
+  var xtupleScripts = process.env.XTSERVER_SRCDIR || '/usr/local/lib/node_modules/xtuple-scripts/',
     planFile = path.resolve(xtupleScripts, 'plans', process.argv[2] + '.json'),
     planExists = fs.existsSync(planFile),
     plan = planExists && require(planFile);
 
   if (!planExists || !_.isObject(plan)) {
-    console.error(clc.yellow.bold('\nNo planfile found at: '+ planFile + '\n'));
+    console.error('\nNo planfile found at: '+ planFile + '\n');
     process.exit(2);
   }
 
@@ -115,11 +114,9 @@
   planner.compileOptions(plan, options);
   planner.verifyOptions(plan, options);
 
-  console.log(clc.bold('\nExecution Plan:\n'));
+  console.log('\nExecution Plan:\n');
   planner.displayPlan(plan, options);
 
-  console.log(clc.green.bold('\nPlease verify the Execution Plan. Installation will begin in 10 seconds. Press Ctrl-C to cancel.'));
-  sleep(15000);
   run(plan, options);
 
 })();

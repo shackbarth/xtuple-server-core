@@ -15,11 +15,13 @@
 
   _.extend(webmin, lib.task, /** @exports webmin */ {
 
+    /** @override */
     beforeInstall: function (options) {
       options.sys.webminConfigPath = path.resolve('/etc/webmin');
       options.sys.webminCustomPath = path.resolve(options.sys.webminConfigPath, 'custom');
     },
 
+    /** @override */
     doTask: function (options) {
       // TODO if debian
       exec('wget https://s3.amazonaws.com/com.xtuple.deploy-assets/webmin_1.680_all.deb');
@@ -29,6 +31,7 @@
       webmin.installNginxSite(options);
     },
 
+    /** @override */
     afterTask: function (options) {
       exec('service nginx reload');
     },
@@ -47,6 +50,10 @@
       }
 
       // write site file
+      options.nginx.availableSite = path.resolve('/etc/nginx/sites-available/webmin-site');
+      options.nginx.enabledSite = path.resolve('/etc/nginx/sites-enabled/webmin-site');
+      options.nginx.siteTemplateFile = path.resolve(__dirname, 'webmin-site');
+      require('../nginx/site').writeSiteConfig(options);
     }
   });
 

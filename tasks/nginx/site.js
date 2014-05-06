@@ -15,9 +15,6 @@
     path = require('path'),
     _ = require('lodash'),
     
-    // nginx site template file path
-    site_template_path = path.resolve(__dirname, 'xtuple-site.template');
-
   _.extend(site, task, /** @exports site */ {
 
     options: {
@@ -49,6 +46,9 @@
       options.nginx.availableSite = path.resolve(options.nginx.sitesAvailable, options.nginx.sitename);
       options.nginx.enabledSite = path.resolve(options.nginx.sitesEnabled, options.nginx.sitename);
 
+      // nginx site template file path
+      options.nginx.siteTemplateFile = path.resolve(__dirname, 'xtuple-site.template');
+
       if (fs.existsSync(options.nginx.siteConfig)) {
         throw new Error('nginx site already exists for this account: '+ options.nginx.siteConfig);
       }
@@ -72,6 +72,7 @@
     beforeTask: function (options) {
       options.nginx.port = require('../xt').serverconfig.getServerSSLPort(options);
       options.nginx.healthfeedport = options.nginx.port + 5984;
+
       exec('rm -f '+ path.resolve(options.nginx.sitesEnabled, 'default'));
       exec('service nginx reload');
     },
@@ -84,25 +85,17 @@
      *  @override
      */
     doTask: function (options) {
-      var pg = options.pg,
-        nginx_site_template = fs.readFileSync(site_template_path).toString(),
-        nginx_conf = nginx_site_template.format(options).trim(),
-        nginx_conf_path = path.resolve('/etc/nginx/sites-available', options.nginx.sitename),
-        nginx_enabled_path = path.resolve('/etc/nginx/sites-enabled', options.nginx.sitename),
-        nginx_default_enabled = path.resolve('/etc/nginx/sites-enabled', 'default'),
-        nginx_default_available = path.resolve('/etc/nginx/sites-available', 'default'),
-        etc_hosts_current;
+      site.writeSiteConfig(options);
+    },
 
-
+    writeSiteConfig: function (options) {
       // write nginx site config file
-      fs.writeFileSync(nginx_conf_path, nginx_conf);
+      fs.writeFileSync(
+        options.nginx.availableSite,
+        fs.readFileSync(options.nginx.siteTemplateFile).toString().format(options).trim()
+      );
 
       exec('ln -s {nginx.availableSite} {nginx.enabledSite}'.format(options));
-
-      _.defaults(options.nginx.site, {
-        json: options,
-        string: nginx_conf
-      });
     },
 
     /** @override */
