@@ -6,16 +6,15 @@
    */
   var site = exports;
 
-  var task = require('../../lib/task'),
+  var lib = require('../../lib'),
     os = require('os'),
-    rimraf = require('rimraf'),
     exec = require('execSync').exec,
     format = require('string-format'),
     fs = require('fs'),
     path = require('path'),
-    _ = require('lodash'),
+    _ = require('lodash');
     
-  _.extend(site, task, /** @exports site */ {
+  _.extend(site, lib.task, /** @exports site */ {
 
     options: {
       domain: {
