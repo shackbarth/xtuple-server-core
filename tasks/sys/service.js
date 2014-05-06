@@ -34,7 +34,7 @@
         fs.unlinkSync('/etc/init.d/xtuple');
       }
       catch (e) { }
-      exec('sudo HOME={xt.userhome} -u {xt.name} pm2 ping'.format(options));
+      exec('pm2 ping'.format(options));
     },
 
     /** @override */
@@ -44,17 +44,6 @@
         path.resolve(options.xt.usersrc, 'node-datasource/main.js'),
         path.resolve(options.sys.sbindir, 'main.js')
       );
-
-      /*
-      var pm2Install = exec('npm install -g https://github.com/xtuple/pm2/tarball/master'),
-        pm2webInstall = exec('npm install -g https://github.com/xtuple/pm2-web/tarball/master');
-
-      if (pm2Install.code !== 0 || pm2webInstall.code !== 0) {
-        throw new Error(JSON.stringify([ pm2Install, pm2webInstall ]));
-      }
-      */
-
-      //exec('rm -f {xt.statedir}/*.pid'.format(options));
 
       // create upstart service "xtuple"
       exec('update-rc.d -f pm2-init.sh remove');
@@ -79,26 +68,21 @@
     afterTask: function (options) {
       exec('service nginx reload');
       service.launch(options);
-      exec('sudo HOME={xt.userhome} -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
+      exec('sudo HOME={xt.homedir} -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
     },
 
     /** @override */
     uninstall: function (options) {
       exec('killall -u {xt.name}'.format(options));
-      exec('sudo HOME={xt.userhome} -u {xt.name} pm2 delete xtuple-server-{xt.version}-{xt.name}'.format(options));
-      exec('sudo HOME={xt.userhome} -u {xt.name} pm2 delete xtuple-healthfeed-{xt.version}-{xt.name}'.format(options));
-      exec('sudo HOME={xt.userhome} -u {xt.name} pm2 delete xtuple-snapshotmgr-{xt.version}-{xt.name}'.format(options));
-      exec('sudo HOME={xt.userhome} -u {xt.name} pm2 kill');
-
-      //exec('rm {xt.logdir}/*.log'.format(options));
-      //exec('npm uninstall pm2 -g');
-      //exec('npm uninstall pm2-web -g');
+      exec('sudo HOME={xt.homedir} pm2 delete xtuple-server-{xt.version}-{xt.name}'.format(options));
+      exec('sudo HOME={xt.homedir} pm2 delete xtuple-healthfeed-{xt.version}-{xt.name}'.format(options));
+      exec('sudo HOME={xt.homedir} pm2 delete xtuple-snapshotmgr-{xt.version}-{xt.name}'.format(options));
     },
 
     /** @override */
     afterInstall: function (options) {
       console.log();
-      var dump = exec('sudo HOME={xt.userhome} -u {xt.name} pm2 dump all'.format(options)),
+      var dump = exec('sudo HOME={xt.homedir} pm2 dump all'.format(options)),
         statusTable = exec('sudo -u {xt.name} service xtuple {xt.version} {xt.name} status'
           .format(options)).stdout;
 
@@ -111,8 +95,8 @@
      * @public
      */
     launch: function (options) {
-      var ping = exec('sudo HOME={xt.userhome} -u {xt.name} pm2 ping'.format(options)),
-        start = exec('sudo HOME={xt.userhome} -u {xt.name} pm2 start -u {xt.name} {sys.pm2.configfile}'
+      var ping = exec('pm2 ping'.format(options)),
+        start = exec('sudo HOME={xt.homedir} pm2 start -u {xt.name} {sys.pm2.configfile}'
             .format(options));
 
       if (start.code !== 0) {

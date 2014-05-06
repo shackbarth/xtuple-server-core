@@ -58,21 +58,25 @@ super() {
 }
 
 start() {
-  echo -e "Starting all xtuple services..."
+  echo -e "Starting all xTuple services..."
   super $PM2 resurrect
 }
 
 stop() {
-  echo -e "Stopping all xtuple services..."
+  echo -e "Stopping all xTuple services..."
   super $PM2 dump
-  super $PM2 delete all
-  super $PM2 kill
+  super $PM2 stop xtuple-server-$version-$account > /dev/null 2>&1
+  super $PM2 stop xtuple-healthfeed-$version-$account > /dev/null 2>&1
+  super $PM2 stop xtuple-snapshotmgr-$version-$account > /dev/null 2>&1
+  echo -e "Done."
 }
 
 restart() {
-  super $PM2 restart xtuple-server-$version-$account 2>&1
-  super $PM2 restart xtuple-healthfeed-$version-$account 2>&1
-  super $PM2 restart xtuple-snapshotmgr-$version-$account 2>&1
+  echo -e "Restarting al xTuple services..."
+  super $PM2 dump
+  super $PM2 restart xtuple-server-$version-$account > /dev/null 2>&1
+  super $PM2 restart xtuple-healthfeed-$version-$account > /dev/null 2>&1
+  super $PM2 restart xtuple-snapshotmgr-$version-$account > /dev/null 2>&1
   status
 }
 
