@@ -1,3 +1,7 @@
 [
+  {"name": "nginx", "tasks": [ "site", "ssl" ], "options": {
+      "execute": false
+    }
+  },
   {"name": "sys", "tasks": [ "webmin" ]}
 ]

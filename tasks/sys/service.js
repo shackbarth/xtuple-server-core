@@ -38,7 +38,7 @@
     },
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
       // TODO replace this with xtuple-server <version> <name> <action>
       fs.symlinkSync(
         path.resolve(options.xt.usersrc, 'node-datasource/main.js'),

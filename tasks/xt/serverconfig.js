@@ -23,7 +23,7 @@
     },
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
       serverconfig.writeBuildConfig(options);
       serverconfig.writeRunConfig(options);
     },

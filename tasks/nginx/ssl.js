@@ -43,7 +43,7 @@
     },
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
       var nginx = options.nginx;
       if (_.isString(nginx.inzip) && _.isString(nginx.inkey)) {
         nginx.inzip = path.resolve(nginx.inzip);
@@ -98,6 +98,11 @@
           '-out {nginx.outcrt}',
         ].join(' ').format(options),
         result = exec(cmd);
+
+      if (result.code !== 0) {
+        console.log(JSON.stringify(options, null, 2));
+        throw new Error('could not generate keypair: '+ result.stdout);
+      }
 
       return result;
     },

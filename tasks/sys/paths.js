@@ -78,7 +78,7 @@
     },
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
 
     }
   });

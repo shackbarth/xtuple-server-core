@@ -50,7 +50,7 @@
     },
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
       if ('install' === options.planName) {
         // validate cron entry
         cron.parseExpressionSync(options.pg.snapschedule);

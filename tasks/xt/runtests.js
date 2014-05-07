@@ -17,7 +17,7 @@
   _.extend(runtests, task, /** @exports runtests */ {
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
       var tests = exec('cd {xt.usersrc} && sudo -u {xt.name} npm test'.format(options));
 
       options.xt.runtests.core = (tests.code === 0);

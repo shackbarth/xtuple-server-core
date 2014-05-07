@@ -68,7 +68,7 @@
     },
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
       pgconfig.writePostgresqlConfig(options);
     },
 

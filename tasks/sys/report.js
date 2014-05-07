@@ -14,7 +14,7 @@
   _.extend(report, lib.task, /** @exports report */ {
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
       options.report = {
         'xTuple Login': {
           domain: options.nginx.domain,

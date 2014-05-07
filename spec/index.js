@@ -12,7 +12,7 @@ describe('xTuple Installer', function () {
       xt: {
         name: 'xtmocha',
         version: require('../package').version,
-        demo: 'yes'
+        demo: true
       },
       pg: {
         version: process.env.XT_PG_VERSION,
@@ -90,7 +90,7 @@ describe('xTuple Installer', function () {
     });
     describe('#beforeInstall', function () {
       before(function () {
-        planner.eachTask(global.installPlan, function (task, phaseName, taskName) {
+        planner.eachTask(global.installPlan, function (task, phase, taskName) {
           task.beforeInstall(global.options);
         });
       });
@@ -102,8 +102,8 @@ describe('xTuple Installer', function () {
     describe('tasks', function (done) {
       this.timeout(900 * 1000); // 15 minutes
 
-      planner.eachTask(global.installPlan, function (task, phaseName, taskName) {
-        describe(phaseName + '.' + taskName, function () {
+      planner.eachTask(global.installPlan, function (task, phase, taskName) {
+        describe(phase.name + '.' + taskName, function () {
           it('should be sane', function (done) {
             assert(task);
             assert(global.options);
@@ -115,9 +115,9 @@ describe('xTuple Installer', function () {
               done();
             });
           });
-          describe('#doTask', function (done) {
+          describe('#executeTask', function (done) {
             it('should complete without error', function (done) {
-              task.doTask(global.options);
+              task.executeTask(global.options);
               done();
             });
           });
@@ -128,7 +128,7 @@ describe('xTuple Installer', function () {
             });
           });
           describe('spec', function () {
-            require(path.resolve('spec', phaseName, taskName));
+            require(path.resolve('spec', phase.name, taskName));
           });
         });
       });
@@ -136,7 +136,7 @@ describe('xTuple Installer', function () {
 
     describe('#afterInstall', function () {
       it('should run all #afterInstall methods', function () {
-        planner.eachTask(global.installPlan, function (task, phaseName, taskName) {
+        planner.eachTask(global.installPlan, function (task, phase, taskName) {
           task.afterInstall(global.options);
         });
       });

@@ -18,7 +18,7 @@
   _.extend(etchosts, lib.task, /** @exports etchosts */ {
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
       var etc_hosts_template = fs.readFileSync(hosts_template_path).toString(),
         etc_hosts_current = fs.readFileSync(path.resolve('/etc/hosts'));
 

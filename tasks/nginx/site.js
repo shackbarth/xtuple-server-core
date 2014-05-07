@@ -50,7 +50,7 @@
         options.nginx.domain = options.nginx.hostname;
       }
       options.nginx.healthfeedurl = '{nginx.domain}/_healthfeed'.format(options);
-      options.nginx.lanEndpoints = (options.pg.mode === 'dedicated') && [
+      options.nginx.lanEndpoints = (options.pg && options.pg.mode === 'dedicated') && [
         '       localhost',
         '       (^127\\.0\\.0\\.1)',
         '       (^10\\.)',
@@ -67,7 +67,6 @@
       options.nginx.healthfeedport = options.nginx.port + 5984;
 
       exec('rm -f '+ path.resolve(options.nginx.sitesEnabled, 'default'));
-      exec('service nginx reload');
     },
 
     /**
@@ -77,8 +76,17 @@
      *  - set up SSL
      *  @override
      */
-    doTask: function (options) {
+    executeTask: function (options) {
       site.writeSiteConfig(options);
+    },
+
+    /** @override */
+    afterTask: function (options) {
+      var reload = exec('service nginx reload');
+
+      if (reload.code !== 0) {
+        throw new Error('nginx failed to reload: ' + reload.stdout);
+      }
     },
 
     writeSiteConfig: function (options) {
@@ -93,8 +101,8 @@
 
     /** @override */
     uninstall: function (options) {
-      fs.unlinkSync(options.nginx.availableSite);
       fs.unlinkSync(options.nginx.enabledSite);
+      fs.unlinkSync(options.nginx.availableSite);
       exec('service nginx reload');
     },
 

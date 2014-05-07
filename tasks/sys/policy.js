@@ -51,7 +51,7 @@
     },
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
       if (exec('id -u {xt.name}'.format(options)).code !== 0) {
         policy.createUsers(options);
         policy.configureSSH(options);

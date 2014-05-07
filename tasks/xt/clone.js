@@ -45,7 +45,7 @@
     },
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
       if (build.hasPrivateExtensions(options)) {
         exec('git config --global credential.helper \'cache --timeout=3600\'');
       }
