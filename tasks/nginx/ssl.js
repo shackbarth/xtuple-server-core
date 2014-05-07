@@ -19,18 +19,15 @@
     options: {
       'inzip': {
         optional: '[file]',
-        description: 'Path to SSL trust chain archive',
-        value: null
+        description: 'Path to SSL trust chain archive'
       },
       'incrt': {
         optional: '[file]',
-        description: 'Path to SSL certificate (.crt)',
-        value: null
+        description: 'Path to SSL certificate (.crt)'
       },
       'inkey': {
         optional: '[file]',
-        description: 'Path to SSL private key (.key)',
-        value: null
+        description: 'Path to SSL private key (.key)'
       }
     },
 
@@ -71,7 +68,11 @@
         }
       }
       else {
-        throw new Error('Missing required SSL inputs');
+        throw new Error([
+          'SSL missing required info.',
+          'Either a key is missing for a non-localhost domain,',
+          'or one of inkey/incrt/inzip is invalid or missing'
+        ].join('\n'));
       }
     },
 

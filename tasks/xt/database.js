@@ -97,7 +97,7 @@
         }
 
         // schedule pilot for installation
-        if (options.xt.maindb && options.xt.pilot) {
+        if (_.isString(options.xt.maindb) && options.xt.pilot === true) {
           databases.push({
             filename: maindb_path,
             dbname: options.xt.name + '_pilot',
