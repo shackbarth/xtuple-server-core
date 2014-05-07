@@ -22,13 +22,11 @@
       exec('usermod -a -G xtuser '+ me);
       exec('usermod -a -G xtadmin '+ me);
 
-      if (exec('id -u xtremote'.format(options)).code !== 0) {
-        ssh.configure(options);
-      }
+      ssh.configure(options);
     },
 
     /**
-     * Configure SSH remote access rules.
+     * Configure SSH remote access rules. Needs to be idempotent.
      * @private
      */
     configure: function  (options) {
