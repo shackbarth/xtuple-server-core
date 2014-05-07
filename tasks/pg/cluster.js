@@ -30,7 +30,7 @@
     },
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
       _.extend(options.pg.cluster, lib.pgCli.createcluster(options), { name: options.xt.name });
       lib.pgCli.ctlcluster({ action: 'restart', version: options.pg.version, name: options.xt.name });
 

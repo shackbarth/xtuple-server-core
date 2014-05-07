@@ -1,3 +1,11 @@
 [
-  {"name": "sys", "tasks": [ "webmin" ]}
+  {"name": "pg", "tasks": [ "config" ], "options": {
+      "execute": false
+    }
+  },
+  {"name": "nginx", "tasks": [ "site", "ssl" ], "options": {
+      "execute": false
+    }
+  },
+  {"name": "sys", "tasks": [ "policy", "webmin", "report" ]}
 ]

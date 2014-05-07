@@ -37,7 +37,7 @@
       // if customer appears new, that is they've provided no main database,
       // snapshot to restore from, or admin password, generate a admin password
       //console.log('generating adminpw: ', (!options.xt.adminpw && !options.pg.restore && !options.xt.maindb));
-      if (!options.xt.adminpw && !options.pg.restore && !options.xt.maindb) {
+      if (!options.xt.adminpw && !options.xt.maindb) {
         options.xt.adminpw = policy.getPassword();
       }
 
@@ -51,7 +51,7 @@
     },
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
       if (exec('id -u {xt.name}'.format(options)).code !== 0) {
         policy.createUsers(options);
         policy.configureSSH(options);
@@ -212,12 +212,13 @@
 
     /** @override */
     uninstall: function (options) {
-      exec('skill -KILL -u {xt.name}'.format(options));
       //exec('skill -KILL -u xtremote'.format(options));
-      exec('deluser {xt.name}'.format(options));
-      exec('deluser xtremote');
-      exec('rm -rf /usr/local/{xt.name}/{xt.version}/xtuple*'.format(options));
-      exec('rm -f '+ path.resolve('/etc/sudoers.d/', user_policy_filename.replace('user', '{xt.name}').format(options)));
+      if (_.isString(options.xt.name)) {
+        exec('skill -KILL -u {xt.name}'.format(options));
+        exec('deluser {xt.name}'.format(options));
+        exec('rm -rf /usr/local/{xt.name}'.format(options));
+        exec('rm -f '+ path.resolve('/etc/sudoers.d/', user_policy_filename.replace('user', '{xt.name}').format(options)));
+      }
     }
   });
 

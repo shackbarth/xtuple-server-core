@@ -32,9 +32,9 @@
         }
       },
       pilot: {
-        optional: '[yes|no]',
+        optional: '[boolean]',
         description: 'Additionally create a pilot using a copy of the main database',
-        value: 'no'
+        value: false
       },
       maindb: {
         optional: '[path]',
@@ -51,9 +51,9 @@
         value: false
       },
       quickstart: {
-        optional: '[yes|no]',
+        optional: '[boolean]',
         description: 'Set to additionally install the quickstart databases',
-        value: 'no'
+        value: false
       },
       adminpw: {
         optional: '[password]',
@@ -67,14 +67,14 @@
         databases = [ ],
         maindb_path;
 
-      if (options.xt.demo === 'yes') {
+      if (options.xt.demo) {
         databases.push({
           dbname: 'xtuple_demo',
           filename: path.resolve(foundationPath, 'postbooks_demo_data.sql'),
           foundation: true
         });
       }
-      if (options.xt.quickstart === 'yes') {
+      if (options.xt.quickstart) {
         databases.push({
           dbname: 'xtuple_quickstart',
           filename: path.resolve(foundationPath, 'quickstart_data.sql'),
@@ -97,7 +97,7 @@
         }
 
         // schedule pilot for installation
-        if (options.xt.maindb && options.xt.pilot === 'yes') {
+        if (_.isString(options.xt.maindb) && options.xt.pilot === true) {
           databases.push({
             filename: maindb_path,
             dbname: options.xt.name + '_pilot',
@@ -114,7 +114,7 @@
     },
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
       if (options.xt.database.list.length === 0) {
         throw new Error('No databases are scheduled to be installed');
       }

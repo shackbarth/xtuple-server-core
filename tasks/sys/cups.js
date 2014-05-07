@@ -18,7 +18,7 @@
     conf_path: path.resolve('/etc/cups/cupsd.conf'),
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
       var cups_conf = fs.readFileSync(cups.conf_path, 'ascii'),
         new_conf = cups_conf.replace(/^Browsing Off/g, 'Browsing On');
 

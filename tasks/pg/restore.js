@@ -34,7 +34,7 @@
     },
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
       // restore database
       lib.pgCli.restore(_.extend({
         filename: path.resolve(options.pg.backupfile),

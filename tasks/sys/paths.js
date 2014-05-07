@@ -8,6 +8,7 @@
 
   var lib = require('../../lib'),
     exec = require('execSync').exec,
+    rimraf = require('rimraf'),
     path = require('path'),
     _ = require('lodash');
 
@@ -78,8 +79,15 @@
     },
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
 
+    },
+
+    /** @override */
+    uninstall: function (options) {
+      if (_.isString(options.sys.userhome)) {
+        rimraf.sync(options.sys.userhome);
+      }
     }
   });
 })();

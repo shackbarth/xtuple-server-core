@@ -11,7 +11,6 @@
     json = require('prettyjson'),
     pgcli = require('./lib/pg-cli'),
     format = require('string-format'),
-    sleep = require('sleep').sleep,
     os = require('os'),
     exec = require('execSync').exec,
     S = require('string'),
@@ -63,26 +62,26 @@
 
   // compile Commander's options list. I wish it accepted a json object; instead
   // we must populate it via api calls
-  planner.eachTask(plan, function (task, phaseName, taskName) {
-    options[phaseName] || (options[phaseName] = { });
-    options[phaseName][taskName] || (options[phaseName][taskName] = { });
+  planner.eachTask(plan, function (task, phase, taskName) {
+    options[phase.name] || (options[phase.name] = { });
+    options[phase.name][taskName] || (options[phase.name][taskName] = { });
 
     _.each(task.options, function (option_details, option_name) {
       try {
         var flag = '--{module}-{option} {optional}{required}'.format(_.extend({
           option: option_name,
-          module: phaseName,
+          module: phase.name,
         }, option_details));
 
         program.option(flag, option_details.description);
 
         // set default values
-        options[phaseName][option_name] = option_details.value;
+        options[phase.name][option_name] = option_details.value;
       }
       catch (e) {
-        planner.log({ msg: e.stack, prefix: planner.format_prefix(phaseName, taskName) });
-        planner.log({ msg: 'See log for error details.', prefix: planner.format_prefix(phaseName, taskName) }, true);
-        planner.die({ msg: e.message, prefix: planner.format_prefix(phaseName, taskName) }, options);
+        planner.log({ msg: e.stack, prefix: planner.format_prefix(phase.name, taskName) });
+        planner.log({ msg: 'See log for error details.', prefix: planner.format_prefix(phase.name, taskName) }, true);
+        planner.die({ msg: e.message, prefix: planner.format_prefix(phase.name, taskName) }, options);
       }
     });
   });
@@ -114,8 +113,8 @@
   planner.verifyOptions(plan, options);
 
   console.log('\nExecution Plan:\n');
-  planner.displayPlan(plan, options);
+  console.log(JSON.stringify(options, null, 2));
 
-  run(plan, options);
-
+  console.log('Review Plan; press Ctrl-C to cancel. Will continue in 10 seconds');
+  setTimeout(_.partial(run, plan, options), 10000);
 })();

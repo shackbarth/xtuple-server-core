@@ -66,7 +66,7 @@
     },
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
       var hba_boilerplate = fs.readFileSync(
           path.resolve(__dirname, filename_template.format(options))
         ),

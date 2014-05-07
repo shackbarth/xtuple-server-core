@@ -6,15 +6,12 @@
   var lib = require('../../lib'),
     exec = require('execSync').exec,
     path = require('path'),
-    _ = require('lodash'),
-    json = require('prettyjson'),
-    clc = require('cli-color'),
-    sleep = require('sleep').sleep;
+    _ = require('lodash');
 
   _.extend(report, lib.task, /** @exports report */ {
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
       options.report = {
         'xTuple Login': {
           domain: options.nginx.domain,
@@ -24,7 +21,7 @@
       };
 
       if (options.sys.policy.remotePassword) {
-        options.report['Remote SSH Access'] = {
+        options.report['Remote Management Access'] = {
           user: 'xtremote',
           password: options.sys.policy.remotePassword
         };
@@ -37,13 +34,9 @@
       }
 
       console.log();
-      console.log(clc.bold('Access Credentials'));
-      console.log(json.render(options.report));
-      console.log(clc.red.bold('Write this information down now. This report will disappear in 2 minutes.'));
-      sleep(120);
-      console.log(clc.reset);
+      console.log('Access Credentials');
+      console.log(JSON.stringify(options.report, null, 2));
+      console.log('Write this information down now. ');
     }
   });
 })();
-
-

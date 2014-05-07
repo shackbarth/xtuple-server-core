@@ -59,7 +59,7 @@
     },
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
       // set tuned values; config will be written by 'config' task
       _.extend(options.pg.config, {
         work_mem: work_mem(options),

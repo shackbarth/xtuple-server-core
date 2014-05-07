@@ -16,7 +16,7 @@
   _.extend(testconfig, lib.task, /** @exports testconfig */ {
 
     /** @override */
-    doTask: function (options) {
+    executeTask: function (options) {
       var loginObject = {
           data: {
             webaddress: 'https://{nginx.hostname}:443'.format(options),
@@ -36,7 +36,7 @@
       testOptions.xt.testdb = 'xtuple_demo';
 
       require('./serverconfig').writeConfig(testOptions);
-      //require('./serverconfig').doTask(testOptions);
+      //require('./serverconfig').executeTask(testOptions);
 
       fs.writeFileSync(options.xt.testloginfile, lib.xt.build.wrapModule(loginObject));
     }
