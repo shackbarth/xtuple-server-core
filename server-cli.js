@@ -11,7 +11,6 @@
     json = require('prettyjson'),
     pgcli = require('./lib/pg-cli'),
     format = require('string-format'),
-    sleep = require('sleep').sleep,
     os = require('os'),
     exec = require('execSync').exec,
     S = require('string'),

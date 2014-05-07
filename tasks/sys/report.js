@@ -7,9 +7,7 @@
     exec = require('execSync').exec,
     path = require('path'),
     _ = require('lodash'),
-    json = require('prettyjson'),
-    clc = require('cli-color'),
-    sleep = require('sleep').sleep;
+    json = require('prettyjson');
 
   _.extend(report, lib.task, /** @exports report */ {
 
@@ -37,13 +35,9 @@
       }
 
       console.log();
-      console.log(clc.bold('Access Credentials'));
+      console.log('Access Credentials');
       console.log(json.render(options.report));
-      console.log(clc.red.bold('Write this information down now. This report will disappear in 2 minutes.'));
-      sleep(120);
-      console.log(clc.reset);
+      console.log('Write this information down now. ');
     }
   });
 })();
-
-
