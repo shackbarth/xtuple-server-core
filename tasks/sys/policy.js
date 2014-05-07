@@ -36,8 +36,7 @@
     beforeTask: function (options) {
       // if customer appears new, that is they've provided no main database,
       // snapshot to restore from, or admin password, generate a admin password
-      //console.log('generating adminpw: ', (!options.xt.adminpw && !options.pg.restore && !options.xt.maindb));
-      if (!options.xt.adminpw && !options.xt.maindb) {
+      if (_.isString(options.xt.name) && !options.xt.adminpw && !options.xt.maindb) {
         options.xt.adminpw = policy.getPassword();
       }
 
@@ -45,7 +44,7 @@
         options.sys.policy.remotePassword = policy.getPassword();
       }
 
-      if (exec('id -u {xt.name}'.format(options)).code !== 0) {
+      if (_.isString(options.xt.name) && exec('id -u {xt.name}'.format(options)).code !== 0) {
         options.sys.policy.userPassword = policy.getPassword();
       }
     },
