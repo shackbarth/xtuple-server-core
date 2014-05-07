@@ -9,3 +9,4 @@ node_modules
 *.tar.gz*
 n.bash
 *.deb
+*.exec

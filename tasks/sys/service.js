@@ -34,7 +34,7 @@
         fs.unlinkSync('/etc/init.d/xtuple');
       }
       catch (e) { }
-      exec('pm2 ping'.format(options));
+      exec('sudo pm2 ping');
     },
 
     /** @override */
@@ -68,6 +68,13 @@
     afterTask: function (options) {
       exec('service nginx reload');
       service.launch(options);
+
+      exec('sudo pm2 ping');
+      // XXX sometimes service creation hangs; I'm not sure why. this is a lame
+      // attempt at making pm2 start more reliable. this is a known pm2 issue.
+      setTimeout(function () {
+        exec('sudo pm2 ping');
+      }, 2000);
       exec('sudo HOME={xt.homedir} -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
     },
 

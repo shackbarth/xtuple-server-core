@@ -7,5 +7,5 @@
       "execute": false
     }
   },
-  {"name": "sys", "tasks": [ "policy", "webmin", "report" ]}
+  {"name": "sys", "tasks": [ "policy", "webmin", "report", "ssh" ]}
 ]
