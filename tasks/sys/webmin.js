@@ -37,8 +37,14 @@
     },
 
     installCustomCommands: function (options) {
-      fs.writeFileSync(options.sys.webminCustomPath, fs.readFileSync('1399142566.cmd'));
-      fs.writeFileSync(options.sys.webminCustomPath, fs.readFileSync('1399145736.cmd'));
+      fs.writeFileSync(
+        options.sys.webminCustomPath,
+        fs.readFileSync(path.resolve(__dirname, '1399142566.cmd'))
+      );
+      fs.writeFileSync(
+        options.sys.webminCustomPath,
+        fs.readFileSync(path.resolve(__dirname, '1399145736.cmd'))
+      );
     },
 
     installNginxSite: function (options) {
