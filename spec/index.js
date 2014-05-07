@@ -27,6 +27,17 @@ describe('xTuple Installer', function () {
     );
   });
 
+  // palindromic install plans are my favorite kinds of install plans
+  global.installPlan = [
+    {name: 'sys', tasks: [ 'paths', 'policy' ]},
+    {name: 'xt', tasks: [ 'clone' ]},
+    {name: 'pg', tasks: [ 'cluster' ]},
+    {name: 'nginx', tasks: [ 'ssl', 'site', 'etchosts' ]},
+    {name: 'pg', tasks: [ 'hba', 'tuner', 'config' ]},
+    {name: 'xt', tasks: [ 'serverconfig', 'testconfig', 'database' ]},
+    {name: 'sys', tasks: [ 'cups', 'service', 'report' ]}
+  ];
+
   describe('planner', function () {
     describe('#execute', function () {
       it('should return resolved promise', function (done) {
@@ -39,43 +50,26 @@ describe('xTuple Installer', function () {
           });
       });
     });
-  });
+    describe('#uninstall', function () {
+      it('should uninstall any existing installation', function () {
+        planner.execute(global.installPlan, _.defaults({
+          planName: 'uninstall',
+          pg: _.extend({
+            cluster: {
+              version: process.env.XT_PG_VERSION,
+              name: global.options.xt.name
+            }
+          }, global.options.pg)
+        }, global.options));
+      });
+    });
 
-  // palindromic install plans are my favorite kinds of install plans
-  global.installPlan = [
-    {name: 'sys', tasks: [ 'paths', 'policy' ]},
-    {name: 'xt', tasks: [ 'clone' ]},
-    {name: 'pg', tasks: [ 'cluster' ]},
-    {name: 'nginx', tasks: [ 'ssl', 'site', 'etchosts' ]},
-    {name: 'pg', tasks: [ 'hba', 'tuner', 'config' ]},
-    {name: 'xt', tasks: [ 'serverconfig', 'testconfig', 'database' ]},
-    {name: 'sys', tasks: [ 'cups', 'service', 'report' ]}
-  ];
+  });
 
   // XXX remove this check when zombie is fixed in node 0.10
   //if (!!process.env.TRAVIS && (process.env.XT_NODE_VERSION || '').indexOf('0.10') === -1) {
     //global.installPlan.push({name: 'xt', tasks: [ 'testconfig', 'runtests' ]});
   //}
-
-  describe('#uninstall', function () {
-    it('should pre-run uninstall on any existing installation', function () {
-      planner.eachTask(global.installPlan, function (task, phaseName, taskName) {
-        try {
-          task.uninstall(_.defaults({
-            pg: _.extend({
-              cluster: {
-                version: process.env.XT_PG_VERSION,
-                name: global.options.xt.name
-              }
-            }, global.options.pg)
-          }, global.options));
-        }
-        catch (e) {
-          // uninstall tasks are allowed to fail
-        }
-      }, global.options);
-    });
-  });
 
   describe('setup', function () {
     describe('#verifyOptions, #compileOptions', function () {
