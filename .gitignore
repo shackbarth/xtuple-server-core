@@ -8,3 +8,4 @@ node_modules
 .pm2
 *.tar.gz*
 n.bash
+*.deb
