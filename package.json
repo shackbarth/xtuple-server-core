@@ -14,7 +14,6 @@
     "mkdirp": "~0.5.0",
     "moment": "~2.5.1",
     "pm2": "https://github.com/xtuple/pm2/tarball/master",
-    "prettyjson": "~1.0.0",
     "q": "~1.0.1",
     "requireindex": "~1.1.0",
     "rimraf": "~2.2.6",

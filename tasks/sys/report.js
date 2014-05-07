@@ -6,8 +6,7 @@
   var lib = require('../../lib'),
     exec = require('execSync').exec,
     path = require('path'),
-    _ = require('lodash'),
-    json = require('prettyjson');
+    _ = require('lodash');
 
   _.extend(report, lib.task, /** @exports report */ {
 
@@ -22,7 +21,7 @@
       };
 
       if (options.sys.policy.remotePassword) {
-        options.report['Remote SSH Access'] = {
+        options.report['Remote Management Access'] = {
           user: 'xtremote',
           password: options.sys.policy.remotePassword
         };
@@ -36,7 +35,7 @@
 
       console.log();
       console.log('Access Credentials');
-      console.log(json.render(options.report));
+      console.log(JSON.stringify(options.report, null, 2));
       console.log('Write this information down now. ');
     }
   });

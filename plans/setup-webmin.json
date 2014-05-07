@@ -3,5 +3,5 @@
       "execute": false
     }
   },
-  {"name": "sys", "tasks": [ "webmin" ]}
+  {"name": "sys", "tasks": [ "policy", "webmin", "report" ]}
 ]
