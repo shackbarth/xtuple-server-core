@@ -46,7 +46,7 @@
 
     /** @override */
     executeTask: function (options) {
-j     _.each(clone.getRepositoryList(options), function (repo) {
+      _.each(clone.getRepositoryList(options), function (repo) {
         var template = _.extend({
             repo: repo,
             path: path.resolve(options.xt.srcdir, repo)
