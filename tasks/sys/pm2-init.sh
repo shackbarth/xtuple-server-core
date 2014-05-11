@@ -15,6 +15,79 @@
 # Description: xTuple Mobile Web Service Manager
 ### END INIT INFO
 
+export PATH=$PATH:/usr/bin
+export HOME=/usr/local/xtuple
+
+PM2=$(which pm2)
+PG_VERSION=$(psql -V | grep [[:digit:]].[[:digit:]] --only-matching)
+
+version="$1"
+account="$2"
+action="$3"
+
+if [[ $UID != 0 ]]; then
+  if [[ -z $action || -z $account || -z $version ]]; then
+    help
+  fi
+else
+  if [[ ! -z $1 ]]; then
+    action="$1"
+  else
+    help
+  fi
+fi
+
+super() {
+  sudo -u $account PATH=$PATH $*
+}
+
+start() {
+  echo -e "Starting all xTuple services..."
+  super $PM2 resurrect
+  super pg_ctlcluster $PG_VERSION $account start
+}
+
+stop() {
+  echo -e "Stopping all xTuple services..."
+  super $PM2 dump
+  super $PM2 stop xtuple-server-$version-$account > /dev/null 2>&1
+  super $PM2 stop xtuple-healthfeed-$version-$account > /dev/null 2>&1
+  super $PM2 stop xtuple-snapshotmgr-$version-$account > /dev/null 2>&1
+
+  super pg_ctlcluster $PG_VERSION $account stop -m fast
+  echo -e "Done."
+}
+
+restart() {
+  echo -e "Restarting xTuple services..."
+  super $PM2 dump
+  super $PM2 restart xtuple-server-$version-$account > /dev/null 2>&1
+  super $PM2 restart xtuple-healthfeed-$version-$account > /dev/null 2>&1
+  super $PM2 restart xtuple-snapshotmgr-$version-$account > /dev/null 2>&1
+
+  super pg_ctlcluster $PG_VERSION $account restart -m fast
+  status
+}
+
+status() {
+  echo ''
+  list=$(super $PM2 list)
+  clusters=$(pg_lsclusters)
+  if [[ -z $list ]]; then
+    help
+  else
+    echo 'xTuple Server Dashboard'
+    if [[ $UID = 0 ]]; then
+      echo "$list"
+      echo "$clusters"
+    else 
+      echo "$list" | head -n 3 && echo "$list" | grep $account -A 1
+      echo "$clusters" | head -n 1 && echo "$clusters" | grep $account
+    fi
+  fi
+
+  RETVAL=$?
+}
 help() {
   echo -e 'xTuple Service'
   echo -e ''
@@ -40,58 +113,6 @@ help() {
   exit 1
 }
 
-PM2=$(which pm2)
-
-version="$1"
-account="$2"
-action="$3"
-
-if [[ -z $action || -z $account || -z $version ]]; then
-  help
-fi
-
-export PATH=$PATH:/usr/bin
-export HOME=/usr/local/$account
-
-super() {
-  sudo -u $account PATH=$PATH $*
-}
-
-start() {
-  echo -e "Starting all xTuple services..."
-  super $PM2 resurrect
-}
-
-stop() {
-  echo -e "Stopping all xTuple services..."
-  super $PM2 dump
-  super $PM2 stop xtuple-server-$version-$account > /dev/null 2>&1
-  super $PM2 stop xtuple-healthfeed-$version-$account > /dev/null 2>&1
-  super $PM2 stop xtuple-snapshotmgr-$version-$account > /dev/null 2>&1
-  echo -e "Done."
-}
-
-restart() {
-  echo -e "Restarting al xTuple services..."
-  super $PM2 dump
-  super $PM2 restart xtuple-server-$version-$account > /dev/null 2>&1
-  super $PM2 restart xtuple-healthfeed-$version-$account > /dev/null 2>&1
-  super $PM2 restart xtuple-snapshotmgr-$version-$account > /dev/null 2>&1
-  status
-}
-
-status() {
-  echo ''
-  list=$(super $PM2 list)
-  if [[ -z $list ]]; then
-    help
-  else
-    echo 'xTuple Server Dashboard'
-    echo "$list" | head -n 3 && echo "$list" | grep $account -A 1
-  fi
-
-  RETVAL=$?
-}
 
 case "$action" in
   start)

@@ -56,12 +56,14 @@
 
       // XXX this is a workaround; something is creating files in these
       // directories as root
+      /*
       exec('chown -R {xt.name} {sys.servicedir}'.format(options));
       exec('chmod -R 700 {sys.servicedir}'.format(options));
       exec('chown -R {xt.name}:xtuser {xt.logdir}'.format(options));
       exec('chmod -R 700 {xt.logdir}'.format(options));
       exec('chown -R {xt.name}:xtuser {xt.statedir}'.format(options));
       exec('chmod -R 700 {xt.statedir}'.format(options));
+      */
     },
     
     /** @override */
