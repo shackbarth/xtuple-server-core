@@ -19,7 +19,6 @@ export PATH=$PATH:/usr/bin
 export HOME=/usr/local/xtuple
 
 PM2=$(which pm2)
-UID=$(id -u)
 PG_VERSION=$(psql -V | grep [[:digit:]].[[:digit:]] --only-matching)
 
 version="$1"
