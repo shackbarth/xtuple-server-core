@@ -38,7 +38,7 @@
         description: 'Path to the postgres backup'
       },
       targetdb: {
-        required: '[targetdb]',
+        optional: '[targetdb]',
         description: 'Name of database to operate on'
       }
     },
@@ -104,7 +104,7 @@
     forkDatabase: function (options) {
       snapshotmgr.backupDatabase(options);
       snapshotmgr.restoreDatabase(_.extend({
-        targetdb: options.pg.targetdb + '_fork_'+ moment().format('MMDD')
+        targetdb: options.pg.targetdb + '_fork_' + moment().format('MMDD')
       }, options));
     },
 
