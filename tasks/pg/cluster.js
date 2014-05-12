@@ -48,7 +48,7 @@
      * Setup an existing, empty-ish cluster to receive xtuple.
      */
     initCluster: function (options) {
-      //lib.pgCli.createdb(_.extend({ dbname: options.xt.name, owner: options.xt.name }, options));
+      lib.pgCli.createdb(_.extend({ dbname: options.xt.name, owner: options.xt.name }, options));
 
       // Docs: <http://www.postgresql.org/docs/9.3/static/sql-createrole.html>
       var queries = [
