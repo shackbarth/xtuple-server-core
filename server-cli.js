@@ -9,7 +9,6 @@
     fs = require('fs'),
     path = require('path'),
     json = require('prettyjson'),
-    pgcli = require('./lib/pg-cli'),
     format = require('string-format'),
     os = require('os'),
     exec = require('execSync').exec,
