@@ -7,17 +7,16 @@
    */
   var database = exports;
 
-  var task = require('../../lib/task'),
+  var lib = require('../../lib'),
     format = require('string-format'),
     path = require('path'),
     build = require('../../lib/xt/build'),
     rimraf = require('rimraf'),
     fs = require('fs'),
     _ = require('lodash'),
-    exec = require('execSync').exec,
-    pgcli = require('../../lib/pg-cli');
+    exec = require('execSync').exec;
 
-  _.extend(database, task, /** @exports database */ {
+  _.extend(database, lib.task, /** @exports database */ {
 
     options: {
       version: {
