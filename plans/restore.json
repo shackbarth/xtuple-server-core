@@ -1,4 +1,5 @@
 [
-  { "name": "sys", "tasks": [ "paths" ] },
-  { "name": "pg", "tasks": [ "restore" ] }
+  { "name": "xt", "tasks": [ "database" ], "options": { "execute": false } },
+  { "name": "sys", "tasks": [ "paths", "policy" ], "options": { "execute": false } },
+  { "name": "pg", "tasks": [ "config", "restore" ] }
 ]
