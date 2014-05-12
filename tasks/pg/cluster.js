@@ -58,7 +58,7 @@
           'CREATE ROLE xtrole',
 
           // create 'admin' user (default xtuple client admin)
-          'CREATE ROLE admin WITH LOGIN PASSWORD \'{xt.adminpw}\' CREATEDB CREATEROLE'.format(options),
+          'CREATE ROLE admin WITH LOGIN PASSWORD \'{xt.adminpw}\' CREATEDB CREATEROLE ADMIN'.format(options),
 
           // create 'postgres' role for convenience + compatibility
           'CREATE ROLE postgres LOGIN SUPERUSER',
