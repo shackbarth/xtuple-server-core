@@ -16,7 +16,6 @@
   _.extend(restore, lib.task, /** @exports restore */ {
 
     options: _.extend({
-
       backupfile: {
         required: '<backupfile>',
         description: 'Path to the postgres backup'

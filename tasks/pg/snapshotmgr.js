@@ -21,10 +21,10 @@
   _.extend(snapshotmgr, lib.task, /** @exports snapshotmgr */ {
 
     options: {
-      restore: {
+      enablesnap: {
         optional: '[boolean]',
-        description: 'Restore the most recent backup',
-        value: false
+        description: 'Enable the snapshot manager',
+        value: true
       },
       snapschedule: {
         optional: '[cron]',
