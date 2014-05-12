@@ -1,24 +1,23 @@
-[
-{
+[{
   "name": "xtuple-snapshotmgr-{xt.version}-{xt.name}",
   "user": "{xt.name}",
-  "script": "/usr/bin/xtuple-server",
-  "args": "[ 'backup', '--xt-name {xt.name}', '--xt-version {xt.version}' ]",
+  "script": "/usr/local/bin/xtuple-server",
+  "args": "[ 'backup-database', '--xt-name', '{xt.name}', '--xt-version', '{xt.version}' ]",
   "cron_restart": "{pg.snapschedule}",
   "env": {
     "NODE_ENV": "production",
-    "PWD": "{xt.userhome}",
+    "HOME": "{xt.userhome}",
     "PORT": "{pg.cluster.port}",
     "XT_PROCESS": "xtuple-snapshotmgr-{xt.version}",
     "XT_NAME": "{xt.name}",
     "XT_VERSION": "{xt.version}",
     "XT_DOMAIN": "{nginx.domain}",
-    "XT_URL": "--",
+    "XT_URL": "N/A",
     "XT_SCHEDULE": "{pg.snapschedule}"
   },
   "exec_mode": "fork_mode",
   "out_file": "{xt.logdir}/pg-snapshot.log",
   "error_file": "{xt.logdir}/pg-snapshot-error.log",
   "pid_file": "{xt.statedir}/pg-snapshot.pid",
-  "min_uptime": 5000
+  "min_uptime": 1000
 }]

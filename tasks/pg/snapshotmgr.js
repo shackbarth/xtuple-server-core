@@ -7,15 +7,12 @@
   var snapshotmgr = exports;
 
   var lib = require('../../lib'),
-    service = require('../sys/service'),
-    pgcli = require('../../lib/pg-cli'),
     fs = require('fs'),
     os = require('os'),
     moment = require('moment'),
     cron = require('cron-parser'),
     exec = require('execSync').exec,
     path = require('path'),
-    program = require('commander'),
     _ = require('lodash');
 
   _.extend(snapshotmgr, lib.task, /** @exports snapshotmgr */ {
@@ -24,7 +21,7 @@
       enablesnap: {
         optional: '[boolean]',
         description: 'Enable the snapshot manager',
-        value: true
+        value: false
       },
       snapschedule: {
         optional: '[cron]',
@@ -35,40 +32,80 @@
         optional: '[integer]',
         description: 'The number of backup snapshots to retain',
         value: 7
+      },
+      backupfile: {
+        optional: '[backupfile]',
+        description: 'Path to the postgres backup'
+      },
+      targetdb: {
+        required: '[targetdb]',
+        description: 'Name of database to operate on'
       }
     },
 
     /** @override */
     beforeInstall: function (options) {
       options.pg.snapshotdir = path.resolve('/var/lib/xtuple', options.xt.version, options.xt.name, 'snapshots');
+      options.pg.pm2 = {
+        configfile: path.resolve(options.sys.servicedir, 'pm2-backup-services.json'),
+        templatefile: path.resolve(__dirname, 'pm2-backup-service.json')
+      };
+      options.pg.pm2.template = fs.readFileSync(options.pg.pm2.templatefile).toString();
     },
 
     /** @override */
     beforeTask: function (options) {
       exec('mkdir -p ' + options.pg.snapshotdir);
       exec(('chown {xt.name}:xtuser '+ options.pg.snapshotdir).format(options));
+      fs.writeFileSync(options.sys.pg.configfile, options.pg.pm2.template.format(options));
     },
 
     /** @override */
     executeTask: function (options) {
-      if ('install' === options.planName) {
-        // validate cron entry
-        cron.parseExpressionSync(options.pg.snapschedule);
+      // validate cron entry
+      cron.parseExpressionSync(options.pg.snapschedule);
 
-        /*
-        var pm2Template = fs.readFileSync(path.resolve(__dirname, 'pm2-backup-service.json')).toString(),
-          coreServices = JSON.parse(fs.readFileSync(options.sys.pm2.configfile).toString()),
-          combinedServices = coreServices.concat(JSON.parse(pm2Template.format(options)));
+      if (options.pg.enablesnap) {
+        exec('pm2 ping');
+        var start = exec('sudo HOME={xt.homedir} pm2 start -u {xt.name} {pg.pm2.configfile}'
+          .format(options));
 
-        fs.writeFileSync(options.sys.pm2.configfile, JSON.stringify(combinedServices, null, 2));
-        */
+        if (start.code !== 0) {
+          throw new Error(JSON.stringify(start));
+        }
       }
-      else if ('backup' === options.planName) {
-        snapshotmgr.createSnapshot(options);
+
+      if (options.planName !== 'install') {
+        snapshotmgr[options.planName.camelize()](options);
       }
-      else if ('restore' === options.planName) {
-        snapshotmgr.restoreSnapshot(options);
-      }
+    },
+
+    /** @override */
+    afterTask: function (options) {
+      exec('HOME=~{xt.name} sudo -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
+    },
+
+    backupDatabase: function (options) {
+      snapshotmgr.createSnapshot(options);
+    },
+
+    restoreDatabase: function (options) {
+      lib.pgCli.restore(_.extend({
+        filename: path.resolve(options.pg.backupfile),
+        dbname: options.pg.targetdb
+      }, options));
+
+      // update config.js
+      var configObject = require(options.xt.configfile);
+      configObject.datasource.databases.push(options.pg.targetdb);
+      fs.writeFileSync(options.xt.configfile, lib.xt.build.wrapModule(configObject));
+    },
+
+    forkDatabase: function (options) {
+      snapshotmgr.backupDatabase(options);
+      snapshotmgr.restoreDatabase(_.extend({
+        targetdb: options.pg.targetdb + '_fork_'+ moment().format('MMDD')
+      }, options));
     },
 
     /**
@@ -102,31 +139,13 @@
      * @public
      */
     createSnapshot: function (options) {
-      var version = options.xt.version,
-        name = options.xt.name,
-        pg_dumpall = 'sudo -u {xt.name} /usr/lib/postgresql/{pg.version}/bin/pg_dumpall',
-        cmd_template = pg_dumpall + ' -U {xt.name} -w -p {port} -f {out} {dbname}',
-
-        // backup globals (users, roles, etc) separately
-        globals_snapshot = exec((pg_dumpall + ' -U {xt.name} -w -p {port} -g > {out}.sql').format(_.extend({
-          port: options.pg.cluster.port,
-          out: snapshotmgr.getSnapshotPath(options, 'globals')
-        }, options))),
-
-        all_snapshot = exec(cmd_template.format(_.defaults({
-          port: options.pg.cluster.port,
-          out: snapshotmgr.getSnapshotPath(options, 'all'),
-          jobs: Math.ceil(os.cpus().length / 2)
-        }, options)));
-
-      if (globals_snapshot.code !== 0) {
-        throw new Error(globals_snapshot.stdout);
-      }
-      if (all_snapshot.code !== 0) {
-        throw new Error(all_snapshot.stdout);
-      }
-
-      return true;
+      lib.pgCli.pg_dumpall({
+        snapshotpath: snapshotmgr.getSnapshotPath(options, 'globals')
+      }, options);
+      lib.pgCli.pg_dump({
+        snapshotpath: snapshotmgr.getSnapshotPath(options, 'maindb'),
+        dbname: options.xt.name + '_main'
+      }, options);
     },
 
     /**
@@ -151,15 +170,15 @@
         deprecated_db = '{dbname}_{version}_{ts}'.format(deprecated_format);
 
       // disconnect all users and lock database
-      pgcli.psql(options, 'select pg_terminate_backend(procpid) from pg_stat_activity');
-      pgcli.psql(options, 'revoke connect on database {dbname} from public'.format(options));
+      lib.pgCli.psql(options, 'select pg_terminate_backend(procpid) from pg_stat_activity');
+      lib.pgCli.psql(options, 'revoke connect on database {dbname} from public'.format(options));
 
       // rename database
-      pgcli.psql(options, ['rename', options.dbname, 'to', deprecated_db].join(' '));
+      lib.pgCli.psql(options, ['rename', options.dbname, 'to', deprecated_db].join(' '));
 
       // initiate restore process... and wait. could take awhile
-      pgcli.createdb(options, 'admin', options.dbname);
-      pgcli.restore(_.extend({
+      lib.pgCli.createdb(options, 'admin', options.dbname);
+      lib.pgCli.restore(_.extend({
         filename: snapshotmgr.getSnapshotPath(options),
         dbname: options.dbname
       }, options));

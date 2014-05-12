@@ -48,7 +48,7 @@
      * Setup an existing, empty-ish cluster to receive xtuple.
      */
     initCluster: function (options) {
-      lib.pgCli.createdb(_.extend({ dbname: options.xt.name, owner: options.xt.name }, options));
+      //lib.pgCli.createdb(_.extend({ dbname: options.xt.name, owner: options.xt.name }, options));
 
       // Docs: <http://www.postgresql.org/docs/9.3/static/sql-createrole.html>
       var queries = [
@@ -58,12 +58,13 @@
           'CREATE ROLE xtrole',
 
           // create 'admin' user (default xtuple client admin)
-          'CREATE ROLE admin WITH LOGIN PASSWORD \'{xt.adminpw}\' SUPERUSER'.format(options),
+          'CREATE ROLE admin WITH LOGIN PASSWORD \'{xt.adminpw}\''.format(options),
 
-          // create 'postgres' role for convenience
+          // create 'postgres' role for convenience + compatibility
           'CREATE ROLE postgres LOGIN SUPERUSER',
 
           'GRANT xtrole TO admin',
+          'GRANT xtrole TO postgres',
           'GRANT xtrole TO {xt.name}'.format(options)
         ],
         results = _.map(queries, _.partial(lib.pgCli.psql, options)),

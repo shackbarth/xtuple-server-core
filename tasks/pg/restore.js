@@ -35,15 +35,6 @@
     /** @override */
     executeTask: function (options) {
       // restore database
-      lib.pgCli.restore(_.extend({
-        filename: path.resolve(options.pg.backupfile),
-        dbname: options.pg.targetdb
-      }, options));
-
-      // update config.js
-      var configObject = require(options.xt.configfile);
-      configObject.datasource.databases.push(options.pg.targetdb);
-      fs.writeFileSync(options.xt.configfile, lib.xt.build.wrapModule(configObject));
     },
 
     /** @override */
