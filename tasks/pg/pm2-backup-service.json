@@ -2,7 +2,7 @@
   "name": "xtuple-snapshotmgr-{xt.version}-{xt.name}",
   "user": "{xt.name}",
   "script": "/usr/local/bin/xtuple-server",
-  "args": "[ 'backup-database', '--xt-name', '{xt.name}', '--xt-version', '{xt.version}' ]",
+  "args": "[ 'snapshot-database', '--xt-name', '{xt.name}', '--xt-version', '{xt.version}' ]",
   "cron_restart": "{pg.snapschedule}",
   "env": {
     "NODE_ENV": "production",
@@ -12,7 +12,7 @@
     "XT_NAME": "{xt.name}",
     "XT_VERSION": "{xt.version}",
     "XT_DOMAIN": "{nginx.domain}",
-    "XT_URL": "N/A",
+    "XT_URL": "--",
     "XT_SCHEDULE": "{pg.snapschedule}"
   },
   "exec_mode": "fork_mode",

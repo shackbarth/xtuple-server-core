@@ -8,7 +8,6 @@
 
   var task = require('../../lib/task'),
     format = require('string-format'),
-    pgcli = require('../../lib/pg-cli'),
     path = require('path'),
     fs = require('fs'),
     _ = require('lodash'),

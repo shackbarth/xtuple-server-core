@@ -2,6 +2,6 @@
   { "name": "xt", "tasks": [ "database" ], "options": { "execute": false, "validate": false } },
   { "name": "sys", "tasks": [ "paths", "policy" ], "options": { "execute": false } },
   { "name": "pg", "tasks": [ "config" ], "options": { "execute": false } },
-  { "name": "pg", "tasks": [ "restore" ] }
+  { "name": "pg", "tasks": [ "backup" ] }
 ]
 

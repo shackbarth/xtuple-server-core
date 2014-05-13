@@ -52,10 +52,6 @@
 
       // Docs: <http://www.postgresql.org/docs/9.3/static/sql-createrole.html>
       var queries = [
-          'DROP EXTENSION IF EXISTS plv8 CASCADE',
-          'DROP EXTENSION IF EXISTS plpgsql CASCADE',
-          'DROP EXTENSION IF EXISTS hstore CASCADE',
-
           'CREATE EXTENSION plv8',
           'CREATE EXTENSION plpgsql',
           'CREATE EXTENSION hstore',

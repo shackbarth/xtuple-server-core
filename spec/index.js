@@ -3,8 +3,7 @@ var assert = require('chai').assert,
   _ = require('lodash'),
   path = require('path'),
   fs = require('fs'),
-  planner = require('../lib/planner'),
-  pgcli = require('../lib/pg-cli');
+  planner = require('../lib/planner');
 
 describe('xTuple Installer', function () {
   global.options = {
