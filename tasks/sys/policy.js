@@ -137,16 +137,12 @@
           'chmod -R g=rx,u=wrx,o-rwx {xt.ssldir}'.format(options),
           'chmod -R g=rwx,u=wrx,o-rw {xt.configdir}'.format(options)
         ],
-        system_users_results,
-        system_access_results,
-        xtuple_users_results,
-        xtuple_access_results,
         sudoers_chmod, visudo_cmd;
 
       // create system users
       if (options.sys.policy.remotePassword) {
-        system_users_results = _.map(system_users, exec);
-        system_access_results = _.map(_.flatten([ system_ownership, system_mode ]), exec);
+        _.map(system_users, exec);
+        _.map(_.flatten([ system_ownership, system_mode ]), exec);
         var htpasswd = exec('htpasswd -cb {sys.htpasswdfile} xtremote {sys.policy.remotePassword}'.format(options));
         if (htpasswd.code !== 0) {
           throw new Error(htpasswd.stdout);
@@ -155,8 +151,8 @@
 
       // create *this* user, and set access rules
       if (options.sys.policy.userPassword) {
-        xtuple_users_results = _.map(xtuple_users, exec);
-        xtuple_access_results = _.map(_.flatten([ user_ownership, user_mode ]), exec);
+        _.map(xtuple_users, exec);
+        _.map(_.flatten([ user_ownership, user_mode ]), exec);
       }
 
       // write sudoers file
