@@ -179,6 +179,7 @@
 
       // set user shell to bash
       exec('sudo chsh -s /bin/bash {xt.name}'.format(options));
+      exec('sudo chsh -s /bin/bash xtremote'.format(options));
     },
 
     /** @override */
