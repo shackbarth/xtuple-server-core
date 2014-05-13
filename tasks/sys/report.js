@@ -50,7 +50,7 @@
 
     /** @override */
     afterInstall: function (_options) {
-      var options = JSON.parse(JSON.stringify(options));
+      var options = JSON.parse(JSON.stringify(_options));
       
       if (options.sys.policy) {
         options.sys.policy.remotePassword = '<hidden>';
