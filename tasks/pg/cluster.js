@@ -52,9 +52,9 @@
 
       // Docs: <http://www.postgresql.org/docs/9.3/static/sql-createrole.html>
       var queries = [
-          'CREATE EXTENSION plv8',
-          'CREATE EXTENSION plpgsql',
-          'CREATE EXTENSION hstore',
+          'CREATE EXTENSION IF NOT EXISTS plv8',
+          'CREATE EXTENSION IF NOT EXISTS plpgsql',
+          'CREATE EXTENSION IF NOT EXISTS hstore',
 
           // create 'admin' user (default xtuple client admin)
           'CREATE ROLE admin WITH LOGIN PASSWORD \'{xt.adminpw}\' SUPERUSER'.format(options),
