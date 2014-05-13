@@ -73,10 +73,13 @@
     },
 
     getPassword: function () {
-      var pass = exec('sleep 5 && sudo openssl rand 6 | base64');
+      var pass = exec('sleep 5 && openssl rand 6 | base64');
         
-      if (pass.code !== 0 || !pass.stdout) {
+      if (pass.code !== 0 && _.isString(pass.stdout)) {
         return pass.stdout.replace(/\W/g, '');
+      }
+      else {
+        throw new Error('Failed to generate password: '+ JSON.stringify(pass));
       }
     },
 
