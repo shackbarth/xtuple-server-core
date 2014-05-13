@@ -76,7 +76,7 @@
       exec('sleep 1');
       var pass = exec('openssl rand 6 | base64');
         
-      if (pass.code !== 0 && _.isString(pass.stdout)) {
+      if (pass.code === 0 && _.isString(pass.stdout)) {
         return pass.stdout.trim().replace(/\W/g, '');
       }
       else {
