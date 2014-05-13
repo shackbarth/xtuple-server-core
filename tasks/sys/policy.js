@@ -73,7 +73,11 @@
     },
 
     getPassword: function () {
-      return exec('openssl rand 6 | base64').stdout.replace(/\W/g, '');
+      var pass = exec('sleep 5 && sudo openssl rand 6 | base64');
+        
+      if (pass.code !== 0 || !pass.stdout) {
+        return pass.stdout.replace(/\W/g, '');
+      }
     },
 
     /**
