@@ -94,7 +94,7 @@
         system_users = [
           'addgroup xtuser',
           'addgroup xtadmin',
-          'useradd xtremote -p {sys.policy.remotePassword}'.format(options),
+          'useradd xtremote -d /usr/local/xtremote -p {sys.policy.remotePassword}'.format(options),
           'adduser xtadmin --disabled-login',
           'usermod -a -G xtadmin,xtuser,www-data,postgres,lpadmin,ssl-cert xtremote',
           'usermod -a -G ssl-cert,xtuser postgres',
