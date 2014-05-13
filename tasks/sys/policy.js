@@ -75,7 +75,15 @@
     },
 
     getPassword: function () {
-      return exec('openssl rand 6 | base64').stdout.replace(/\W/g, '');
+      exec('sleep 1');
+      var pass = exec('openssl rand 6 | base64');
+        
+      if (pass.code === 0 && _.isString(pass.stdout)) {
+        return pass.stdout.trim().replace(/\W/g, '');
+      }
+      else {
+        throw new Error('Failed to generate password: '+ JSON.stringify(pass));
+      }
     },
 
     /**
