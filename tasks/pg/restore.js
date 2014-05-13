@@ -13,11 +13,11 @@ _.extend(exports, lib.task, /** @exports restore-database */ {
 
   options: {
     infile: {
-      required: '<infile>',
+      optional: '[infile]',
       description: 'Path to the file to be restored'
     },
     dbname: {
-      required: '<dbname>',
+      optional: '[dbname]',
       description: 'Name of database to operate on'
     }
   },

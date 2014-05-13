@@ -1,5 +1,7 @@
 var lib = require('../../lib'),
-  pg = require('./'),
+  config = require('./config'),
+  moment = require('moment'),
+  mgr = require('./snapshotmgr'),
   fs = require('fs'),
   exec = require('execSync').exec,
   path = require('path'),
@@ -19,11 +21,12 @@ _.extend(exports, lib.task, /** @exports fork-database */ {
 
   /** @override */
   beforeTask: function (options) {
-    pg.config.discoverCluster(options);
+    config.discoverCluster(options);
   },
 
   /** @override */
   executeTask: function (options) {
+    options.pg.infile = mgr.getSnapshotPath(options);
     options.pg.dbname = exports.getForkName(options);
   },
 

@@ -87,8 +87,7 @@
 
       return path.resolve(
         options.pg.snapshotdir,
-        '{name}_{dbname}_{ts}.{ext}'.format({
-          name: options.xt.name,
+        '{dbname}_{ts}.{ext}'.format({
           dbname: options.pg.dbname,
           ts: ts.format('MMDDhhmm'),
           ext: options.dbname === 'globals' ? 'sql' : 'dir.gz'
