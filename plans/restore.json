@@ -1,4 +1,0 @@
-[
-  { "name": "sys", "tasks": [ "paths" ] },
-  { "name": "pg", "tasks": [ "restore" ] }
-]

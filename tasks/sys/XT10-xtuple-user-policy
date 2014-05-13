@@ -11,4 +11,5 @@
       /usr/local/bin/pm2 restart xtuple-server-{xt.version}-{xt.name}, \
       /usr/local/bin/pm2 restart xtuple-healthfeed-{xt.version}-{xt.name}, \
       /usr/local/bin/pm2 restart xtuple-postgres-{xt.version}-{xt.name}, \
-      /usr/local/bin/pm2 restart xtuple-snapshotmgr-{xt.version}-{xt.name}
+      /usr/local/bin/pm2 restart xtuple-snapshotmgr-{xt.version}-{xt.name}, \
+      /usr/local/bin/xtuple-server * --xt-version {xt.version} * --xt-name {xt.name} *

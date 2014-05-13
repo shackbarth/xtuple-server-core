@@ -7,9 +7,7 @@
   var pgconfig = exports;
 
   var lib = require('../../lib'),
-    pghba = require('./hba'),
     exec = require('execSync').exec,
-    os = require('os'),
     fs = require('fs'),
     path = require('path'),
     format = require('string-format'),
@@ -33,7 +31,7 @@
       host: {
         optional: '[host]',
         description: 'Postgres server host address',
-        value: 'localhost'
+        value: '/var/run/postgresql'
       },
       version: {
         optional: '[version]',
@@ -54,12 +52,8 @@
 
     /** @override */
     beforeInstall: function (options) {
-      /*
-      if (os.totalmem() < (2 * 1048576)) {
-        throw new Error('This machine has insufficient RAM');
-      }
-      */
       options.pg.config || (options.pg.config = { });
+      options.pg.snapshotdir = path.resolve('/var/lib/xtuple', options.xt.version, options.xt.name, 'snapshots');
     },
 
     /** @override */

@@ -26,10 +26,12 @@
         'xtremote',
         'root',
         'admin',
-        'vagrant'
+        'vagrant',
+        'postgres'
       ];
       if (_.contains(userBlacklist, options.xt.name)) {
-        throw new Error('Name for xTuple instance is disallowed: '+ options.xt.name);
+        throw new Error('Name of xTuple instance is reserved for system use: '+ options.xt.name +
+          '. Please provide a different name.');
       }
     },
 

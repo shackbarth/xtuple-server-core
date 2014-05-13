@@ -1,56 +1,58 @@
-(function () {
-  'use strict';
+var lib = require('../../lib'),
+  fs = require('fs'),
+  config = require('./config'),
+  mgr = require('./snapshotmgr'),
+  exec = require('execSync').exec,
+  path = require('path'),
+  _ = require('lodash');
 
-  /**
-   * Restore a database from a single file
-   */
-  var restore = exports;
+/**
+ * Restore a database from a file
+ */
+_.extend(exports, lib.task, /** @exports restore-database */ {
 
-  var lib = require('../../lib'),
-    pgconfig = require('./config'),
-    fs = require('fs'),
-    exec = require('execSync').exec,
-    path = require('path'),
-    _ = require('lodash');
-
-  _.extend(restore, lib.task, /** @exports restore */ {
-
-    options: _.extend({
-
-      backupfile: {
-        required: '<backupfile>',
-        description: 'Path to the postgres backup'
-      },
-      targetdb: {
-        required: '<targetdb>',
-        description: 'Name of target database to create'
-      }
-
-    }, pgconfig.options),
-
-    /** @override */
-    beforeTask: function (options) {
-      pgconfig.discoverCluster(options);
+  options: {
+    infile: {
+      optional: '[infile]',
+      description: 'Path to the file to be restored'
     },
-
-    /** @override */
-    executeTask: function (options) {
-      // restore database
-      lib.pgCli.restore(_.extend({
-        filename: path.resolve(options.pg.backupfile),
-        dbname: options.pg.targetdb
-      }, options));
-
-      // update config.js
-      var configObject = require(options.xt.configfile);
-      configObject.datasource.databases.push(options.pg.targetdb);
-      fs.writeFileSync(options.xt.configfile, lib.xt.build.wrapModule(configObject));
-    },
-
-    /** @override */
-    afterTask: function (options) {
-      exec('HOME=~{xt.name} sudo -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
+    dbname: {
+      optional: '[dbname]',
+      description: 'Name of database to operate on'
     }
-  });
+  },
 
-})();
+  /** @override */
+  beforeInstall: function (options) {
+    options.pg.infile = path.resolve(options.pg.infile);
+  },
+
+  /** @override */
+  beforeTask: function (options) {
+    config.discoverCluster(options);
+  },
+
+  /** @override */
+  executeTask: function (options) {
+    if ('import-users' === options.planName && /\.sql$/.test(options.pg.infile)) {
+      lib.pgCli.psqlFile(options, options.pg.infile);
+    }
+    else {
+      lib.pgCli.createdb(options, 'admin', options.pg.dbname);
+      lib.pgCli.restore(_.extend({
+        filename: path.resolve(options.pg.infile),
+        dbname: options.pg.dbname
+      }, options));
+    }
+
+    // update config.js
+    var configObject = require(options.xt.configfile);
+    configObject.datasource.databases.push(options.pg.dbname);
+    fs.writeFileSync(options.xt.configfile, lib.xt.build.wrapModule(configObject));
+  },
+
+  /** @override */
+  afterTask: function (options) {
+    exec('HOME=~{xt.name} sudo -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
+  }
+});

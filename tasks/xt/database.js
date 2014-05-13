@@ -7,17 +7,16 @@
    */
   var database = exports;
 
-  var task = require('../../lib/task'),
+  var lib = require('../../lib'),
     format = require('string-format'),
     path = require('path'),
     build = require('../../lib/xt/build'),
     rimraf = require('rimraf'),
     fs = require('fs'),
     _ = require('lodash'),
-    exec = require('execSync').exec,
-    pgcli = require('../../lib/pg-cli');
+    exec = require('execSync').exec;
 
-  _.extend(database, task, /** @exports database */ {
+  _.extend(database, lib.task, /** @exports database */ {
 
     options: {
       version: {
@@ -183,21 +182,6 @@
         if (demoBuild.code !== 0) {
           throw new Error(JSON.stringify(demoBuild));
         }
-        /*
-        rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
-        var cp = exec([
-          'cp',
-          path.resolve(demo.filename),
-          path.resolve(options.xt.usersrc, 'test/lib/demo-test.backup')
-        ].join(' ')),
-        buildResult = exec(build.getSourceBuildCommand(demo, options));
-
-        demoBuild = exec('cd {xt.usersrc} && sudo -u {xt.name} npm run-script test-build'.format(options));
-
-        if (demoBuild.code !== 0) {
-          throw new Error(JSON.stringify(demoBuild, null, 2));
-        }
-        */
       }
     }
   });
