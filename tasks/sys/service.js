@@ -65,7 +65,6 @@
       }
 
       exec('sudo HOME={xt.homedir} -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
-      exec('service nginx reload');
     },
 
     /** @override */
@@ -78,6 +77,7 @@
 
     /** @override */
     afterInstall: function (options) {
+      exec('service nginx reload');
       console.log();
       var dump = exec('sudo HOME={xt.homedir} pm2 dump all'.format(options)),
         statusTable = exec('sudo -u {xt.name} service xtuple {xt.version} {xt.name} status'
