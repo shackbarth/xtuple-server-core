@@ -6,7 +6,7 @@
    */
   var policy = exports;
 
-  var task = require('../../lib/task'),
+  var lib = require('../../lib'),
     fs = require('fs'),
     rimraf = require('rimraf'),
     exec = require('execSync').exec,
@@ -16,7 +16,7 @@
     user_policy_filename = 'XT10-xtuple-user-policy',
     sudoers_d = path.resolve('/etc/sudoers.d');
 
-  _.extend(policy, task, /** @exports policy */ {
+  _.extend(policy, lib.task, /** @exports policy */ {
 
     /** @override */
     beforeInstall: function (options) {
@@ -25,10 +25,13 @@
         'xtadmin',
         'xtremote',
         'root',
-        'admin'
+        'admin',
+        'vagrant',
+        'postgres'
       ];
       if (_.contains(userBlacklist, options.xt.name)) {
-        throw new Error('Invalid name: '+ options.xt.name);
+        throw new Error('Name of xTuple instance is reserved for system use: '+ options.xt.name +
+          '. Please provide a different name.');
       }
     },
 
@@ -53,7 +56,6 @@
     executeTask: function (options) {
       if (exec('id -u {xt.name}'.format(options)).code !== 0) {
         policy.createUsers(options);
-        policy.configureSSH(options);
       }
     },
 
@@ -64,6 +66,7 @@
       exec('rm -f /root/.bash_history');
 
       exec('chmod a-w {xt.configdir}/install-arguments.json'.format(options));
+      exec('chmod a-w {xt.configdir}/install-results.json'.format(options));
     },
 
     /** @override */
@@ -72,7 +75,15 @@
     },
 
     getPassword: function () {
-      return exec('openssl rand 6 | base64').stdout.replace(/\W/g, '');
+      exec('sleep 1');
+      var pass = exec('openssl rand 6 | base64');
+        
+      if (pass.code === 0 && _.isString(pass.stdout)) {
+        return pass.stdout.trim().replace(/\W/g, '');
+      }
+      else {
+        throw new Error('Failed to generate password: '+ JSON.stringify(pass));
+      }
     },
 
     /**
@@ -91,7 +102,7 @@
         system_users = [
           'addgroup xtuser',
           'addgroup xtadmin',
-          'useradd xtremote -p {sys.policy.remotePassword}'.format(options),
+          'useradd xtremote -d /usr/local/xtremote -p {sys.policy.remotePassword}'.format(options),
           'adduser xtadmin --disabled-login',
           'usermod -a -G xtadmin,xtuser,www-data,postgres,lpadmin,ssl-cert xtremote',
           'usermod -a -G ssl-cert,xtuser postgres',
@@ -134,16 +145,12 @@
           'chmod -R g=rx,u=wrx,o-rwx {xt.ssldir}'.format(options),
           'chmod -R g=rwx,u=wrx,o-rw {xt.configdir}'.format(options)
         ],
-        system_users_results,
-        system_access_results,
-        xtuple_users_results,
-        xtuple_access_results,
         sudoers_chmod, visudo_cmd;
 
       // create system users
       if (options.sys.policy.remotePassword) {
-        system_users_results = _.map(system_users, exec);
-        system_access_results = _.map(_.flatten([ system_ownership, system_mode ]), exec);
+        _.map(system_users, exec);
+        _.map(_.flatten([ system_ownership, system_mode ]), exec);
         var htpasswd = exec('htpasswd -cb {sys.htpasswdfile} xtremote {sys.policy.remotePassword}'.format(options));
         if (htpasswd.code !== 0) {
           throw new Error(htpasswd.stdout);
@@ -152,8 +159,8 @@
 
       // create *this* user, and set access rules
       if (options.sys.policy.userPassword) {
-        xtuple_users_results = _.map(xtuple_users, exec);
-        xtuple_access_results = _.map(_.flatten([ user_ownership, user_mode ]), exec);
+        _.map(xtuple_users, exec);
+        _.map(_.flatten([ user_ownership, user_mode ]), exec);
       }
 
       // write sudoers file
@@ -178,35 +185,7 @@
 
       // set user shell to bash
       exec('sudo chsh -s /bin/bash {xt.name}'.format(options));
-    },
-
-    /**
-     * Configure SSH remote access rules.
-     * @private
-     */
-    configureSSH: function  (options) {
-      var src_sshd_conf = fs.readFileSync('/etc/ssh/sshd_config').toString(),
-        rules = {
-          UseDNS: 'no',
-          PermitRootLogin: 'no',
-          // AllowGroups: 'xtadmin xtuser', TODO solve riskiness of installing over ssh
-          LoginGraceTime: '30s',
-          ClientAliveInterval: '60',
-          ClientAliveCountMax: '60',  // keep session alive for one hour
-          X11Forwarding: 'no',
-          PubkeyAuthentication: 'no',
-          HostbasedAuthentication: 'no'
-        },
-        target_sshd_conf = _.reduce(_.keys(rules), function (memo, key) {
-          var regex = new RegExp('^' + key + '.*$', 'gm'),
-            entry = key + ' ' + rules[key],
-            match = regex.exec(memo);
-
-          return match ? memo.replace(match, entry) : memo.concat(entry + '\n');
-        }, src_sshd_conf);
-
-      fs.writeFileSync('/etc/ssh/sshd_config.bak.' + new Date().valueOf(), src_sshd_conf);
-      fs.writeFileSync('/etc/ssh/sshd_config', target_sshd_conf);
+      exec('sudo chsh -s /bin/bash xtremote'.format(options));
     },
 
     /** @override */

@@ -52,18 +52,22 @@
 
       // Docs: <http://www.postgresql.org/docs/9.3/static/sql-createrole.html>
       var queries = [
-          'CREATE EXTENSION plv8',
-
-          // create xtrole
-          'CREATE ROLE xtrole',
+          'CREATE EXTENSION IF NOT EXISTS plv8',
+          'CREATE EXTENSION IF NOT EXISTS plpgsql',
+          'CREATE EXTENSION IF NOT EXISTS hstore',
 
           // create 'admin' user (default xtuple client admin)
           'CREATE ROLE admin WITH LOGIN PASSWORD \'{xt.adminpw}\' SUPERUSER'.format(options),
+          //'CREATE ROLE admin WITH LOGIN PASSWORD \'{xt.adminpw}\' CREATEDB CREATEROLE INHERIT'.format(options),
 
-          // create 'postgres' role for convenience
+          // create xtrole
+          'CREATE ROLE xtrole WITH ROLE admin',
+
+          // create 'postgres' role for convenience + compatibility
           'CREATE ROLE postgres LOGIN SUPERUSER',
 
           'GRANT xtrole TO admin',
+          'GRANT xtrole TO postgres',
           'GRANT xtrole TO {xt.name}'.format(options)
         ],
         results = _.map(queries, _.partial(lib.pgCli.psql, options)),

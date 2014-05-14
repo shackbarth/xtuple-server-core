@@ -3,8 +3,7 @@ var assert = require('chai').assert,
   _ = require('lodash'),
   path = require('path'),
   fs = require('fs'),
-  planner = require('../lib/planner'),
-  pgcli = require('../lib/pg-cli');
+  planner = require('../lib/planner');
 
 describe('xTuple Installer', function () {
   global.options = {
@@ -35,7 +34,7 @@ describe('xTuple Installer', function () {
     {name: 'nginx', tasks: [ 'ssl', 'site', 'etchosts' ]},
     {name: 'pg', tasks: [ 'hba', 'tuner', 'config' ]},
     {name: 'xt', tasks: [ 'serverconfig', 'testconfig', 'database' ]},
-    {name: 'sys', tasks: [ 'cups', 'service', 'report' ]}
+    {name: 'sys', tasks: [ 'cups', 'service', 'report', 'ssh' ]}
   ];
 
   describe('planner', function () {

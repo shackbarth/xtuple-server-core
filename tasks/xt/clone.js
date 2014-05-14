@@ -8,7 +8,6 @@
 
   var task = require('../../lib/task'),
     format = require('string-format'),
-    pgcli = require('../../lib/pg-cli'),
     path = require('path'),
     fs = require('fs'),
     _ = require('lodash'),
@@ -46,10 +45,6 @@
 
     /** @override */
     executeTask: function (options) {
-      if (build.hasPrivateExtensions(options)) {
-        exec('git config --global credential.helper \'cache --timeout=3600\'');
-      }
-
       _.each(clone.getRepositoryList(options), function (repo) {
         var template = _.extend({
             repo: repo,
@@ -62,7 +57,7 @@
             exec('git clone --recursive https://github.com/xtuple/{repo}.git {path}'.format(template)),
             exec(('cd {path} && git checkout '+ options.xt.repoHash).format(template)),
             exec('cd {path} && npm install'.format(template)),
-            //exec('cd {path} && npm install --production -g'.format(template)),
+            exec('cd {path} && npm install -g'.format(template)),
           ],
           failed = _.difference(cloneCommands, _.where(cloneCommands, { code: 0 }));
 

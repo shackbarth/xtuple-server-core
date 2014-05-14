@@ -34,12 +34,11 @@
         fs.unlinkSync('/etc/init.d/xtuple');
       }
       catch (e) { }
-      exec('pm2 ping'.format(options));
+      exec('sudo pm2 ping');
     },
 
     /** @override */
     executeTask: function (options) {
-      // TODO replace this with xtuple-server <version> <name> <action>
       fs.symlinkSync(
         path.resolve(options.xt.usersrc, 'node-datasource/main.js'),
         path.resolve(options.sys.sbindir, 'main.js')
@@ -53,24 +52,20 @@
 
       // write pm2 config files
       fs.writeFileSync(options.sys.pm2.configfile, options.sys.pm2.template.format(options));
-
-      // XXX this is a workaround; something is creating files in these
-      // directories as root
-      /*
-      exec('chown -R {xt.name} {sys.servicedir}'.format(options));
-      exec('chmod -R 700 {sys.servicedir}'.format(options));
-      exec('chown -R {xt.name}:xtuser {xt.logdir}'.format(options));
-      exec('chmod -R 700 {xt.logdir}'.format(options));
-      exec('chown -R {xt.name}:xtuser {xt.statedir}'.format(options));
-      exec('chmod -R 700 {xt.statedir}'.format(options));
-      */
     },
     
     /** @override */
     afterTask: function (options) {
-      exec('service nginx reload');
-      service.launch(options);
+      var ping = exec('pm2 ping'),
+        start = exec('sudo HOME={xt.homedir} pm2 start -u {xt.name} {sys.pm2.configfile}'
+            .format(options));
+
+      if (start.code !== 0) {
+        throw new Error(JSON.stringify(start));
+      }
+
       exec('sudo HOME={xt.homedir} -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
+      exec('service nginx reload');
     },
 
     /** @override */
@@ -89,23 +84,6 @@
           .format(options)).stdout;
 
       console.log(statusTable);
-    },
-
-    /**
-     * Launch a service.
-     * @param config  resolved path to the pm2 json config file
-     * @public
-     */
-    launch: function (options) {
-      var ping = exec('pm2 ping'.format(options)),
-        start = exec('sudo HOME={xt.homedir} pm2 start -u {xt.name} {sys.pm2.configfile}'
-            .format(options));
-
-      if (start.code !== 0) {
-        throw new Error(JSON.stringify(start));
-      }
-
-      return start;
     }
   });
 

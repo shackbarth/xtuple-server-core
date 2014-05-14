@@ -9,7 +9,6 @@
     fs = require('fs'),
     path = require('path'),
     json = require('prettyjson'),
-    pgcli = require('./lib/pg-cli'),
     format = require('string-format'),
     os = require('os'),
     exec = require('execSync').exec,
@@ -116,5 +115,5 @@
   console.log(JSON.stringify(options, null, 2));
 
   console.log('Review Plan; press Ctrl-C to cancel. Will continue in 10 seconds');
-  setTimeout(_.partial(run, plan, options), 10000);
+  setTimeout(_.partial(run, plan, options), 0);
 })();

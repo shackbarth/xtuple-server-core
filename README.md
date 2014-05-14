@@ -14,7 +14,7 @@ This is the **xTuple Server**. It installs, configures, runs, serves, secures, b
     - Installs system dependencies; its only prerequisite is a Ubuntu operating system
     - Clones this repository and installs the `xtuple-server` CLI into the global path
   - How do I make it do those things?
-    - `$ wget git.io/67JeUg -qO- | sudo bash`
+    - `wget git.io/67JeUg -qO- | sudo bash`
 
 #### 2. "xtuple-server"
   - What does it do?
@@ -55,7 +55,7 @@ For more information and details on how to perform more serious stuff, keep read
 ### a. System Dependencies
 
   - `bootstrap.sh` installs all system dependencies. Here are a few of my favorites:
-    - `nginx      >  v1.4.7`
+    - `nginx      >  v1.4.6`
     - `nodejs     >  v0.8.26`
     - `npm        >  v1.3.0`
     - `postgres   >= v9.3`
@@ -65,10 +65,7 @@ For more information and details on how to perform more serious stuff, keep read
 ### b. Self-tests
 
   The `bootstrap.sh` will run a series of self-diagnostic tests on the machine
-  after it installs the system dependencies. You should also run these
-  yourself! They are fun. Everybody's doing it.
-
-  - `sudo npm test`
+  after it installs the system dependencies. 
 
 ### c. Variables and Defaults
 
@@ -88,8 +85,8 @@ The `xtuple-server` command-line program is installed by `bootstrap.sh`. It requ
     - The provided database file is not able to be automatically mobile-ized
   
   - The Installer generates credentials. And users. And everything else.
-    - Before running the installer, find a pen and paper. When the installer finishes, it displays credentials for a limited time. If you do not write it down, you are screwed.
-    - And on that note: if you are installing over SSH, failure to follow these instructions could result in being locked out of the machine **irreversibly**, regardless of how much `sudo` you have.
+    - Before running the installer, find a pen and paper. When the installer finishes, it displays credentials.
+    - And on that note: if you are installing over SSH, failure to follow these instructions could result in being locked out of the machine **irreversibly**, regardless of how much `sudo` you think you have.
     - If you think a config is wrong, [file a bug report](https://github.com/xtuple/xtuple-scripts/issues?state=open). Changing it by hand will probably break some automatically-installed thing you didn't know existed.
     - Do not install anything else on the machine. If you need additional packages for an xTuple installation, it needs to be written as an add-on module to the installer. File an issue.
 
@@ -112,6 +109,8 @@ The `xtuple-server` command-line program is installed by `bootstrap.sh`. It requ
 
 # 2. Manage
 
+## ~ Command Line
+
 ### a. System Services
 
 The xTuple Server is comprised of a collection of system services that work together to run the application. The required services are installed automatically using the installer:
@@ -121,6 +120,7 @@ The xTuple Server is comprised of a collection of system services that work toge
   - xTuple Health Feed (monitors system health)
   - xTuple Snapshot Manager (auto-backups databases)
   - pm2 Process Manager
+  - Webmin control panel
 
 The xTuple Service can be managed using the following command template: `service xtuple <version> <name> {restart|status}`. More information on this is in the following sections.
 
@@ -154,9 +154,18 @@ The xTuple Service can be managed using the following command template: `service
 
 By default, the xTuple Server pro-actively monitors the health of the system on which it is installed. The `xtuple-healthfeed` process maintains a log of the server's vital signs.
 
-### f. Command Center
+## ~ Command Center
 
-  - **TODO document**
+### a. Webmin
+The Production xTuple Server includes a `setup-webmin` plan that you can and should invoke immediately after running `bootstrap. It provides a web-based interface for deploying new xTuple Server instances.
+  - `sudo xtuple-server setup-webmin`
+  - Access it in your browser at xtremote.<domain>/_manage
+  - Log in with the `xtremote` user, and navigate on the left to **Others -> Custom Commands**, and you will see a list that looks like this:
+      ![xTuple Webmin Commands](https://s3.amazonaws.com/com.xtuple.deploy-assets/webmin-command-list.png)
+  - The "New xTuple Deployment" command, for example, looks like this:
+      ![xTuple Webmin Commands](https://s3.amazonaws.com/com.xtuple.deploy-assets/webmin-command-form.png)
+
+### b. xTuple Web Client Toolkit
 
 # 3. Reference
 
