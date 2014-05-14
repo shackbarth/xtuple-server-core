@@ -34,7 +34,7 @@
         fs.unlinkSync('/etc/init.d/xtuple');
       }
       catch (e) { }
-      exec('sudo pm2 ping');
+      exec('sudo HOME={xt.homedir} pm2 ping');
     },
 
     /** @override */
@@ -56,7 +56,7 @@
     
     /** @override */
     afterTask: function (options) {
-      var ping = exec('pm2 ping'),
+      var ping = exec('sudo HOME={xt.homedir} pm2 ping'),
         start = exec('sudo HOME={xt.homedir} pm2 start -u {xt.name} {sys.pm2.configfile}'
             .format(options));
 
@@ -79,7 +79,7 @@
     afterInstall: function (options) {
       exec('service nginx reload');
       console.log();
-      var dump = exec('sudo HOME={xt.homedir} pm2 dump all'.format(options)),
+      var dump = exec('sudo HOME={xt.homedir} pm2 dump'.format(options)),
         statusTable = exec('sudo -u {xt.name} service xtuple {xt.version} {xt.name} status'
           .format(options)).stdout;
 

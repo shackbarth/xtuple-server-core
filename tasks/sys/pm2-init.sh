@@ -25,7 +25,7 @@ version="$1"
 account="$2"
 action="$3"
 
-if [[ $UID != 0 ]]; then
+if [[ $(id -u) != 0 ]]; then
   if [[ -z $action || -z $account || -z $version ]]; then
     help
   fi
@@ -77,7 +77,7 @@ status() {
     help
   else
     echo 'xTuple Server Dashboard'
-    if [[ $UID = 0 ]]; then
+    if [[ $(id -u) = 0 ]]; then
       echo "$list"
       echo "$clusters"
     else 
