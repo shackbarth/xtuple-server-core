@@ -34,6 +34,7 @@
 
       options.xt.homedir = path.resolve('/usr/local/xtuple');
       options.xt.pm2dir = path.resolve('/usr/local/xtuple/.pm2');
+      options.xt.userPm2dir = path.resolve('/usr/local/{xt.name}/.pm2'.format(options));
       options.sys.userHomeDir = path.resolve('/usr/local', options.xt.name);
 
       // other system paths
@@ -56,6 +57,7 @@
       exec('mkdir -p ' + options.xt.userhome);
       exec('mkdir -p ' + options.xt.usersrc);
       exec('mkdir -p ' + options.xt.pm2dir);
+      exec('mkdir -p ' + options.xt.userPm2dir);
 
       exec('mkdir -p ' + options.xt.configdir);
       exec('mkdir -p ' + path.resolve(options.xt.configdir, 'build'));
