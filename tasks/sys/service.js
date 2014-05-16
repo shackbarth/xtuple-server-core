@@ -26,15 +26,10 @@
 
     /** @override */
     beforeTask: function (options) {
-      try {
+      if (fs.existsSync(path.resolve(options.sys.sbindir, 'main.js'))) {
         fs.unlinkSync(path.resolve(options.sys.sbindir, 'main.js'));
       }
-      catch (e) { }
-      try {
-        fs.unlinkSync('/etc/init.d/xtuple');
-      }
-      catch (e) { }
-      exec('sudo HOME={xt.homedir} pm2 ping');
+      exec('sudo -Ei -u {xt.name} USER={xt.name} HOME={xt.userhome} pm2 ping');
     },
 
     /** @override */
@@ -45,10 +40,11 @@
       );
 
       // create upstart service "xtuple"
-      exec('update-rc.d -f pm2-init.sh remove');
-      exec('update-rc.d -f xtuple remove');
-      exec('cp {sys.pm2.initscript} /etc/init.d/xtuple'.format(options));
-      exec('update-rc.d xtuple defaults');
+      if (!fs.existsSync('/etc/init.d/xtuple')) {
+        exec('update-rc.d -f xtuple remove');
+        exec('cp {sys.pm2.initscript} /etc/init.d/xtuple'.format(options));
+        exec('update-rc.d xtuple defaults');
+      }
 
       // write pm2 config files
       fs.writeFileSync(options.sys.pm2.configfile, options.sys.pm2.template.format(options));
@@ -56,33 +52,32 @@
     
     /** @override */
     afterTask: function (options) {
-      var ping = exec('sudo HOME={xt.homedir} pm2 ping'),
-        start = exec('sudo HOME={xt.homedir} pm2 start -u {xt.name} {sys.pm2.configfile}'
+      var ping = exec('sudo -Ei USER={xt.name} HOME={xt.userhome} pm2 ping'),
+        start = exec('sudo -Ei USER={xt.name} HOME={xt.userhome} -u {xt.name} pm2 start -u {xt.name} {sys.pm2.configfile}'
             .format(options));
 
       if (start.code !== 0) {
         throw new Error(JSON.stringify(start));
       }
 
-      exec('sudo HOME={xt.homedir} -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
+      //exec('sudo -Ei USER={xt.name} HOME={xt.userhome} -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
     },
 
     /** @override */
     uninstall: function (options) {
+      exec('sudo -Ei USER={xt.name} HOME={xt.userhome} -u {xt.name} pm2 delete all'.format(options));
       exec('killall -u {xt.name}'.format(options));
-      exec('sudo HOME={xt.homedir} pm2 delete xtuple-server-{xt.version}-{xt.name}'.format(options));
-      exec('sudo HOME={xt.homedir} pm2 delete xtuple-healthfeed-{xt.version}-{xt.name}'.format(options));
-      exec('sudo HOME={xt.homedir} pm2 delete xtuple-snapshotmgr-{xt.version}-{xt.name}'.format(options));
     },
 
     /** @override */
     afterInstall: function (options) {
       exec('service nginx reload');
       console.log();
-      var dump = exec('sudo HOME={xt.homedir} pm2 dump'.format(options)),
-        statusTable = exec('sudo -u {xt.name} service xtuple {xt.version} {xt.name} status'
-          .format(options)).stdout;
+      var dump = exec('sudo -Ei USER={xt.name} HOME={xt.userhome} -u {xt.name} pm2 dump'.format(options)),
+        statusTable = exec('sudo service xtuple {xt.version} {xt.name} status'.format(options)).stdout;
 
+      // running the status command actually loads the processes from the
+      // user-specific file into the root process file.
       console.log(statusTable);
     }
   });
