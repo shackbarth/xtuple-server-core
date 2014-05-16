@@ -1,6 +1,6 @@
 Defaults  syslog=auth
 
-Runas_Alias XTGROUPS = xtadmin, postgres, www-data, lpadmin, tomcat7, ssl-cert
+Runas_Alias XTGROUPS = xtadmin, xtuser, postgres, www-data, lpadmin, tomcat7, ssl-cert
 
 Cmnd_Alias POWERCYCLE = /sbin/shutdown, /sbin/reboot, /sbin/halt
 Cmnd_Alias PACKAGEMGR = /usr/bin/dpkg *, /usr/bin/apt-get *, /usr/bin/aptitude
@@ -19,7 +19,7 @@ Cmnd_Alias POSTGRES = \
       /usr/bin/pg_restore *, \
       /usr/bin/psql
 
-Cmnd_Alias NODEJS = /usr/bin/node *, /usr/bin/npm *, /usr/lib/node_modules/.bin
+Cmnd_Alias NODEJS = /usr/bin/node *, /usr/bin/npm *, /usr/lib/node_modules/.bin, /usr/bin/n
 Cmnd_Alias SYSTEM = /usr/bin/su *
 Cmnd_Alias SHELLS = /usr/bin/sh, /usr/bin/csh, /usr/bin/ksh, /usr/local/bin/tcsh, /usr/bin/rsh, /usr/local/bin/zsh
 

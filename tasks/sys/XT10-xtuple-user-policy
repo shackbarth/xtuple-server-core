@@ -1,15 +1,12 @@
 {xt.name}    ALL = (ALL) SETENV: \
       /usr/sbin/service xtuple [0-9.]* {xt.name} [A-Za-z]*, \
       /usr/lib/postgresql/{pg.version}/bin/postgres -D /var/lib/postgresql/{pg.version}/{xt.name} -c config_file=/etc/postgresql/{pg.version}/{xt.name}/postgresql.conf, \
-      /usr/bin/pg_ctlcluster [0-9.]* {xt.name} [A-Za-z]*, \
-      /usr/bin/pg_restore -U {xt.name} *, \
-      /usr/bin/pg_dumpall -U {xt.name} *, \
-      /usr/bin/pg_dump -U {xt.name} *, \
-      /usr/bin/createdb -U {xt.name} *, \
-      /usr/bin/dropdb -U {xt.name} *, \
-      /usr/local/bin/pm2 list, \
-      /usr/local/bin/pm2 restart xtuple-server-{xt.version}-{xt.name}, \
-      /usr/local/bin/pm2 restart xtuple-healthfeed-{xt.version}-{xt.name}, \
-      /usr/local/bin/pm2 restart xtuple-postgres-{xt.version}-{xt.name}, \
-      /usr/local/bin/pm2 restart xtuple-snapshotmgr-{xt.version}-{xt.name}, \
+      /usr/bin/pg_ctlcluster [0-9.]* {xt.name}* [A-Za-z]*, \
+      /usr/bin/pg_restore * -U {xt.name} *, \
+      /usr/bin/pg_lsclusters, \
+      /usr/bin/pg_dumpall * -U {xt.name} *, \
+      /usr/bin/pg_dump * -U {xt.name} *, \
+      /usr/bin/createdb * -U {xt.name} *, \
+      /usr/bin/dropdb * -U {xt.name} *, \
+      /usr/local/bin/pm2 *, \
       /usr/local/bin/xtuple-server * --xt-version {xt.version} * --xt-name {xt.name} *
