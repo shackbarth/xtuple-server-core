@@ -134,6 +134,7 @@
           'chown -R {xt.name}:xtuser {xt.configdir}'.format(options),
           'chown -R {xt.name}:xtuser {sys.servicedir}'.format(options),
           'chown -R {xt.name}:xtuser {xt.statedir}'.format(options),
+          'chown -R {xt.name}:xtuser {xt.userPm2dir}'.format(options),
           'chown -R {xt.name}:xtuser {xt.rundir}'.format(options),
           'chown -R {xt.name}:xtuser {sys.sbindir}'.format(options),
           'chown -R {xt.name}:ssl-cert {xt.ssldir}'.format(options)
@@ -143,7 +144,8 @@
           'chmod -R u=rwx,g=wx {pg.logdir}'.format(options),
           'chmod -R u=rwx,g-rwx {xt.statedir}'.format(options),
           'chmod -R g=rx,u=wrx,o-rwx {xt.ssldir}'.format(options),
-          'chmod -R g=rwx,u=wrx,o-rw {xt.configdir}'.format(options)
+          'chmod -R g=rwx,u=wrx,o-rw {xt.configdir}'.format(options),
+          'chmod -R g-rwx,u=wrx,o-rwx {xt.userPm2dir}'.format(options)
         ],
         sudoers_chmod, visudo_cmd;
 

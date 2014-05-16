@@ -29,7 +29,7 @@
       if (fs.existsSync(path.resolve(options.sys.sbindir, 'main.js'))) {
         fs.unlinkSync(path.resolve(options.sys.sbindir, 'main.js'));
       }
-      exec('sudo -Ei -u {xt.name} USER={xt.name} HOME={xt.userhome} pm2 ping');
+      exec('sudo -Ei -u {xt.name} USER={xt.name} HOME={xt.userhome} pm2 ping'.format(options));
     },
 
     /** @override */
@@ -52,7 +52,7 @@
     
     /** @override */
     afterTask: function (options) {
-      var ping = exec('sudo -Ei USER={xt.name} HOME={xt.userhome} pm2 ping'),
+      var ping = exec('sudo -Ei USER={xt.name} HOME={xt.userhome} -u {xt.name} pm2 ping'.format(options)),
         start = exec('sudo -Ei USER={xt.name} HOME={xt.userhome} -u {xt.name} pm2 start -u {xt.name} {sys.pm2.configfile}'
             .format(options));
 
