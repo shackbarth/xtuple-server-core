@@ -54,7 +54,7 @@
 
       // allow for one extra, due to potential default 'main' cluster
       if (options.pg.clusterCount >= options.pg.capacity + 1) {
-        throw new Error('Over Capacity: Declared Capacity: {pg.capacity}; Clusters: {pg.clusterCount}');
+        console.log('Warning: Over Capacity. max: {pg.capacity}, installed: {pg.clusterCount}'.format(options));
       }
     },
 
