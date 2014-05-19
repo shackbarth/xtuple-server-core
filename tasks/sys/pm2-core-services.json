@@ -1,7 +1,7 @@
 [
   {
     "name": "xtuple-server-{xt.version}-{xt.name}",
-    "user": "{xt.name}",
+    "run_as_user": "{xt.name}",
     "script": "/usr/sbin/xtuple/{xt.version}/{xt.name}/main.js",
     "args": "[ '-c', '/etc/xtuple/{xt.version}/{xt.name}/config.js' ]",
     "env": {
@@ -23,7 +23,7 @@
   },
   {
     "name": "xtuple-healthfeed-{xt.version}-{xt.name}",
-    "user": "{xt.name}",
+    "run_as_user": "{xt.name}",
     "script": "/usr/local/lib/node_modules/xtuple-scripts/node_modules/pm2/lib/HttpInterface.js",
     "env": {
       "NODE_ENV": "production",

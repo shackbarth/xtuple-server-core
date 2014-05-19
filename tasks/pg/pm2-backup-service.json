@@ -1,6 +1,6 @@
 [{
   "name": "xtuple-snapshotmgr-{xt.version}-{xt.name}",
-  "user": "{xt.name}",
+  "run_as_user": "{xt.name}",
   "script": "/usr/local/bin/xtuple-server",
   "args": "[ 'snapshot-database', '--xt-name', '{xt.name}', '--xt-version', '{xt.version}' ]",
   "cron_restart": "{pg.snapschedule}",
