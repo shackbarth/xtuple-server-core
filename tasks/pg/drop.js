@@ -7,7 +7,7 @@ var lib = require('../../lib'),
 /**
  * Drop an existing database.
  */
-_.extend(exports, lib.task, /** @exports fork-database */ {
+_.extend(exports, lib.task, /** @exports drop-database */ {
 
   options: {
     dbname: {
@@ -27,8 +27,16 @@ _.extend(exports, lib.task, /** @exports fork-database */ {
 
     // update config.js
     var configObject = require(options.xt.configfile);
-    _.pull(configObject.datasource.databases, options.pg.dbname);
+    var res = _.pull(configObject.datasource.databases, options.pg.dbname);
+
+    console.log(JSON.stringify(configObject.datasource.databases, null, 2));
+    console.log(res);
+
     fs.writeFileSync(options.xt.configfile, lib.xt.build.wrapModule(configObject));
+  },
+
+  afterTask: function (options) {
+    exec('service xtuple {xt.version} {xt.name} restart'.format(options));
   }
 
 });

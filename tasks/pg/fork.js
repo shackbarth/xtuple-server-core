@@ -1,7 +1,6 @@
 var lib = require('../../lib'),
   config = require('./config'),
   moment = require('moment'),
-  mgr = require('./snapshotmgr'),
   fs = require('fs'),
   exec = require('execSync').exec,
   path = require('path'),
@@ -26,7 +25,7 @@ _.extend(exports, lib.task, /** @exports fork-database */ {
 
   /** @override */
   executeTask: function (options) {
-    options.pg.infile = mgr.getSnapshotPath(options);
+    options.pg.infile = exports.getSnapshotPath(options);
     options.pg.dbname = exports.getForkName(options);
   },
 
@@ -34,33 +33,37 @@ _.extend(exports, lib.task, /** @exports fork-database */ {
    * Return the name of a forked database.
    */
   getForkName: function (options) {
-    return '{dbname}_copy_{version}_{ts}'.format({
+    return '{dbname}_copy_{ts}'.format({
       dbname: options.pg.dbname,
-      version: options.xt.version.split('.').join(''),
       ts: moment().format('MMDDhhmm')
     });
   },
 
   /**
+   * Return path of a snapshot file
+   * @param options - typical options object
+   * @param options.date - date of snapshot (MMDDhhmm)
+   * @param options.dbname - name of database
+   * @public
+   */
+  getSnapshotPath: function (options) {
+    var ext = (options.pg.dbname === 'globals' ? '.sql' : '.dir.gz');
+    return path.resolve(options.pg.snapshotdir, require('./fork').getForkName(options) + ext);
+  },
+
+  /**
    * Return an object consisting of the backup filename components.
    * @public
-   * @returns {
-   *    name: STRING [kelhay],
-   *    dbname: VERSION [1.8.1],
-   *    ts: DATE [{Date}]
-   * }
    */
   parseForkName: function (filename) {
     var base = path.basename(filename),
-      halves = base.split('_copy_'),
-      tokens = halves[1].split('_');
+      halves = base.split('_copy_');
 
     return {
       original: filename,
       dbname: halves[0],
-      version: tokens[0],
-      ts: moment(tokens[1], 'MMDDhhmm').valueOf()
+      ts: moment(halves[1], 'MMDDhhmm').valueOf()
     };
-  },
+  }
 
 });

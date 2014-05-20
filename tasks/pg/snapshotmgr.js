@@ -7,10 +7,8 @@
   var snapshotmgr = exports;
 
   var lib = require('../../lib'),
-    pg = require('./'),
     fs = require('fs'),
     os = require('os'),
-    moment = require('moment'),
     cron = require('cron-parser'),
     exec = require('execSync').exec,
     path = require('path'),
@@ -70,30 +68,6 @@
     },
 
     /**
-     * Return path of a snapshot file
-     * @param options - typical options object
-     * @param options.date - date of snapshot (MMDDhhmm)
-     * @param options.dbname - name of database
-     * @public
-     */
-    getSnapshotPath: function (options) {
-      options.date || (options.date = new Date());
-      var ts = moment(options.date);
-      if (!ts.isValid()) {
-        throw new Error('options.date not valid: '+ options.date);
-      }
-
-      return path.resolve(
-        options.pg.snapshotdir,
-        '{dbname}_{ts}.{ext}'.format({
-          dbname: options.pg.dbname,
-          ts: ts.format('MMDDhhmm'),
-          ext: options.dbname === 'globals' ? 'sql' : 'dir.gz'
-        })
-      );
-    },
-
-    /**
      * Rotate local snapshots; This function will either delete old snapshots
      * or do nothing.
      *
@@ -103,8 +77,7 @@
       var maxlen = options.pg.snapshotcount,
         name = options.xt.name,
         version = options.xt.version,
-        root = snapshotmgr.getSnapshotRoot(version, name),
-        ls = fs.readdirSync(root),
+        ls = fs.readdirSync(options.pg.snapshotdir),
         db_groups = _.groupBy(
           _.map(ls, function (file) {
             return snapshotmgr.parseFilename(file);
@@ -116,7 +89,7 @@
         }));
 
       return _.map(expired, function (file) {
-        fs.unlinkSync(path.resolve(root, file.original));
+        fs.unlinkSync(path.resolve(options.pg.snapshotdir, file.original));
         return file;
       });
     }

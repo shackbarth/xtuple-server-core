@@ -1,8 +1,7 @@
 var lib = require('../../lib'),
   config = require('./config'),
-  mgr = require('./snapshotmgr'),
+  fork = require('./fork'),
   fs = require('fs'),
-  exec = require('execSync').exec,
   path = require('path'),
   _ = require('lodash');
 
@@ -32,12 +31,12 @@ _.extend(exports, lib.task, /** @exports backup */ {
   executeTask: function (options) {
     // dump globals
     lib.pgCli.dumpall(_.extend({
-      snapshotpath: mgr.getSnapshotPath(_.extend({ dbname: 'globals' }, options)),
+      snapshotpath: fork.getSnapshotPath(_.extend({ dbname: 'globals' }, options)),
     }, options));
     
     // dump data
     lib.pgCli.dump(_.extend({
-      snapshotpath: mgr.getSnapshotPath(options),
+      snapshotpath: fork.getSnapshotPath(options),
       dbname: options.pg.dbname
     }, options));
   },
