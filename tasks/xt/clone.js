@@ -77,7 +77,7 @@
     },
 
     crudeVersionResolve: function (version) {
-      if (!semver.valid(version)) {
+      if (!semver.validRange(version)) {
         throw new Error('xtuple package version does not seem to be valid: '+ version);
       }
 
