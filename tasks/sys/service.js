@@ -53,7 +53,7 @@
       // write pm2 config files
       fs.writeFileSync(options.sys.pm2.configfile, options.sys.pm2.template.format(options));
 
-      var start = exec('xtupled start {sys.pm2.configfile}'.format(options));
+      var start = exec('xtupled kill && xtupled start {sys.pm2.configfile}'.format(options));
 
       if (start.code !== 0) {
         throw new Error(JSON.stringify(start));

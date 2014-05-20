@@ -8,7 +8,6 @@
   var planner = require('./lib/planner'),
     fs = require('fs'),
     path = require('path'),
-    json = require('prettyjson'),
     format = require('string-format'),
     os = require('os'),
     exec = require('execSync').exec,
