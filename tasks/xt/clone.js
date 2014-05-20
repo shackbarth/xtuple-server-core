@@ -61,7 +61,7 @@
       }
       fs.symlinkSync(
         path.resolve(options.xt.usersrc, 'node_modules'), 
-        path.resolve(options.xt.srcdir, 'node_modules')
+        path.resolve(options.xt.srcdir, 'xtuple', 'node_modules')
       );
     },
 
