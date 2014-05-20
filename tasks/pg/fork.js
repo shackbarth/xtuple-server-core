@@ -34,7 +34,7 @@ _.extend(exports, lib.task, /** @exports fork-database */ {
    * Return the name of a forked database.
    */
   getForkName: function (options) {
-    return '{dbname}_fork_{version}_{ts}'.format({
+    return '{dbname}_copy_{version}_{ts}'.format({
       dbname: options.pg.dbname,
       version: options.xt.version.split('.').join(''),
       ts: moment().format('MMDDhhmm')
@@ -52,7 +52,7 @@ _.extend(exports, lib.task, /** @exports fork-database */ {
    */
   parseForkName: function (filename) {
     var base = path.basename(filename),
-      halves = base.split('_fork_'),
+      halves = base.split('_copy_'),
       tokens = halves[1].split('_');
 
     return {

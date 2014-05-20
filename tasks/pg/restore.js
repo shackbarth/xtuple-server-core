@@ -53,6 +53,6 @@ _.extend(exports, lib.task, /** @exports restore-database */ {
 
   /** @override */
   afterTask: function (options) {
-    exec('HOME=~{xt.name} sudo -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
+    exec('service xtuple {xt.version} {xt.name} restart'.format(options));
   }
 });
