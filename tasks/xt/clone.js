@@ -46,6 +46,8 @@
           options.xt.nodeBin = path.resolve(options.xt.nodePath, 'node');
           options.xt.npmBin = path.resolve(options.xt.nodePath, 'npm');
 
+          console.log(JSON.stringify(options.xt, null, 2));
+
           template.npm = options.xt.npmBin;
           exec('cd {path} && {npm} install --silent'.format(template));
 
@@ -58,7 +60,7 @@
         var userSourcePath = path.resolve(options.xt.userhome, options.xt.version, repo);
         exec('mkdir -p ' + userSourcePath);
         var rsync = exec([
-            'rsync -ar --exclude=.git --exclude=node_modules',
+            'rsync -ar --exclude=.git',// --exclude=node_modules',
             template.path + '/*',
             userSourcePath
           ].join(' '));
@@ -66,10 +68,12 @@
         if (rsync.code !== 0) {
           throw new Error(JSON.stringify(rsync, null, 2));
         }
+        /*
         fs.symlinkSync(
           path.resolve(template.path, 'node_modules'),
           path.resolve(userSourcePath, 'node_modules')
         );
+        */
       });
     },
 
