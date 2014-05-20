@@ -70,7 +70,7 @@
      * xtuple repo.
      */
     getPackageNodeVersion: function (options) {
-      var pkg = require(path.resolve(options.xt.srcdir, 'package')),
+      var pkg = require(path.resolve(options.xt.srcdir, 'xtuple', 'package')),
         node = pkg.engines.node;
 
       return exports.crudeVersionResolve(node);
