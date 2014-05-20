@@ -10,7 +10,7 @@ describe('xTuple Installer', function () {
       plan: 'install',
       xt: {
         name: 'xtmocha',
-        version: require('../package').version,
+        version: '4.4.1',
         demo: true
       },
       pg: {

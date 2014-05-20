@@ -125,24 +125,7 @@
     buildMainDatabases: function (options) {
       var xt = options.xt,
         extensions = build.editions[xt.edition],
-        databases = _.where(xt.database.list, { foundation: false }),
-        repos = require('./clone').getRepositoryList(options);
-
-      _.each(repos, function (repo) {
-        var template = {
-            repo: repo,
-            path: path.resolve(options.xt.srcdir, repo),
-            out: path.resolve(options.xt.usersrc, '..')
-          },
-          rsync = exec('rsync -ar --exclude=".git" {path} {out}'.format(template));
-
-        if (rsync.code !== 0) {
-          throw new Error(JSON.stringify(rsync, null, 2));
-        }
-
-        exec('chown -R {xt.name}:{xt.name} {xt.userhome}'.format(options));
-        exec('chmod -R 700 {xt.userhome}'.format(options));
-      });
+        databases = _.where(xt.database.list, { foundation: false });
 
       // build the main database and pilot, if specified
       _.each(databases, function (db) {
