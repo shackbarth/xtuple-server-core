@@ -55,8 +55,9 @@
         }
 
         // copy main repo files to user's home directory
-        var userSourcePath = path.resolve(options.xt.userhome, options.xt.version, repo),
-          rsync = exec([
+        var userSourcePath = path.resolve(options.xt.userhome, options.xt.version, repo);
+        exec('mkdir -p ' + userSourcePath);
+        var rsync = exec([
             'rsync -ar --exclude=.git --exclude=node_modules',
             template.path + '/*',
             userSourcePath
