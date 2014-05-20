@@ -181,6 +181,7 @@ The xTuple Service can be managed using the following command template: `service
       ```
     - Backs up the database to the default backup directory, and restores an indentical copy into Postgres called
       `tesla_pilot_copy_05201030`
+    - Creates a backup file in the default backup directory called `tesla_pilot_05201030`
     - Changes can now be made to `tesla_pilot` without affecting `tesla_pilot_copy_05201030`.
 
 ### e. Health Monitor
