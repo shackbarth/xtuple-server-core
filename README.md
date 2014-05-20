@@ -86,7 +86,7 @@ The `xtuple-server` command-line program is installed by `bootstrap.sh`. It requ
   
   - The Installer generates credentials. And users. And everything else.
     - Before running the installer, find a pen and paper. When the installer finishes, it displays credentials.
-    - And on that note: if you are installing over SSH, failure to follow these instructions could result in being locked out of the machine **irreversibly**, regardless of how much `sudo` you think you have.
+    - If you are installing over SSH, failure to follow these instructions could result in being locked out of the machine irreversibly, regardless of how much `sudo` you think you have.
     - If you think a config is wrong, [file a bug report](https://github.com/xtuple/xtuple-scripts/issues?state=open). Changing it by hand will probably break some automatically-installed thing you didn't know existed.
     - Do not install anything else on the machine. If you need additional packages for an xTuple installation, it needs to be written as an add-on module to the installer. File an issue.
 
@@ -141,7 +141,7 @@ The xTuple Service can be managed using the following command template: `service
   - `service xtuple help`
     - outputs help info
 
-#### c. Control your xTuple Server
+### c. Control your xTuple Server
 
   - `pg_ctlcluster <version> <name> {restart|stop|start}`
     - Control your Postgres server
@@ -150,7 +150,40 @@ The xTuple Service can be managed using the following command template: `service
     - Restart all xTuple services
     - Example: `service xtuple 4.4.0 xtmocha restart` will restart all the xTuple services for the user `xtmocha`
 
-### d. Health Monitor
+### d. Manage your Databases
+
+  These commands handle the usual database operations, and include the benefit of automatically updating
+  the configuation file for the Web server.
+
+  - **Backup Database**
+      ```
+      xtuple-server backup-database --xt-version 4.4.1 --xt-name tesla --pg-dbname tesla_main
+      ```
+    - Backs up the `tesla_main` database to the default backup directory: `/var/lib/xtuple/4.4.1/tesla/snapshots`
+    
+  - **Restore Database**
+      ```
+      xtuple-server restore-database --xt-version 4.4.1 --xt-name tesla
+        --pg-dbname tesla_updated
+        --pg-infile /var/lib/xtuple/4.4.1/tesla/snapshots/tesla_main_05201030.dir.gz
+      ```
+    - Restores the database created by the `backup-database` plan
+
+  - **Drop Database**
+      ```
+      xtuple-server drop-database --xt-version 4.4.1 --xt-name tesla --pg-dbname tesla_junk
+      ```
+    - Drops the database called `tesla_junk`
+  
+  - **Copy Database**
+      ```
+      xtuple-server copy-database --xt-version 4.4.1 --xt-name tesla --pg-dbname tesla_pilot
+      ```
+    - Backs up the database to the default backup directory, and restores an indentical copy into Postgres called
+      `tesla_pilot_copy_05201030`
+    - Changes can now be made to `tesla_pilot` without affecting `tesla_pilot_copy_05201030`.
+
+### e. Health Monitor
 
 By default, the xTuple Server pro-actively monitors the health of the system on which it is installed. The `xtuple-healthfeed` process maintains a log of the server's vital signs.
 
