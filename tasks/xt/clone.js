@@ -66,7 +66,10 @@
         if (rsync.code !== 0) {
           throw new Error(JSON.stringify(rsync, null, 2));
         }
-        fs.symlinkSync(template.path, path.resolve(userSourcePath, 'node_modules'));
+        fs.symlinkSync(
+          path.resolve(template.path, 'node_modules'),
+          path.resolve(userSourcePath, 'node_modules')
+        );
       });
     },
 
