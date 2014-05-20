@@ -55,7 +55,6 @@
 
       //exec('mkdir -p ' + path.resolve(options.xt.configdir, 'test'));
       exec('mkdir -p ' + options.xt.userhome);
-      exec('mkdir -p ' + options.xt.usersrc);
       exec('mkdir -p ' + options.xt.pm2dir);
       exec('mkdir -p ' + options.xt.userPm2dir);
 

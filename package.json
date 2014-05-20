@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "xtuple-scripts",
-  "version": "4.4.0",
+  "version": "0.9.9",
   "description": "xtuple-scripts",
   "main": "index.js",
   "dependencies": {
@@ -49,7 +49,8 @@
   "engines": {
     "node": ">=0.8.26",
     "npm": ">=1.3.0",
-    "postgres": ">=9.3"
+    "postgres": ">=9.3",
+    "xtuple": ">= 4.4.0"
   },
   "repository": {
     "type": "git",

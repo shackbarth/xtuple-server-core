@@ -36,33 +36,37 @@
             path: path.resolve(options.xt.srcdir, repo)
           }, options);
 
-        if (fs.existsSync(template.path)) { return; }
+        if (!fs.existsSync(template.path)) {
 
-        var clone = exec('git clone --recursive https://github.com/xtuple/{repo}.git {path}'.format(template)),
-          checkout = exec(('cd {path} && git checkout '+ options.xt.repoHash).format(template));
+          var clone = exec('git clone --recursive https://github.com/xtuple/{repo}.git {path}'.format(template)),
+            checkout = exec(('cd {path} && git checkout '+ options.xt.repoHash).format(template));
 
-        options.xt.nodeVersion = exports.getPackageNodeVersion(options);
-        options.xt.nodePath = path.dirname(exec('n bin '+ options.xt.nodeVersion).stdout);
-        options.xt.nodeBin = path.resolve(options.xt.nodePath, 'node');
-        options.xt.npmBin = path.resolve(options.xt.nodePath, 'npm');
+          options.xt.nodeVersion = exports.getPackageNodeVersion(options);
+          options.xt.nodePath = path.dirname(exec('n bin '+ options.xt.nodeVersion).stdout);
+          options.xt.nodeBin = path.resolve(options.xt.nodePath, 'node');
+          options.xt.npmBin = path.resolve(options.xt.nodePath, 'npm');
 
-        template.npm = options.xt.npmBin;
-        exec('cd {path} && {npm} install --silent'.format(template));
+          template.npm = options.xt.npmBin;
+          exec('cd {path} && {npm} install --silent'.format(template));
 
-        if (clone.code !== 0) {
-          throw new Error(JSON.stringify(clone, null, 2));
+          if (clone.code !== 0) {
+            throw new Error(JSON.stringify(clone, null, 2));
+          }
         }
-      });
 
-      // copy main repo files to user's home directory
-      var rsync = exec('rsync -ar --exclude=.git --exclude=node_modules {xt.coredir}/* {xt.usersrc}'.format(options));
-      if (rsync.code !== 0) {
-        throw new Error(JSON.stringify(rsync, null, 2));
-      }
-      fs.symlinkSync(
-        path.resolve(options.xt.usersrc, 'node_modules'), 
-        path.resolve(options.xt.srcdir, 'xtuple', 'node_modules')
-      );
+        // copy main repo files to user's home directory
+        var userSourcePath = path.resolve(options.xt.userhome, options.xt.version, repo),
+          rsync = exec([
+            'rsync -ar --exclude=.git --exclude=node_modules',
+            template.path + '/*',
+            userSourcePath
+          ].join(' '));
+          
+        if (rsync.code !== 0) {
+          throw new Error(JSON.stringify(rsync, null, 2));
+        }
+        fs.symlinkSync(template.path, path.resolve(userSourcePath, 'node_modules'));
+      });
     },
 
     /**
