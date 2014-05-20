@@ -30,7 +30,8 @@
   },
   "bin": {
     "xtuple-server": "./server-cli.js",
-    "pm2": "node_modules/.bin/pm2"
+    "xtuple-healthfeed": "node_modules/pm2/lib/HttpInterface.js",
+    "xtupled": "node_modules/.bin/pm2"
   },
   "preferGlobal": true,
   "os": [
@@ -48,7 +49,7 @@
   "engines": {
     "node": ">=0.8.26",
     "npm": ">=1.3.0",
-    "postgres": ">9.3"
+    "postgres": ">=9.3"
   },
   "repository": {
     "type": "git",

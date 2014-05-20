@@ -195,7 +195,7 @@
       //exec('skill -KILL -u xtremote'.format(options));
       if (_.isString(options.xt.name)) {
         exec('skill -KILL -u {xt.name}'.format(options));
-        exec('deluser {xt.name}'.format(options));
+        //exec('deluser {xt.name}'.format(options));  XXX no user, no cluster owner = strangeness
         exec('rm -rf /usr/local/{xt.name}'.format(options));
         exec('rm -f '+ path.resolve('/etc/sudoers.d/', user_policy_filename.replace('user', '{xt.name}').format(options)));
       }

@@ -8,5 +8,8 @@
       /usr/bin/pg_dump * -U {xt.name} *, \
       /usr/bin/createdb * -U {xt.name} *, \
       /usr/bin/dropdb * -U {xt.name} *, \
-      /usr/local/bin/pm2 *, \
-      /usr/local/bin/xtuple-server * --xt-version {xt.version} * --xt-name {xt.name} *
+      /usr/local/bin/xtupled dump, \
+      /usr/local/bin/xtupled restart *, \
+      /usr/local/bin/xtupled list, \
+      /usr/local/bin/xtuple-healthfeed *, \
+      /usr/local/bin/xtuple-server * --xt-name {xt.name} *

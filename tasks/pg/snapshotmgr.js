@@ -57,9 +57,7 @@
     executeTask: function (options) {
       if (!options.pg.enablesnap) { return; }
 
-      exec('pm2 ping');
-      var start = exec('sudo HOME={xt.homedir} pm2 start -u {xt.name} {pg.pm2.configfile}'
-        .format(options));
+      var start = exec('xtupled start {pg.pm2.configfile}'.format(options));
 
       if (start.code !== 0) {
         throw new Error(JSON.stringify(start));
@@ -68,7 +66,7 @@
 
     /** @override */
     afterTask: function (options) {
-      exec('HOME=~{xt.name} sudo -u {xt.name} service xtuple {xt.version} {xt.name} restart'.format(options));
+      exec('service xtuple {xt.version} {xt.name} restart'.format(options));
     },
 
     /**
