@@ -27,7 +27,11 @@
         required: '<name>',
         description: 'Name of the installation',
         validate: function (arg) {
-          return !/\d/.test(arg);
+          if (/\d/.test(arg)) {
+            throw new Error('xt.name cannot contain numbers');
+          }
+
+          return true;
         }
       },
       pilot: {
