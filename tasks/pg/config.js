@@ -80,6 +80,10 @@
         name: require('./cluster').getClusterName(options),
         version: options.pg.version
       });
+
+      if (!_.isObject(options.pg.cluster)) {
+        throw new Error('No such installation exists: ' + require('./cluster').getClusterName(options));
+      }
     },
 
     /**
