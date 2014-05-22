@@ -19,7 +19,9 @@ _.extend(exports, lib.task, /** @exports backup */ {
 
   /** @override */
   beforeInstall: function (options) {
-    options.pg.dbname || (options.pg.dbname = options.xt.name + '_main');
+    options.pg.dbname || (
+      options.pg.dbname = options.xt.name + require('../xt').database.getDatabaseNameSuffix(options)
+    );
   },
 
   /** @override */
@@ -32,6 +34,7 @@ _.extend(exports, lib.task, /** @exports backup */ {
     // dump globals
     lib.pgCli.dumpall(_.extend({
       snapshotpath: fork.getSnapshotPath(_.extend({ dbname: 'globals' }, options)),
+      dbname: 'globals'
     }, options));
     
     // dump data
