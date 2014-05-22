@@ -29,7 +29,7 @@ _.extend(exports, lib.task, /** @exports service */ {
 
   /** @override */
   executeTask: function (options) {
-    if (/^setup/.test(options.planName)) {
+    if (options.planName === 'setup') {
       exports.setupServiceManager(options);
     }
     else {
