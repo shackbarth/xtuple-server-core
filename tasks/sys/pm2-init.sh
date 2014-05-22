@@ -75,7 +75,7 @@ start() {
 }
 
 stop() {
-  echo -e "Stopping xTuple services... (this will drop any current sessions)"
+  echo -e "Stopping xTuple services... (this will drop any user sessions)"
 
   if [[ -z $USER ]]; then
     xtupled stop all --silent
@@ -88,7 +88,7 @@ stop() {
 }
 
 restart() {
-  echo -e "Restarting xTuple services... (this will drop any current sessions)"
+  echo -e "Restarting xTuple services... (this will drop any user sessions)"
 
   if [[ -z $USER ]]; then
     service postgresql restart &> /dev/null
