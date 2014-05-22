@@ -19,13 +19,13 @@ trap help ERR SIGINT SIGTERM
 export PATH=$PATH:/usr/bin:/usr/local/bin
 export PM2_NODE_OPTIONS='--harmony'
 
-HOME=/usr/local/xtuple
 version="$1"
 USER="$2"
 action="$3"
 
 PG_VERSION=$(psql -V | grep [[:digit:]].[[:digit:]] --only-matching)
 XTUPLED=/usr/local/bin/xtupled HOME=$HOME PATH=$PATH 
+SERVICES_FILE=
 
 # non-root users must specify account and version
 if [[ $EUID -ne 0 && -z $USER ]]; then
@@ -38,6 +38,10 @@ if [[ -z $USER ]]; then
   version=
   action="$1"
   USER="root"
+  export HOME=/usr/local/xtuple
+else
+  export HOME=$(eval echo ~$USER)
+  SERVICES_FILE=/etc/xtuple/$version/$USER/services.json
 fi
 
 if [[ -z $USER && ! -z $version ]]; then
@@ -72,11 +76,12 @@ start() {
 
 stop() {
   echo -e "Stopping xTuple services... (this will drop any current sessions)"
-  xtupled stop all --silent
 
   if [[ -z $USER ]]; then
+    xtupled stop all --silent
     service postgresql stop &> /dev/null
   else
+    xtupled stop $SERVICES_FILE --silent
     pg_ctlcluster $PG_VERSION $USER stop -m fast &> /dev/null
   fi
   echo -e "Done."
@@ -87,11 +92,12 @@ restart() {
 
   if [[ -z $USER ]]; then
     service postgresql restart &> /dev/null
+    xtupled restart all --silent
   else
     pg_ctlcluster $PG_VERSION $USER restart -m fast &> /dev/null
+    xtupled restart $SERVICES_FILE --silent
   fi
 
-  xtupled restart all --silent
   echo -e "Done."
 }
 
@@ -100,21 +106,24 @@ reload() {
 
   if [[ -z $USER ]]; then
     service postgresql reload &> /dev/null
+    xtupled reload all --silent
   else
     pg_ctlcluster $PG_VERSION $USER reload &> /dev/null
+    xtupled reload $SERVICES_FILE --silent
   fi
 
-  xtupled reload all --silent
   echo -e "Done."
 }
 
 status() {
   clusters=$(pg_lsclusters)
-  echo "$(xtupled list)"
+  services=$($XTUPLED status -m)
 
   if [[ -z $USER ]]; then
+    echo "$services"
     echo "$clusters"
   else 
+    echo "$services" | head -n 1 && echo "$services" | grep $USER
     echo "$clusters" | head -n 1 && echo "$clusters" | grep $USER
   fi
 }
@@ -126,7 +135,7 @@ help() {
     echo -e 'Usage: service xtuple {stop|restart|reload|status|help}'
     echo -e '       service xtuple <version> <name> {stop|restart|reload|status|help}'
     echo -e ''
-    echo -e 'Examples:  '
+    echo -e 'Examples:'
     echo -e '   Restart all services:        service xtuple restart'
     echo -e '   Restart a single account:    service xtuple 4.4.0 acme restart'
     echo -e '   Display status:              service xtuple status'
@@ -172,7 +181,3 @@ case "$action" in
       help
       ;;
 esac
-
-if [[ $RETVAL -ne 0 ]]; then
-  help
-fi
