@@ -1,6 +1,6 @@
 [
   {
-    "name": "xtuple-server-{xt.version}-{xt.name}",
+    "name": "web-{pg.cluster.name}",
     "run_as_user": "{xt.name}",
     "script": "/usr/sbin/xtuple/{xt.version}/{xt.name}/main.js",
     "args": "[ '-c', '/etc/xtuple/{xt.version}/{xt.name}/config.js' ]",
@@ -8,12 +8,10 @@
     "instances": "1",
     "USER": "{xt.name}",
     "HOME": "{xt.userhome}",
-    "PORT": "{xt.port}",
     "env": {
       "NODE_ENV": "production",
       "PORT": "{xt.port}",
-      "XT_PROCESS": "xtuple-server-{xt.version}",
-      "XT_NAME": "{xt.name}",
+      "XT_PROCESS": "web-{xt.version}",
       "XT_VERSION": "{xt.version}",
       "XT_DOMAIN": "{nginx.domain}",
       "XT_URL": "{nginx.domain}",
@@ -25,7 +23,7 @@
     "min_uptime": 10000
   },
   {
-    "name": "xtuple-healthfeed-{xt.version}-{xt.name}",
+    "name": "healthfeed-{pg.cluster.name}",
     "run_as_user": "{xt.name}",
     "script": "/usr/local/bin/xtuple-healthfeed",
     "instances": "1",
@@ -37,7 +35,6 @@
       "NODE_ENV": "production",
       "PORT": "{nginx.healthfeedport}",
       "XT_PROCESS": "xtuple-healthfeed",
-      "XT_NAME": "{xt.name}",
       "XT_VERSION": "{xt.version}",
       "XT_DOMAIN": "{nginx.domain}",
       "XT_URL": "/_healthfeed",
