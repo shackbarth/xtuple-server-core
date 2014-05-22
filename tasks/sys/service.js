@@ -68,6 +68,8 @@ _.extend(exports, lib.task, /** @exports service */ {
     // create upstart service "xtuple"
     exec('cp {sys.pm2.initscript} {sys.initd}'.format(options));
     exec('update-rc.d xtuple defaults');
+
+    exec('xtupled kill');
   },
 
   /**
