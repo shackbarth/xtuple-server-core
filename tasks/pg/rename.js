@@ -1,5 +1,6 @@
 var lib = require('../../lib'),
   config = require('./config'),
+  exec = require('execSync').exec,
   fs = require('fs'),
   _ = require('lodash');
 
