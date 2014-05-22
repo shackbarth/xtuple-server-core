@@ -17,7 +17,8 @@ describe('xTuple Installer', function () {
       pg: {
         version: process.env.XT_PG_VERSION,
         capacity: 32,
-        forceoverwrite: true
+        forceoverwrite: true,
+        pilot: true
       }
     };
 
@@ -48,24 +49,29 @@ describe('xTuple Installer', function () {
           })
           .fail(function (e) {
             assert.fail(e);
-            done();
           });
       });
     });
     describe('#uninstall', function () {
-      it('should uninstall any existing installation', function () {
+      it('should uninstall any existing installation', function (done) {
+        this.timeout(300 * 1000); // 5 minutes
         planner.execute(global.installPlan, _.defaults({
-          planName: 'uninstall',
-          pg: _.extend({
-            cluster: {
-              version: process.env.XT_PG_VERSION,
-              name: global.options.xt.name
-            }
-          }, global.options.pg)
-        }, global.options));
+            planName: 'uninstall',
+            pg: _.extend({
+              cluster: {
+                version: process.env.XT_PG_VERSION,
+                name: global.options.xt.name
+              }
+            }, global.options.pg)
+          }, global.options)
+        ).then(function () {
+          done();
+        })
+        .fail(function (e) {
+          assert.fail(e);
+        });
       });
     });
-
   });
 
   // XXX remove this check when zombie is fixed in node 0.10

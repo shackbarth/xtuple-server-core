@@ -103,7 +103,7 @@ _.extend(exports, lib.task, /** @exports cluster */ {
    * Derive the name of the postgres cluster from the options.
    */
   getClusterName: function (options) {
-    if (options.planName === 'install-pilot') {
+    if (options.pg.pilot === true) {
       return options.xt.name + '-' + options.xt.version + '-pilot';
     }
     else {
