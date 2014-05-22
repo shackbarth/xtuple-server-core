@@ -8,7 +8,7 @@ var assert = require('chai').assert,
 
 describe('xTuple Installer', function () {
   global.options = {
-      planName: 'install',
+      planName: 'install-pilot',
       xt: {
         name: 'xtmocha',
         version: '4.4.1',
