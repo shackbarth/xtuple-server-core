@@ -75,7 +75,7 @@ _.extend(exports, lib.task, /** @exports database */ {
     }
 
     // schedule main database file for installation
-    if (_.isString(options.xt.maindb)) {
+    if (!_.isEmpty(options.xt.maindb)) {
       maindb_path = path.resolve(options.xt.maindb);
       if (fs.existsSync(maindb_path)) {
         databases.push({

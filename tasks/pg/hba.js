@@ -54,7 +54,7 @@
       exec('usermod -a -G www-data postgres');
       exec('usermod -a -G ssl-cert postgres');
 
-      if (_.isString(options.pg.cacrt)) {
+      if (!_.isEmpty(options.pg.cacrt)) {
         options.pg.cacrt = path.resolve(options.pg.cacrt);
       }
       else {

@@ -47,7 +47,7 @@
     beforeTask: function (options) {
       // if customer appears new, that is they've provided no main database,
       // snapshot to restore from, or admin password, generate a admin password
-      if (_.isString(options.xt.name) && !options.xt.adminpw && !options.xt.maindb) {
+      if (!_.isEmpty(options.xt.name) && !options.xt.adminpw && !options.xt.maindb) {
         options.xt.adminpw = policy.getPassword();
       }
 
@@ -55,7 +55,7 @@
         options.sys.policy.remotePassword = policy.getPassword();
       }
 
-      if (_.isString(options.xt.name) && exec('id -u {xt.name}'.format(options)).code !== 0) {
+      if (!_.isEmpty(options.xt.name) && exec('id -u {xt.name}'.format(options)).code !== 0) {
         options.sys.policy.userPassword = policy.getPassword();
       }
     },
@@ -86,7 +86,7 @@
       exec('sleep 1');
       var pass = exec('openssl rand 6 | base64');
         
-      if (pass.code === 0 && _.isString(pass.stdout)) {
+      if (pass.code === 0 && !_.isEmpty(pass.stdout)) {
         return pass.stdout.trim().replace(/\W/g, '');
       }
       else {
@@ -201,7 +201,7 @@
     /** @override */
     uninstall: function (options) {
       //exec('skill -KILL -u xtremote'.format(options));
-      if (_.isString(options.xt.name)) {
+      if (!_.isEmpty(options.xt.name)) {
         exec('skill -KILL -u {xt.name}'.format(options));
         //exec('deluser {xt.name}'.format(options));  XXX no user, no cluster owner = strangeness
         exec('rm -rf /usr/local/{xt.name}'.format(options));
