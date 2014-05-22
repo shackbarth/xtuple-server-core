@@ -41,8 +41,8 @@
         configfile: path.resolve(options.xt.configdir, 'pm2-backup-services.json'),
         templatefile: path.resolve(__dirname, 'pm2-backup-service.json')
       };
-      */
       options.pg.pm2.template = fs.readFileSync(options.pg.pm2.templatefile).toString();
+      */
       cron.parseExpressionSync(options.pg.snapschedule);
     },
 
