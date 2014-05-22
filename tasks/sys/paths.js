@@ -44,7 +44,6 @@
       options.xt.rundir = path.resolve('/var/run/xtuple', version, name);
       options.xt.statedir = path.resolve('/var/lib/xtuple', version, name);
       options.sys.sbindir = path.resolve('/usr/sbin/xtuple/', version, name);
-      options.sys.servicedir = path.resolve(options.xt.configdir, 'services');
       options.sys.htpasswdfile = path.resolve('/etc/nginx/.htpasswd-xtuple');
 
       // repositories
@@ -69,7 +68,6 @@
       exec('mkdir -p ' + options.xt.socketdir);
       exec('mkdir -p ' + options.xt.statedir);
       exec('mkdir -p ' + options.xt.srcdir);
-      exec('mkdir -p ' + options.sys.servicedir);
       exec('mkdir -p ' + options.sys.sbindir);
 
       exec('chown -R xtadmin:xtuser '+ options.xt.srcdir);

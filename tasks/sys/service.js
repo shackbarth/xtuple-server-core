@@ -19,7 +19,7 @@
     beforeInstall: function (options) {
       options.sys.pm2 = {
         template: fs.readFileSync(path.resolve(__dirname, 'pm2-core-services.json')).toString(),
-        configfile: path.resolve(options.sys.servicedir, 'pm2-core-services.json'),
+        configfile: path.resolve(options.xt.configdir, 'services.json'),
         initscript: path.resolve(__dirname, 'pm2-init.sh')
       };
     },

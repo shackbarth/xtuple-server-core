@@ -140,7 +140,6 @@
           'chown -R :xtuser {pg.logdir}'.format(options),
           'chown -R {xt.name}:xtuser {xt.logdir}'.format(options),
           'chown -R {xt.name}:xtuser {xt.configdir}'.format(options),
-          'chown -R {xt.name}:xtuser {sys.servicedir}'.format(options),
           'chown -R {xt.name}:xtuser {xt.statedir}'.format(options),
           'chown -R {xt.name}:xtuser {xt.userPm2dir}'.format(options),
           'chown -R {xt.name}:xtuser {xt.rundir}'.format(options),
