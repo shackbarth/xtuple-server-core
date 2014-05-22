@@ -30,7 +30,7 @@
       capacity: {
         optional: '[int]',
         description: 'Number of provisioned "slots" available [1]',
-        value: 2
+        value: 4
       }
     },
 
@@ -63,6 +63,7 @@
       // set tuned values; config will be written by 'config' task
       _.extend(options.pg.config, {
         work_mem: work_mem(options),
+        maintenance_work_mem: maintenance_work_mem(options),
         shared_buffers: shared_buffers(options),
         //max_stack_depth: max_stack_depth(options),
         effective_cache_size: effective_cache_size(options),
@@ -94,7 +95,12 @@
   });
 
   function maintenance_work_mem (options) {
-    return work_mem(options) * 2;
+    if (options.planName === 'install-pilot') {
+      return work_mem(options) * 4;
+    }
+    else {
+      return work_mem(options) * 2;
+    }
   }
 
   /**

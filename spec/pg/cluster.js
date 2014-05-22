@@ -4,7 +4,7 @@ var assert = require('chai').assert,
   options = global.options;
 
 it('pg.cluster.name should be set correctly', function () {
-  assert.equal(options.pg.cluster.name, options.xt.name + '-' + options.xt.version);
+  assert.equal(options.pg.cluster.name, options.xt.name + '-' + options.xt.version + '-pilot');
 });
 
 it('should be able to control my personal pg cluster', function () {

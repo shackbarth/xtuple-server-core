@@ -43,9 +43,11 @@
       }
 
       console.log();
+      console.log('Installation Name: '+ options.pg.cluster.name);
       console.log('Access Credentials');
       console.log(JSON.stringify(options.report, null, 2));
-      console.log('Write this information down now. ');
+      console.log('Write this information down now.');
+      console.log();
     },
 
     /** @override */
