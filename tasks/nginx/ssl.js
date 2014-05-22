@@ -42,11 +42,11 @@
     /** @override */
     executeTask: function (options) {
       var nginx = options.nginx;
-      if (_.isString(nginx.inzip) && _.isString(nginx.inkey)) {
+      if (!_.isEmpty(nginx.inzip) && !_.isEmpty(nginx.inkey)) {
         nginx.inzip = path.resolve(nginx.inzip);
         ssl.createBundle(options);
       }
-      else if (_.isString(nginx.incrt) && _.isString(nginx.inkey)) {
+      else if (!_.isEmpty(nginx.incrt) && !_.isEmpty(nginx.inkey)) {
         nginx.incrt = path.resolve(nginx.incrt);
         nginx.inkey = path.resolve(nginx.inkey);
 

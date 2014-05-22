@@ -52,7 +52,10 @@
       options.xt.coredir = path.resolve(options.xt.srcdir, 'xtuple');
       options.xt.extdir = path.resolve(options.xt.srcdir, 'xtuple-extensions');
       options.xt.privatedir = path.resolve(options.xt.srcdir, 'private-extensions');
+    },
 
+    /** @override */
+    executeTask: function (options) {
       //exec('mkdir -p ' + path.resolve(options.xt.configdir, 'test'));
       exec('mkdir -p ' + options.xt.userhome);
       exec('mkdir -p ' + options.xt.pm2dir);
@@ -80,13 +83,8 @@
     },
 
     /** @override */
-    executeTask: function (options) {
-
-    },
-
-    /** @override */
     uninstall: function (options) {
-      if (_.isString(options.sys.userhome)) {
+      if (!_.isEmpty(options.sys.userhome)) {
         rimraf.sync(options.sys.userhome);
       }
     }
