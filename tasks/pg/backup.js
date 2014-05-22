@@ -32,10 +32,7 @@ _.extend(exports, lib.task, /** @exports backup */ {
   /** @override */
   executeTask: function (options) {
     // dump globals
-    lib.pgCli.dumpall(_.extend({
-      snapshotpath: fork.getSnapshotPath(_.extend({ dbname: 'globals' }, options)),
-      dbname: 'globals'
-    }, options));
+    lib.pgCli.dumpall(_.extend({ snapshotpath: fork.getSnapshotPath(options, true) }, options));
     
     // dump data
     lib.pgCli.dump(_.extend({
