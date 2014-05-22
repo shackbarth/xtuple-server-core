@@ -15,17 +15,18 @@ _.extend(exports, lib.task, /** @exports report */ {
       path.resolve(options.xt.configdir, 'install-arguments.json'),
       JSON.stringify(options, null, 2)
     );
+    options.report = { };
   },
 
   /** @override */
   executeTask: function (options) {
-    options.report = {
-      'xTuple Login': {
+    if (!_.isEmpty(options.xt.adminpw)) {
+      options.report['xTuple Login'] = {
         domain: options.nginx.domain,
         user: 'admin',
         password: options.xt.adminpw
-      }
-    };
+      };
+    }
 
     if (options.sys.policy.remotePassword) {
       options.report['Remote Management Access'] = {
