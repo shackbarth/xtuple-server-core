@@ -5,7 +5,7 @@ var lib = require('../../lib'),
 /**
  * Rename an existing database.
  */
-_.extend(exports, lib.task, /** @exports rename-database */ {
+_.extend(exports, lib.task, /** @exports rename */ {
 
   options: {
     dbname: {
@@ -25,10 +25,9 @@ _.extend(exports, lib.task, /** @exports rename-database */ {
 
   /** @override */
   executeTask: function (options) {
-    lib.pgCli.psql(options, [
-      'alter database', options.pg.dbname, 'rename to', options.pg.newname
-    ].join(' '));
+    var res = lib.pgCli.psql(options,
+      'alter database ' + options.pg.dbname + ' rename to ' + options.pg.newname
+    );
+    console.log(res);
   }
-
 });
-

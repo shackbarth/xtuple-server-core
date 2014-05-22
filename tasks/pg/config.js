@@ -68,7 +68,7 @@
 
     /** @override */
     afterTask: function (options) {
-      lib.pgCli.ctlcluster({ action: 'restart', version: options.pg.version, name: options.xt.name });
+      lib.pgCli.ctlcluster(options, 'restart');
     },
 
     /**
