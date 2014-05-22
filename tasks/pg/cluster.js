@@ -12,11 +12,18 @@
    */
   _.extend(exports, lib.task, /** @exports cluster */ {
 
+    options: {
+      forceoverwrite: {
+        optional: '[boolean]',
+        description: 'Force drop an existing cluster of the same version/name and overwrite it'
+      }
+    },
+
     /** @override */
     beforeInstall: function (options) {
       var clusters = lib.pgCli.lsclusters(),
         exists = _.findWhere(clusters, {
-          name: options.xt.name,
+          name: exports.getClusterName(options),
           version: parseFloat(options.pg.version)
         });
 
@@ -39,8 +46,12 @@
 
     /** @override */
     uninstall: function (options) {
-      lib.pgCli.ctlcluster(options, 'stop');
-      lib.pgCli.dropcluster(options);
+      options.pg.cluster.name = exports.getClusterName(options);
+
+      if (options.pg.forceoverwrite === true) {
+        lib.pgCli.ctlcluster(options, 'stop');
+        lib.pgCli.dropcluster(options);
+      }
     },
 
     /**

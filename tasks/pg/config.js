@@ -77,7 +77,7 @@
      */
     discoverCluster: function (options) {
       options.pg.cluster = _.findWhere(lib.pgCli.lsclusters(), {
-        name: options.xt.name,
+        name: require('./cluster').getClusterName(options),
         version: options.pg.version
       });
     },
@@ -87,7 +87,7 @@
      */
     writePostgresqlConfig: function (options) {
       _.defaults(options.pg.config, options.pg.cluster, {
-        name: options.xt.name,
+        name: require('./cluster').getClusterName(options),
         timezone: options.pg.timezone,
         data_directory: options.pg.cluster.data,
         ssl_cert_file: options.pg.outcrt,
@@ -95,7 +95,7 @@
         ssl_ca_file: options.pg.outcacrt
       }, pgconfig.defaults);
 
-      var targetPath = path.resolve('/etc/postgresql', options.pg.version, options.xt.name, 'postgresql.conf'),
+      var targetPath = path.resolve('/etc/postgresql', options.pg.version, options.pg.cluster.name, 'postgresql.conf'),
         templateFile = path.resolve(__dirname, 'postgresql-{pg.version}.conf.template'.format(options)),
         template = fs.readFileSync(templateFile).toString(),
         conf = template.format(options.pg.config);

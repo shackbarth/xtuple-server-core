@@ -1,6 +1,7 @@
 var assert = require('chai').assert,
   exec = require('execSync').exec,
   _ = require('lodash'),
+  lib = require('../lib'),
   path = require('path'),
   fs = require('fs'),
   planner = require('../lib/planner');
@@ -15,7 +16,8 @@ describe('xTuple Installer', function () {
       },
       pg: {
         version: process.env.XT_PG_VERSION,
-        capacity: 32
+        capacity: 32,
+        forceoverwrite: true
       }
     };
 
