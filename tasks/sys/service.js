@@ -45,7 +45,7 @@ _.extend(exports, lib.task, /** @exports service */ {
 
   /** @override */
   afterInstall: function (options) {
-    console.log(exec('service xtuple {xt.version} {xt.name} status'.format(options)).stdout);
+    console.log(exec('service xtuple status'));
   },
 
   /**
@@ -62,7 +62,6 @@ _.extend(exports, lib.task, /** @exports service */ {
 
     if (fs.existsSync(options.sys.initd)) {
       exec('update-rc.d -f xtuple remove');
-      fs.unlinkSync(options.sys.initd);
     }
 
     // create upstart service "xtuple"

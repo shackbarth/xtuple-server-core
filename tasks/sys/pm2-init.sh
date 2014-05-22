@@ -14,36 +14,62 @@
 # Description: xTuple Mobile Web Service Manager
 ### END INIT INFO
 
+help() {
+  echo -e 'xTuple Service Manager'
+  echo -e ''
+
+  if [[ $EUID -eq 0 ]]; then
+    echo -e 'Usage: service xtuple {stop|restart|reload|status|help}'
+    echo -e '       service xtuple <VERSION> <name> {stop|restart|reload|status|help}'
+    echo -e ''
+    echo -e 'Examples:'
+    echo -e '   Restart all services:        service xtuple restart'
+    echo -e '   Restart a single account:    service xtuple 4.4.0 acme restart'
+    echo -e '   Display status:              service xtuple status'
+    echo -e ''
+  else
+    echo -e 'Usage: service xtuple <VERSION> <name> {stop|restart|status|help}'
+    echo -e ''
+    echo -e 'xTuple Log Path: /var/log/xtuple/<VERSION>/<name>'
+    echo -e 'xTuple Config Path: /etc/xtuple/<VERSION>/<name>'
+    echo -e 'Postgres Log Path: /var/log/postgresql/'
+    echo -e ''
+  fi
+  echo -e 'Having trouble? Email us: <dev@xtuple.com>'
+  
+  exit $RETVAL
+}
+
 trap help ERR SIGINT SIGTERM
 
 export PATH=$PATH:/usr/bin:/usr/local/bin
 export PM2_NODE_OPTIONS='--harmony'
 
-version="$1"
+VERSION="$1"
 USER="$2"
-action="$3"
+ACTION="$3"
 
 PG_VERSION=$(psql -V | grep [[:digit:]].[[:digit:]] --only-matching)
 XTUPLED=/usr/local/bin/xtupled HOME=$HOME PATH=$PATH 
 SERVICES_FILE=
 
-# non-root users must specify account and version
+# non-root users must specify account and VERSION
 if [[ $EUID -ne 0 && -z $USER ]]; then
   help
 fi
 
-# if root does not specify account, then the first argument is the action
-# e.g. sudo service xtuple status, action = status
+# if root does not specify account, then the first argument is the ACTION
+# e.g. sudo service xtuple status, ACTION = status
 if [[ -z $USER ]]; then
-  version=
-  action="$1"
+  VERSION=
+  ACTION="$1"
   export HOME=/usr/local/xtuple
 else
   export HOME=$(eval echo ~$USER)
-  SERVICES_FILE=/etc/xtuple/$version/$USER/services.json
+  SERVICES_FILE=/etc/xtuple/$VERSION/$USER/services.json
 fi
 
-if [[ -z $USER && ! -z $version ]]; then
+if [[ -z $USER && ! -z $VERSION ]]; then
   help
 fi
 
@@ -54,7 +80,7 @@ xtupled() {
 }
 
 start() {
-  if [[ $(id -u) -eq 0 && -z $USER ]]; then
+  if [[ $EUID -eq 0 && -z $USER ]]; then
 
     service postgresql start &> /dev/null
 
@@ -126,31 +152,6 @@ status() {
     echo "$clusters" | head -n 1 && echo "$clusters" | grep $USER
   fi
 }
-help() {
-  echo -e 'xTuple Service Manager'
-  echo -e ''
-
-  if [[ $EUID -eq 0 ]]; then
-    echo -e 'Usage: service xtuple {stop|restart|reload|status|help}'
-    echo -e '       service xtuple <version> <name> {stop|restart|reload|status|help}'
-    echo -e ''
-    echo -e 'Examples:'
-    echo -e '   Restart all services:        service xtuple restart'
-    echo -e '   Restart a single account:    service xtuple 4.4.0 acme restart'
-    echo -e '   Display status:              service xtuple status'
-    echo -e ''
-  else
-    echo -e 'Usage: service xtuple <version> <name> {stop|restart|status|help}'
-    echo -e ''
-    echo -e 'xTuple Log Path: /var/log/xtuple/<version>/<name>'
-    echo -e 'xTuple Config Path: /etc/xtuple/<version>/<name>'
-    echo -e 'Postgres Log Path: /var/log/postgresql/'
-    echo -e ''
-  fi
-  echo -e 'Having trouble? Email us: <dev@xtuple.com>'
-  
-  exit $RETVAL
-}
 
 # explicitly (re)-permission root process file so that users can not see the
 # global process list even if something else accidentally slackens the rules
@@ -160,7 +161,7 @@ if [[ $EUID -eq 0 ]]; then
   chmod -R o-rw /usr/local/xtuple/.pm2
 fi
 
-case "$action" in
+case "$ACTION" in
   start)
       start
       ;;
