@@ -18,6 +18,14 @@
 
   _.extend(policy, lib.task, /** @exports policy */ {
 
+    options: {
+      mode: {
+        optional: '[mode]',
+        description: 'System mode {dedicated|cloud|other}',
+        value: 'other'
+      }
+    },
+
     /** @override */
     beforeInstall: function (options) {
       var userBlacklist = [

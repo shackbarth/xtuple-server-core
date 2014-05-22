@@ -38,7 +38,6 @@
       '# hostssl    all             {xt.name}       0.0.0.0/0               cert clientcert=1',
 
       '# world',
-      'hostssl   all             all             0.0.0.0/0               md5'
     ];
   
   _.extend(hba, lib.task, /** @exports hba */ {
@@ -69,6 +68,10 @@
 
     /** @override */
     executeTask: function (options) {
+      if (options.sys.mode === 'cloud') {
+        xtuple_hba_entries.push('hostssl all all 0.0.0.0/0 md5');
+      }
+
       var hba_boilerplate = fs.readFileSync(
           path.resolve(__dirname, filename_template.format(options))
         ),
