@@ -36,16 +36,20 @@
 
     /** @override */
     beforeInstall: function (options) {
+      /*
       options.pg.pm2 = {
-        configfile: path.resolve(options.sys.servicedir, 'pm2-backup-services.json'),
+        configfile: path.resolve(options.xt.configdir, 'pm2-backup-services.json'),
         templatefile: path.resolve(__dirname, 'pm2-backup-service.json')
       };
+      */
       options.pg.pm2.template = fs.readFileSync(options.pg.pm2.templatefile).toString();
       cron.parseExpressionSync(options.pg.snapschedule);
     },
 
     /** @override */
     beforeTask: function (options) {
+      // XXX
+      return;
       exec('mkdir -p ' + options.pg.snapshotdir);
       exec(('chown {xt.name}:xtuser '+ options.pg.snapshotdir).format(options));
       fs.writeFileSync(options.pg.pm2.configfile, options.pg.pm2.template.format(options));
@@ -53,6 +57,7 @@
 
     /** @override */
     executeTask: function (options) {
+      return;
       if (!options.pg.enablesnap) { return; }
 
       var start = exec('xtupled start {pg.pm2.configfile}'.format(options));
