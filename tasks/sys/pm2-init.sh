@@ -37,7 +37,6 @@ fi
 if [[ -z $USER ]]; then
   version=
   action="$1"
-  USER="root"
   export HOME=/usr/local/xtuple
 else
   export HOME=$(eval echo ~$USER)
@@ -117,13 +116,13 @@ reload() {
 
 status() {
   clusters=$(pg_lsclusters)
-  services=$($XTUPLED status -m)
+  services=$(xtupled status -m)
 
   if [[ -z $USER ]]; then
-    echo "$services"
+    echo "$services" | sed 1d
     echo "$clusters"
   else 
-    echo "$services" | head -n 1 && echo "$services" | grep $USER
+    echo "$services" | grep $USER
     echo "$clusters" | head -n 1 && echo "$clusters" | grep $USER
   fi
 }
