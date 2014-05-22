@@ -1,13 +1,14 @@
 var assert = require('chai').assert,
   exec = require('execSync').exec,
   _ = require('lodash'),
+  lib = require('../lib'),
   path = require('path'),
   fs = require('fs'),
   planner = require('../lib/planner');
 
 describe('xTuple Installer', function () {
   global.options = {
-      plan: 'install',
+      planName: 'install',
       xt: {
         name: 'xtmocha',
         version: '4.4.1',
@@ -15,7 +16,8 @@ describe('xTuple Installer', function () {
       },
       pg: {
         version: process.env.XT_PG_VERSION,
-        capacity: 8
+        capacity: 32,
+        forceoverwrite: true
       }
     };
 
@@ -40,12 +42,13 @@ describe('xTuple Installer', function () {
   describe('planner', function () {
     describe('#execute', function () {
       it('should return resolved promise', function (done) {
-        planner.execute([ ], { })
+        planner.execute([ ], { planName: 'promise-test' })
           .then(function () {
             done();
           })
           .fail(function (e) {
             assert.fail(e);
+            done();
           });
       });
     });

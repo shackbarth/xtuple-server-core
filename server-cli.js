@@ -114,5 +114,6 @@
   console.log(JSON.stringify(options, null, 2));
 
   console.log('Review Plan; press Ctrl-C to cancel. Will continue in 10 seconds');
+  exec('sleep 10');
   setTimeout(_.partial(run, plan, options), 0);
 })();

@@ -35,9 +35,9 @@ _.extend(exports, lib.task, /** @exports drop-database */ {
     fs.writeFileSync(options.xt.configfile, lib.xt.build.wrapModule(configObject));
   },
 
+  /** @override */
   afterTask: function (options) {
     exec('service xtuple {xt.version} {xt.name} restart'.format(options));
   }
-
 });
 

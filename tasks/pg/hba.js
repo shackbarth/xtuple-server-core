@@ -22,7 +22,7 @@
       '# xTuple HBA Entries (auto-generated)',
       '# ===================================================',
 
-    //  'local      all             all                                     trust',
+      'local      all             {xt.name}                               peer',
 
       '# internal networks (rfc1918); don\'t require ssl',
       'host       all             all             10.0.0.0/8              md5',
@@ -38,7 +38,7 @@
       '# hostssl    all             {xt.name}       0.0.0.0/0               cert clientcert=1',
 
       '# world',
-      '#hostssl   all             all             0.0.0.0/0               md5'
+      'hostssl   all             all             0.0.0.0/0               md5'
     ];
   
   _.extend(hba, lib.task, /** @exports hba */ {
@@ -62,7 +62,9 @@
         options.pg.cacrt = options.nginx.outcrt;
       }
       options.pg.version = (options.pg.version).toString();
-      options.pg.outcacrt = path.resolve('/var/lib/postgresql', options.pg.version, options.xt.name, 'root.crt');
+      options.pg.outcacrt = path.resolve(
+        '/var/lib/postgresql', options.pg.version, options.pg.cluster.name, 'root.crt'
+      );
     },
 
     /** @override */
@@ -70,7 +72,9 @@
       var hba_boilerplate = fs.readFileSync(
           path.resolve(__dirname, filename_template.format(options))
         ),
-        hba_target = path.resolve('/etc/postgresql/', options.pg.version, options.xt.name, 'pg_hba.conf'),
+        hba_target = path.resolve(
+          '/etc/postgresql/', options.pg.version, options.pg.cluster.name, 'pg_hba.conf'
+        ),
         hba_conf = hba_boilerplate.toString()
           .split('\n')
           .concat(xtuple_hba_entries)

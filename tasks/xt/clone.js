@@ -46,8 +46,6 @@
           options.xt.nodeBin = path.resolve(options.xt.nodePath, 'node');
           options.xt.npmBin = path.resolve(options.xt.nodePath, 'npm');
 
-          console.log(JSON.stringify(options.xt, null, 2));
-
           template.npm = options.xt.npmBin;
           exec('cd {path} && {npm} install --silent'.format(template));
 
