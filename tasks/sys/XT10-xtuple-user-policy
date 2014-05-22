@@ -1,15 +1,20 @@
 {xt.name}    ALL = (ALL) SETENV: \
-      /usr/sbin/service xtuple [0-9.]* {xt.name} [A-Za-z]*, \
       /usr/lib/postgresql/{pg.version}/bin/postgres -D /var/lib/postgresql/{pg.version}/{xt.name} -c config_file=/etc/postgresql/{pg.version}/{xt.name}/postgresql.conf, \
-      /usr/bin/pg_ctlcluster [0-9.]* {xt.name}* [A-Za-z]*, \
+      /usr/bin/pg_ctlcluster [0-9.]* {xt.name}* *, \
       /usr/bin/pg_restore * -U {xt.name} *, \
       /usr/bin/pg_lsclusters, \
       /usr/bin/pg_dumpall * -U {xt.name} *, \
       /usr/bin/pg_dump * -U {xt.name} *, \
+      /usr/bin/psql * -U {xt.name} *, \
       /usr/bin/createdb * -U {xt.name} *, \
       /usr/bin/dropdb * -U {xt.name} *, \
+      /usr/sbin/service xtuple [0-9.]* {xt.name} stop, \
+      /usr/sbin/service xtuple [0-9.]* {xt.name} restart, \
+      /usr/sbin/service xtuple [0-9.]* {xt.name} reload, \
+      /usr/sbin/service xtuple [0-9.]* {xt.name} status, \
       /usr/local/bin/xtupled dump, \
-      /usr/local/bin/xtupled restart *, \
+      /usr/local/bin/xtupled restart /etc/xtuple/[0-9.]*/{xt.name}/services.json, \
+      /usr/local/bin/xtupled reload /etc/xtuple/[0-9.]*/{xt.name}/services.json, \
       /usr/local/bin/xtupled list, \
       /usr/local/bin/xtuple-healthfeed *, \
       /usr/local/bin/xtuple-server * --xt-name {xt.name} *
