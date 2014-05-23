@@ -157,14 +157,6 @@ status() {
   fi
 }
 
-# explicitly (re)-permission root process file so that users can not see the
-# global process list even if something else accidentally slackens the rules
-if [[ $EUID -eq 0 ]]; then
-  mkdir -p /usr/local/xtuple/.pm2
-  chown -R root:xtadmin /usr/local/xtuple/.pm2
-  chmod -R o-rw /usr/local/xtuple/.pm2
-fi
-
 case "$ACTION" in
   start)
       start
