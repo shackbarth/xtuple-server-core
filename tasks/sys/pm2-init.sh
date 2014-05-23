@@ -73,12 +73,6 @@ if [[ -z $USER && ! -z $VERSION ]]; then
   help
 fi
 
-xtupled() {
-  set -e
-  $XTUPLED "$@"
-  set +e
-}
-
 start() {
   if [[ $EUID -eq 0 && -z $USER ]]; then
 
@@ -101,6 +95,7 @@ start() {
 
 stop() {
   echo -e "Stopping xTuple services... (this will drop any user sessions)"
+  xtupled ping --silent
 
   if [[ -z $USER ]]; then
     xtupled stop all --silent
@@ -114,6 +109,7 @@ stop() {
 
 restart() {
   echo -e "Restarting xTuple services... (this will drop any user sessions)"
+  xtupled ping --silent
 
   if [[ -z $USER ]]; then
     service postgresql restart &> /dev/null
@@ -128,6 +124,7 @@ restart() {
 
 reload() {
   echo -e "Reloading xTuple services..."
+  xtupled ping --silent
 
   if [[ -z $USER ]]; then
     service postgresql reload &> /dev/null
@@ -141,6 +138,8 @@ reload() {
 }
 
 status() {
+  xtupled ping --silent
+
   clusters=$(pg_lsclusters)
   services=$(xtupled status -m)
 
