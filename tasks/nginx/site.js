@@ -21,6 +21,11 @@
         optional: '[domain]',
         description: 'The public domain name that will point to this web server',
         value: 'localhost'
+      },
+      safeport: {
+        optional: '[boolean]',
+        description: 'Use non-root nginx http port',
+        value: false
       }
     },
 
@@ -38,6 +43,14 @@
       options.nginx.sitesEnabled = path.resolve('/etc/nginx/sites-enabled');
       options.nginx.availableSite = path.resolve(options.nginx.sitesAvailable, options.nginx.sitename);
       options.nginx.enabledSite = path.resolve(options.nginx.sitesEnabled, options.nginx.sitename);
+
+      options.nginx.httpport = 80;
+      options.nginx.httpsport = 443;
+
+      if (options.nginx.safeport) {
+        options.nginx.httpport += 32768;
+        options.nginx.httpsport += 32768;
+      }
 
       // nginx site template file path
       options.nginx.siteTemplateFile = path.resolve(__dirname, 'xtuple-site.template');
