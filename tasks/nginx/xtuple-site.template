@@ -7,13 +7,13 @@ upstream pm2feed-{nginx.sitename} {
 
 # auto redirect http -> https
 server {
-  listen 80;
+  listen {nginx.httpport};
   return 301 https://$host$request_uri;
 }
 
 # proxy SSL requests to the upstream node server
 server {
-  listen 443 ssl;
+  listen {nginx.httpsport} ssl;
   ssl on; 
   ssl_certificate {nginx.outcrt};
   ssl_certificate_key {nginx.outkey};
