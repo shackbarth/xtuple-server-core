@@ -8,12 +8,7 @@ var lib = require('../../lib'),
  * to receive import of xtuple databases.
  */
 _.extend(exports, lib.task, /** @exports cluster */ {
-
   options: {
-    forceoverwrite: {
-      optional: '[boolean]',
-      description: 'Force drop an existing cluster of the same version/name and overwrite it'
-    },
     pilot: {
       optional: '[boolean]',
       description: 'Additionally create a pilot cluster',
@@ -23,26 +18,23 @@ _.extend(exports, lib.task, /** @exports cluster */ {
 
   /** @override */
   beforeInstall: function (options) {
-    var clusters = lib.pgCli.lsclusters(),
-      exists = _.findWhere(clusters, {
-        name: exports.getClusterName(options),
-        version: parseFloat(options.pg.version)
-      });
-
-    if (exists) {
-      throw new Error('cluster configuration already exists');
-    }
-
     options.pg.cluster = {
       owner: options.xt.name,
-      name: exports.getClusterName(options)
+      name: exports.getClusterName(options),
+      version: parseFloat(options.pg.version)
     };
+    var exists = _.findWhere(lib.pgCli.lsclusters(), options.pg.cluster);
+
+    if (exists) {
+      throw new Error('Cluster already exists: ' + options.pg.cluster);
+    }
     options.pg.configdir = path.resolve('/etc/postgresql', options.pg.version, options.xt.name);
   },
 
   /** @override */
   executeTask: function (options) {
     _.extend(options.pg.cluster, lib.pgCli.createcluster(options));
+    lib.pgCli.ctlcluster(options, 'restart');
     exports.initCluster(options);
   },
 
@@ -50,7 +42,7 @@ _.extend(exports, lib.task, /** @exports cluster */ {
   uninstall: function (options) {
     options.pg.cluster.name = exports.getClusterName(options);
 
-    if (options.pg.forceoverwrite === true || options.planName === 'uninstall') {
+    if (/^uninstall/.test(options.planName)) {
       lib.pgCli.ctlcluster(options, 'stop');
       lib.pgCli.dropcluster(options);
     }
