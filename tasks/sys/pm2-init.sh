@@ -20,7 +20,7 @@ help() {
 
   if [[ $EUID -eq 0 ]]; then
     echo -e 'Usage: service xtuple {stop|restart|reload|status|help}'
-    echo -e '       service xtuple <VERSION> <name> {stop|restart|reload|status|help}'
+    echo -e '       service xtuple <version> <name> {stop|restart|reload|status|help}'
     echo -e ''
     echo -e 'Examples:'
     echo -e '   Restart all services:        service xtuple restart'
@@ -28,10 +28,10 @@ help() {
     echo -e '   Display status:              service xtuple status'
     echo -e ''
   else
-    echo -e 'Usage: service xtuple <VERSION> <name> {stop|restart|status|help}'
+    echo -e 'Usage: service xtuple <version> <name> {stop|restart|status|help}'
     echo -e ''
-    echo -e 'xTuple Log Path: /var/log/xtuple/<VERSION>/<name>'
-    echo -e 'xTuple Config Path: /etc/xtuple/<VERSION>/<name>'
+    echo -e 'xTuple Log Path: /var/log/xtuple/<version>/<name>'
+    echo -e 'xTuple Config Path: /etc/xtuple/<version>/<name>'
     echo -e 'Postgres Log Path: /var/log/postgresql/'
     echo -e ''
   fi
@@ -46,77 +46,82 @@ export PATH=$PATH:/usr/bin:/usr/local/bin
 export PM2_NODE_OPTIONS='--harmony'
 
 VERSION="$1"
-USER="$2"
+ACCOUNT="$2"
 ACTION="$3"
-
-PG_VERSION=$(psql -V | grep [[:digit:]].[[:digit:]] --only-matching)
-XTUPLED=/usr/local/bin/xtupled HOME=$HOME PATH=$PATH 
 SERVICES_FILE=
 
 # non-root users must specify account and VERSION
-if [[ $EUID -ne 0 && -z $USER ]]; then
+if [[ $EUID -ne 0 && -z $ACCOUNT ]]; then
   help
 fi
 
 # if root does not specify account, then the first argument is the ACTION
 # e.g. sudo service xtuple status, ACTION = status
-if [[ -z $USER ]]; then
+if [[ -z $ACCOUNT ]]; then
   VERSION=
   ACTION="$1"
-  export HOME=/usr/local/xtuple
+  HOME="/usr/local/xtuple"
 else
-  export HOME=$(eval echo ~$USER)
-  SERVICES_FILE=/etc/xtuple/$VERSION/$USER/services.json
+  HOME=$(getent passwd "$USER" | cut -d: -f6)
+  if [[ -z $HOME ]]; then
+    # looks like user doesn't exist, or at least has no homedir
+    echo "User $ACCOUNT not found"
+    exit 2
+  fi
+  SERVICES_FILE="/etc/xtuple/$VERSION/$ACCOUNT/services.json"
 fi
 
-if [[ -z $USER && ! -z $VERSION ]]; then
+if [[ -z $ACCOUNT && ! -z $VERSION ]]; then
   help
 fi
 
+PG_VERSION=$(psql -V | grep [[:digit:]].[[:digit:]] --only-matching)
+XTUPLED="HOME=$HOME PATH=$PATH /usr/local/bin/xtupled"
+
+#echo "$HOME"
+#echo "xtupled"
+#echo "$SERVICES_FILE"
+
+xtupled() {
+  eval $XTUPLED "$@"
+}
+
 start() {
-  if [[ $EUID -eq 0 && -z $USER ]]; then
+  echo -e "Initializing xTuple services..."
+  xtupled ping --silent &> /dev/null
 
+  if [[ $EUID -eq 0 && -z $ACCOUNT ]]; then
     service postgresql start &> /dev/null
-
-    if [[ $(xtupled ping) =~ "pong" ]]; then
-      echo -e "xtupled is Already Initialized."
-    else
-      echo -e "Initializing xTuple services..."
-
-      #xtupled kill --silent
-      xtupled resurrect --silent
-
-      echo -e "Done."
-    fi
-  else
-    help
+    #xtupled kill --silent
+    xtupled resurrect --silent
   fi
+  echo -e "Done."
 }
 
 stop() {
-  echo -e "Stopping xTuple services... (this will drop any user sessions)"
-  xtupled ping --silent
+  echo -e "Stopping xTuple services... "
+  xtupled ping --silent &> /dev/null
 
-  if [[ -z $USER ]]; then
-    xtupled stop all --silent
+  if [[ -z $ACCOUNT ]]; then
+    xtupled stop all --silent &> /dev/null
     service postgresql stop &> /dev/null
   else
-    xtupled stop $SERVICES_FILE --silent
-    pg_ctlcluster $PG_VERSION $USER stop -m fast &> /dev/null
+    xtupled stop $SERVICES_FILE --silent &> /dev/null
+    pg_ctlcluster $PG_VERSION $ACCOUNT stop -m fast &> /dev/null
   fi
   echo -e "Done."
 }
 
 restart() {
-  echo -e "Restarting xTuple services... (this will drop any user sessions)"
-  xtupled ping --silent
+  echo -e "Restarting xTuple services..."
+  xtupled ping --silent &> /dev/null
 
-  if [[ -z $USER ]]; then
+  if [[ -z $ACCOUNT ]]; then
     service postgresql restart &> /dev/null
-    xtupled restart all --silent
+    xtupled restart all --silent &> /dev/null
   else
-    pg_ctlcluster $PG_VERSION $USER restart -m fast &> /dev/null
-    xtupled restart $SERVICES_FILE --silent
+    pg_ctlcluster $PG_VERSION $ACCOUNT restart -m fast &> /dev/null
+    xtupled restart $SERVICES_FILE --silent &> /dev/null
   fi
 
   echo -e "Done."
@@ -124,31 +129,31 @@ restart() {
 
 reload() {
   echo -e "Reloading xTuple services..."
-  xtupled ping --silent
+  xtupled ping --silent &> /dev/null
 
-  if [[ -z $USER ]]; then
+  if [[ -z $ACCOUNT ]]; then
     service postgresql reload &> /dev/null
-    xtupled reload all --silent
+    xtupled reload all --silent &> /dev/null
   else
-    pg_ctlcluster $PG_VERSION $USER reload &> /dev/null
-    xtupled reload $SERVICES_FILE --silent
+    pg_ctlcluster $PG_VERSION $ACCOUNT reload &> /dev/null
+    xtupled reload $SERVICES_FILE --silent &> /dev/null
   fi
 
   echo -e "Done."
 }
 
 status() {
-  xtupled ping --silent
+  xtupled ping --silent &> /dev/null
 
   clusters=$(pg_lsclusters)
-  services=$(xtupled status -m)
+  services=$(xtupled status -m | sed 1d)
 
-  if [[ -z $USER ]]; then
+  if [[ -z $ACCOUNT ]]; then
     echo "$services" | sed 1d
     echo "$clusters"
   else 
-    echo "$services" | grep $USER
-    echo "$clusters" | head -n 1 && echo "$clusters" | grep $USER
+    echo "$services" | grep $ACCOUNT
+    echo "$clusters" | head -n 1 && echo "$clusters" | grep $ACCOUNT
   fi
 }
 

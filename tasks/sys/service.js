@@ -39,8 +39,8 @@ _.extend(exports, lib.task, /** @exports service */ {
 
   /** @override */
   uninstall: function (options) {
-    exec('HOME=/usr/local/xtuple xtupled delete {sys.pm2.configfile}'.format(options));
-    exec('HOME=/usr/local/xtuple xtupled dump');
+    exec('HOME={xt.userhome} xtupled delete {sys.pm2.configfile}'.format(options));
+    exec('HOME={xt.userhome} xtupled dump'.format(options));
   },
 
   /** @override */
@@ -52,9 +52,6 @@ _.extend(exports, lib.task, /** @exports service */ {
    * Perform initial setup of the service management system.
    */
   setupServiceManager: function (options) {
-    // pm2 finds this very cleansing for some reason
-    exec('HOME=/usr/local/xtuple xtupled kill');
-
     exec('chmod a+x {xt.userhome}'.format(options));
     exec('chmod a+x {xt.userhome}/{xt.version}'.format(options));
     exec('chmod a+x {xt.usersrc}'.format(options));
@@ -67,8 +64,7 @@ _.extend(exports, lib.task, /** @exports service */ {
     // create upstart service "xtuple"
     exec('cp {sys.pm2.initscript} {sys.initd}'.format(options));
     exec('update-rc.d xtuple defaults');
-
-    exec('HOME=/usr/local/xtuple xtupled kill');
+    exec('xtupled kill');
   },
 
   /**
@@ -84,13 +80,13 @@ _.extend(exports, lib.task, /** @exports service */ {
     // write service config files
     fs.writeFileSync(options.sys.pm2.configfile, options.sys.pm2.template.format(options));
 
-    var start = exec('HOME=/usr/local/xtuple xtupled start {sys.pm2.configfile}'.format(options));
+    var start = exec('HOME={xt.userhome} xtupled start {sys.pm2.configfile}'.format(options));
 
     if (start.code !== 0) {
       throw new Error(JSON.stringify(start));
     }
 
-    exec('HOME=/usr/local/xtuple xtupled dump');
+    exec('HOME={xt.userhome} xtupled dump'.format(options));
     exec('service xtuple {xt.version} {xt.name} restart'.format(options));
   }
 });
