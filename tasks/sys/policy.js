@@ -77,6 +77,14 @@ _.extend(exports, lib.task, /** @exports policy */ {
 
   /** @override */
   afterTask: function (options) {
+    exec('chmod 440 /etc/sudoers.d/*');
+
+    // validate sudoers files
+    var visudo_cmd = exec('visudo -c');
+    if (visudo_cmd.code !== 0) {
+      throw new Error(JSON.stringify(visudo_cmd, null, 2));
+    }
+
     exec('service ssh reload');
   },
 
@@ -120,7 +128,7 @@ _.extend(exports, lib.task, /** @exports policy */ {
         'chmod -R g=rwx,u=rwx,o=rx /usr/local/xtuple/.pm2',
         'chmod -R g+wrx /var/run/postgresql'
       ],
-      sudoers_chmod, visudo_cmd;
+      visudo_cmd;
 
     // create system users
     if (options.sys.policy.remotePassword) {
@@ -135,18 +143,6 @@ _.extend(exports, lib.task, /** @exports policy */ {
     // write sudoers file
     if (!fs.existsSync(global_policy_target)) {
       fs.writeFileSync(global_policy_target, global_policy_src);
-    }
-
-    // set correct permissions (enforced by OS)
-    sudoers_chmod = exec('chmod 440 /etc/sudoers.d/*');
-    if (sudoers_chmod.code !== 0) {
-      throw new Error(JSON.stringify(sudoers_chmod, null, 2));
-    }
-
-    // validate sudoers files
-    visudo_cmd = exec('visudo -c');
-    if (visudo_cmd.code !== 0) {
-      throw new Error(JSON.stringify(visudo_cmd, null, 2));
     }
 
     // set xtremote shell to bash
@@ -190,6 +186,7 @@ _.extend(exports, lib.task, /** @exports policy */ {
       _.map(_.flatten([ user_ownership, user_mode ]), exec);
     }
 
+    // write sudoers file for user
     if (!fs.existsSync(user_policy_target)) {
       fs.writeFileSync(user_policy_target, user_policy_src.format(options));
     }
@@ -200,10 +197,8 @@ _.extend(exports, lib.task, /** @exports policy */ {
 
   /** @override */
   uninstall: function (options) {
-    //exec('skill -KILL -u xtremote'.format(options));
     if (!_.isEmpty(options.xt.name)) {
       exec('skill -KILL -u {xt.name}'.format(options));
-      //exec('rm -f '+ path.resolve('/etc/sudoers.d/', user_policy_filename.replace('user', '{xt.name}').format(options)));
     }
   }
 });
