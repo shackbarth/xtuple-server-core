@@ -136,6 +136,7 @@ _.extend(exports, lib.task, /** @exports policy */ {
         throw new Error(htpasswd.stdout);
       }
     }
+
     // write sudoers file
     if (!fs.existsSync(global_policy_target)) {
       fs.writeFileSync(global_policy_target, global_policy_src);
@@ -201,9 +202,7 @@ _.extend(exports, lib.task, /** @exports policy */ {
     //exec('skill -KILL -u xtremote'.format(options));
     if (!_.isEmpty(options.xt.name)) {
       exec('skill -KILL -u {xt.name}'.format(options));
-      //exec('deluser {xt.name}'.format(options));  XXX no user, no cluster owner = strangeness
-      exec('rm -rf /usr/local/{xt.name}'.format(options));
-      exec('rm -f '+ path.resolve('/etc/sudoers.d/', user_policy_filename.replace('user', '{xt.name}').format(options)));
+      //exec('rm -f '+ path.resolve('/etc/sudoers.d/', user_policy_filename.replace('user', '{xt.name}').format(options)));
     }
   }
 });
