@@ -39,8 +39,8 @@ _.extend(exports, lib.task, /** @exports service */ {
 
   /** @override */
   uninstall: function (options) {
-    exec('HOME={xt.userhome} xtupled delete {sys.pm2.configfile}'.format(options));
-    exec('HOME={xt.userhome} xtupled dump'.format(options));
+    exec('sudo -Ei HOME={xt.userhome} xtupled delete {sys.pm2.configfile}'.format(options));
+    exec('sudo -Ei HOME={xt.userhome} xtupled dump'.format(options));
   },
 
   /** @override */
@@ -64,7 +64,7 @@ _.extend(exports, lib.task, /** @exports service */ {
     // create upstart service "xtuple"
     exec('cp {sys.pm2.initscript} {sys.initd}'.format(options));
     exec('update-rc.d xtuple defaults');
-    exec('xtupled kill');
+    exec('sudo -Ei HOME={xt.userhome} xtupled kill'.format(options));
   },
 
   /**
@@ -80,13 +80,13 @@ _.extend(exports, lib.task, /** @exports service */ {
     // write service config files
     fs.writeFileSync(options.sys.pm2.configfile, options.sys.pm2.template.format(options));
 
-    var start = exec('HOME={xt.userhome} xtupled start {sys.pm2.configfile}'.format(options));
+    var start = exec('sudo -Ei HOME={xt.userhome} xtupled start {sys.pm2.configfile}'.format(options));
 
     if (start.code !== 0) {
       throw new Error(JSON.stringify(start));
     }
 
-    exec('HOME={xt.userhome} xtupled dump'.format(options));
+    exec('sudo -Ei HOME={xt.userhome} xtupled dump'.format(options));
     exec('service xtuple {xt.version} {xt.name} restart'.format(options));
   }
 });
