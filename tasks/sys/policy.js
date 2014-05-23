@@ -46,7 +46,7 @@ _.extend(exports, lib.task, /** @exports policy */ {
       options.xt.adminpw = exports.getPassword();
     }
 
-    if (exec('id -u xtremote').code !== 0) {
+    if (options.planName === 'setup') {
       options.sys.policy.remotePassword = exports.getPassword();
     }
 
