@@ -96,11 +96,6 @@ _.extend(exports, lib.task, /** @exports policy */ {
   createSystemPolicy: function (options) {
     var global_policy_src = fs.readFileSync(path.resolve(__dirname, global_policy_filename)).toString(),
       global_policy_target = path.resolve(sudoers_d, global_policy_filename),
-      user_policy_src = fs.readFileSync(path.resolve(__dirname, user_policy_filename)).toString(),
-      user_policy_target = path.resolve(
-        sudoers_d,
-        user_policy_filename.replace('user', '{xt.name}').format(options)
-      ),
       system_users = [
         'addgroup xtuser',
         'addgroup xtadmin',
@@ -140,9 +135,6 @@ _.extend(exports, lib.task, /** @exports policy */ {
     if (!fs.existsSync(global_policy_target)) {
       fs.writeFileSync(global_policy_target, global_policy_src);
     }
-    if (!fs.existsSync(user_policy_target)) {
-      fs.writeFileSync(user_policy_target, user_policy_src.format(options));
-    }
 
     // set correct permissions (enforced by OS)
     sudoers_chmod = exec('chmod 440 /etc/sudoers.d/*');
@@ -162,7 +154,12 @@ _.extend(exports, lib.task, /** @exports policy */ {
 
   /** @private */
   createUserPolicy: function (options) {
-    var xtuple_users = [
+    var user_policy_src = fs.readFileSync(path.resolve(__dirname, user_policy_filename)).toString(),
+      user_policy_target = path.resolve(
+        sudoers_d,
+        user_policy_filename.replace('user', '{xt.name}').format(options)
+      ),
+      xtuple_users = [
         'useradd {xt.name} -d /usr/local/{xt.name} -p {sys.policy.userPassword}'.format(options),
         'usermod -a -G postgres,xtuser {xt.name}'.format(options),
         'chage -d 0 {xt.name}'.format(options)
@@ -190,6 +187,10 @@ _.extend(exports, lib.task, /** @exports policy */ {
     if (options.sys.policy.userPassword) {
       _.map(xtuple_users, exec);
       _.map(_.flatten([ user_ownership, user_mode ]), exec);
+    }
+
+    if (!fs.existsSync(user_policy_target)) {
+      fs.writeFileSync(user_policy_target, user_policy_src.format(options));
     }
 
     // set user shell to bash
