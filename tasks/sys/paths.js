@@ -78,13 +78,6 @@
       exec('chmod u=rwx,g=rx '+ options.xt.coredir);
       exec('chmod u=rwx,g=rx '+ options.xt.extdir);
       exec('chmod u=rwx,g=rx,o-rwx '+ options.xt.privatedir);
-    },
-
-    /** @override */
-    uninstall: function (options) {
-      if (!_.isEmpty(options.sys.userhome)) {
-        rimraf.sync(options.sys.userhome);
-      }
     }
   });
 })();
