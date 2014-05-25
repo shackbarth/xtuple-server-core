@@ -42,7 +42,7 @@ _.extend(exports, lib.task, /** @exports cluster */ {
   uninstall: function (options) {
     options.pg.cluster.name = exports.getClusterName(options);
 
-    if (/^uninstall/.test(options.planName)) {
+    if (/uninstall/.test(options.planName)) {
       lib.pgCli.ctlcluster(options, 'stop');
       lib.pgCli.dropcluster(options);
     }

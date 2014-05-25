@@ -13,4 +13,3 @@ it('should be able to control my personal pg cluster', function () {
 
   assert.equal(result.code, 0, 'Cannot restart cluster: '+ JSON.stringify(result));
 });
-
