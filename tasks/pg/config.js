@@ -51,12 +51,6 @@
     },
 
     /** @override */
-    beforeInstall: function (options) {
-      options.pg.config || (options.pg.config = { });
-      options.pg.snapshotdir = path.resolve('/var/lib/xtuple', options.xt.version, options.xt.name, 'snapshots');
-    },
-
-    /** @override */
     beforeTask: function (options) {
       exec('usermod -a -G ssl-cert postgres');
     },

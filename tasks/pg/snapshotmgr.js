@@ -41,7 +41,6 @@ _.extend(exports, lib.task, /** @exports snapshotmgr */ {
   beforeTask: function (options) {
     // XXX
     return;
-    exec('mkdir -p ' + options.pg.snapshotdir);
     exec(('chown {xt.name}:xtuser '+ options.pg.snapshotdir).format(options));
     fs.writeFileSync(options.pg.pm2.configfile, options.pg.pm2.template.format(options));
   },
