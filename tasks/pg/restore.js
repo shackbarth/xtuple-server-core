@@ -14,7 +14,14 @@ _.extend(exports, lib.task, /** @exports restore-database */ {
   options: {
     infile: {
       optional: '[infile]',
-      description: 'Path to the file to be restored'
+      description: 'Path to the file to be restored',
+      validate: function (arg) {
+        if (!fs.existsSync(path.resolve(arg))) {
+          throw new Error('Invalid path for pg.infile: '+ arg);
+        }
+
+        return true;
+      }
     },
     dbname: {
       optional: '[dbname]',

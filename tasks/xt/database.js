@@ -30,7 +30,14 @@ _.extend(exports, lib.task, /** @exports database */ {
     },
     maindb: {
       optional: '[path]',
-      description: 'Path to primary database .backup/.sql filename to use in production'
+      description: 'Path to primary database .backup/.sql filename to use in production',
+      validate: function (arg) {
+        if (!fs.existsSync(path.resolve(arg))) {
+          throw new Error('Invalid path for xt.maindb: '+ arg);
+        }
+
+        return true;
+      }
     },
     edition: {
       optional: '[string]',
