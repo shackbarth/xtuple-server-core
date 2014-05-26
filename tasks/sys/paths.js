@@ -51,6 +51,8 @@
       options.xt.coredir = path.resolve(options.xt.srcdir, 'xtuple');
       options.xt.extdir = path.resolve(options.xt.srcdir, 'xtuple-extensions');
       options.xt.privatedir = path.resolve(options.xt.srcdir, 'private-extensions');
+
+      options.pg.snapshotdir = path.resolve('/var/lib/xtuple', options.xt.version, options.xt.name, 'snapshots');
     },
 
     /** @override */
@@ -59,6 +61,7 @@
       exec('mkdir -p ' + options.xt.userhome);
       exec('mkdir -p ' + options.xt.pm2dir);
       exec('mkdir -p ' + options.xt.userPm2dir);
+      exec('mkdir -p ' + options.pg.snapshotdir);
 
       exec('mkdir -p ' + options.xt.configdir);
       exec('mkdir -p ' + path.resolve(options.xt.configdir, 'build'));
