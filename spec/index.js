@@ -82,8 +82,8 @@ describe('xTuple Installer', function () {
   describe('setup', function () {
     describe('#verifyOptions, #compileOptions', function () {
       before(function () {
-        planner.verifyOptions(global.installPlan, global.options);
         planner.compileOptions(global.installPlan, global.options);
+        planner.verifyOptions(global.installPlan, global.options);
       });
 
       it('should compile options defaults', function () {

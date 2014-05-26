@@ -34,3 +34,4 @@ after_failure:
   - sudo cat /etc/xtuple/4.4.1/xtmocha/install-arguments.json
   - sudo cat /etc/xtuple/4.4.1/xtmocha/install-results.json
   - sudo cat /usr/local/xtuple/.pm2/dump.pm2
+  - sudo cat install.log
