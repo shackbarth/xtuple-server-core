@@ -62,7 +62,7 @@ if [[ -z $ACCOUNT ]]; then
   ACTION="$1"
   HOME="/usr/local/xtuple"
 else
-  HOME=$(getent passwd "$USER" | cut -d: -f6)
+  HOME=$(getent passwd "$ACCOUNT" | cut -d: -f6)
   if [[ -z $HOME ]]; then
     # looks like user doesn't exist, or at least has no homedir
     echo "User $ACCOUNT not found"
