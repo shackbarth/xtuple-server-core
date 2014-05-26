@@ -51,26 +51,3 @@ describe('#verifyCertificate', function () {
 
   });
 });
-
-describe.skip('#createBundle', function () {
-  if (!fs.existsSync(path.resolve('test_chain.zip'))) {
-    this.pending = true;
-
-    console.log();
-    console.log('>> '+ this.title + ': Skipping');
-    console.log('>> '+ this.title + ': to run this suite, copy a real trust chain archive + key to:');
-    console.log('>> '+ this.title + ': '+ path.resolve('test_chain.zip'));
-    console.log('>> '+ this.title + ': '+ path.resolve('test_chain.key'));
-  }
-
-  beforeEach(function () {
-    options.nginx.inzip = path.resolve('test_chain.zip');
-  });
-
-  it('should bundle a trusted chain', function () {
-    assert(nginxModule.ssl.createBundle(options), 'createBundle did not return true');
-  });
-  it('should verify a legit bundle', function () {
-    assert(nginxModule.ssl.verifyCertificate(options), 'verifyCertificate did not return true');
-  });
-});

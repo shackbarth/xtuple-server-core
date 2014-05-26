@@ -3,7 +3,6 @@ var task = require('../../lib/task'),
   _ = require('lodash'),
   exec = require('execSync').exec,
   fs = require('fs'),
-  Zip = require('adm-zip'),
   path = require('path');
 
 /**
@@ -11,10 +10,6 @@ var task = require('../../lib/task'),
  */
 _.extend(exports, task, /** @exports ssl */ {
   options: {
-    'inzip': {
-      optional: '[file]',
-      description: 'Path to SSL trust chain archive'
-    },
     'incrt': {
       optional: '[file]',
       description: 'Path to SSL certificate (.crt)',
@@ -50,11 +45,7 @@ _.extend(exports, task, /** @exports ssl */ {
   /** @override */
   executeTask: function (options) {
     var nginx = options.nginx;
-    if (!_.isEmpty(nginx.inzip) && !_.isEmpty(nginx.inkey)) {
-      nginx.inzip = path.resolve(nginx.inzip);
-      exports.createBundle(options);
-    }
-    else if (!_.isEmpty(nginx.incrt) && !_.isEmpty(nginx.inkey)) {
+    if (!_.isEmpty(nginx.incrt) && !_.isEmpty(nginx.inkey)) {
       nginx.incrt = path.resolve(nginx.incrt);
       nginx.inkey = path.resolve(nginx.inkey);
 
@@ -72,7 +63,7 @@ _.extend(exports, task, /** @exports ssl */ {
       throw new Error([
         'SSL missing required info.',
         'Either a key is missing for a non-localhost domain,',
-        'or one of inkey/incrt/inzip is invalid or missing'
+        'or one of inkey/incrt is invalid or missing'
       ].join('\n'));
     }
   },
@@ -107,30 +98,6 @@ _.extend(exports, task, /** @exports ssl */ {
     }
 
     return result;
-  },
-
-  /**
-   * Create a .crt bundle from a Comodo zip archive
-   */
-  createBundle: function (options) {
-    var inzip = new Zip(options.nginx.inzip),
-      entries = inzip.getEntries(),
-      sort = function (entry) {
-        return {
-          'PositiveSSLCA2.crt': 1,
-          'AddTrustExternalCARoot.crt': 2
-        }[entry.entryName] || 0;
-      },
-
-      // cat mydomain.crt PositiveSSLCA2.crt AddTrustExternalCARoot.crt >> sslbundle.crt
-      bundleStr = _.reduce(_.sortBy(entries, sort), function (memo, entry) {
-        return memo + inzip.readAsText(entry);
-      }, '');
-
-    // TODO switch to camelcase. I don't know what it is about writing sysadmin
-    // scripts that makes me want to use lodashs everywhere
-    fs.writeFileSync(options.nginx.outcrt, bundleStr);
-    exec('cp {nginx.inkey} {nginx.outkey}'.format(options));
   },
 
   /**
