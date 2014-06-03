@@ -1,7 +1,7 @@
 {
-  "name": "xtuple-server-nginx-hosts",
-  "version": "0.9.0",
-  "description": "xTuple Server Task [nginx.hosts]: configure the system hosts file for a new xTuple instance deployment",
+  "name": "xtuple-server-nginx-site",
+  "version": "0.9.1",
+  "description": "xTuple Server Task [nginx.site]: create the nginx site file for a new xTuple instance deployment",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha spec/ -R spec"
@@ -17,7 +17,7 @@
     "business",
     "software",
     "nginx",
-    "hosts",
+    "site",
     "config",
     "tuple"
   ],
@@ -28,7 +28,9 @@
   },
   "homepage": "https://github.com/xtuple/xtuple-server",
   "dependencies": {
+    "execSync": "^1.0.1-pre",
     "lodash": "^2.4.1",
+    "string-format": "^0.2.1",
     "xtuple-server-lib": "^0.9.0"
   },
   "devDependencies": {
