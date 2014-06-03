@@ -1,4 +1,4 @@
-var task = require('../../lib/task'),
+var lib = require('xtuple-server-lib'),
   format = require('string-format'),
   _ = require('lodash'),
   exec = require('execSync').exec,
@@ -8,7 +8,7 @@ var task = require('../../lib/task'),
 /**
  * Setup SSL in nginx
  */
-_.extend(exports, task, /** @exports ssl */ {
+_.extend(exports, lib.task, /** @exports ssl */ {
   options: {
     'incrt': {
       optional: '[file]',

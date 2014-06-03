@@ -1,0 +1,41 @@
+{
+  "private": true,
+  "name": "xtuple-server-nginx-ssl",
+  "version": "0.9.0",
+  "description": "xTuple Server Task [nginx.ssl]: configure the SSL endpoint for a new xTuple instance deployment",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha spec/ -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xtuple/xtuple-server-commercial"
+  },
+  "keywords": [
+    "xtuple",
+    "server",
+    "erp",
+    "business",
+    "software",
+    "nginx",
+    "ssl",
+    "config",
+    "tuple"
+  ],
+  "author": "xTuple",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xtuple/xtuple-server/issues"
+  },
+  "homepage": "https://github.com/xtuple/xtuple-server",
+  "dependencies": {
+    "execSync": "^1.0.1-pre",
+    "lodash": "^2.4.1",
+    "string-format": "^0.2.1",
+    "xtuple-server-lib": "^0.9.0"
+  },
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "mocha": "^1.20.0"
+  }
+}
