@@ -1,15 +1,14 @@
-var lib = require('../../lib'),
-  nginx = require('../nginx'),
+var lib = require('xtuple-server-lib'),
+  _ = require('lodash'),
   fs = require('fs'),
   path = require('path'),
   os = require('os'),
-  _ = require('lodash'),
   hosts_template_path = path.resolve(__dirname, 'etc-hosts.template');
 
 /**
  * Append entries to the system hosts file if necessary.
  */
-_.extend(exports, lib.task, /** @exports etchosts */ {
+_.extend(exports, lib.task, /** @exports hosts */ {
 
   /** @override */
   executeTask: function (options) {
@@ -29,6 +28,7 @@ _.extend(exports, lib.task, /** @exports etchosts */ {
 
   /** @override */
   uninstall: function (options) {
-
+    // TODO implement
+    // TODO remove hosts entries
   }
 });

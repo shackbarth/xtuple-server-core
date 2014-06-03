@@ -32,6 +32,8 @@
       options.xt.testconfigfile = path.resolve(options.xt.usersrc, 'node-datasource/config.js');
       options.xt.buildconfigfile = path.resolve(options.xt.configdir, 'build/config.js');
 
+      // shared config (per account)
+
       options.xt.homedir = path.resolve('/usr/local/xtuple');
       options.xt.pm2dir = path.resolve('/usr/local/xtuple/.pm2');
       options.xt.userPm2dir = path.resolve('/usr/local/{xt.name}/.pm2'.format(options));

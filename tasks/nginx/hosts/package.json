@@ -1,0 +1,34 @@
+{
+  "name": "xtuple-server-nginx-hosts",
+  "version": "0.1.234",
+  "description": "xTuple Server Task [nginx.hosts]: configure the system hosts file for a new xTuple instance deployment",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xtuple/xtuple-server"
+  },
+  "keywords": [
+    "xtuple",
+    "server",
+    "erp",
+    "business",
+    "software",
+    "nginx",
+    "hosts",
+    "config",
+    "tuple"
+  ],
+  "author": "xTuple",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xtuple/xtuple-server/issues"
+  },
+  "homepage": "https://github.com/xtuple/xtuple-server",
+  "dependencies": {
+    "lodash": "^2.4.1",
+    "xtuple-server-lib": "^0.1.233"
+  }
+}
