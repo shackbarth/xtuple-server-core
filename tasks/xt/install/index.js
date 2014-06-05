@@ -1,0 +1,113 @@
+var lib = require('xtuple-server-lib'),
+  format = require('string-format'),
+  semver = require('semver'),
+  _ = require('lodash'),
+  exec = require('execSync').exec,
+  fs = require('fs'),
+  path = require('path');
+
+_.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
+
+  /** @override */
+  beforeInstall: function (options) {
+    options.xt.scalarversion = options.xt.version.replace(/\./g, '');
+  },
+
+  /** @override */
+  beforeTask: function (options) {
+    if (lib.xt.build.isTaggedVersion(options)) {
+      options.xt.repoHash = 'v' + options.xt.version;
+    }
+    else {
+      options.xt.repoHash = options.xt.version.slice(0, 6);
+    }
+  },
+
+  /** @override */
+  executeTask: function (options) {
+    _.each(exports.getRepositoryList(options), function (repo) {
+      var template = _.extend({
+          repo: repo,
+          path: path.resolve(options.xt.srcdir, repo)
+        }, options);
+
+      if (!fs.existsSync(template.path)) {
+
+        var clone = exec('git clone --recursive https://github.com/xtuple/{repo}.git {path}'.format(template)),
+          checkout = exec(('cd {path} && git checkout '+ options.xt.repoHash).format(template));
+
+        options.xt.nodeVersion = exports.getPackageNodeVersion(options);
+        options.xt.nodePath = path.dirname(exec('n bin '+ options.xt.nodeVersion).stdout);
+        options.xt.nodeBin = path.resolve(options.xt.nodePath, 'node');
+        options.xt.npmBin = path.resolve(options.xt.nodePath, 'npm');
+
+        template.npm = options.xt.npmBin;
+        exec('cd {path} && {npm} install --silent'.format(template));
+
+        if (clone.code !== 0) {
+          throw new Error(JSON.stringify(clone, null, 2));
+        }
+      }
+
+      // copy main repo files to user's home directory
+      var userSourcePath = path.resolve(options.xt.userhome, options.xt.version, repo);
+      exec('mkdir -p ' + userSourcePath);
+      var rsync = exec([
+          'rsync -ar --exclude=.git',// --exclude=node_modules',
+          template.path + '/*',
+          userSourcePath
+        ].join(' '));
+        
+      if (rsync.code !== 0) {
+        throw new Error(JSON.stringify(rsync, null, 2));
+      }
+      /*
+      fs.symlinkSync(
+        path.resolve(template.path, 'node_modules'),
+        path.resolve(userSourcePath, 'node_modules')
+      );
+      */
+    });
+  },
+
+  /**
+   * Return the node.js version specified in the package.json of the main
+   * xtuple repo.
+   */
+  getPackageNodeVersion: function (options) {
+    var pkg = require(path.resolve(options.xt.srcdir, 'xtuple', 'package')),
+      node = pkg.engines.node;
+
+    return exports.crudeVersionResolve(node);
+  },
+
+  crudeVersionResolve: function (version) {
+    if (!semver.validRange(version)) {
+      throw new Error('xtuple package version does not seem to be valid: '+ version);
+    }
+
+    if ('0.8.x' === version) {
+      return '0.8.26';
+    }
+    else {
+      return semver.clean(version);
+    }
+  },
+
+  /** @override */
+  afterTask: function (options) {
+    exec('chown -R {xt.name}:{xt.name} {xt.userhome}'.format(options));
+    exec('chmod -R 700 {xt.userhome}'.format(options));
+  },
+
+  /**
+   * @return list of repositories to clone
+   */
+  getRepositoryList: function (options) {
+    return _.compact([
+      'xtuple',
+      'xtuple-extensions',
+      lib.xt.build.hasPrivateExtensions(options) && 'private-extensions'
+    ]);
+  }
+});
