@@ -176,6 +176,7 @@ _.extend(exports, lib.task, /** @exports policy */ {
         'chmod -R u=rwx,g=wx {pg.logdir}'.format(options),
         'chmod -R u=rwx,g-rwx {xt.statedir}'.format(options),
         'chmod -R g=rx,u=wrx,o-rwx {xt.ssldir}'.format(options),
+
         'chmod -R g=rwx,u=wrx,o-rw {xt.configdir}'.format(options),
         'chmod -R g-rwx,u=wrx,o-rwx {xt.userPm2dir}'.format(options)
       ];
