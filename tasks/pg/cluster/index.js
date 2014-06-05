@@ -1,7 +1,7 @@
-var lib = require('../../lib'),
+var lib = require('xtuple-server-lib'),
+  _ = require('lodash'),
   exec = require('execSync').exec,
-  path = require('path'),
-  _ = require('lodash');
+  path = require('path');
 
 /**
  * Create a new postgres cluster and prime it to the point of being able
