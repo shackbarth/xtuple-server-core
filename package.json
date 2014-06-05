@@ -12,7 +12,7 @@
     "lodash": "~2.4.1",
     "mkdirp": "~0.5.0",
     "moment": "~2.5.1",
-    "pm2": "https://github.com/xtuple/pm2/tarball/master",
+    "pm2": "^0.8",
     "q": "~1.0.1",
     "requireindex": "~1.1.0",
     "rimraf": "~2.2.6",
@@ -48,8 +48,7 @@
   "engines": {
     "node": ">=0.8.26",
     "npm": ">=1.3.0",
-    "postgres": ">=9.3",
-    "xtuple": ">= 4.4.0"
+    "postgres": ">=9.3"
   },
   "repository": {
     "type": "git",
