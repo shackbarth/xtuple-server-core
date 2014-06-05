@@ -1,12 +1,12 @@
 {
   "private": true,
-  "name": "xtuple-scripts",
+  "name": "xtuple-server",
   "version": "0.9.9",
-  "description": "xtuple-scripts",
+  "description": "xTuple Server",
   "main": "index.js",
   "dependencies": {
     "commander": "1.3.2",
-    "congruence": "1.5.x",
+    "congruence": "^1.5",
     "cron-parser": "~0.3.3",
     "execSync": "^1.0.1-pre",
     "lodash": "~2.4.1",
@@ -19,6 +19,13 @@
     "semver": "^2.2.1",
     "string": "~1.8.1",
     "string-format": "^0.2.1"
+  },
+  "peerDependencies": {
+    "xtuple-server-plan-setup": "^0.9.0",
+    "xtuple-server-plan-install": "^0.9.0",
+    "xtuple-server-plan-uninstall": "^0.9.0",
+    "xtuple-server-plan-backup-database": "^0.9.0",
+    "xtuple-server-plan-restore-database": "^0.9.0"
   },
   "devDependencies": {
     "chai": "~1.9.0",
@@ -40,6 +47,10 @@
     "xtuple",
     "server",
     "erp",
+    "business",
+    "database",
+    "platform",
+    "api",
     "crm",
     "inventory",
     "distribution",
@@ -55,7 +66,7 @@
     "url": "git://github.com/xtuple/xtuple-scripts.git"
   },
   "author": "Travis Webb <travis@xtuple.com>",
-  "license": "CPAL",
+  "license": "GPL",
   "bugs": {
     "url": "https://github.com/xtuple/xtuple-scripts/issues"
   }
