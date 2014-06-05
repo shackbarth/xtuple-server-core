@@ -1,0 +1,39 @@
+{
+  "name": "xtuple-server-xt-database",
+  "version": "0.9.0",
+  "description": "xTuple Server Task [xt.database]: build an xTuple database",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha spec/ -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xtuple/xtuple-server"
+  },
+  "keywords": [
+    "xtuple",
+    "server",
+    "erp",
+    "business",
+    "software",
+    "postgres",
+    "postgresql",
+    "tuple"
+  ],
+  "author": "xTuple",
+  "license": "GPL",
+  "bugs": {
+    "url": "https://github.com/xtuple/xtuple-server/issues"
+  },
+  "homepage": "https://github.com/xtuple/xtuple-server",
+  "dependencies": {
+    "xtuple-server-lib": "^0.9.0",
+    "execSync": "^1.0.1-pre",
+    "lodash": "^2.4.1",
+    "rimraf": "^2.2.8"
+  },
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "mocha": "^1.20.0"
+  }
+}
