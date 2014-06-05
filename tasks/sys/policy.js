@@ -110,7 +110,7 @@ _.extend(exports, lib.task, /** @exports policy */ {
         'useradd xtremote -d /usr/local/xtremote -p {sys.policy.remotePassword}'.format(options),
         'adduser xtadmin --disabled-login',
         'usermod -a -G xtadmin,xtuser,www-data,postgres,lpadmin,ssl-cert xtremote',
-        'usermod -a -G ssl-cert,xtuser postgres',
+        'usermod -a -G ssl-cert,xtuser,www-data postgres',
       ],
       system_ownership = [
         'chown -R xtadmin:xtuser /etc/xtuple',

@@ -1,10 +1,9 @@
-var lib = require('../../lib'),
+var lib = require('xtuple-server-lib'),
   _ = require('lodash'),
-  fs = require('fs'),
-  path = require('path'),
   exec = require('execSync').exec,
   format = require('string-format'),
-  filename_template = 'pg_hba-{pg.version}.conf.template';
+  fs = require('fs'),
+  path = require('path');
 
 /**
  * Configure Authentication Rules for Postgres access.
@@ -14,6 +13,9 @@ var lib = require('../../lib'),
  * <http://www.postgresql.org/docs/9.3/static/auth-methods.html#AUTH-CERT>
  */
 _.extend(exports, lib.task, /** @exports hba */ {
+
+  filename_template: 'pg_hba-{pg.version}.conf.template',
+
   options: {
     cacrt: {
       optional: '[cacrt]',
@@ -23,9 +25,6 @@ _.extend(exports, lib.task, /** @exports hba */ {
 
   /** @override */
   beforeTask: function (options) {
-    exec('usermod -a -G www-data postgres');
-    exec('usermod -a -G ssl-cert postgres');
-
     if (!_.isEmpty(options.pg.cacrt)) {
       options.pg.cacrt = path.resolve(options.pg.cacrt);
     }
@@ -42,7 +41,7 @@ _.extend(exports, lib.task, /** @exports hba */ {
   /** @override */
   executeTask: function (options) {
     var hba_boilerplate = fs.readFileSync(
-        path.resolve(__dirname, filename_template.format(options))
+        path.resolve(__dirname, exports.filename_template.format(options))
       ),
       hba_target = path.resolve(
         '/etc/postgresql/', options.pg.version, options.pg.cluster.name, 'pg_hba.conf'
@@ -66,6 +65,7 @@ _.extend(exports, lib.task, /** @exports hba */ {
 
     // create a client key and a signing request against the installed domain
     // cert
+    // TODO use some openssl npm module instead of calling 'exec'
     exec([
         'openssl req -new -nodes',
         '-keyout {pg.outkey}',
@@ -88,6 +88,5 @@ _.extend(exports, lib.task, /** @exports hba */ {
     exec('chown {xt.name}:ssl-cert {pg.outcacrt}'.format(options));
     exec('chown {xt.name}:ssl-cert {pg.outcrt}'.format(options));
     exec('chown {xt.name}:ssl-cert {pg.outkey}'.format(options));
-    exec('chmod -R g=rx,u=wrx,o-rwx {xt.ssldir}'.format(options));
   }
 });
