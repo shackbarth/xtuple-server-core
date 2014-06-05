@@ -8,7 +8,7 @@ var lib = require('xtuple-server-lib'),
 /**
  * Append entries to the system hosts file if necessary.
  */
-_.extend(exports, lib.task, /** @exports hosts */ {
+_.extend(exports, lib.task, /** @exports xtuple-server-nginx-hosts */ {
 
   /** @override */
   executeTask: function (options) {

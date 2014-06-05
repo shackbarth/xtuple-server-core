@@ -1,15 +1,13 @@
-var lib = require('../../lib'),
-  fs = require('fs'),
-  config = require('./config'),
-  mgr = require('./snapshotmgr'),
-  exec = require('execSync').exec,
+var lib = require('xtuple-server-lib'),
+  config = require('xtuple-server-pg-config'),
   path = require('path'),
+  fs = require('fs'),
   _ = require('lodash');
 
 /**
  * Restore a database from a file
  */
-_.extend(exports, lib.task, /** @exports restore-database */ {
+_.extend(exports, lib.task, /** @exports xtuple-server-pg-restore */ {
 
   options: {
     infile: {
@@ -60,6 +58,6 @@ _.extend(exports, lib.task, /** @exports restore-database */ {
 
   /** @override */
   afterTask: function (options) {
-    exec('service xtuple {xt.version} {xt.name} restart'.format(options));
+    console.log('Restart the xTuple server for changes to take effect.');
   }
 });

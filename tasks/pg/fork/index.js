@@ -1,15 +1,11 @@
-var lib = require('../../lib'),
-  config = require('./config'),
-  moment = require('moment'),
-  fs = require('fs'),
-  exec = require('execSync').exec,
-  path = require('path'),
+var lib = require('xtuple-server-lib'),
+  config = require('xtuple-server-pg-config'),
   _ = require('lodash');
 
 /**
- * Fork an existing database.
+ * Fork an existing database; sets arguments for the restore task.
  */
-_.extend(exports, lib.task, /** @exports fork-database */ {
+_.extend(exports, lib.task, /** @exports xtuple-server-pg-fork */ {
 
   options: {
     dbname: {
@@ -25,44 +21,7 @@ _.extend(exports, lib.task, /** @exports fork-database */ {
 
   /** @override */
   executeTask: function (options) {
-    options.pg.infile = exports.getSnapshotPath(options);
-    options.pg.dbname = exports.getForkName(options);
-  },
-
-  /**
-   * Return the name of a forked database.
-   */
-  getForkName: function (options, globals) {
-    return '{dbname}_copy_{ts}'.format({
-      dbname: globals ? 'globals' : options.pg.dbname,
-      ts: moment().format('MMDDhhmm')
-    });
-  },
-
-  /**
-   * Return path of a snapshot file
-   * @param options - typical options object
-   * @param options.pg.dbname - name of database
-   * @public
-   */
-  getSnapshotPath: function (options, globals) {
-    var ext = (globals ? '.sql' : '.dir.gz');
-    return path.resolve(options.pg.snapshotdir, require('./fork').getForkName(options, globals) + ext);
-  },
-
-  /**
-   * Return an object consisting of the backup filename components.
-   * @public
-   */
-  parseForkName: function (filename) {
-    var base = path.basename(filename),
-      halves = base.split('_copy_');
-
-    return {
-      original: filename,
-      dbname: halves[0],
-      ts: moment(halves[1], 'MMDDhhmm').valueOf()
-    };
+    options.pg.infile = lib.util.getSnapshotPath(options);
+    options.pg.dbname = lib.util.getForkName(options);
   }
-
 });

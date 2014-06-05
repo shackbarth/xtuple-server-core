@@ -1,17 +1,15 @@
-var lib = require('../../lib'),
-  format = require('string-format'),
-  path = require('path'),
-  build = require('../../lib/xt/build'),
+var lib = require('xtuple-server-lib'),
   rimraf = require('rimraf'),
-  fs = require('fs'),
   _ = require('lodash'),
-  exec = require('execSync').exec;
+  exec = require('execSync').exec,
+  path = require('path'),
+  fs = require('fs');
 
 /**
  * Aggregate info about the databases the installer has been directed to set
  * up.
  */
-_.extend(exports, lib.task, /** @exports database */ {
+_.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
   options: {
     version: {
       required: '<version>',
@@ -87,7 +85,7 @@ _.extend(exports, lib.task, /** @exports database */ {
       if (fs.existsSync(maindb_path)) {
         databases.push({
           filename: maindb_path,
-          dbname: options.xt.name + exports.getDatabaseNameSuffix(options),
+          dbname: options.xt.name + lib.util.getDatabaseNameSuffix(options),
           foundation: false
         });
       }
@@ -115,21 +113,21 @@ _.extend(exports, lib.task, /** @exports database */ {
 
   buildMainDatabases: function (options) {
     var xt = options.xt,
-      extensions = build.editions[xt.edition],
+      extensions = lib.build.editions[xt.edition],
       databases = _.where(xt.database.list, { foundation: false });
 
     // build the main database, if specified
     _.each(databases, function (db) {
       rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
 
-      var buildResult = exec(build.getCoreBuildCommand(db, options));
+      var buildResult = exec(lib.build.getCoreBuildCommand(db, options));
       if (buildResult.code !== 0) {
         throw new Error(buildResult.stdout);
       }
 
       // install extensions specified by the edition
       _.each(extensions, function (ext) {
-        var result = exec(build.getExtensionBuildCommand(db, options, ext));
+        var result = exec(lib.build.getExtensionBuildCommand(db, options, ext));
         if (result.code !== 0) {
           throw new Error(result.stdout);
         }
@@ -144,27 +142,18 @@ _.extend(exports, lib.task, /** @exports database */ {
 
     rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
     if (quickstart) {
-      qsBuild = exec(build.getSourceBuildCommand(quickstart, options));
+      qsBuild = exec(lib.build.getSourceBuildCommand(quickstart, options));
 
       if (qsBuild.code !== 0) {
         throw new Error(JSON.stringify(qsBuild));
       }
     }
     if (demo) {
-      demoBuild = exec(build.getSourceBuildCommand(demo, options));
+      demoBuild = exec(lib.build.getSourceBuildCommand(demo, options));
 
       if (demoBuild.code !== 0) {
         throw new Error(JSON.stringify(demoBuild));
       }
-    }
-  },
-
-  getDatabaseNameSuffix: function (options) {
-    if (options.planName === 'install-pilot') {
-      return '_pilot';
-    }
-    else {
-      return '_live';
     }
   }
 });

@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "xtuple-server-nginx-ssl",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "xTuple Server Task [nginx.ssl]: configure the SSL endpoint for a new xTuple instance deployment",
   "main": "index.js",
   "scripts": {
@@ -17,13 +17,13 @@
     "erp",
     "business",
     "software",
+    "database",
     "nginx",
     "ssl",
-    "config",
     "tuple"
   ],
   "author": "xTuple",
-  "license": "MIT",
+  "license": "",
   "bugs": {
     "url": "https://github.com/xtuple/xtuple-server/issues"
   },

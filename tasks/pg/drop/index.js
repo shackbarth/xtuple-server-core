@@ -1,13 +1,12 @@
-var lib = require('../../lib'),
-  config = require('./config'),
-  fs = require('fs'),
-  exec = require('execSync').exec,
-  _ = require('lodash');
+var lib = require('xtuple-server-lib'),
+  config = require('xtuple-server-pg-config'),
+  _ = require('lodash'),
+  fs = require('fs');
 
 /**
  * Drop an existing database.
  */
-_.extend(exports, lib.task, /** @exports drop-database */ {
+_.extend(exports, lib.task, /** @exports xtuple-server-pg-drop */ {
 
   options: {
     dbname: {
@@ -37,7 +36,6 @@ _.extend(exports, lib.task, /** @exports drop-database */ {
 
   /** @override */
   afterTask: function (options) {
-    exec('service xtuple {xt.version} {xt.name} restart'.format(options));
+    console.log('Restart the xTuple server for changes to take effect');
   }
 });
-

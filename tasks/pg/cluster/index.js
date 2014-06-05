@@ -1,6 +1,5 @@
 var lib = require('xtuple-server-lib'),
   _ = require('lodash'),
-  exec = require('execSync').exec,
   path = require('path');
 
 /**
@@ -8,6 +7,7 @@ var lib = require('xtuple-server-lib'),
  * to receive import of xtuple databases.
  */
 _.extend(exports, lib.task, /** @exports cluster */ {
+
   options: {
     pilot: {
       optional: '[boolean]',
@@ -20,7 +20,7 @@ _.extend(exports, lib.task, /** @exports cluster */ {
   beforeInstall: function (options) {
     options.pg.cluster = {
       owner: options.xt.name,
-      name: exports.getClusterName(options),
+      name: lib.util.getClusterName(options),
       version: parseFloat(options.pg.version)
     };
     var exists = _.findWhere(lib.pgCli.lsclusters(), options.pg.cluster);
@@ -40,7 +40,7 @@ _.extend(exports, lib.task, /** @exports cluster */ {
 
   /** @override */
   uninstall: function (options) {
-    options.pg.cluster.name = exports.getClusterName(options);
+    options.pg.cluster.name = lib.util.getClusterName(options);
 
     if (/uninstall/.test(options.planName)) {
       lib.pgCli.ctlcluster(options, 'stop');
@@ -88,18 +88,6 @@ _.extend(exports, lib.task, /** @exports cluster */ {
 
     if (failed.length > 0) {
       throw new Error(JSON.stringify(failed, null, 2));
-    }
-  },
-
-  /**
-   * Derive the name of the postgres cluster from the options.
-   */
-  getClusterName: function (options) {
-    if (options.pg.pilot === true) {
-      return options.xt.name + '-' + options.xt.version + '-pilot';
-    }
-    else {
-      return options.xt.name + '-' + options.xt.version + '-live';
     }
   }
 });

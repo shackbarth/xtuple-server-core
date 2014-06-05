@@ -1,13 +1,12 @@
-var lib = require('../../lib'),
-  config = require('./config'),
-  exec = require('execSync').exec,
-  fs = require('fs'),
-  _ = require('lodash');
+var lib = require('xtuple-server-lib'),
+  config = require('xtuple-server-pg-config'),
+  _ = require('lodash'),
+  fs = require('fs');
 
 /**
  * Rename an existing database.
  */
-_.extend(exports, lib.task, /** @exports rename */ {
+_.extend(exports, lib.task, /** @exports xtuple-server-pg-rename */ {
 
   options: {
     dbname: {
@@ -44,6 +43,6 @@ _.extend(exports, lib.task, /** @exports rename */ {
 
   /** @override */
   afterTask: function (options) {
-    exec('service xtuple {xt.version} {xt.name} restart'.format(options));
+    console.log('Restart the xTuple server for changes to take effect');
   }
 });

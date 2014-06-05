@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-pg-cluster",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "xTuple Server Task [pg.cluster]: create and setup a postgres cluster for xTuple",
   "main": "index.js",
   "scripts": {
@@ -16,12 +16,13 @@
     "erp",
     "business",
     "software",
+    "database",
     "postgres",
-    "config",
+    "postgresql",
     "tuple"
   ],
   "author": "xTuple",
-  "license": "MIT",
+  "license": "GPL",
   "bugs": {
     "url": "https://github.com/xtuple/xtuple-server/issues"
   },

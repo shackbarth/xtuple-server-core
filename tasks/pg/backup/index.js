@@ -1,14 +1,11 @@
-var lib = require('../../lib'),
-  config = require('./config'),
-  fork = require('./fork'),
-  fs = require('fs'),
-  path = require('path'),
+var lib = require('xtuple-server-lib'),
+  config = require('xtuple-server-pg-config'),
   _ = require('lodash');
 
 /**
  * Backup an existing database.
  */
-_.extend(exports, lib.task, /** @exports backup */ {
+_.extend(exports, lib.task, /** @exports xtuple-server-pg-backup */ {
 
   options: {
     dbname: {
@@ -20,7 +17,7 @@ _.extend(exports, lib.task, /** @exports backup */ {
   /** @override */
   beforeInstall: function (options) {
     options.pg.dbname || (
-      options.pg.dbname = options.xt.name + require('../xt').database.getDatabaseNameSuffix(options)
+      options.pg.dbname = options.xt.name + lib.util.getDatabaseNameSuffix(options)
     );
   },
 
@@ -32,11 +29,11 @@ _.extend(exports, lib.task, /** @exports backup */ {
   /** @override */
   executeTask: function (options) {
     // dump globals
-    lib.pgCli.dumpall(_.extend({ snapshotpath: fork.getSnapshotPath(options, true) }, options));
+    lib.pgCli.dumpall(_.extend({ snapshotpath: lib.util.getSnapshotPath(options, true) }, options));
     
     // dump data
     lib.pgCli.dump(_.extend({
-      snapshotpath: fork.getSnapshotPath(options),
+      snapshotpath: lib.util.getSnapshotPath(options),
       dbname: options.pg.dbname
     }, options));
   },
@@ -46,4 +43,3 @@ _.extend(exports, lib.task, /** @exports backup */ {
     console.log('Database backed up to: ', options.pg.snapshotdir);
   }
 });
-

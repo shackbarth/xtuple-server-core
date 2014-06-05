@@ -9,7 +9,7 @@ var lib = require('xtuple-server-lib'),
 /**
  * Create a new nginx site
  */
-_.extend(exports, lib.task, /** @exports site */ {
+_.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
 
   options: {
     domain: {
@@ -69,7 +69,7 @@ _.extend(exports, lib.task, /** @exports site */ {
 
   /** @override */
   beforeTask: function (options) {
-    options.nginx.port = require('../xt').serverconfig.getServerSSLPort(options);
+    options.nginx.port = lib.util.getServerSSLPort(options);
     options.nginx.healthfeedport = options.nginx.port + 5984;
 
     exec('rm -f '+ path.resolve(options.nginx.sitesEnabled, 'default'));

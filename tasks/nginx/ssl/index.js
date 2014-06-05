@@ -8,7 +8,8 @@ var lib = require('xtuple-server-lib'),
 /**
  * Setup SSL in nginx
  */
-_.extend(exports, lib.task, /** @exports ssl */ {
+_.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
+
   options: {
     'incrt': {
       optional: '[file]',
