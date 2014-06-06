@@ -1,3 +1,3 @@
-# xtuple-server-pg-config module
+# xtuple-server-lib module
 
 ### See <https://github.com/xtuple/xtuple-server/wiki>

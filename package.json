@@ -3,6 +3,7 @@
   "version": "0.9.11",
   "description": "xTuple Server",
   "dependencies": {
+    "xtuple-server-lib": "^0.9.0",
     "commander": "^2.2.0",
     "execSync": "^1.0.1-pre",
     "lodash": "~2.4.1",
@@ -11,7 +12,6 @@
     "string-format": "^0.2.1"
   },
   "peerDependencies": {
-    "xtuple-server-lib": "^0.9.0",
     "xtuple-server-nginx-hosts": "^0.9.0",
     "xtuple-server-nginx-site": "^0.9.0",
     "xtuple-server-pg-config": "^0.9.0",
