@@ -28,7 +28,7 @@ _.extend(exports, lib.task, /** @exports rename */ {
   /** @override */
   executeTask: function (options) {
     var res = lib.pgCli.psql(options,
-      'alter database ' + options.pg.dbname + ' rename to ' + options.pg.newname
+    'select pg_terminate_backend(pg_stat_activity.pid) from pg_stat_activity where pg_stat_activity.datname = \'' + options.pg.dbname + '\' and pid <> pg_backend_pid(); alter database \"' + options.pg.dbname + '\" rename to ' + options.pg.newname
     );
     console.log(res);
 
