@@ -17,7 +17,7 @@ before_install:
   - sudo -E bash bootstrap/bootstrap.sh --no-installer
 
 install:
-  - /usr/local/bin/npm install -g
+  - sudo /usr/local/bin/npm install -g
 
 script: 
   - /usr/local/bin/npm test
