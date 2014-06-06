@@ -1,9 +1,9 @@
-var lib = require('../../lib'),
+var lib = require('xtuple-server-lib'),
   exec = require('execSync').exec,
   mkdirp = require('mkdirp'),
+  _ = require('lodash'),
   fs = require('fs'),
-  path = require('path'),
-  _ = require('lodash');
+  path = require('path');
 
 _.extend(exports, lib.task, /** @exports report */ {
 
@@ -27,14 +27,13 @@ _.extend(exports, lib.task, /** @exports report */ {
         password: options.xt.adminpw
       };
     }
-
-    if (options.sys.policy.remotePassword) {
+    if (!_.isEmpty(options.sys.policy.remotePassword)) {
       options.report['Remote Management Access'] = {
         user: 'xtremote',
         password: options.sys.policy.remotePassword
       };
     }
-    if (options.sys.policy.userPassword) {
+    if (!_.isEmpty(options.sys.policy.userPassword)) {
       options.report['System User Account'] = {
         user: options.xt.name,
         password: options.sys.policy.userPassword
