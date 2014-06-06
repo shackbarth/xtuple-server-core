@@ -6,10 +6,10 @@ var lib = require('xtuple-server-lib'),
   fs = require('fs');
 
 /**
- * Aggregate info about the databases the installer has been directed to set
- * up.
+ * Build the specified xTuple database(s)
  */
 _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
+
   options: {
     version: {
       required: '<version>',

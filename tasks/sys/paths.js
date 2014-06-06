@@ -28,8 +28,6 @@
       options.xt.key256file = path.resolve('/etc/xtuple', version, name, 'key256.txt');
       options.xt.userhome = path.resolve('/usr/local/', options.xt.name);
       options.xt.usersrc = path.resolve(options.xt.userhome, options.xt.version, 'xtuple');
-      options.xt.testloginfile = path.resolve(options.xt.usersrc, 'test/lib/login_data.js');
-      options.xt.testconfigfile = path.resolve(options.xt.usersrc, 'node-datasource/config.js');
       options.xt.buildconfigfile = path.resolve(options.xt.configdir, 'build/config.js');
 
       // shared config (per account)

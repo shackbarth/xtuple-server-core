@@ -36,7 +36,7 @@ describe('xTuple Installer', function () {
     {name: 'pg', tasks: [ 'cluster' ]},
     {name: 'nginx', tasks: [ 'ssl', 'site', 'hosts' ]},
     {name: 'pg', tasks: [ 'hba', 'tuner', 'config' ]},
-    {name: 'xt', tasks: [ 'serverconfig', 'testconfig', 'database' ]},
+    {name: 'xt', tasks: [ 'serverconfig', 'database' ]},
     {name: 'sys', tasks: [ 'cups', 'service', 'report', 'ssh' ]}
   ];
 
@@ -73,11 +73,6 @@ describe('xTuple Installer', function () {
       });
     });
   });
-
-  // XXX remove this check when zombie is fixed in node 0.10
-  //if (!!process.env.TRAVIS && (process.env.XT_NODE_VERSION || '').indexOf('0.10') === -1) {
-    //global.installPlan.push({name: 'xt', tasks: [ 'testconfig', 'runtests' ]});
-  //}
 
   describe('setup', function () {
     describe('#verifyOptions, #compileOptions', function () {

@@ -14,7 +14,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-serverconfig */ {
   beforeTask: function (options) {
     options.xt.port = lib.util.getServerPort(options);
     options.xt.sslport = lib.util.getServerSSLPort(options);
-    //options.xt.testdb = (options.xt.demo && options.xt.runtests) ? 'xtuple_demo' : '';
   },
 
   /** @override */
