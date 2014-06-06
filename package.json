@@ -65,7 +65,7 @@
   ],
   "scripts": {
     "test": "sudo XT_PG_VERSION=9.3 -E node_modules/.bin/mocha spec -R spec -b",
-    "postinstall": "sudo xtuple-server setup"
+    "postinstall": "sudo -E xtuple-server setup"
   },
   "bin": {
     "xtuple-server": "./server-cli.js",
