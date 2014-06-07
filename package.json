@@ -70,7 +70,7 @@
     "server-cli.js"
   ],
   "scripts": {
-    "test": "sudo XT_PG_VERSION=9.3 -E node_modules/.bin/mocha spec -R spec -b",
+    "test": "sudo XT_PG_VERSION=9.3 -E mocha spec -R spec -b",
     "setup": "sudo xtuple-server setup"
   },
   "bin": {
