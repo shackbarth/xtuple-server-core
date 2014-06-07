@@ -17,7 +17,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-dev-paths */ {
   usrSbin: path.resolve(prefix, 'usr/sbin'),
   varLog: path.resolve(prefix, 'var/log'),
   varLibXtuple: path.resolve(prefix, 'var/lib/xtuple'),
-  varRun: path.resolve(prefix, 'var/run/'),
+  varRun: path.resolve(prefix, 'var/run'),
 
   /** @override */
   beforeInstall: function (options) {
