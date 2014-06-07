@@ -51,7 +51,6 @@
     "xtuple-server": "./server-cli.js",
     "xtuple-healthfeed": "node_modules/pm2/lib/HttpInterface.js",
     "xtupled": "node_modules/.bin/pm2",
-    "mocha": "node_modules/.bin/mocha"
   },
   "preferGlobal": true,
   "os": [
