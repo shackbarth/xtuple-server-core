@@ -17,11 +17,9 @@ before_install:
   - export XT_NODE_VERSION=$TRAVIS_NODE_VERSION
   - sudo -E bash bootstrap/bootstrap.sh --no-installer
   - sudo /usr/local/bin/npm install -g node-gyp
-  - sudo /usr/local/bin/npm install -g chai
-  - sudo /usr/local/bin/npm install -g mocha
 
 install:
-  - sudo /usr/local/bin/npm install -g
+  - /usr/local/bin/npm install
 
 script: 
   - /usr/local/bin/npm test

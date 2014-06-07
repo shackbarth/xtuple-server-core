@@ -70,13 +70,14 @@
     "server-cli.js"
   ],
   "scripts": {
-    "test": "sudo XT_PG_VERSION=9.3 -E mocha spec -R spec -b",
+    "test": "sudo XT_PG_VERSION=9.3 -E ./node_modules/.bin/mocha spec -R spec -b",
     "setup": "sudo xtuple-server setup"
   },
   "bin": {
     "xtuple-server": "./server-cli.js",
     "xtuple-healthfeed": "node_modules/pm2/lib/HttpInterface.js",
-    "xtupled": "node_modules/.bin/pm2"
+    "xtupled": "node_modules/.bin/pm2",
+    "mocha": "node_modules/.bin/mocha"
   },
   "preferGlobal": true,
   "os": [
@@ -94,12 +95,11 @@
     "crm",
     "inventory",
     "distribution",
-    "manufacturing"
+    "manufacturing",
+    "enterprise"
   ],
   "engines": {
-    "node": ">=0.8.26",
-    "npm": ">=1.3.0",
-    "postgres": ">=9.3"
+    "node": ">=0.10.28"
   },
   "repository": {
     "type": "git",
