@@ -105,4 +105,5 @@ host       all             all             192.168.0.0/16          md5
 # hostssl    all             {xt.name}       0.0.0.0/0               cert clientcert=1
 
 # world
-{pg.hba.world}hostssl    all             all             0.0.0.0/0               md5
+{pg.worldlogin}hostssl    all             all             0.0.0.0/0               md5
+

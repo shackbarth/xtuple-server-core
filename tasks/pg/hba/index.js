@@ -20,6 +20,11 @@ _.extend(exports, lib.task, /** @exports hba */ {
     cacrt: {
       optional: '[cacrt]',
       description: 'The root CA file for the SSL cert'
+    },
+    worldlogin: {
+      optional: '[boolean]',
+      description: 'True if postgres should allow world md5 login; false otherwise',
+      value: false
     }
   },
 
@@ -35,7 +40,6 @@ _.extend(exports, lib.task, /** @exports hba */ {
     options.pg.outcacrt = path.resolve(
       '/var/lib/postgresql', options.pg.version, options.pg.cluster.name, 'root.crt'
     );
-    options.pg.hba.world = (options.sys.mode === 'cloud') ? '' : '#';
   },
 
   /** @override */
