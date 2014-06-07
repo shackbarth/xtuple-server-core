@@ -50,7 +50,7 @@
   "bin": {
     "xtuple-server": "./server-cli.js",
     "xtuple-healthfeed": "node_modules/pm2/lib/HttpInterface.js",
-    "xtupled": "node_modules/.bin/pm2",
+    "xtupled": "node_modules/.bin/pm2"
   },
   "preferGlobal": true,
   "os": [
