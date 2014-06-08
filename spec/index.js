@@ -1,10 +1,10 @@
 var assert = require('chai').assert,
   exec = require('execSync').exec,
   _ = require('lodash'),
-  lib = require('../lib'),
+  lib = require('xtuple-server-lib'),
   path = require('path'),
   fs = require('fs'),
-  planner = require('../lib/planner');
+  planner = lib.planner;
 
 describe('xTuple Installer', function () {
   global.options = {
