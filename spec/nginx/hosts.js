@@ -1,9 +1,6 @@
 var assert = require('chai').assert,
   _ = require('lodash'),
   fs = require('fs'),
-  path = require('path'),
-  exec = require('execSync').exec,
-  nginxModule = require('../../tasks/nginx'),
   options = global.options;
 
 it('should add an entry in /etc/hosts', function () {

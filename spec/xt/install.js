@@ -1,8 +1,8 @@
 var assert = require('chai').assert,
+  lib = require('xtuple-server-lib'),
   _ = require('lodash'),
   fs = require('fs'),
   exec = require('execSync').exec,
-  xtModule = require('../../tasks/xt'),
   options = global.options;
 
 describe('#getRepositoryList', function () {
@@ -12,7 +12,7 @@ describe('#getRepositoryList', function () {
   });
 
   it('should clone only public repos if installing a free edition', function () {
-    var repoList = xtModule.clone.getRepositoryList(options);
+    var repoList = lib.util.getRepositoryList(options);
 
     assert.include(repoList, 'xtuple');
     assert.include(repoList, 'xtuple-extensions');
@@ -20,21 +20,21 @@ describe('#getRepositoryList', function () {
   });
   it('should clone all repos if installing a premium edition', function () {
     options.xt.edition = 'manufacturing';
-    var repoList = xtModule.clone.getRepositoryList(options);
+    var repoList = lib.util.getRepositoryList(options);
 
     assert.include(repoList, 'xtuple');
     assert.include(repoList, 'xtuple-extensions');
     assert.include(repoList, 'private-extensions');
 
     options.xt.edition = 'distribution';
-    repoList = xtModule.clone.getRepositoryList(options);
+    repoList = lib.util.getRepositoryList(options);
 
     assert.include(repoList, 'xtuple');
     assert.include(repoList, 'xtuple-extensions');
     assert.include(repoList, 'private-extensions');
 
     options.xt.edition = 'enterprise';
-    repoList = xtModule.clone.getRepositoryList(options);
+    repoList = lib.util.getRepositoryList(options);
 
     assert.include(repoList, 'xtuple');
     assert.include(repoList, 'xtuple-extensions');

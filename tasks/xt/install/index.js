@@ -25,7 +25,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
 
   /** @override */
   executeTask: function (options) {
-    _.each(exports.getRepositoryList(options), function (repo) {
+    _.each(lib.util.getRepositoryList(options), function (repo) {
       var template = _.extend({
           repo: repo,
           path: path.resolve(options.xt.srcdir, repo)
@@ -98,16 +98,5 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
   afterTask: function (options) {
     exec('chown -R {xt.name}:{xt.name} {xt.userhome}'.format(options));
     exec('chmod -R 700 {xt.userhome}'.format(options));
-  },
-
-  /**
-   * @return list of repositories to clone
-   */
-  getRepositoryList: function (options) {
-    return _.compact([
-      'xtuple',
-      'xtuple-extensions',
-      lib.xt.build.hasPrivateExtensions(options) && 'private-extensions'
-    ]);
   }
 });
