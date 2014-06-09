@@ -30,7 +30,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
       optional: '[path]',
       description: 'Path to primary database .backup/.sql filename to use in production',
       validate: function (arg) {
-        if (!fs.existsSync(path.resolve(arg))) {
+        if (!_.isEmpty(arg) && !fs.existsSync(path.resolve(arg))) {
           throw new Error('Invalid path for xt.maindb: '+ arg);
         }
 
@@ -113,21 +113,21 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
 
   buildMainDatabases: function (options) {
     var xt = options.xt,
-      extensions = lib.build.editions[xt.edition],
+      extensions = lib.util.editions[xt.edition],
       databases = _.where(xt.database.list, { foundation: false });
 
     // build the main database, if specified
     _.each(databases, function (db) {
       rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
 
-      var buildResult = exec(lib.build.getCoreBuildCommand(db, options));
+      var buildResult = exec(lib.util.getCoreBuildCommand(db, options));
       if (buildResult.code !== 0) {
         throw new Error(buildResult.stdout);
       }
 
       // install extensions specified by the edition
       _.each(extensions, function (ext) {
-        var result = exec(lib.build.getExtensionBuildCommand(db, options, ext));
+        var result = exec(lib.util.getExtensionBuildCommand(db, options, ext));
         if (result.code !== 0) {
           throw new Error(result.stdout);
         }
@@ -142,14 +142,14 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
 
     rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
     if (quickstart) {
-      qsBuild = exec(lib.build.getSourceBuildCommand(quickstart, options));
+      qsBuild = exec(lib.util.getSourceBuildCommand(quickstart, options));
 
       if (qsBuild.code !== 0) {
         throw new Error(JSON.stringify(qsBuild));
       }
     }
     if (demo) {
-      demoBuild = exec(lib.build.getSourceBuildCommand(demo, options));
+      demoBuild = exec(lib.util.getSourceBuildCommand(demo, options));
 
       if (demoBuild.code !== 0) {
         throw new Error(JSON.stringify(demoBuild));

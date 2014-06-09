@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-xt-install",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "xTuple Server Task [xt.install]: clone and install the xTuple source",
   "main": "index.js",
   "scripts": {

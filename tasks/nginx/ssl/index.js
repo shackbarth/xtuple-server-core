@@ -15,7 +15,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
       optional: '[file]',
       description: 'Path to SSL certificate (.crt)',
       validate: function (arg) {
-        if (!fs.existsSync(path.resolve(arg))) {
+        if (!_.isEmpty(arg) && !fs.existsSync(path.resolve(arg))) {
           throw new Error('Invalid path for nginx.incrt: '+ arg);
         }
 
@@ -26,7 +26,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
       optional: '[file]',
       description: 'Path to SSL private key (.key)',
       validate: function (arg) {
-        if (!fs.existsSync(path.resolve(arg))) {
+        if (!_.isEmpty(arg) && !fs.existsSync(path.resolve(arg))) {
           throw new Error('Invalid path for nginx.inkey: '+ arg);
         }
 

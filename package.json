@@ -15,9 +15,7 @@
     "rimraf": "~2.2.6",
     "semver": "~2.2.1",
     "string": "~1.8.1",
-    "string-format": "^0.2.1"
-  },
-  "peerDependencies": {
+    "string-format": "^0.2.1",
     "xtuple-server-nginx-hosts": "^0.9.0",
     "xtuple-server-nginx-site": "^0.9.0",
     "xtuple-server-pg-config": "^0.9.0",
@@ -72,7 +70,7 @@
     "enterprise"
   ],
   "engines": {
-    "node": ">=0.10.28"
+    "node": "0.10.28"
   },
   "repository": {
     "type": "git",

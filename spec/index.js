@@ -32,11 +32,11 @@ describe('xTuple Installer', function () {
   // palindromic install plans are my favorite kinds of install plans
   global.installPlan = [
     {name: 'sys', tasks: [ 'paths', 'policy' ]},
-    {name: 'xt', tasks: [ 'clone' ]},
+    {name: 'xt', tasks: [ 'install' ]},
     {name: 'pg', tasks: [ 'cluster' ]},
     {name: 'nginx', tasks: [ 'ssl', 'site', 'hosts' ]},
     {name: 'pg', tasks: [ 'hba', 'tuner', 'config' ]},
-    {name: 'xt', tasks: [ 'serverconfig', 'database' ]},
+    {name: 'xt', tasks: [ 'config', 'database' ]},
     {name: 'sys', tasks: [ 'cups', 'service', 'report', 'ssh' ]}
   ];
 
@@ -86,7 +86,7 @@ describe('xTuple Installer', function () {
         assert.equal(global.options.xt.edition, 'core');
       });
       it('should create empty objects for tasks', function () {
-        assert.isObject(global.options.xt.serverconfig);
+        assert.isObject(global.options.xt.config);
         assert.isObject(global.options.sys.paths);
         assert.isObject(global.options.pg.config);
       });

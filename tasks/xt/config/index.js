@@ -8,7 +8,7 @@ var lib = require('xtuple-server-lib'),
 /**
  * Generate the config.js file
  */
-_.extend(exports, lib.task, /** @exports xtuple-server-xt-serverconfig */ {
+_.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
 
   /** @override */
   beforeTask: function (options) {
@@ -18,12 +18,12 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-serverconfig */ {
 
   /** @override */
   executeTask: function (options) {
-    lib.util.writeBuildConfig(options);
-    lib.util.writeRunConfig(options);
+    exports.writeBuildConfig(options);
+    exports.writeRunConfig(options);
   },
 
   writeRunConfig: function (options) {
-    lib.util.writeConfig(options);
+    exports.writeConfig(options);
   },
 
   writeBuildConfig: function (options) {
@@ -34,10 +34,10 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-serverconfig */ {
       password: options.xt.adminpw,
       configfile: options.xt.buildconfigfile
     });
-    buildOptions.xt.serverconfig = { };
+    buildOptions.xt.config = { };
     buildOptions.xt.testdb = 'xtuple_demo';
 
-    lib.util.writeConfig(buildOptions);
+    exports.writeConfig(buildOptions);
 
     exec('chown {xt.name}:{xt.name} {xt.buildconfigfile}'.format(options));
     exec('chmod 700 {xt.buildconfigfile}'.format(options));
@@ -74,7 +74,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-serverconfig */ {
           port: parseInt(pg.cluster.port)
         })
       }),
-      output_conf = lib.xt.build.wrapModule(derived_config_obj);
+      output_conf = lib.util.wrapModule(derived_config_obj);
 
     fs.writeFileSync(options.xt.configfile, output_conf);
         
@@ -96,7 +96,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-serverconfig */ {
       );
     }
 
-    _.extend(options.xt.serverconfig, {
+    _.extend(options.xt.config, {
       string: output_conf,
       json: derived_config_obj
     });

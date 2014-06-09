@@ -15,7 +15,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
 
   /** @override */
   beforeTask: function (options) {
-    if (lib.xt.build.isTaggedVersion(options)) {
+    if (lib.util.isTaggedVersion(options)) {
       options.xt.repoHash = 'v' + options.xt.version;
     }
     else {
@@ -42,7 +42,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
         options.xt.npmBin = path.resolve(options.xt.nodePath, 'npm');
 
         template.npm = options.xt.npmBin;
-        exec('cd {path} && {npm} install --silent'.format(template));
+        exec('cd {path} && {npm} install'.format(template));
 
         if (clone.code !== 0) {
           throw new Error(JSON.stringify(clone, null, 2));

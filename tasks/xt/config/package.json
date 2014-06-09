@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-xt-config",
-  "version": "0.9.0",
+  "version": "0.9.3",
   "description": "xTuple Server Task [xt.config]: configure the xTuple web server",
   "main": "index.js",
   "scripts": {

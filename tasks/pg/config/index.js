@@ -60,12 +60,12 @@ _.extend(exports, lib.task, /** @exports config */ {
    */
   discoverCluster: function (options) {
     options.pg.cluster = _.findWhere(lib.pgCli.lsclusters(), {
-      name: require('../cluster').getClusterName(options),
+      name: lib.util.getClusterName(options),
       version: options.pg.version
     });
 
     if (!_.isObject(options.pg.cluster)) {
-      throw new Error('No such installation exists: ' + require('../cluster').getClusterName(options));
+      throw new Error('No such installation exists: ' + lib.util.getClusterName(options));
     }
   },
 
@@ -74,7 +74,7 @@ _.extend(exports, lib.task, /** @exports config */ {
    */
   writePostgresqlConfig: function (options) {
     _.defaults(options.pg.config, options.pg.cluster, {
-      name: require('../cluster').getClusterName(options),
+      name: lib.util.getClusterName(options),
       timezone: options.pg.timezone,
       data_directory: options.pg.cluster.data,
       ssl_cert_file: options.pg.outcrt,

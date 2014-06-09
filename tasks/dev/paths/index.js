@@ -3,7 +3,7 @@ var lib = require('xtuple-server-lib'),
   rimraf = require('rimraf'),
   path = require('path'),
   _ = require('lodash'),
-  prefix: '~/.xtuple';
+  prefix = '~/.xtuple';
 
 /**
  * Sets up system file and directory paths

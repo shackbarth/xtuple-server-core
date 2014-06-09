@@ -3,7 +3,7 @@
   {"name": "pg", "tasks": [ "cluster" ]},
   {"name": "nginx", "tasks": [ "ssl", "site", "hosts" ]},
   {"name": "pg", "tasks": [ "hba", "tuner", "config" ]},
-  {"name": "xt", "tasks": [ "clone", "serverconfig", "database" ]},
+  {"name": "xt", "tasks": [ "install", "config", "database" ]},
   {"name": "sys", "tasks": [ "cups", "service", "report", "ssh" ]},
   {"name": "pg", "tasks": [ "snapshotmgr" ]}
 ]
