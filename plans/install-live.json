@@ -1,8 +1,8 @@
 [
-  {"name": "sys", "tasks": [ "paths", "policy" ]},
+  {"name": "dev", "tasks": [ "paths", "policy" ]},
   {"name": "pg", "tasks": [ "cluster" ]},
   {"name": "nginx", "tasks": [ "ssl", "site", "hosts" ]},
   {"name": "pg", "tasks": [ "hba", "config" ]},
   {"name": "xt", "tasks": [ "install", "config", "database" ]},
-  {"name": "sys", "tasks": [ "report" ]}
+  {"name": "sys", "tasks": [ "report" ]},
 ]

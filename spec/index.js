@@ -30,12 +30,11 @@ describe('xTuple Installer', function () {
   // palindromic install plans are my favorite kinds of install plans
   global.installPlan = [
     {name: 'sys', tasks: [ 'paths', 'policy' ]},
-    {name: 'xt', tasks: [ 'install' ]},
     {name: 'pg', tasks: [ 'cluster' ]},
     {name: 'nginx', tasks: [ 'ssl', 'site', 'hosts' ]},
     {name: 'pg', tasks: [ 'hba', 'config' ]},
-    {name: 'xt', tasks: [ 'config', 'database' ]},
-    {name: 'sys', tasks: [ 'cups', 'report' ]}
+    {name: 'xt', tasks: [ 'install', 'config', 'database' ]},
+    {name: 'sys', tasks: [ 'report' ]}
   ];
 
   describe('planner', function () {
