@@ -16,9 +16,7 @@ describe('xTuple Installer', function () {
       },
       pg: {
         version: process.env.XT_PG_VERSION,
-        capacity: 32,
-        forceoverwrite: true,
-        pilot: true
+        capacity: 32
       }
     };
 
@@ -35,9 +33,9 @@ describe('xTuple Installer', function () {
     {name: 'xt', tasks: [ 'install' ]},
     {name: 'pg', tasks: [ 'cluster' ]},
     {name: 'nginx', tasks: [ 'ssl', 'site', 'hosts' ]},
-    {name: 'pg', tasks: [ 'hba', 'tuner', 'config' ]},
+    {name: 'pg', tasks: [ 'hba', 'config' ]},
     {name: 'xt', tasks: [ 'config', 'database' ]},
-    {name: 'sys', tasks: [ 'cups', 'service', 'report', 'ssh' ]}
+    {name: 'sys', tasks: [ 'cups', 'report' ]}
   ];
 
   describe('planner', function () {

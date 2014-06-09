@@ -1,5 +1,4 @@
 {
-  "private": true,
   "name": "xtuple-server-nginx-ssl",
   "version": "0.9.1",
   "description": "xTuple Server Task [nginx.ssl]: configure the SSL endpoint for a new xTuple instance deployment",
