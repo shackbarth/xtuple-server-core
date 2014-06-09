@@ -11,6 +11,9 @@ _.extend(exports, lib.task, /** @exports xtuple-server-dev-policy */ {
 
   /** @override */
   beforeInstall: function (options) {
+    options.sys || (options.sys = { });
+    options.sys.policy || (options.sys.policy = { });
+
     var userBlacklist = [
       'xtuple', 'xtadmin', 'xtremote', 'root', 'admin', 'vagrant', 'postgres', 'node'
     ];
