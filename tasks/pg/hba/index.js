@@ -30,6 +30,9 @@ _.extend(exports, lib.task, /** @exports hba */ {
 
   /** @override */
   beforeTask: function (options) {
+    if (options.pg.worldlogin === false) {
+      options.pg.worldlogin = '#';
+    }
     if (!_.isEmpty(options.pg.cacrt)) {
       options.pg.cacrt = path.resolve(options.pg.cacrt);
     }
@@ -89,8 +92,11 @@ _.extend(exports, lib.task, /** @exports hba */ {
     exec('cp {pg.cacrt} {pg.outcacrt}'.format(options));
 
     exec('chown {xt.name}:ssl-cert {pg.outcacrt}'.format(options));
-    exec('chown {xt.name}:ssl-cert {pg.outcacrt}'.format(options));
+    exec('chown {xt.name}:{xt.name} {pg.outcacrt}'.format(options));
     exec('chown {xt.name}:ssl-cert {pg.outcrt}'.format(options));
-    exec('chown {xt.name}:ssl-cert {pg.outkey}'.format(options));
+    exec('chown {xt.name}:{xt.name} {pg.outkey}'.format(options));
+
+    exec('chmod 600 {pg.outcrt}'.format(options));
+    exec('chmod 600 {pg.outkey}'.format(options));
   }
 });

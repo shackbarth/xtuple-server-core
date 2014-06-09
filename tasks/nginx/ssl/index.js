@@ -73,8 +73,11 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
   afterTask: function (options) {
     exports.verifyCertificate(options);
 
-    exec('chown {xt.name}:ssl-cert {nginx.outcrt}'.format(options));
-    exec('chown {xt.name}:ssl-cert {nginx.outkey}'.format(options));
+    exec('chmod 600 {nginx.outkey}'.format(options));
+    exec('chmod 600 {nginx.outcrt}'.format(options));
+
+    //exec('chown {xt.name}:ssl-cert {nginx.outcrt}'.format(options));
+    //exec('chown {xt.name}:{xt.name} {nginx.outkey}'.format(options));
   },
 
   /**
