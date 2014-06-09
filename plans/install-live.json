@@ -1,5 +1,5 @@
 [
-  {"name": "dev", "tasks": [ "paths", "policy" ]},
+  {"name": "sys", "tasks": [ "paths", "policy" ]},
   {"name": "pg", "tasks": [ "cluster" ]},
   {"name": "nginx", "tasks": [ "ssl", "site", "hosts" ]},
   {"name": "pg", "tasks": [ "hba", "config" ]},

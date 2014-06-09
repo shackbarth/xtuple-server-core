@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-pg-hba",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "xTuple Server Task [pg.hba]: write postgres hba configuration",
   "main": "index.js",
   "scripts": {
