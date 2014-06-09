@@ -3,7 +3,7 @@ var lib = require('xtuple-server-lib'),
   rimraf = require('rimraf'),
   path = require('path'),
   _ = require('lodash'),
-  prefix = '~/.xtuple';
+  prefix = path.resolve(lib.util.getUserHome(), '.xtuple');
 
 /**
  * Sets up system file and directory paths
@@ -20,6 +20,9 @@ _.extend(exports, lib.task, /** @exports xtuple-server-dev-paths */ {
 
   /** @override */
   beforeInstall: function (options) {
+    options.sys || (options.sys = { });
+    options.sys.paths || (options.sys.paths = { });
+
     exports.definePaths(options);
   },
 
@@ -55,10 +58,10 @@ _.extend(exports, lib.task, /** @exports xtuple-server-dev-paths */ {
     // other system paths
     options.xt.logdir = path.resolve(exports.varLog, 'xtuple', version, name);
     options.pg.logdir = path.resolve(exports.varLog, 'postgresql');
-    options.xt.socketdir = path.resolve(exports.varRun, 'postgresql');
+    options.xt.socketdir = path.resolve('/var/run/postgresql');
     options.xt.rundir = path.resolve(exports.varRun, 'xtuple', version, name);
     options.xt.statedir = path.resolve(exports.varLibXtuple, version, name);
-    options.sys.sbindir = path.resolve(usrSbin, 'xtuple/', version, name);
+    options.sys.sbindir = path.resolve(exports.usrSbin, 'xtuple', version, name);
     options.sys.htpasswdfile = path.resolve('/etc/nginx/.htpasswd-xtuple');
 
     // repositories
