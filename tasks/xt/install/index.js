@@ -61,12 +61,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
       if (rsync.code !== 0) {
         throw new Error(JSON.stringify(rsync, null, 2));
       }
-      /*
-      fs.symlinkSync(
-        path.resolve(template.path, 'node_modules'),
-        path.resolve(userSourcePath, 'node_modules')
-      );
-      */
     });
   },
 
