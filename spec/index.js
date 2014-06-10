@@ -10,6 +10,7 @@ describe('xTuple Installer', function () {
   global.options = {
       planName: 'install-pilot',
       xt: {
+        name: 'nonuser',
         version: '4.4.1',
         demo: true
       },
