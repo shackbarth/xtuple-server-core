@@ -36,7 +36,8 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-policy */ {
 
   /** @protected */
   createUserPolicy: function (options) {
-    exec('usermod -a -G postgres,xtuser {xt.name}'.format(options)),
+    exec('usermod -a -G www-data,ssl-cert,postgres,xtuser {xt.name}'.format(options)),
     exec('chown -R {xt.name}:xtuser ~/.xtuple'.format(options));
+    exec('chown -R {xt.name}:xtuser /var/run/postgresql'.format(options));
   }
 });
