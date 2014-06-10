@@ -41,6 +41,12 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
         options.xt.nodeBin = path.resolve(options.xt.nodePath, 'node');
         options.xt.npmBin = path.resolve(options.xt.nodePath, 'npm');
 
+        console.log(exec('n bin '+ options.xt.nodeVersion).stdout);
+        console.log(options.xt.nodeVersion);
+        console.log(options.xt.nodePath);
+        console.log(options.xt.nodeBin);
+        console.log(options.xt.npmBin);
+
         template.npm = options.xt.npmBin;
         exec('cd {path} && {npm} install'.format(template));
 

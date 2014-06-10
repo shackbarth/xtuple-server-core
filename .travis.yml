@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "0.10.28"
+  - "0.10.29"
     #- "0.11"
 
 env:
@@ -14,7 +14,6 @@ matrix:
 
 before_install:
   - rm -rf ~/.nvm
-  - export NODE_PATH=/usr/local/lib/node_modules
   - export XT_NODE_VERSION=$TRAVIS_NODE_VERSION
   - sudo -E bash bootstrap/bootstrap.sh --no-installer
   - sudo /usr/local/bin/npm install node-gyp -g
@@ -36,6 +35,5 @@ after_failure:
   - sudo cat /etc/xtuple/4.4.1/xtmocha/services/services.json
   - sudo cat /etc/xtuple/4.4.1/xtmocha/install-arguments.json
   - sudo cat /etc/xtuple/4.4.1/xtmocha/install-results.json
-  - sudo cat /usr/local/xtuple/.pm2/dump.pm2
   - sudo cat npm-debug.log
   - sudo cat install.log
