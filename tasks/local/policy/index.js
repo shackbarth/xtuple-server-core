@@ -7,19 +7,16 @@ var lib = require('xtuple-server-lib'),
 /**
  * Setup proper permissions and ownership for xTuple files and paths
  */
-_.extend(exports, lib.task, /** @exports xtuple-server-dev-policy */ {
+_.extend(exports, lib.task, /** @exports xtuple-server-local-policy */ {
 
   /** @override */
   beforeInstall: function (options) {
     options.sys || (options.sys = { });
     options.sys.policy || (options.sys.policy = { });
 
-    var userBlacklist = [
-      'xtuple', 'xtadmin', 'xtremote', 'root', 'admin', 'vagrant', 'postgres', 'node'
-    ];
-    if (_.contains(userBlacklist, options.xt.name)) {
-      throw new Error('Name of xTuple instance is reserved for system use: '+ options.xt.name +
-        '. Please provide a different name.');
+    options.xt.name = process.env.SUDO_USER;
+    if (_.isEmpty(options.xt.name)) {
+      throw new Error('There is no SUDO_USER value set. I don\'t know why this would be. Please file an issue');
     }
   },
 
@@ -39,7 +36,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-dev-policy */ {
 
   /** @protected */
   createUserPolicy: function (options) {
-    exec('usermod -a -G postgres,xtuser $USER'.format(options)),
-    exec('chown -R $USER:xtuser ~/.xtuple');
+    exec('usermod -a -G postgres,xtuser {xt.name}'.format(options)),
+    exec('chown -R {xt.name}:xtuser ~/.xtuple'.format(options));
   }
 });

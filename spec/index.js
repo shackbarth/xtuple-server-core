@@ -10,7 +10,6 @@ describe('xTuple Installer', function () {
   global.options = {
       planName: 'install-pilot',
       xt: {
-        name: 'xtmocha',
         version: '4.4.1',
         demo: true
       },
@@ -29,7 +28,7 @@ describe('xTuple Installer', function () {
 
   // palindromic install plans are my favorite kinds of install plans
   global.installPlan = [
-    {name: 'dev', tasks: [ 'paths', 'policy' ]},
+    {name: 'local', tasks: [ 'paths', 'policy' ]},
     {name: 'pg', tasks: [ 'cluster' ]},
     {name: 'nginx', tasks: [ 'ssl', 'site', 'hosts' ]},
     {name: 'pg', tasks: [ 'hba', 'config' ]},

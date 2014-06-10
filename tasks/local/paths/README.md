@@ -1,3 +1,3 @@
-# xtuple-server-dev-paths module
+# xtuple-server-local-paths module
 
 ### See <https://github.com/xtuple/xtuple-server/wiki>
