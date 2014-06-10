@@ -18,7 +18,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
 
   /** @override */
   executeTask: function (options) {
-    exports.writeBuildConfig(options);
     exports.writeRunConfig(options);
   },
 
@@ -27,8 +26,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
   },
 
   writeBuildConfig: function (options) {
-    // TODO safer clone stringify/parse; circular ref currently
-    var buildOptions = _.clone(options);
+    var buildOptions = JSON.parse(JSON.stringify(options));
 
     buildOptions.xt = _.extend({ }, options.xt, {
       password: options.xt.adminpw,

@@ -24,6 +24,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
     options.sys.paths || (options.sys.paths = { });
 
     options.xt.name = process.env.SUDO_USER;
+    options.xt.name = process.env.SUDO_USER;
     if (_.isEmpty(options.xt.name)) {
       throw new Error('There is no SUDO_USER value set. I don\'t know why this would be. Please file an issue');
     }
@@ -47,18 +48,15 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
     // node server/config stuff
     options.xt.configdir = path.resolve(exports.etcXtuple, version, name);
     options.xt.configfile = path.resolve(options.xt.configdir, 'config.js');
-    options.xt.buildconfigfile = path.resolve(options.xt.configdir, 'build/config.js');
+    //options.xt.buildconfigfile = path.resolve(options.xt.configdir, 'build/config.js');
     options.xt.ssldir = path.resolve(exports.etcXtuple, version, name, 'ssl');
     options.xt.rand64file = path.resolve(exports.etcXtuple, version, name, 'rand64.txt');
     options.xt.key256file = path.resolve(exports.etcXtuple, version, name, 'key256.txt');
-    options.xt.userhome = path.resolve(exports.usrLocal, options.xt.name);
-    options.xt.usersrc = path.resolve(options.xt.userhome, options.xt.version, 'xtuple');
-    options.xt.buildconfigfile = path.resolve(options.xt.configdir, 'build/config.js');
+    options.xt.userhome = lib.util.getUserHome();
+    options.xt.usersrc = process.cwd();
 
     // shared config (per account)
     options.xt.homedir = path.resolve(exports.usrLocalXtuple);
-    options.xt.pm2dir = path.resolve(options.xt.homedir, '.pm2');
-    options.xt.userPm2dir = path.resolve(options.xt.userhome, '.pm2');
 
     // other system paths
     options.xt.logdir = path.resolve(exports.varLog, 'xtuple', version, name);
@@ -70,10 +68,9 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
     options.sys.htpasswdfile = path.resolve('/etc/nginx/.htpasswd-xtuple');
 
     // repositories
-    options.xt.srcdir = path.resolve(options.xt.homedir, options.xt.version);
-    options.xt.coredir = path.resolve(options.xt.srcdir, 'xtuple');
+    options.xt.srcdir = path.resolve(options.xt.usersrc, '..');
+    options.xt.coredir = options.xt.usersrc;
     options.xt.extdir = path.resolve(options.xt.srcdir, 'xtuple-extensions');
-    options.xt.privatedir = path.resolve(options.xt.srcdir, 'private-extensions');
 
     options.pg.snapshotdir = path.resolve(exports.varLibXtuple, options.xt.version, options.xt.name, 'snapshots');
   },
@@ -84,8 +81,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
    */
   createPaths: function (options) {
     exec('mkdir -p ' + options.xt.userhome);
-    exec('mkdir -p ' + options.xt.pm2dir);
-    exec('mkdir -p ' + options.xt.userPm2dir);
     exec('mkdir -p ' + options.pg.snapshotdir);
 
     exec('mkdir -p ' + options.xt.configdir);

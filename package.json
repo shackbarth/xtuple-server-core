@@ -71,14 +71,14 @@
     "enterprise"
   ],
   "engines": {
-    "node": "0.10.28"
+    "node": ">=0.10.28"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/xtuple/xtuple-server.git"
   },
   "author": "Travis Webb <travis@xtuple.com>",
-  "license": "GPL",
+  "license": "MPL",
   "bugs": {
     "url": "https://github.com/xtuple/xtuple-server/issues"
   }
