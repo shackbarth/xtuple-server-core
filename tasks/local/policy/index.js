@@ -13,11 +13,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-policy */ {
   beforeInstall: function (options) {
     options.sys || (options.sys = { });
     options.sys.policy || (options.sys.policy = { });
-
-    options.xt.name = process.env.SUDO_USER;
-    if (_.isEmpty(options.xt.name)) {
-      throw new Error('There is no SUDO_USER value set. I don\'t know why this would be. Please file an issue');
-    }
   },
 
   /** @override */
