@@ -23,6 +23,11 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
     options.sys || (options.sys = { });
     options.sys.paths || (options.sys.paths = { });
 
+    options.xt.name = process.env.SUDO_USER;
+    if (_.isEmpty(options.xt.name)) {
+      throw new Error('There is no SUDO_USER value set. I don\'t know why this would be. Please file an issue');
+    }
+
     exports.definePaths(options);
   },
 
