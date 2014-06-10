@@ -84,7 +84,7 @@ describe('xTuple Installer', function () {
       });
       it('should create empty objects for tasks', function () {
         assert.isObject(global.options.xt.config);
-        assert.isObject(global.options.dev.paths);
+        assert.isObject(global.options.local.paths);
         assert.isObject(global.options.pg.config);
       });
     });
