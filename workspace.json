@@ -1,0 +1,21 @@
+{
+  "links": {
+    "xtuple-server-local-paths": "tasks/local/paths",
+    "xtuple-server-local-policy": "tasks/local/policy",
+    "xtuple-server-lib": "lib",
+    "xtuple-server-nginx-hosts": "tasks/nginx/hosts",
+    "xtuple-server-nginx-site": "tasks/nginx/site",
+    "xtuple-server-nginx-ssl": "tasks/nginx/ssl",
+    "xtuple-server-pg-backup": "tasks/pg/backup",
+    "xtuple-server-pg-cluster": "tasks/pg/cluster",
+    "xtuple-server-pg-config": "tasks/pg/config",
+    "xtuple-server-pg-fork": "tasks/pg/fork",
+    "xtuple-server-pg-hba": "tasks/pg/hba",
+    "xtuple-server-pg-rename": "tasks/pg/rename",
+    "xtuple-server-pg-restore": "tasks/pg/restore",
+    "xtuple-server-sys-report": "tasks/sys/report",
+    "xtuple-server-xt-config": "tasks/xt/config",
+    "xtuple-server-xt-database": "tasks/xt/database",
+    "xtuple-server-xt-install": "tasks/xt/install"
+  }
+}
