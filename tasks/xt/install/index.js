@@ -11,6 +11,10 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
   /** @override */
   beforeInstall: function (options) {
     options.xt.scalarversion = options.xt.version.replace(/\./g, '');
+
+    if (fs.existsSync(path.resolve(options.xt.srcdir, 'xtuple'))) {
+      exports.setNodeVersions(options);
+    }
   },
 
   /** @override */
@@ -36,17 +40,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
         var clone = exec('git clone --recursive https://github.com/xtuple/{repo}.git {path}'.format(template)),
           checkout = exec(('cd {path} && git checkout '+ options.xt.repoHash).format(template));
 
-        options.xt.nodeVersion = exports.getPackageNodeVersion(options);
-        options.xt.nodePath = path.dirname(exec('n bin '+ options.xt.nodeVersion).stdout);
-        options.xt.nodeBin = path.resolve(options.xt.nodePath, 'node');
-        options.xt.npmBin = path.resolve(options.xt.nodePath, 'npm');
-
-        console.log(exec('n bin '+ options.xt.nodeVersion).stdout);
-        console.log(options.xt.nodeVersion);
-        console.log(options.xt.nodePath);
-        console.log(options.xt.nodeBin);
-        console.log(options.xt.npmBin);
-
+        exports.setNodeVersions(options);
         template.npm = options.xt.npmBin;
         exec('cd {path} && {npm} install'.format(template));
 
@@ -98,5 +92,18 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
   afterTask: function (options) {
     exec('chown -R {xt.name}:{xt.name} {xt.userhome}'.format(options));
     exec('chmod -R 700 {xt.userhome}'.format(options));
+  },
+
+  setNodeVersions: function (options) {
+    options.xt.nodeVersion = exports.getPackageNodeVersion(options);
+    options.xt.nodePath = path.dirname(exec('n bin '+ options.xt.nodeVersion).stdout);
+    options.xt.nodeBin = path.resolve(options.xt.nodePath, 'node');
+    options.xt.npmBin = path.resolve(options.xt.nodePath, 'npm');
+
+    console.log(exec('n bin '+ options.xt.nodeVersion).stdout);
+    console.log(options.xt.nodeVersion);
+    console.log(options.xt.nodePath);
+    console.log(options.xt.nodeBin);
+    console.log(options.xt.npmBin);
   }
 });

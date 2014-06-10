@@ -2,7 +2,6 @@
   "links": {
     "xtuple-server-local-paths": "tasks/local/paths",
     "xtuple-server-local-policy": "tasks/local/policy",
-    "xtuple-server-lib": "lib",
     "xtuple-server-nginx-hosts": "tasks/nginx/hosts",
     "xtuple-server-nginx-site": "tasks/nginx/site",
     "xtuple-server-nginx-ssl": "tasks/nginx/ssl",
@@ -16,6 +15,7 @@
     "xtuple-server-sys-report": "tasks/sys/report",
     "xtuple-server-xt-config": "tasks/xt/config",
     "xtuple-server-xt-database": "tasks/xt/database",
-    "xtuple-server-xt-install": "tasks/xt/install"
+    "xtuple-server-xt-install": "tasks/xt/install",
+    "xtuple-server-lib": "lib"
   }
 }

@@ -25,7 +25,7 @@ install:
   - sudo /usr/local/bin/npm install -g
 
 script: 
-  - /usr/local/bin/npm test
+  - sudo /usr/local/bin/npm test
 
 after_failure:
   - env
