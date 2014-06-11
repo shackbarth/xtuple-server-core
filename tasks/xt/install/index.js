@@ -37,16 +37,16 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
 
       if (!fs.existsSync(template.path)) {
         var clone = exec('git clone --recursive https://github.com/xtuple/{repo}.git {path}'.format(template)),
-          checkout = exec(('cd {path} && git checkout '+ options.xt.repoHash).format(template));
-
-        exports.setNodeVersions(options);
-        template.npm = options.xt.npmBin;
-        exec('cd {path} && {npm} install'.format(template));
+          checkout = exec(('cd {path} && git fetch && git checkout '+ options.xt.repoHash).format(template));
 
         if (clone.code !== 0) {
           throw new Error(JSON.stringify(clone, null, 2));
         }
       }
+
+      exports.setNodeVersions(options);
+      template.npm = options.xt.npmBin;
+      exec('cd {path} && {npm} install'.format(template));
 
       if (options.xt.usersrc !== options.xt.coredir) {
 
