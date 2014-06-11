@@ -12,7 +12,6 @@ matrix:
 
 before_install:
   - sudo bash bootstrap.sh
-  - sudo /usr/local/bin/npm install node-gyp -g
   - git clone git@github.com:xtuple/xtuple.git --recursive 
   - sudo rm -rf ~/.npm ~/tmp ~/.nvm
 
