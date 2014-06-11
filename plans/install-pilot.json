@@ -1,9 +1,8 @@
 [
-  {"name": "sys", "tasks": [ "paths", "policy" ]},
+  {"name": "local", "tasks": [ "paths", "policy" ]},
   {"name": "pg", "tasks": [ "cluster" ]},
-  {"name": "nginx", "tasks": [ "ssl", "site", "etchosts" ]},
-  {"name": "pg", "tasks": [ "hba", "tuner", "config" ]},
-  {"name": "xt", "tasks": [ "clone", "serverconfig", "database" ]},
-  {"name": "sys", "tasks": [ "cups", "service", "report", "ssh" ]},
-  {"name": "pg", "tasks": [ "snapshotmgr" ]}
+  {"name": "nginx", "tasks": [ "ssl", "site", "hosts" ]},
+  {"name": "pg", "tasks": [ "hba", "config" ]},
+  {"name": "xt", "tasks": [ "install", "config", "database" ]},
+  {"name": "local", "tasks": [ "report" ]}
 ]

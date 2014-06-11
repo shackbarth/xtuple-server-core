@@ -1,24 +1,25 @@
 var assert = require('chai').assert,
   exec = require('execSync').exec,
   _ = require('lodash'),
-  lib = require('../lib'),
+  lib = require('xtuple-server-lib'),
   path = require('path'),
   fs = require('fs'),
-  planner = require('../lib/planner');
+  planner = lib.planner;
 
 describe('xTuple Installer', function () {
   global.options = {
       planName: 'install-pilot',
+      local: {
+        workspace: path.resolve(process.cwd(), 'xtuple')
+      },
       xt: {
-        name: 'xtmocha',
+        name: 'nonuser',
         version: '4.4.1',
         demo: true
       },
       pg: {
         version: process.env.XT_PG_VERSION,
-        capacity: 32,
-        forceoverwrite: true,
-        pilot: true
+        capacity: 32
       }
     };
 
@@ -31,13 +32,12 @@ describe('xTuple Installer', function () {
 
   // palindromic install plans are my favorite kinds of install plans
   global.installPlan = [
-    {name: 'sys', tasks: [ 'paths', 'policy' ]},
-    {name: 'xt', tasks: [ 'clone' ]},
+    {name: 'local', tasks: [ 'paths', 'policy' ]},
     {name: 'pg', tasks: [ 'cluster' ]},
-    {name: 'nginx', tasks: [ 'ssl', 'site', 'etchosts' ]},
-    {name: 'pg', tasks: [ 'hba', 'tuner', 'config' ]},
-    {name: 'xt', tasks: [ 'serverconfig', 'testconfig', 'database' ]},
-    {name: 'sys', tasks: [ 'cups', 'service', 'report', 'ssh' ]}
+    {name: 'nginx', tasks: [ 'ssl', 'site', 'hosts' ]},
+    {name: 'pg', tasks: [ 'hba', 'config' ]},
+    {name: 'xt', tasks: [ 'install', 'config', 'database' ]},
+    {name: 'sys', tasks: [ 'report' ]}
   ];
 
   describe('planner', function () {
@@ -74,11 +74,6 @@ describe('xTuple Installer', function () {
     });
   });
 
-  // XXX remove this check when zombie is fixed in node 0.10
-  //if (!!process.env.TRAVIS && (process.env.XT_NODE_VERSION || '').indexOf('0.10') === -1) {
-    //global.installPlan.push({name: 'xt', tasks: [ 'testconfig', 'runtests' ]});
-  //}
-
   describe('setup', function () {
     describe('#verifyOptions, #compileOptions', function () {
       before(function () {
@@ -91,8 +86,8 @@ describe('xTuple Installer', function () {
         assert.equal(global.options.xt.edition, 'core');
       });
       it('should create empty objects for tasks', function () {
-        assert.isObject(global.options.xt.serverconfig);
-        assert.isObject(global.options.sys.paths);
+        assert.isObject(global.options.xt.config);
+        assert.isObject(global.options.local.paths);
         assert.isObject(global.options.pg.config);
       });
     });

@@ -1,7 +1,7 @@
 var assert = require('chai').assert,
   _ = require('lodash'),
   exec = require('execSync').exec,
-  lib = require('../../lib'),
+  lib = require('xtuple-server-lib'),
   options = global.options;
 
 it('can parse a pristine pg_hba', function () {

@@ -1,3 +1,0 @@
-kernel.shmmax={shmmax}
-kernel.shmall={shmall}
-kernel.sem={semmsl} {semmns} {semopm} {semmni}
