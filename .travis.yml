@@ -12,6 +12,7 @@ matrix:
     - node_js: "0.11"
 
 before_install:
+  - sudo rm -rf ~/.npm ~/tmp ~/.nvm
   - export XT_NODE_VERSION=$TRAVIS_NODE_VERSION
   - sudo -E bash bootstrap/bootstrap.sh --no-installer
   - sudo /usr/local/bin/npm install node-gyp -g
