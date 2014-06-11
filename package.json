@@ -73,7 +73,8 @@
   ],
   "scripts": {
     "test": "./node_modules/.bin/mocha spec -R spec -b",
-    "setup": "xtuple-server setup"
+    "setup": "xtuple-server setup",
+    "prepublish": "npm dedupe"
   },
   "bin": {
     "xtuple-server": "./server-cli.js",
