@@ -1,19 +1,17 @@
 language: node_js
 node_js:
   - "0.10.28"
-  - "0.11"
 
 env:
   - XT_PG_VERSION="9.3"
 
 matrix:
   fast_finish: true
-  allow_failures:
-    - node_js: "0.11"
+  #allow_failures:
+  #- node_js: "0.11"
 
 before_install:
-  - export XT_NODE_VERSION=$TRAVIS_NODE_VERSION
-  - sudo -E bash bootstrap/bootstrap.sh --no-installer
+  - sudo bash bootstrap.sh
   - sudo /usr/local/bin/npm install node-gyp -g
   - git clone git@github.com:xtuple/xtuple.git --recursive 
   - sudo rm -rf ~/.npm ~/tmp ~/.nvm
@@ -26,4 +24,5 @@ script:
 
 after_failure:
   - sudo cat npm-debug.log
+  - sudo cat bootstrap.log
   - sudo cat install.log
