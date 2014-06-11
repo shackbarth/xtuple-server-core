@@ -1,24 +1,21 @@
 language: node_js
 node_js:
   - "0.10.28"
-    #- "0.11"
+  - "0.11"
 
 env:
   - XT_PG_VERSION="9.3"
 
 matrix:
   fast_finish: true
-  #allow_failures:
-    #- node_js: "0.10.28"
-    #- node_js: "0.11"
+  allow_failures:
+    - node_js: "0.11"
 
 before_install:
-  - rm -rf ~/.nvm
   - export XT_NODE_VERSION=$TRAVIS_NODE_VERSION
   - sudo -E bash bootstrap/bootstrap.sh --no-installer
   - sudo /usr/local/bin/npm install node-gyp -g
-  - rm -rf ~/tmp
-  - rm -rf ~/.npm
+  - git clone git@github.com:xtuple/xtuple.git --recursive 
 
 install:
   - /usr/local/bin/npm install
@@ -28,12 +25,5 @@ script:
   - sudo /usr/local/bin/npm test
 
 after_failure:
-  - env
-  - sudo cat /etc/postgresql/$XT_PG_VERSION/xtmocha/postgresql.conf
-  - sudo cat /etc/postgresql/$XT_PG_VERSION/xtmocha/pg_hba.conf
-  - sudo cat /etc/xtuple/4.4.1/xtmocha/config.js
-  - sudo cat /etc/xtuple/4.4.1/xtmocha/services/services.json
-  - sudo cat /etc/xtuple/4.4.1/xtmocha/install-arguments.json
-  - sudo cat /etc/xtuple/4.4.1/xtmocha/install-results.json
   - sudo cat npm-debug.log
   - sudo cat install.log

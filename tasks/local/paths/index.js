@@ -18,6 +18,22 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
   varLibXtuple: path.resolve(prefix, 'var/lib/xtuple'),
   varRun: path.resolve(prefix, 'var/run'),
 
+  options: {
+    workspace: {
+      optional: '[path]',
+      description: 'The path of the local workspace in which to install',
+      value: process.cwd(),
+      validate: function (value) {
+        var pkg = require(path.resolve(value, 'package'));
+        if (pkg.name !== 'xtuple') {
+          throw new Error('I think you you\'re running this command from the wrong directory');
+        }
+
+        return true;
+      }
+    }
+  },
+
   /** @override */
   beforeInstall: function (options) {
     options.sys || (options.sys = { });
@@ -48,12 +64,11 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
     // node server/config stuff
     options.xt.configdir = path.resolve(exports.etcXtuple, version, name);
     options.xt.configfile = path.resolve(options.xt.configdir, 'config.js');
-    //options.xt.buildconfigfile = path.resolve(options.xt.configdir, 'build/config.js');
     options.xt.ssldir = path.resolve(exports.etcXtuple, version, name, 'ssl');
     options.xt.rand64file = path.resolve(exports.etcXtuple, version, name, 'rand64.txt');
     options.xt.key256file = path.resolve(exports.etcXtuple, version, name, 'key256.txt');
     options.xt.userhome = lib.util.getUserHome();
-    options.xt.usersrc = process.cwd();
+    options.xt.usersrc = options.local.workspace;
 
     // shared config (per account)
     options.xt.homedir = path.resolve(exports.usrLocalXtuple);

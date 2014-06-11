@@ -36,7 +36,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
         }, options);
 
       if (!fs.existsSync(template.path)) {
-
         var clone = exec('git clone --recursive https://github.com/xtuple/{repo}.git {path}'.format(template)),
           checkout = exec(('cd {path} && git checkout '+ options.xt.repoHash).format(template));
 

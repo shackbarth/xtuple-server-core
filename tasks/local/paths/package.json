@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-local-paths",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "description": "xTuple Server Task [local.paths]: setup paths for local server mode",
   "main": "index.js",
   "scripts": {
