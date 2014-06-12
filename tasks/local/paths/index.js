@@ -26,7 +26,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
       validate: function (value) {
         var pkg = require(path.resolve(value, 'package'));
         if (pkg.name !== 'xtuple') {
-          throw new Error('I think you you\'re running this command from the wrong directory');
+          throw new Error('Please run this command from the directory of your xtuple repository, or correctly set --local-workspace');
         }
 
         return true;
