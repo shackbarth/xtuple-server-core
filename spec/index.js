@@ -9,6 +9,9 @@ var assert = require('chai').assert,
 describe('xTuple Installer', function () {
   global.options = {
       planName: 'install-pilot',
+      local: {
+        workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
+      },
       xt: {
         name: 'nonuser',
         version: '4.4.1',
