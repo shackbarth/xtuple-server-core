@@ -52,8 +52,8 @@ install_debian () {
 
 install_node () {
   log "Installing node.js..."
-  mkdir -p /usr/local/{share/man,bin,lib/node,include/node}
-  chmod -R a+w /usr/local/{share/man,bin,lib/node,include/node}
+  mkdir -p /usr/local/{share/man,bin,lib/node,lib/node_modules,include/node}
+  chmod -R a+w /usr/local/{share/man,bin,lib/node*,include/node*}
   wget git.io/FsmDSw -qO n.bash
   chmod +x n.bash
   mv n.bash /usr/bin/n
