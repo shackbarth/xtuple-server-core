@@ -1,4 +1,5 @@
 before_install:
+  - rm -rf ~/.nvm
   - sudo bash bootstrap.sh
 
 install:
