@@ -1,24 +1,11 @@
-language: node_js
-node_js:
-  - "0.10.28"
-
-env:
-  - XT_PG_VERSION="9.3"
-
-matrix:
-  fast_finish: true
-  #allow_failures:
-  #- node_js: "0.11"
-
 before_install:
   - sudo bash bootstrap.sh
-  - sudo rm -rf ~/.npm ~/tmp ~/.nvm
 
 install:
-  - /usr/local/bin/npm install
+  - npm install
 
 script: 
-  - sudo /usr/local/bin/npm test
+  - sudo npm test
 
 after_failure:
   - sudo cat npm-debug.log
