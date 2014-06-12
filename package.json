@@ -73,12 +73,11 @@
     "server-cli.js"
   ],
   "scripts": {
-    "test": "./node_modules/.bin/mocha spec -R spec -b",
-    "setup": "xtuple-server setup",
+    "test": "node_modules/.bin/mocha spec -R spec -b",
     "prepublish": "npm dedupe"
   },
   "bin": {
-    "xtuple-server": "./server-cli.js"
+    "xtuple-server": "server-cli.js"
   },
   "preferGlobal": true,
   "os": [
