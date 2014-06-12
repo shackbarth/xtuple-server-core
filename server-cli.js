@@ -41,7 +41,7 @@ if (process.argv.length < 3) {
   process.exit(0);
 }
 
-var xtupleScripts = process.env.XTSERVER_SRCDIR || '/usr/local/lib/node_modules/xtuple-scripts/',
+var xtupleScripts = process.env.XTSERVER_SRCDIR || '/usr/local/lib/node_modules/xtuple-server/',
   planFile = path.resolve(xtupleScripts, 'plans', process.argv[2] + '.json'),
   planExists = fs.existsSync(planFile),
   plan = planExists && require(planFile);
