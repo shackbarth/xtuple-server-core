@@ -70,9 +70,7 @@
   ],
   "devDependencies": {
     "chai": "~1.9.0",
-    "mocha": "~1.17.1"
-  },
-  "optionalDependencies": {
+    "mocha": "~1.17.1",
     "xtuple": "^4.5.0"
   },
   "files": [
