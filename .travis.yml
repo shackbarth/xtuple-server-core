@@ -1,7 +1,6 @@
 language: c
 
 before_install:
-  - rm -rf ~/.nvm ~/.npm ~/tmp
   - sudo bash bootstrap.sh
   - n stable
 

@@ -56,8 +56,8 @@ install_node () {
   chmod +x n.bash
   mv n.bash /usr/bin/n
   n 0.8.26
-  n stable
   n latest
+  n stable
   mkdir -p /usr/local/{share/man,bin,lib/node,lib/node_modules,include/node}
   chmod -R a+w /usr/local/{share/man,bin,lib/node*,include/node*,n,ChangeLog,LICENSE,README.md}
 }
