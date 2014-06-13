@@ -81,6 +81,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
             }
           }
         }
+      });
     });
   },
 
