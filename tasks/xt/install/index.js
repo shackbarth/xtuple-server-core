@@ -15,7 +15,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
     options.xt.scalarversion = options.xt.version.replace(/\./g, '');
 
     if (fs.existsSync(path.resolve(options.xt.coredir))) {
-      exports.setNodeVersions(options);
+      //exports.setNodeVersions(options);
     }
   },
 
@@ -64,7 +64,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
           }
 
           template.npm = options.xt.npmBin;
-          exec('cd {path} && {npm} install --production'.format(template));
+          exec('cd {path} && npm install --production'.format(template));
 
           if (options.xt.usersrc !== options.xt.coredir) {
             // copy main repo files to user's home directory
