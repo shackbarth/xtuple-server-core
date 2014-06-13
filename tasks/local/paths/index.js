@@ -25,7 +25,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
       value: process.cwd(),
       validate: function (value) {
         var pkg = require(path.resolve(value, 'package'));
-        if (pkg.name !== 'xtuple') {
+        if (!pkg && pkg.name !== 'xtuple') {
           throw new Error('Please run this command from the directory of your xtuple repository, or correctly set --local-workspace');
         }
 
@@ -39,7 +39,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
     options.sys || (options.sys = { });
     options.sys.paths || (options.sys.paths = { });
 
-    options.xt.name = process.env.SUDO_USER;
     options.xt.name = process.env.SUDO_USER;
     if (_.isEmpty(options.xt.name)) {
       throw new Error('There is no SUDO_USER value set. I don\'t know why this would be. Please file an issue');
