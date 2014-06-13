@@ -2,9 +2,6 @@ before_install:
   - rm -rf ~/.nvm
   - sudo bash bootstrap.sh
 
-install:
-  - npm install
-
 script: 
   - sudo npm test
 
