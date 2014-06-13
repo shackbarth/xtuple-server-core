@@ -5,6 +5,9 @@ before_install:
   - sudo bash bootstrap.sh
   - n stable
 
+install:
+  - npm install
+
 script: 
   - sudo npm test
 
