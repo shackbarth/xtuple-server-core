@@ -80,7 +80,7 @@
   ],
   "scripts": {
     "test": "node_modules/.bin/mocha spec -R spec -b",
-    "prepublish": "npm dedupe"
+    "prepublish": "npm dedupe --silent"
   },
   "bin": {
     "xtuple-server": "server-cli.js"
