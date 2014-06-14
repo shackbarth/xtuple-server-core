@@ -1,6 +1,8 @@
+language: c
+
 before_install:
-  - rm -rf ~/.nvm
   - sudo bash bootstrap.sh
+  - n stable
 
 install:
   - npm install
@@ -9,6 +11,7 @@ script:
   - sudo npm test
 
 after_failure:
+  - env
   - sudo cat npm-debug.log
   - sudo cat bootstrap.log
   - sudo cat install.log

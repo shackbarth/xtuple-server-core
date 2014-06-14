@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server",
-  "version": "0.9.27",
+  "version": "0.9.31",
   "description": "xTuple Server",
   "dependencies": {
     "commander": "^2.2.0",
@@ -8,21 +8,24 @@
     "lodash": "~2.4.1",
     "mkdirp": "~0.5.0",
     "moment": "^2.6.0",
+    "npm": "^1.4.15",
     "q": "~1.0.1",
     "requireindex": "~1.1.0",
     "rimraf": "~2.2.6",
     "semver": "~2.2.1",
     "string": "~1.8.1",
     "string-format": "^0.2.1",
+    "sync": "^0.2.2",
+    "xtuple-server-lib": "^0.9.0",
     "xtuple-server-local-paths": "^0.9.0",
     "xtuple-server-local-policy": "^0.9.0",
-    "xtuple-server-lib": "^0.9.0",
     "xtuple-server-nginx-hosts": "^0.9.0",
     "xtuple-server-nginx-site": "^0.9.0",
     "xtuple-server-nginx-ssl": "^0.9.1",
     "xtuple-server-pg-backup": "^0.9.0",
     "xtuple-server-pg-cluster": "^0.9.0",
     "xtuple-server-pg-config": "^0.9.0",
+    "xtuple-server-pg-drop": "^0.9.0",
     "xtuple-server-pg-fork": "^0.9.0",
     "xtuple-server-pg-hba": "^0.9.0",
     "xtuple-server-pg-rename": "^0.9.0",
@@ -44,14 +47,14 @@
   ],
   "scripts": {
     "test": "node_modules/.bin/mocha spec -R spec -b",
-    "prepublish": "npm dedupe"
+    "prepublish": "npm dedupe --silent"
   },
   "bin": {
     "xtuple-server": "server-cli.js"
   },
   "preferGlobal": true,
   "os": [
-    "!win32"
+    "linux"
   ],
   "keywords": [
     "xtuple",
