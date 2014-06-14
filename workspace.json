@@ -8,6 +8,7 @@
     "xtuple-server-pg-backup": "tasks/pg/backup",
     "xtuple-server-pg-cluster": "tasks/pg/cluster",
     "xtuple-server-pg-config": "tasks/pg/config",
+    "xtuple-server-pg-drop": "tasks/pg/drop",
     "xtuple-server-pg-fork": "tasks/pg/fork",
     "xtuple-server-pg-hba": "tasks/pg/hba",
     "xtuple-server-pg-rename": "tasks/pg/rename",

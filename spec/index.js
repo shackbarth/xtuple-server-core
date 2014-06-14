@@ -10,7 +10,7 @@ describe('xTuple Installer', function () {
   global.options = {
       planName: 'install-pilot',
       local: {
-        workspace: path.resolve(process.cwd(), 'xtuple')
+        workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
       },
       xt: {
         name: 'nonuser',

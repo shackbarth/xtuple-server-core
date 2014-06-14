@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server",
-  "version": "0.9.18",
+  "version": "0.9.31",
   "description": "xTuple Server",
   "dependencies": {
     "commander": "^2.2.0",
@@ -8,21 +8,24 @@
     "lodash": "~2.4.1",
     "mkdirp": "~0.5.0",
     "moment": "^2.6.0",
+    "npm": "^1.4.15",
     "q": "~1.0.1",
     "requireindex": "~1.1.0",
     "rimraf": "~2.2.6",
     "semver": "~2.2.1",
     "string": "~1.8.1",
     "string-format": "^0.2.1",
+    "sync": "^0.2.2",
+    "xtuple-server-lib": "^0.9.0",
     "xtuple-server-local-paths": "^0.9.0",
     "xtuple-server-local-policy": "^0.9.0",
-    "xtuple-server-lib": "^0.9.0",
     "xtuple-server-nginx-hosts": "^0.9.0",
     "xtuple-server-nginx-site": "^0.9.0",
     "xtuple-server-nginx-ssl": "^0.9.1",
     "xtuple-server-pg-backup": "^0.9.0",
     "xtuple-server-pg-cluster": "^0.9.0",
     "xtuple-server-pg-config": "^0.9.0",
+    "xtuple-server-pg-drop": "^0.9.0",
     "xtuple-server-pg-fork": "^0.9.0",
     "xtuple-server-pg-hba": "^0.9.0",
     "xtuple-server-pg-rename": "^0.9.0",
@@ -32,9 +35,43 @@
     "xtuple-server-xt-database": "^0.9.0",
     "xtuple-server-xt-install": "^0.9.0"
   },
+  "bundledDependencies": [
+    "commander",
+    "execSync",
+    "lodash",
+    "mkdirp",
+    "moment",
+    "npm",
+    "q",
+    "requireindex",
+    "rimraf",
+    "semver",
+    "string",
+    "string-format",
+    "sync",
+    "xtuple-server-local-paths",
+    "xtuple-server-local-policy",
+    "xtuple-server-lib",
+    "xtuple-server-nginx-hosts",
+    "xtuple-server-nginx-site",
+    "xtuple-server-nginx-ssl",
+    "xtuple-server-pg-backup",
+    "xtuple-server-pg-cluster",
+    "xtuple-server-pg-config",
+    "xtuple-server-pg-drop",
+    "xtuple-server-pg-fork",
+    "xtuple-server-pg-hba",
+    "xtuple-server-pg-rename",
+    "xtuple-server-pg-restore",
+    "xtuple-server-sys-report",
+    "xtuple-server-xt-config",
+    "xtuple-server-xt-database",
+    "xtuple-server-xt-install"
+  ],
   "devDependencies": {
     "chai": "~1.9.0",
-    "mocha": "~1.17.1"
+    "mocha": "~1.17.1",
+    "xtuple": "^4.5.0"
   },
   "files": [
     "plans/",
@@ -42,17 +79,15 @@
     "server-cli.js"
   ],
   "scripts": {
-    "test": "./node_modules/.bin/mocha spec -R spec -b",
-    "setup": "xtuple-server setup"
+    "test": "node_modules/.bin/mocha spec -R spec -b",
+    "prepublish": "npm dedupe --silent"
   },
   "bin": {
-    "xtuple-server": "./server-cli.js",
-    "xtuple-healthfeed": "node_modules/pm2/lib/HttpInterface.js",
-    "xtupled": "node_modules/.bin/pm2"
+    "xtuple-server": "server-cli.js"
   },
   "preferGlobal": true,
   "os": [
-    "!win32"
+    "linux"
   ],
   "keywords": [
     "xtuple",
