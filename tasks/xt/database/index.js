@@ -12,11 +12,11 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
 
   options: {
     version: {
-      required: '<version>',
+      required: '[version]',
       description: 'xTuple Version'
     },
     name: {
-      required: '<name>',
+      required: '[name]',
       description: 'Name of the installation',
       validate: function (arg) {
         if (/\d/.test(arg)) {
