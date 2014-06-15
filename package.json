@@ -113,7 +113,7 @@
     "url": "git://github.com/xtuple/xtuple-server.git"
   },
   "author": "Travis Webb <travis@xtuple.com>",
-  "license": "MPL",
+  "license": "MPL-2.0",
   "bugs": {
     "url": "https://github.com/xtuple/xtuple-server/issues"
   }
