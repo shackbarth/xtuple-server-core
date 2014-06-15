@@ -29,7 +29,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
           throw new Error('Please run this command from the directory of your xtuple repository, or correctly set --local-workspace');
         }
 
-        return true;
+        return value;
       }
     }
   },
