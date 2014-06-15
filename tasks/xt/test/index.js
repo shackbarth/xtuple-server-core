@@ -15,6 +15,11 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-test */ {
     exports.writeLoginData(options);
   },
 
+  /** @override */
+  afterTask: function (options) {
+    options.xt.testdb = 'xtuple_demo';
+  },
+
   writeLoginData: function (options) {
     fs.writeFileSync(path.resolve(options.xt.usersrc, 'test/lib/login_data.json'), JSON.stringify({
       data: {

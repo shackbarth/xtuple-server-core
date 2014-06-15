@@ -1,5 +1,5 @@
 {
-  "description": "Install xTuple Pilot Instance",
+  "description": "Install xTuple Pilot Instance and Run Unit Tests",
   "plan": [
     {
       "name": "local",
@@ -19,7 +19,7 @@
     },
     {
       "name": "xt",
-      "tasks": [ "install", "config", "database" ]
+      "tasks": [ "install", "test", "config", "database" ]
     },
     {
       "name": "sys",
