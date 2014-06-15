@@ -88,5 +88,18 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
     exec('chmod 700 {xt.key256file}'.format(options));
     exec('chmod 700 {xt.rand64file}'.format(options));
     exec('chmod 700 {xt.configfile}'.format(options));
+  },
+
+  /**
+   * @override
+   * Link the written config to be the new 'default' config located in 
+   * node-datasource/config.js
+   */
+  afterInstall: function (options) {
+    var localConfig = path.resolve(options.xt.usersrc, 'node-datasource', 'config.js');
+    if (fs.existsSync(localConfig)) {
+      fs.unlinkSync(localConfig);
+    }
+    fs.symlinkSync(options.xt.configfile, localConfig);
   }
 });
