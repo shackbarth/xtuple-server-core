@@ -21,7 +21,7 @@
     "xtuple-server-local-policy": "^0.9.0",
     "xtuple-server-nginx-hosts": "^0.9.0",
     "xtuple-server-nginx-site": "^0.9.0",
-    "xtuple-server-nginx-ssl": "^0.9.1",
+    "xtuple-server-nginx-ssl": "^0.9.0",
     "xtuple-server-pg-backup": "^0.9.0",
     "xtuple-server-pg-cluster": "^0.9.0",
     "xtuple-server-pg-config": "^0.9.0",
@@ -33,7 +33,8 @@
     "xtuple-server-sys-report": "^0.9.0",
     "xtuple-server-xt-config": "^0.9.0",
     "xtuple-server-xt-database": "^0.9.0",
-    "xtuple-server-xt-install": "^0.9.0"
+    "xtuple-server-xt-install": "^0.9.0",
+    "xtuple-server-xt-test": "^0.9.0"
   },
   "bundledDependencies": [
     "commander",
@@ -66,7 +67,8 @@
     "xtuple-server-sys-report",
     "xtuple-server-xt-config",
     "xtuple-server-xt-database",
-    "xtuple-server-xt-install"
+    "xtuple-server-xt-install",
+    "xtuple-server-xt-test"
   ],
   "devDependencies": {
     "chai": "~1.9.0",
