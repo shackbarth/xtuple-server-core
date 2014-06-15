@@ -39,9 +39,14 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
     options.sys || (options.sys = { });
     options.sys.paths || (options.sys.paths = { });
 
+    options.xt.version = require(path.resolve(options.local.workspace, 'package')).version;
     options.xt.name = process.env.SUDO_USER;
+
     if (_.isEmpty(options.xt.name)) {
-      throw new Error('There is no SUDO_USER value set. I don\'t know why this would be. Please file an issue');
+      throw new Error('There is no SUDO_USER set. I don\'t know why this would be. Please file an issue');
+    }
+    if (_.isEmpty(options.xt.version)) {
+      throw new Error('There is no version set. I don\'t know why this would be. Please file an issue');
     }
 
     exports.definePaths(options);

@@ -28,6 +28,10 @@ _.each(plans, function (plan, name) {
   preparePlan(cmd, plan.plan, options)
 });
 
+program.command('*').action(function (cmd) {
+  console.error('Plan not found:', cmd);
+});
+
 program.parse(process.argv);
 
 /**
