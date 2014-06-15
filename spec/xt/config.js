@@ -8,9 +8,6 @@ describe('config.js', function () {
   it.skip('should be able to read config.js file', function () {
     assert.match(fs.canRead(options.xt.configfile));
   });
-  it('should set login user to admin', function () {
-    assert.match(options.xt.config.string, new RegExp('"user": "admin"'));
-  });
 });
 it.skip('should be able to read rand64 file', function () {
   assert.match(fs.canRead(options.xt.rand64file));
