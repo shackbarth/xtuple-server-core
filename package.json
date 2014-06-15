@@ -79,8 +79,7 @@
     "server-cli.js"
   ],
   "scripts": {
-    "test": "node_modules/.bin/mocha spec -R spec -b",
-    "prepublish": "npm dedupe --silent"
+    "test": "node_modules/.bin/mocha spec -R spec -b"
   },
   "bin": {
     "xtuple-server": "server-cli.js"
