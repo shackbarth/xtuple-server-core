@@ -12,29 +12,43 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
 
   options: {
     version: {
-      required: '[version]',
-      description: 'xTuple Version'
-    },
-    name: {
-      required: '[name]',
-      description: 'Name of the installation',
-      validate: function (arg) {
-        if (/\d/.test(arg)) {
-          throw new Error('xt.name cannot contain numbers');
+      optional: '[version]',
+      description: 'xTuple Version',
+      validate: function (value, options) {
+        if (_.isEmpty(value)) {
+          return require(path.resolve(options.local.workspace, 'package')).version;
+        }
+        if (_.isNumber(parseInt(value, 16))) {
+          return value;
+        }
+        if (semver.valid(value)) {
+          return value;
         }
 
-        return true;
+        throw new TypeError('Specified version is not valid: '+ value);
+      }
+    },
+    name: {
+      optional: '[name]',
+      description: 'Name of the installation',
+      validate: function (value) {
+        if (_.isEmpty(value)) {
+          return process.env.SUDO_USER;
+        }
+        if (/\d/.test(value)) {
+          throw new Error('xt.name cannot contain numbers');
+        }
       }
     },
     maindb: {
       optional: '[path]',
       description: 'Path to primary database .backup/.sql filename to use in production',
-      validate: function (arg) {
-        if (!_.isEmpty(arg) && !fs.existsSync(path.resolve(arg))) {
-          throw new Error('Invalid path for xt.maindb: '+ arg);
+      validate: function (value) {
+        if (!_.isEmpty(value) && !fs.existsSync(path.resolve(value))) {
+          throw new Error('Invalid path for xt.maindb: '+ value);
         }
 
-        return true;
+        return value;
       }
     },
     edition: {

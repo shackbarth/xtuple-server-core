@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-pg-restore",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "xTuple Server Task [pg.restore]: restore an xTuple database",
   "main": "index.js",
   "scripts": {

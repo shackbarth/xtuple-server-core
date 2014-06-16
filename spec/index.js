@@ -13,8 +13,6 @@ describe('xTuple Installer', function () {
         workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
       },
       xt: {
-        name: 'nonuser',
-        version: '4.4.1',
         demo: true
       },
       pg: {

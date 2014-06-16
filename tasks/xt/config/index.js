@@ -25,22 +25,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
     exports.writeConfig(options);
   },
 
-  writeBuildConfig: function (options) {
-    var buildOptions = JSON.parse(JSON.stringify(options));
-
-    buildOptions.xt = _.extend({ }, options.xt, {
-      password: options.xt.adminpw,
-      configfile: options.xt.buildconfigfile
-    });
-    buildOptions.xt.config = { };
-    buildOptions.xt.testdb = 'xtuple_demo';
-
-    exports.writeConfig(buildOptions);
-
-    exec('chown {xt.name}:{xt.name} {xt.buildconfigfile}'.format(options));
-    exec('chmod 700 {xt.buildconfigfile}'.format(options));
-  },
-
   writeConfig: function (options) {
     var xt = options.xt,
       pg = options.pg,
@@ -93,11 +77,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
         exec('openssl rand 256 -hex').stdout
       );
     }
-
-    _.extend(options.xt.config, {
-      string: output_conf,
-      json: derived_config_obj
-    });
   },
 
   /** @override */
@@ -109,5 +88,18 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
     exec('chmod 700 {xt.key256file}'.format(options));
     exec('chmod 700 {xt.rand64file}'.format(options));
     exec('chmod 700 {xt.configfile}'.format(options));
+  },
+
+  /**
+   * @override
+   * Link the written config to be the new 'default' config located in 
+   * node-datasource/config.js
+   */
+  afterInstall: function (options) {
+    var localConfig = path.resolve(options.xt.usersrc, 'node-datasource', 'config.js');
+    if (fs.existsSync(localConfig)) {
+      fs.unlinkSync(localConfig);
+    }
+    fs.symlinkSync(options.xt.configfile, localConfig);
   }
 });

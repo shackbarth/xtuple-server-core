@@ -1,7 +1,7 @@
 {
-  "name": "xtuple-server-xt-database",
-  "version": "0.9.4",
-  "description": "xTuple Server Task [xt.database]: build an xTuple database",
+  "name": "xtuple-server-xt-test",
+  "version": "0.9.1",
+  "description": "xTuple Server Task [xt.test]: setup the xTuple unit test suite",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha spec/ -R spec"
@@ -21,7 +21,7 @@
     "tuple"
   ],
   "author": "xTuple",
-  "license": "GPL",
+  "license": "Mozilla Public License",
   "bugs": {
     "url": "https://github.com/xtuple/xtuple-server/issues"
   },
@@ -30,7 +30,7 @@
     "xtuple-server-lib": "^0.9.0",
     "execSync": "^1.0.1-pre",
     "lodash": "^2.4.1",
-    "rimraf": "^2.2.8"
+    "string-format": "^0.2.1"
   },
   "devDependencies": {
     "chai": "^1.9.1",

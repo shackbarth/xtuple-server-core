@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-lib",
-  "version": "0.9.15",
+  "version": "0.9.16",
   "description": "xTuple Server common lib",
   "main": "index.js",
   "scripts": {

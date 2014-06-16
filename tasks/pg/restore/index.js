@@ -13,12 +13,11 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-restore */ {
     infile: {
       optional: '[infile]',
       description: 'Path to the file to be restored',
-      validate: function (arg) {
-        if (!fs.existsSync(path.resolve(arg))) {
-          throw new Error('Invalid path for pg.infile: '+ arg);
+      validate: function (value) {
+        if (!fs.existsSync(path.resolve(value))) {
+          throw new Error('Invalid path for pg.infile: '+ value);
         }
-
-        return true;
+        return value;
       }
     },
     dbname: {
