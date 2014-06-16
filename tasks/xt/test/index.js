@@ -23,7 +23,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-test */ {
   writeLoginData: function (options) {
     fs.writeFileSync(path.resolve(options.xt.usersrc, 'test/lib/login_data.json'), JSON.stringify({
       data: {
-        webaddress: options.nginx.hostname + ':' + options.nginx.httpsport,
+        webaddress: 'https://' + options.nginx.hostname + ':' + options.nginx.httpsport,
         username: 'admin',
         pwd: options.xt.adminpw,
         org: 'xtuple_demo'
