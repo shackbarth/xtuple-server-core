@@ -12,6 +12,13 @@ script:
 
 after_failure:
   - env
-  - sudo cat npm-debug.log
-  - sudo cat bootstrap.log
-  - sudo cat install.log
+  - cat npm-debug.log
+  - cat bootstrap.log
+  - cat install.log
+  - cat node_modules/xtuple/node-datasource/config.js
+  - cat node_modules/xtuple/test/lib/login_data.json
+  - cat node_modules/xtuple/package.json
+  - ls -l node_modules/xtuple/lib
+  - ls -l node_modules/xtuple/enyo-client/application
+  - ls -l node_modules/xtuple/enyo-client/application/build
+  - ./node_modules/xtuple/enyo-client/application/tools/deploy.sh

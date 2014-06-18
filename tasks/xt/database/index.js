@@ -58,19 +58,19 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
     },
     demo: {
       optional: '[boolean]',
-      description: 'Set to install the demo databases',
+      description: 'Set to install the demo database',
       filename: 'postbooks_demo_data.sql',
       value: false
     },
     quickstart: {
       optional: '[boolean]',
-      description: 'Set to install the quickstart databases',
+      description: 'Set to install the quickstart database',
       filename: 'quickstart_data.sql',
       value: false
     },
     empty: {
       optional: '[boolean]',
-      description: 'Set to install the empty databases',
+      description: 'Set to install the empty database',
       filename: 'empty_data.sql',
       value: false
     },
@@ -82,19 +82,20 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
 
   /** @override */
   beforeInstall: function (options) {
+
     options.xt.database.list = _.compact(_.map([ 'demo', 'quickstart', 'empty' ], function (db) {
-      return options.xt[db] && {
+      return options.xt[db] ? {
         dbname: 'xtuple_' + db,
         filename: path.resolve(options.xt.usersrc, 'foundation-database', exports.options[db].filename),
         type: 's'
-      };
+      } : null;
     }));
 
     // schedule main database file for installation
     if (!_.isEmpty(options.xt.maindb)) {
       options.xt.database.list.push({
-        filename: path.resolve(options.xt.maindb),
         dbname: options.xt.name + lib.util.getDatabaseNameSuffix(options),
+        filename: path.resolve(options.xt.maindb),
         type: 'b'
       });
     }
@@ -105,10 +106,14 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
   },
 
   /** @override */
+  beforeTask: function (options) {
+    rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
+  },
+
+  /** @override */
   executeTask: function (options) {
     // build all specified databases
     _.each(options.xt.database.list, function (db) {
-      rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
 
       var buildResult = exec(lib.util.getDatabaseBuildCommand(db, options));
       if (buildResult.code !== 0) {
@@ -116,7 +121,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
       }
 
       // install extensions specified by the edition
-      exports.buildExtensions(lib.util.editions[xt.edition], db, options);
+      exports.buildExtensions(lib.util.editions[options.xt.edition], db, options);
     });
   },
 
