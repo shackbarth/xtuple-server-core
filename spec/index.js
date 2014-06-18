@@ -13,11 +13,13 @@ describe('xTuple Installer', function () {
         workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
       },
       xt: {
-        demo: true
+        demo: true,
+        quickstart: true,
+        empty: true
       },
       pg: {
         version: process.env.XT_PG_VERSION,
-        capacity: 32
+        capacity: 16
       }
     };
 

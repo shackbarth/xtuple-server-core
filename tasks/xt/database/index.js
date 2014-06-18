@@ -58,12 +58,20 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
     },
     demo: {
       optional: '[boolean]',
-      description: 'Set to additionally install the demo databases',
+      description: 'Set to install the demo database',
+      filename: 'postbooks_demo_data.sql',
       value: false
     },
     quickstart: {
       optional: '[boolean]',
-      description: 'Set to additionally install the quickstart databases',
+      description: 'Set to install the quickstart database',
+      filename: 'quickstart_data.sql',
+      value: false
+    },
+    empty: {
+      optional: '[boolean]',
+      description: 'Set to install the empty database',
+      filename: 'empty_data.sql',
       value: false
     },
     adminpw: {
@@ -74,100 +82,55 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
 
   /** @override */
   beforeInstall: function (options) {
-    var foundationPath = path.resolve(options.xt.usersrc, 'foundation-database'),
-      databases = [ ],
-      maindb_path;
 
-    if (options.xt.demo) {
-      databases.push({
-        dbname: 'xtuple_demo',
-        filename: path.resolve(foundationPath, 'postbooks_demo_data.sql'),
-        foundation: true
-      });
-    }
-    if (options.xt.quickstart) {
-      databases.push({
-        dbname: 'xtuple_quickstart',
-        filename: path.resolve(foundationPath, 'quickstart_data.sql'),
-        foundation: true
-      });
-    }
+    options.xt.database.list = _.compact(_.map([ 'demo', 'quickstart', 'empty' ], function (db) {
+      return options.xt[db] ? {
+        dbname: 'xtuple_' + db,
+        filename: path.resolve(options.xt.usersrc, 'foundation-database', exports.options[db].filename),
+        type: 's'
+      } : null;
+    }));
 
     // schedule main database file for installation
     if (!_.isEmpty(options.xt.maindb)) {
-      maindb_path = path.resolve(options.xt.maindb);
-      if (fs.existsSync(maindb_path)) {
-        databases.push({
-          filename: maindb_path,
-          dbname: options.xt.name + lib.util.getDatabaseNameSuffix(options),
-          foundation: false
-        });
-      }
-      else {
-        throw new Error('Database File not found; expected to find '+ maindb_path);
-      }
+      options.xt.database.list.push({
+        dbname: options.xt.name + lib.util.getDatabaseNameSuffix(options),
+        filename: path.resolve(options.xt.maindb),
+        type: 'b'
+      });
     }
 
-    if (databases.length === 0) {
+    if (options.xt.database.list.length === 0) {
       throw new Error('No databases have been found for installation');
     }
+  },
 
-    options.xt.database.list = databases;
+  /** @override */
+  beforeTask: function (options) {
+    rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
   },
 
   /** @override */
   executeTask: function (options) {
-    if (options.xt.database.list.length === 0) {
-      throw new Error('No databases are scheduled to be installed');
-    }
+    // build all specified databases
+    _.each(options.xt.database.list, function (db) {
 
-    exports.buildFoundationDatabases(options);
-    exports.buildMainDatabases(options);
-  },
-
-  buildMainDatabases: function (options) {
-    var xt = options.xt,
-      extensions = lib.util.editions[xt.edition],
-      databases = _.where(xt.database.list, { foundation: false });
-
-    // build the main database, if specified
-    _.each(databases, function (db) {
-      rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
-
-      var buildResult = exec(lib.util.getCoreBuildCommand(db, options));
+      var buildResult = exec(lib.util.getDatabaseBuildCommand(db, options));
       if (buildResult.code !== 0) {
         throw new Error(buildResult.stdout);
       }
 
       // install extensions specified by the edition
-      _.each(extensions, function (ext) {
-        var result = exec(lib.util.getExtensionBuildCommand(db, options, ext));
-        if (result.code !== 0) {
-          throw new Error(result.stdout);
-        }
-      });
+      exports.buildExtensions(lib.util.editions[options.xt.edition], db, options);
     });
   },
 
-  buildFoundationDatabases: function (options) {
-    var quickstart = _.findWhere(options.xt.database.list, { dbname: 'xtuple_quickstart' }),
-      demo = _.findWhere(options.xt.database.list, { dbname: 'xtuple_demo' }),
-      qsBuild, demoBuild;
-
-    rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
-    if (quickstart) {
-      qsBuild = exec(lib.util.getSourceBuildCommand(quickstart, options));
-
-      if (qsBuild.code !== 0) {
-        throw new Error(JSON.stringify(qsBuild));
+  buildExtensions: function (extensions, options) {
+    _.each(extensions, function (ext) {
+      var result = exec(lib.util.getExtensionBuildCommand(db, options, ext));
+      if (result.code !== 0) {
+        throw new Error(result.stdout);
       }
-    }
-    if (demo) {
-      demoBuild = exec(lib.util.getSourceBuildCommand(demo, options));
-
-      if (demoBuild.code !== 0) {
-        throw new Error(JSON.stringify(demoBuild));
-      }
-    }
+    });
   }
 });
