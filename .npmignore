@@ -1,3 +1,9 @@
 tasks/
 lib/
-bootstrap/
+bootstrap.sh
+*.log
+*.sw*
+*.key
+*.crt
+*.backup
+*.sql
