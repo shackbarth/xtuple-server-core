@@ -39,7 +39,8 @@
   "devDependencies": {
     "chai": "~1.9.0",
     "mocha": "~1.17.1",
-    "xtuple": "^4.5.0"
+    "xtuple": "^4.5.0",
+    "nde": "^0.1.15"
   },
   "files": [
     "plans/",
@@ -69,7 +70,9 @@
     "enterprise"
   ],
   "engines": {
-    "node": ">=0.10.26 <0.11"
+    "node": ">=0.10.26 <0.11",
+    "postgresql": ">=9.3",
+    "nginx": ">= 1.4.6"
   },
   "cpu": [ "!ia32" ],
   "os": [ "linux" ],

@@ -6,7 +6,7 @@ var assert = require('chai').assert,
   fs = require('fs'),
   planner = lib.planner;
 
-describe('xTuple Installer', function () {
+describe('xTuple Server', function () {
   global.options = {
       planName: 'install-pilot',
       local: {
