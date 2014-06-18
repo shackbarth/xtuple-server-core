@@ -1,6 +1,7 @@
 language: c
 
 before_install:
+  - mv ~/.nvm ~/.nvm.disabled
   - sudo bash bootstrap.sh
   - n stable
 
