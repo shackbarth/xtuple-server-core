@@ -57,7 +57,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
     if (options.nginx.domain === 'localhost') {
       options.nginx.domain = options.nginx.hostname;
     }
-    options.nginx.healthfeedurl = '{nginx.domain}/_healthfeed'.format(options);
     options.nginx.lanEndpoints = (options.pg && options.pg.mode === 'dedicated') && [
       '       (^10\\.)',
       '       (^172\\.1[6-9]\\.)',
@@ -70,7 +69,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
   /** @override */
   beforeTask: function (options) {
     options.nginx.port = lib.util.getServerSSLPort(options);
-    options.nginx.healthfeedport = options.nginx.port + 5984;
 
     exec('rm -f '+ path.resolve(options.nginx.sitesEnabled, 'default'));
   },

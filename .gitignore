@@ -7,6 +7,5 @@ node_modules
 *.zip*
 .pm2
 *.tar.gz*
-n.bash
 *.deb
 *.exec
