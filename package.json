@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server",
-  "version": "0.9.41",
+  "version": "0.9.42",
   "description": "xTuple Server",
   "dependencies": {
     "commander": "^2.2.0",
@@ -71,8 +71,12 @@
   "engines": {
     "node": ">=0.10.26 <0.11"
   },
-  "cpu": [ "!ia32" ],
-  "os": [ "linux" ],
+  "cpu": [
+    "!ia32"
+  ],
+  "os": [
+    "linux"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/xtuple/xtuple-server.git"
