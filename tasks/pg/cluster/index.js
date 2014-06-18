@@ -1,4 +1,5 @@
 var lib = require('xtuple-server-lib'),
+  config = require('xtuple-server-pg-config'),
   _ = require('lodash'),
   path = require('path');
 
@@ -40,7 +41,7 @@ _.extend(exports, lib.task, /** @exports cluster */ {
 
   /** @override */
   uninstall: function (options) {
-    options.pg.cluster.name = lib.util.getClusterName(options);
+    config.discoverCluster(options);
 
     if (/uninstall/.test(options.planName)) {
       lib.pgCli.ctlcluster(options, 'stop');
