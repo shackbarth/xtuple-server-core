@@ -29,10 +29,12 @@ _.extend(exports, lib.task, /** @exports hba */ {
   },
 
   /** @override */
+  beforeInstall: function (options) {
+    options.pg.worldlogin = options.pg.worldlogin ? '' : '#';
+  },
+
+  /** @override */
   beforeTask: function (options) {
-    if (options.pg.worldlogin === false) {
-      options.pg.worldlogin = '#';
-    }
     if (!_.isEmpty(options.pg.cacrt)) {
       options.pg.cacrt = path.resolve(options.pg.cacrt);
     }
