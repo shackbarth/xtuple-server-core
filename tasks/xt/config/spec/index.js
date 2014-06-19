@@ -14,4 +14,4 @@ exports.afterTask = function (options) {
     assert.match(fs.canRead(options.xt.key256file));
   });
 
-});
+};
