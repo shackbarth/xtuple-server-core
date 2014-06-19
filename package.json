@@ -46,13 +46,14 @@
   },
   "files": [
     "plans/",
+    "cli.js"
     "index.js"
   ],
   "scripts": {
     "test": "mocha spec/index.js -R spec -b"
   },
   "bin": {
-    "xtuple-server": "index.js"
+    "xtuple-server": "cli.js"
   },
   "preferGlobal": true,
   "keywords": [
