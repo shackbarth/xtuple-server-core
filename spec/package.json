@@ -1,7 +1,7 @@
 {
-  "name": "xtuple-server-pg-hba",
-  "version": "0.9.6",
-  "description": "xTuple Server Task [pg.hba]: write postgres hba configuration",
+  "name": "xtuple-server-spec",
+  "version": "0.9.3",
+  "description": "xTuple Server Specification Tests",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha spec/ -R spec"
@@ -16,12 +16,14 @@
     "erp",
     "business",
     "software",
-    "postgres",
-    "postgresql",
-    "tuple"
+    "site",
+    "config",
+    "tuple",
+    "tests",
+    "spec"
   ],
   "author": "xTuple",
-  "license": "GPL",
+  "license": "MPL-2.0",
   "bugs": {
     "url": "https://github.com/xtuple/xtuple-server/issues"
   },
@@ -29,11 +31,12 @@
   "dependencies": {
     "xtuple-server-lib": "^0.9.0",
     "execSync": "^1.0.1-pre",
-    "lodash": "^2.4.1",
-    "string-format": "^0.2.1"
+    "lodash": "^2.4.1"
   },
   "devDependencies": {
     "chai": "^1.9.1",
-    "mocha": "^1.20.0"
+    "mocha": "^1.20.0",
+    "requireindex": "^1.1.0",
+    "xtuple": "^4.5.0-r1590-2"
   }
 }
