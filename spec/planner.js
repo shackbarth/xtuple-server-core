@@ -1,27 +1,18 @@
 var assert = require('chai').assert,
-  exec = require('execSync').exec,
   _ = require('lodash'),
   lib = require('xtuple-server-lib'),
-  path = require('path'),
-  fs = require('fs'),
-  Mocha = require('mocha'),
   planner = lib.planner;
 
 function getPackageName (phaseName, taskName) {
   return 'xtuple-server-' + phaseName + '-' + taskName;
 }
-function getPackageSpecPath (packageName) {
-  return path.resolve(path.dirname(require.resolve(packageName)), 'spec');
-}
 
 exports.describe = function (parent) {
   var options = _.clone(parent.options);
-  var suite = this;
-  var planModule = require('xtuple-server/plans')[options.planName];
-  var plan = planModule.plan;
-  _.isArray(options.plan) || (options.plan = plan);
+  var planObject = _.clone(parent.planObject);
+  var plan = planObject.plan;
 
-  it.skip(planModule.description);
+  it.skip(planObject.description);
 
   before(function () {
     planner.compileOptions(plan, options);
@@ -48,7 +39,6 @@ exports.describe = function (parent) {
   });
 
   describe('execute', function () {
-    var suite = this;
     
     if (/^uninstall/.test(options.planName)) {
       it('#uninstall', function () {
@@ -79,7 +69,6 @@ exports.describe = function (parent) {
   });
 
   describe('after execute', function () {
-    var suite = this;
 
     planner.eachTask(plan, function (task, phase, taskName) {
       it('#afterInstall <- '+ getPackageName(phase.name, taskName), function () {

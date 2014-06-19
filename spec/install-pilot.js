@@ -3,8 +3,10 @@ var _ = require('lodash'),
   planner = require('./planner');
 
 describe('install-pilot', function () {
+  this.planObject = require('../plans')['install-pilot'];
   this.options = {
     planName: 'install-pilot',
+    plan: this.planObject.plan,
     requiresRoot: true,
     local: {
       workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')

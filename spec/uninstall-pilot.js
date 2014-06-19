@@ -3,8 +3,10 @@ var _ = require('lodash'),
   planner = require('./planner');
 
 describe('uninstall-pilot', function () {
+  this.planObject = require('../plans')['uninstall-pilot'];
   this.options = {
     planName: 'uninstall-pilot',
+    plan: this.planObject.plan,
     requiresRoot: true,
     local: {
       workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
