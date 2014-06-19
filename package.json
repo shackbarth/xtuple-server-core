@@ -50,7 +50,6 @@
     "index.js"
   ],
   "scripts": {
-    "pretest": "npm link",
     "test": "npm test xtuple-server-spec"
   },
   "bin": {
