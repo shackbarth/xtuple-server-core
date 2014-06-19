@@ -2,7 +2,7 @@ module.exports = {
   planner: require('./planner')
 };
 
-describe('(v'+ require('../package').version + ') xtuple-server', function () {
+describe('(v'+ require('xtuple-server/package').version + ') xtuple-server', function () {
   describe('sanity', function () {
 
   });
