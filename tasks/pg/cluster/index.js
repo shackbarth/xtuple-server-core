@@ -43,7 +43,9 @@ _.extend(exports, lib.task, /** @exports cluster */ {
   uninstall: function (options) {
     config.discoverCluster(options);
 
-    if (/uninstall/.test(options.planName)) {
+    // uninstall is used for auto-rollbacks; only run this if a specific uninstall
+    // plan is being invoked.
+    if (/^uninstall/.test(options.planName)) {
       lib.pgCli.ctlcluster(options, 'stop');
       lib.pgCli.dropcluster(options);
     }
