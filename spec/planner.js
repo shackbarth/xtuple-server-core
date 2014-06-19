@@ -43,6 +43,7 @@ exports.describe = function (parent) {
       it('#uninstall', function () {
         planner.uninstall(options);
       });
+
       return;
     }
 
@@ -68,6 +69,10 @@ exports.describe = function (parent) {
   });
 
   describe('after execute', function () {
+
+    if (/^uninstall/.test(options.planName)) {
+      return;
+    }
 
     planner.eachTask(plan, function (task, phase, taskName) {
       it('#afterInstall <- '+ getPackageName(phase.name, taskName), function () {
