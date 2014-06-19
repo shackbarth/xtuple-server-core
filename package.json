@@ -50,7 +50,7 @@
     "index.js"
   ],
   "scripts": {
-    "test": "mocha spec/index.js -R spec -b"
+    "test": "mocha ./node_modules/xtuple-server-spec/index.js -R spec -b"
   },
   "bin": {
     "xtuple-server": "cli.js"

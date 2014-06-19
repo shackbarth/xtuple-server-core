@@ -3,9 +3,6 @@
   "version": "0.9.4",
   "description": "xTuple Server Specification Tests",
   "main": "index.js",
-  "scripts": {
-    "test": "mocha -R spec"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/xtuple/xtuple-server"
