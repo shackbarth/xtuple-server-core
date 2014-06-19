@@ -1,7 +1,6 @@
 var assert = require('chai').assert,
   _ = require('lodash'),
-  lib = require('xtuple-server-lib'),
-  planner = lib.planner;
+  planner = require('../');
 
 function getPackageName (phaseName, taskName) {
   return 'xtuple-server-' + phaseName + '-' + taskName;
@@ -42,7 +41,7 @@ exports.describe = function (parent) {
     
     if (/^uninstall/.test(options.planName)) {
       it('#uninstall', function () {
-        lib.planner.uninstall(options);
+        planner.uninstall(options);
       });
       return;
     }

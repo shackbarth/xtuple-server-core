@@ -1,5 +1,5 @@
 {
-  "description": "Install xTuple Pilot Instance and Run Unit Tests",
+  "description": "Install xTuple Pilot Instance",
   "plan": [
     {
       "name": "local",
