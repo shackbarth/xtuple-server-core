@@ -30,7 +30,7 @@ describe('xTuple Server', function () {
     );
   });
 
-  global.installPlan = require('../plans/install-pilot');
+  global.installPlan = require('../plans/install-pilot').plan;
 
   describe('planner', function () {
     describe('#execute', function () {
