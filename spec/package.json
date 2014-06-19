@@ -4,7 +4,7 @@
   "description": "xTuple Server Specification Tests",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha spec/ -R spec"
+    "test": "mocha -R spec"
   },
   "repository": {
     "type": "git",

@@ -1,4 +1,6 @@
-module.exports = require('requireindex')(__dirname);
+module.exports = {
+  planner: require('./planner')
+};
 
 describe('(v'+ require('../package').version + ') xtuple-server', function () {
   describe('sanity', function () {
