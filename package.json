@@ -39,8 +39,9 @@
   "devDependencies": {
     "chai": "~1.9.0",
     "mocha": "~1.17.1",
-    "xtuple": "^4.5.0",
-    "nde": "^0.1.15"
+    "nde": "^0.1.15",
+    "npm": "^1.4.16",
+    "xtuple": "^4.5.0"
   },
   "files": [
     "plans/",
@@ -48,7 +49,7 @@
     "server-cli.js"
   ],
   "scripts": {
-    "test": "node_modules/.bin/mocha spec -R spec -b"
+    "test": "mocha spec/index.js -R spec -b"
   },
   "bin": {
     "xtuple-server": "server-cli.js"
@@ -74,8 +75,12 @@
     "postgresql": ">=9.3",
     "nginx": ">= 1.4.6"
   },
-  "cpu": [ "!ia32" ],
-  "os": [ "linux" ],
+  "cpu": [
+    "!ia32"
+  ],
+  "os": [
+    "linux"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/xtuple/xtuple-server.git"
