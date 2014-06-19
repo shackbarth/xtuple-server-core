@@ -30,15 +30,7 @@ describe('xTuple Server', function () {
     );
   });
 
-  // palindromic install plans are my favorite kinds of install plans
-  global.installPlan = [
-    {name: 'local', tasks: [ 'paths', 'policy' ]},
-    {name: 'pg', tasks: [ 'cluster' ]},
-    {name: 'nginx', tasks: [ 'ssl', 'site', 'hosts' ]},
-    {name: 'pg', tasks: [ 'hba', 'config' ]},
-    {name: 'xt', tasks: [ 'install', 'config', 'database' ]},
-    {name: 'sys', tasks: [ 'report' ]}
-  ];
+  global.installPlan = require('../plans/install-pilot');
 
   describe('planner', function () {
     describe('#execute', function () {
