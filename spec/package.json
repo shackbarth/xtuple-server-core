@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-spec",
-  "version": "0.9.5",
+  "version": "0.9.7",
   "description": "xTuple Server Tests",
   "main": "index.js",
   "repository": {
@@ -37,6 +37,6 @@
     "xtuple": "^4.5.0-r1590-2"
   },
   "scripts": {
-    "test": "mocha -R spec ."
+    "test": "sudo -E mocha -R spec ."
   }
 }
