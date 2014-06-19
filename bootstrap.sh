@@ -60,6 +60,8 @@ install_node () {
   n stable
   mkdir -p /usr/local/{share/man,bin,lib/node,lib/node_modules,include/node}
   chmod -R a+w /usr/local/{share/man,bin,lib/node*,include/node*,n,ChangeLog,LICENSE,README.md}
+
+  echo "export NODE_PATH=/usr/local/lib/node_modules" > /etc/profile.d/nodepath.sh
 }
 
 log() {
