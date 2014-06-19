@@ -12,7 +12,8 @@ describe('install-pilot', function () {
       workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
     },
     xt: {
-      demo: true
+      demo: true,
+      version: this.xtupleVersion
     },
     pg: {
       version: process.env.XT_PG_VERSION,
