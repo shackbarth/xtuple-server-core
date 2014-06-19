@@ -1,7 +1,7 @@
 {
   "name": "xtuple-server-spec",
-  "version": "0.9.4",
-  "description": "xTuple Server Specification Tests",
+  "version": "0.9.5",
+  "description": "xTuple Server Tests",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -35,5 +35,8 @@
     "mocha": "^1.20.0",
     "requireindex": "^1.1.0",
     "xtuple": "^4.5.0-r1590-2"
+  },
+  "scripts": {
+    "test": "mocha -R spec ."
   }
 }

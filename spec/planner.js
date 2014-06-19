@@ -17,7 +17,7 @@ function getPackageSpecPath (packageName) {
 exports.describe = function (parent) {
   var options = _.clone(parent.options);
   var suite = this;
-  var planModule = require(path.resolve('./plans/', options.planName));
+  var planModule = require('xtuple-server/plans')[options.planName];
   var plan = planModule.plan;
   _.isArray(options.plan) || (options.plan = plan);
 

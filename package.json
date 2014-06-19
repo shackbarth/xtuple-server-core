@@ -50,8 +50,8 @@
     "index.js"
   ],
   "scripts": {
-    "pretest": "npm link",
-    "test": "mocha spec/index.js -R spec -b"
+    "pretest": "link",
+    "test": "test xtuple-server-spec"
   },
   "bin": {
     "xtuple-server": "cli.js"
