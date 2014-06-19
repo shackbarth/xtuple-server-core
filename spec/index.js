@@ -1,4 +1,6 @@
-var x = describe('(v'+ require('../package').version + ') xtuple-server', function () {
+module.exports = require('requireindex')(__dirname);
+
+describe('(v'+ require('../package').version + ') xtuple-server', function () {
   describe('sanity', function () {
 
   });
