@@ -19,7 +19,7 @@ exports.describe = function (parent) {
   var suite = this;
   var planModule = require(path.resolve('./plans/', options.planName));
   var plan = planModule.plan;
-  options.plan = plan;
+  _.isArray(options.plan) || (options.plan = plan);
 
   it.skip(planModule.description);
 
