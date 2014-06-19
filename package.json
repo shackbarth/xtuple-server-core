@@ -46,7 +46,7 @@
   },
   "files": [
     "plans/",
-    "cli.js"
+    "cli.js",
     "index.js"
   ],
   "scripts": {
