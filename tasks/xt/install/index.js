@@ -28,7 +28,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
   /** @override */
   executeTask: function (options) {
     _.each(lib.util.getRepositoryList(options), function (repo) {
-      Sync(function () {
+      //Sync(function () {
         /*
         if (!options.local.workspace) {
           var npm = npm.load.sync(null, {
@@ -44,13 +44,15 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
           ].join(' '));
         }
         */
+        console.dir(options.local);
         if (!options.local.workspace) {
           var template = _.extend({
               repo: repo,
-              path: options.local.workspace || path.resolve(options.xt.srcdir, repo)
+              path: path.resolve(options.xt.srcdir, repo)
             }, options);
 
-          if (!options.local.workspace && !fs.existsSync(template.path)) {
+          console.dir(template);
+          if (!fs.existsSync(template.path)) {
             var clone = exec('git clone --recursive https://github.com/xtuple/{repo}.git {path}'.format(template)),
               checkout = exec(('cd {path} && git fetch && git checkout '+ options.xt.repoHash).format(template));
 
@@ -59,17 +61,15 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
             }
           }
 
-          template.npm = options.xt.npmBin;
-          exec('cd {path} && npm install --production'.format(template));
+          exec('cd {path} && npm install'.format(template));
 
           if (options.xt.usersrc !== options.xt.coredir) {
             // copy main repo files to user's home directory
-            var userSourcePath = path.resolve(options.xt.userhome, options.xt.version, repo);
-            exec('mkdir -p ' + userSourcePath);
+            exec('mkdir -p ' + options.xt.usersrc);
             var rsync = exec([
                 'rsync -ar --exclude=.git',// --exclude=node_modules',
                 template.path + '/*',
-                userSourcePath
+                options.xt.usersrc
               ].join(' '));
               
             if (rsync.code !== 0) {
@@ -77,7 +77,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
             }
           }
         }
-      });
+      //});
     });
   },
 
