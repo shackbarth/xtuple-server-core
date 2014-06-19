@@ -42,7 +42,7 @@
     "nde": "^0.1.15",
     "npm": "^1.4.16",
     "xtuple": "^4.5.0",
-    "xtuple-server-spec": "^0.9.1"
+    "xtuple-server-spec": "^0.9.0"
   },
   "files": [
     "plans/",
@@ -50,7 +50,8 @@
     "index.js"
   ],
   "scripts": {
-    "test": "mocha ./node_modules/xtuple-server-spec/index.js -R spec -b"
+    "pretest": "npm link",
+    "test": "mocha spec/index.js -R spec -b"
   },
   "bin": {
     "xtuple-server": "cli.js"
