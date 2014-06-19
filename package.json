@@ -41,11 +41,11 @@
     "mocha": "~1.17.1",
     "nde": "^0.1.15",
     "npm": "^1.4.16",
-    "xtuple": "^4.5.0"
+    "xtuple": "^4.5.0",
+    "xtuple-server-spec": "^0.9.1"
   },
   "files": [
     "plans/",
-    "spec/",
     "server-cli.js"
   ],
   "scripts": {
