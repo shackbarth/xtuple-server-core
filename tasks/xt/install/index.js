@@ -80,6 +80,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
       throw new Error('xtuple package version does not seem to be valid: '+ version);
     }
 
+    // TODO remove
     if ('0.8.x' === version) {
       return '0.8.26';
     }
@@ -91,6 +92,5 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
   /** @override */
   afterTask: function (options) {
     exec('chown -R {xt.name}:{xt.name} {xt.userhome}'.format(options));
-    exec('chmod -R 700 {xt.userhome}'.format(options));
   }
 });
