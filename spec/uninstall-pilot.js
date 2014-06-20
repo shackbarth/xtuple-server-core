@@ -3,14 +3,17 @@ var _ = require('lodash'),
   planner = require('./planner');
 
 describe('uninstall-pilot', function () {
+  this.planObject = require('../plans')['uninstall-pilot'];
   this.options = {
     planName: 'uninstall-pilot',
+    plan: this.planObject.plan,
     requiresRoot: true,
     local: {
       workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
     },
     xt: {
-      demo: true
+      demo: true,
+      version: this.xtupleVersion
     },
     pg: {
       version: process.env.XT_PG_VERSION,

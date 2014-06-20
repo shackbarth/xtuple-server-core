@@ -24,6 +24,7 @@ install_debian () {
 
   apt-get -qq remove nodejs* --force-yes > /dev/null 2>&1
   apt-get -qq remove npm* --force-yes > /dev/null 2>&1
+  apt-get -qq remove postgres* --force-yes > /dev/null 2>&1
   
   if [[ $version =~ '12.04' ]]; then
     log "Adding custom Debian repositories for Ubuntu 12.04..."

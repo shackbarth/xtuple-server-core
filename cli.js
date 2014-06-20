@@ -6,10 +6,11 @@ var lib = require('xtuple-server-lib'),
   S = require('string'),
   _ = require('lodash'),
   program = require('commander'),
+  planner = require('./'),
   plans = require('./plans');
 
 if (exec('id -u').stdout.indexOf('0') !== 0) {
-  lib.planner.die({ msg: 'Must be run as root', prefix: 'xtuple' }, { });
+  planner.die({ msg: 'Must be run as root', prefix: 'xtuple' }, { });
 }
 
 program.version(require('./package').version);
@@ -25,7 +26,7 @@ _.each(plans, function (plan, name) {
       setTimeout(_.partial(executePlan, plan.plan, options), 0);
     });
 
-  preparePlan(cmd, plan.plan, options)
+  preparePlan(cmd, plan.plan, options);
 });
 
 program.command('*').action(function (cmd) {
@@ -39,7 +40,7 @@ program.parse(process.argv);
  * we must populate it via api calls
  */
 function preparePlan (program, plan, options) {
-  lib.planner.eachTask(plan, function (task, phase, taskName) {
+  planner.eachTask(plan, function (task, phase, taskName) {
     options[phase.name] || (options[phase.name] = { });
     options[phase.name][taskName] || (options[phase.name][taskName] = { });
 
@@ -56,12 +57,12 @@ function preparePlan (program, plan, options) {
         options[phase.name][option_name] = option_details.value;
       }
       catch (e) {
-        lib.planner.log({ msg: e.stack, prefix: lib.planner.format_prefix(phase.name, taskName) });
-        lib.planner.log({
+        planner.log({ msg: e.stack, prefix: planner.format_prefix(phase.name, taskName) });
+        planner.log({
           msg: 'See log for error details.',
-          prefix: lib.planner.format_prefix(phase.name, taskName)
+          prefix: planner.format_prefix(phase.name, taskName)
         }, true);
-        lib.planner.die({ msg: e.message, prefix: lib.planner.format_prefix(phase.name, taskName) }, options);
+        planner.die({ msg: e.message, prefix: planner.format_prefix(phase.name, taskName) }, options);
       }
     });
   });
@@ -89,8 +90,8 @@ function compilePlan (program, plan, options) {
     }
   });
 
-  lib.planner.compileOptions(plan, options);
-  lib.planner.verifyOptions(plan, options);
+  planner.compileOptions(plan, options);
+  planner.verifyOptions(plan, options);
 
   console.log('\nExecution Plan:\n');
   console.log(JSON.stringify(options, function (key, value) {
@@ -99,9 +100,9 @@ function compilePlan (program, plan, options) {
 }
 
 function executePlan (plan, options) {
-  lib.planner.execute(plan, options)
+  planner.execute(plan, options)
     .then(function () {
-      lib.planner.log_progress({ phase: 'planner', task: 'execute', msg: 'Done!'});
+      planner.log_progress({ phase: 'planner', task: 'execute', msg: 'Done!'});
       process.exit(0);
     })
     .fail(function (error) {

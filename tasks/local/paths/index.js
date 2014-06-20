@@ -25,7 +25,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
       value: process.cwd(),
       validate: function (value) {
         var pkg = require(path.resolve(value, 'package'));
-        if (!pkg && pkg.name !== 'xtuple') {
+        if (!pkg || pkg.name !== 'xtuple') {
           throw new Error('Please run this command from the directory of your xtuple repository, or correctly set --local-workspace');
         }
 
@@ -39,7 +39,14 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
     options.sys || (options.sys = { });
     options.sys.paths || (options.sys.paths = { });
 
-    options.xt.version = require(path.resolve(options.local.workspace, 'package')).version;
+    if (!options.xt.version) {
+      try {
+        options.xt.version = require(path.resolve(options.local.workspace, 'package')).version;
+      }
+      catch (e) {
+        throw new TypeError('Can\'t find xTuple package. xt.version or local.workspace might be incorrect');
+      }
+    }
     options.xt.name = process.env.SUDO_USER;
 
     if (_.isEmpty(options.xt.name)) {
@@ -81,10 +88,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
     options.xt.logdir = path.resolve(exports.varLog, 'xtuple', version, name);
     options.pg.logdir = path.resolve(exports.varLog, 'postgresql');
     options.xt.socketdir = path.resolve('/var/run/postgresql');
-    options.xt.rundir = path.resolve(exports.varRun, 'xtuple', version, name);
-    options.xt.statedir = path.resolve(exports.varLibXtuple, version, name);
-    options.sys.sbindir = path.resolve(exports.usrSbin, 'xtuple', version, name);
-    options.sys.htpasswdfile = path.resolve('/etc/nginx/.htpasswd-xtuple');
 
     // repositories
     options.xt.srcdir = path.resolve(options.xt.usersrc, '..');
@@ -103,13 +106,9 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
     exec('mkdir -p ' + options.pg.snapshotdir);
 
     exec('mkdir -p ' + options.xt.configdir);
-    exec('mkdir -p ' + path.resolve(options.xt.configdir, 'build'));
     exec('mkdir -p ' + options.xt.ssldir);
     exec('mkdir -p ' + options.xt.logdir);
-    exec('mkdir -p ' + options.xt.rundir);
     exec('mkdir -p ' + options.xt.socketdir);
-    exec('mkdir -p ' + options.xt.statedir);
     exec('mkdir -p ' + options.xt.srcdir);
-    exec('mkdir -p ' + options.sys.sbindir);
   }
 });

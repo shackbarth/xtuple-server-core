@@ -27,57 +27,40 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
 
   /** @override */
   executeTask: function (options) {
-    _.each(lib.util.getRepositoryList(options), function (repo) {
-      Sync(function () {
-        /*
-        if (!options.local.workspace) {
-          var npm = npm.load.sync(null, {
-            dir: '/tmp',
-            root: '/tmp'
-          });
-          npm.commands.install.sync(null, [lib.util.getNpmPackageId(repo, options.xt.version), '--production']);
+    if (_.isObject(options.local) && !_.isEmpty(options.local.workspace)) {
+      return;
+    }
 
-          exec([
-            'cp -r',
-            path.resolve('/tmp/node_modules/', repo),
+    _.each(lib.util.getRepositoryList(options), function (repo) {
+      var template = _.extend({
+          repo: repo,
+          path: path.resolve(options.xt.srcdir, repo)
+        }, options);
+
+      if (!fs.existsSync(template.path)) {
+        var clone = exec('git clone --recursive https://github.com/xtuple/{repo}.git {path}'.format(template)),
+          checkout = exec(('cd {path} && git fetch && git checkout '+ options.xt.repoHash).format(template));
+
+        if (clone.code !== 0) {
+          throw new Error(JSON.stringify(clone, null, 2));
+        }
+      }
+
+      exec('cd {path} && npm install'.format(template));
+
+      if (options.xt.usersrc !== options.xt.coredir) {
+        // copy main repo files to user's home directory
+        exec('mkdir -p ' + options.xt.usersrc);
+        var rsync = exec([
+            'rsync -ar --exclude=.git',// --exclude=node_modules',
+            template.path + '/*',
             options.xt.usersrc
           ].join(' '));
+          
+        if (rsync.code !== 0) {
+          throw new Error(JSON.stringify(rsync, null, 2));
         }
-        */
-        if (!options.local.workspace) {
-          var template = _.extend({
-              repo: repo,
-              path: options.local.workspace || path.resolve(options.xt.srcdir, repo)
-            }, options);
-
-          if (!options.local.workspace && !fs.existsSync(template.path)) {
-            var clone = exec('git clone --recursive https://github.com/xtuple/{repo}.git {path}'.format(template)),
-              checkout = exec(('cd {path} && git fetch && git checkout '+ options.xt.repoHash).format(template));
-
-            if (clone.code !== 0) {
-              throw new Error(JSON.stringify(clone, null, 2));
-            }
-          }
-
-          template.npm = options.xt.npmBin;
-          exec('cd {path} && npm install --production'.format(template));
-
-          if (options.xt.usersrc !== options.xt.coredir) {
-            // copy main repo files to user's home directory
-            var userSourcePath = path.resolve(options.xt.userhome, options.xt.version, repo);
-            exec('mkdir -p ' + userSourcePath);
-            var rsync = exec([
-                'rsync -ar --exclude=.git',// --exclude=node_modules',
-                template.path + '/*',
-                userSourcePath
-              ].join(' '));
-              
-            if (rsync.code !== 0) {
-              throw new Error(JSON.stringify(rsync, null, 2));
-            }
-          }
-        }
-      });
+      }
     });
   },
 
@@ -97,6 +80,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
       throw new Error('xtuple package version does not seem to be valid: '+ version);
     }
 
+    // TODO remove
     if ('0.8.x' === version) {
       return '0.8.26';
     }
@@ -108,6 +92,5 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
   /** @override */
   afterTask: function (options) {
     exec('chown -R {xt.name}:{xt.name} {xt.userhome}'.format(options));
-    exec('chmod -R 700 {xt.userhome}'.format(options));
   }
 });

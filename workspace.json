@@ -17,7 +17,7 @@
     "xtuple-server-xt-config": "tasks/xt/config",
     "xtuple-server-xt-database": "tasks/xt/database",
     "xtuple-server-xt-install": "tasks/xt/install",
-    "xtuple-server-spec": "spec",
+    "xtuple-server-xt-test": "tasks/xt/test",
     "xtuple-server-lib": "lib"
   }
 }
