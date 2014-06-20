@@ -88,10 +88,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
     options.xt.logdir = path.resolve(exports.varLog, 'xtuple', version, name);
     options.pg.logdir = path.resolve(exports.varLog, 'postgresql');
     options.xt.socketdir = path.resolve('/var/run/postgresql');
-    options.xt.rundir = path.resolve(exports.varRun, 'xtuple', version, name);
-    options.xt.statedir = path.resolve(exports.varLibXtuple, version, name);
-    options.sys.sbindir = path.resolve(exports.usrSbin, 'xtuple', version, name);
-    options.sys.htpasswdfile = path.resolve('/etc/nginx/.htpasswd-xtuple');
 
     // repositories
     options.xt.srcdir = path.resolve(options.xt.usersrc, '..');
@@ -112,10 +108,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
     exec('mkdir -p ' + options.xt.configdir);
     exec('mkdir -p ' + options.xt.ssldir);
     exec('mkdir -p ' + options.xt.logdir);
-    exec('mkdir -p ' + options.xt.rundir);
     exec('mkdir -p ' + options.xt.socketdir);
-    exec('mkdir -p ' + options.xt.statedir);
     exec('mkdir -p ' + options.xt.srcdir);
-    exec('mkdir -p ' + options.sys.sbindir);
   }
 });
