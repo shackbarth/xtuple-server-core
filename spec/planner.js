@@ -61,7 +61,7 @@ exports.describe = function (parent) {
 
         if (_.isFunction(spec.afterTask)) {
           describe(pkgName, function () {
-            spec.afterTask((JSON.parse(JSON.stringify(options)));
+            spec.afterTask(JSON.parse(JSON.stringify(options)));
           });
         }
       });
@@ -85,7 +85,7 @@ exports.describe = function (parent) {
       var spec = require(pkgName + '/spec');
       if (_.isFunction(spec.afterExecute) && /^install/.test(options.planName)) {
         describe(pkgName, function () {
-          spec.afterExecute((JSON.parse(JSON.stringify(options)));
+          spec.afterExecute(JSON.parse(JSON.stringify(options)));
         });
       }
     });
