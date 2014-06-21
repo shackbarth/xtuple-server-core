@@ -31,8 +31,6 @@
     "execSync": "^1.0.1-pre",
     "lodash": "^2.4.1",
     "moment": "^2.6.0",
-    "q": "^1.0.1",
-    "requireindex": "^1.1.0",
     "semver": "^2.3.0",
     "string-format": "^0.2.1"
   },
