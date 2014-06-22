@@ -102,7 +102,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
       });
     }
 
-    if (options.xt.database.list.length === 0 && options.plan.xt.validate !== false) {
+    if (/^install/.test(options.planName) && options.xt.database.list.length === 0) {
       throw new Error('No databases have been found for installation');
     }
   },
