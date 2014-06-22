@@ -1,5 +1,6 @@
 {
   "description": "Rename xTuple Database",
+  "types": "all",
   "plan": [
     {
       "name": "xt",

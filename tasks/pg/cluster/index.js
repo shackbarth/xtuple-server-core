@@ -9,25 +9,17 @@ var lib = require('xtuple-server-lib'),
  */
 _.extend(exports, lib.task, /** @exports cluster */ {
 
-  options: {
-    pilot: {
-      optional: '[boolean]',
-      description: 'Additionally create a pilot cluster',
-      value: false
-    }
-  },
-
   /** @override */
   beforeInstall: function (options) {
     options.pg.cluster = {
       owner: options.xt.name,
-      name: lib.util.getClusterName(options),
+      name: lib.util.$(options),
       version: parseFloat(options.pg.version)
     };
     var exists = _.findWhere(lib.pgCli.lsclusters(), options.pg.cluster);
 
     if (exists) {
-      throw new Error('Cluster already exists: ' + options.pg.cluster);
+      throw new Error('Cluster already exists: ' + options.pg.cluster.name);
     }
     options.pg.configdir = path.resolve('/etc/postgresql', options.pg.version, options.xt.name);
   },
@@ -72,17 +64,9 @@ _.extend(exports, lib.task, /** @exports cluster */ {
         // create xtrole
         'CREATE ROLE xtrole WITH ROLE admin',
 
-        // create xtremote, xtpilot, and xtlive roles for purposes TBD
-        'CREATE ROLE xtremote',
-        'CREATE ROLE xtpilot',
-        'CREATE ROLE xtlive',
-
         // create 'postgres' role for convenience + compatibility
         'CREATE ROLE postgres LOGIN SUPERUSER',
 
-        'GRANT xtpilot TO admin',
-        'GRANT xtremote TO admin',
-        'GRANT xtlive TO admin',
         'GRANT xtrole TO admin',
         'GRANT xtrole TO {xt.name}'.format(options)
       ],

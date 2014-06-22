@@ -1,5 +1,6 @@
 {
   "description": "Restore xTuple Database",
+  "types": "all",
   "plan": [
     {
       "name": "xt",

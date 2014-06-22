@@ -1,5 +1,6 @@
 {
   "description": "Copy xTuple Database",
+  "types": "all",
   "plan": [
     {
       "name": "xt",

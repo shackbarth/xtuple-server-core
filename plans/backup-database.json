@@ -1,5 +1,6 @@
 {
   "description": "Backup xTuple Database",
+  "types": "all",
   "plan": [
     {
       "name": "xt",
