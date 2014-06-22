@@ -42,9 +42,6 @@ _.extend(exports, /** @exports planner */ {
     */
   die: function (payload, options) {
     exports.log({ msg: payload.msg, prefix: payload.prefix }, true);
-    if (_.isObject(options) && _.isArray(options.progress)) {
-      exports.rollback(options);
-    }
     console.log('Encountered Error. Stopping. See log for details.');
     process.exit(1);
   },
@@ -73,7 +70,7 @@ _.extend(exports, /** @exports planner */ {
     }
     exports.eachTask(plan, function (task, phase, taskName) {
       _.each(task, options, function (option, key) {
-        if (_.isFunction(option.validate)) {
+        if (_.isFunction(option.validate) && phase.options.validate !== false) {
           // this will throw an exception if invalid
           options[phase.name][key] = option.validate(options[phase.name][key], options);
         }
@@ -103,27 +100,14 @@ _.extend(exports, /** @exports planner */ {
     });
   },
 
-  /**
-    * Rollback a failed installation; call 'uninstall' on every task that has
-    * been run so far. State is maintained in options.progress
-    */
-  rollback: function (options) {
-    _.each(options.progress.reverse(), function (state) {
-      try {
-        exports.requireTask(state.phase, state.task).uninstall(options);
-      }
-      catch (e) {
-        // console.log(e);
-      }
-    });
-  },
-
   uninstall: function (options) {
-    options.progress || (options.progress = [ ]);
-    exports.eachTask(options.plan, function (task, phase, taskName) {
-      options.progress.push({ phase: phase.name, task: taskName });
+    _.each(options.plan.reverse(), function (phase) {
+      var phaseName = phase.name;
+      _.each(phase.tasks, function (taskName) {
+        var task = exports.requireTask(phaseName, taskName);
+        task.uninstall(options);
+      });
     });
-    exports.rollback(options);
   },
   /**
     * Run planner with the specified plan and options. Atomic.
@@ -134,7 +118,6 @@ _.extend(exports, /** @exports planner */ {
       originalOptions = JSON.stringify(options, null, 2);
 
     setTimeout(function () {
-      options.progress = [ ];
       options.plan = plan;
 
       if (!_.isString(options.planName)) {
@@ -144,32 +127,27 @@ _.extend(exports, /** @exports planner */ {
       // beforeInstall
       exports.log({ prefix: 'installer', msg: 'Pre-flight checks...' });
       exports.eachTask(plan, function (task, phase, taskName) {
-        var phaseOptions = phase.options || { };
-        if (phaseOptions.validate !== false) {
-          task.beforeInstall(options);
-        }
+        task.beforeInstall(options);
       }, options);
+
+      if (/^uninstall/.test(options.planName)) {
+        exports.uninstall(options);
+        deferred.resolve();
+        return deferred.promise;
+      }
 
       // execute plan tasks
       exports.eachTask(plan, function (task, phase, taskName) {
         var phaseOptions = phase.options || { };
 
-        if (/^uninstall/.test(options.planName)) {
-          exports.uninstall(options);
-        }
-        else if (phaseOptions.execute !== false) {
+        if (phaseOptions.execute !== false) {
           exports.log_progress({ phase: phase.name, task: taskName, msg: 'Running...' });
-          options.progress.push({ phase: phase.name, task: taskName });
           task.beforeTask(options);
           task.executeTask(options);
           task.afterTask(options);
         }
 
       }, options);
-
-      if (/^uninstall/.test(options.planName)) {
-        deferred.resolve();
-      }
 
       exports.eachTask(plan, function (task, phase, taskName) {
         exports.log_progress({ phase: phase.name, task: taskName, msg: 'Finishing...' });

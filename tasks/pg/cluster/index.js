@@ -49,14 +49,16 @@ _.extend(exports, lib.task, /** @exports cluster */ {
 
   /** @override */
   uninstall: function (options) {
-    config.discoverCluster(options);
+    try {
+      config.discoverCluster(options);
 
-    // uninstall is used for auto-rollbacks; only run this if a specific uninstall
-    // plan is being invoked.
-    if (/^uninstall/.test(options.planName)) {
       lib.pgCli.ctlcluster(options, 'stop');
       lib.pgCli.dropcluster(options);
     }
+    catch (e) {
+      // do nothing
+    }
+
   },
 
   /**
