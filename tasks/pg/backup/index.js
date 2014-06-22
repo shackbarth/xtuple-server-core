@@ -15,13 +15,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-backup */ {
   },
 
   /** @override */
-  beforeInstall: function (options) {
-    options.pg.dbname || (
-      options.pg.dbname = options.xt.name + lib.util.getDatabaseNameSuffix(options)
-    );
-  },
-
-  /** @override */
   beforeTask: function (options) {
     config.discoverCluster(options);
   },

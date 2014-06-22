@@ -13,15 +13,34 @@ if (exec('id -u').stdout.indexOf('0') !== 0) {
   planner.die({ msg: 'Must be run as root', prefix: 'xtuple' }, { });
 }
 
-program.version(require('./package').version);
+program
+  .version(require('./package').version)
+  .usage('<plan> <type> [options]');
 
-// load the available plans into the cli commands list
+program._name = 'xtuple-server';
+
 _.each(plans, function (plan, name) {
   var options = { planName: name };
   var cmd = program
     .command(name)
-    .description(plan.description)
-    .action(function () {
+    .description(plan.description + ' <type>')
+    .action(function (type) {
+      if (_.isUndefined(plan.types)) {
+        type = 'setup';
+      }
+      else if (plan.types !== 'all') {
+        if (plan.types.length === 1 && !_.isString(type)) {
+          type = plan.types[0];
+        }
+        if (!_.contains(plan.types, type)) {
+          throw new TypeError('plan "' + name + '" does not support type "' + type + '"');
+        }
+      }
+
+      if (!_.isString(type)) {
+        throw new TypeError('A type is required. See --help');
+      }
+      options.type = type;
       compilePlan(cmd, plan.plan, options);
       setTimeout(_.partial(executePlan, plan.plan, options), 0);
     });

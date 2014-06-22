@@ -7,6 +7,7 @@ describe('install-pilot', function () {
   this.options = {
     planName: 'install-pilot',
     plan: this.planObject.plan,
+    type: 'pilot',
     requiresRoot: true,
     local: {
       workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')

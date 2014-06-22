@@ -87,7 +87,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
 
     options.xt.database.list = _.compact(_.map([ 'demo', 'quickstart', 'empty' ], function (db) {
       return options.xt[db] ? {
-        dbname: 'xtuple_' + db,
+        dbname: db + '_' + options.type,
         filename: path.resolve(options.xt.usersrc, 'foundation-database', exports.options[db].filename),
         type: 's'
       } : null;
@@ -96,7 +96,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
     // schedule main database file for installation
     if (!_.isEmpty(options.xt.maindb)) {
       options.xt.database.list.push({
-        dbname: options.xt.name + lib.util.getDatabaseNameSuffix(options),
+        dbname: path.basename(options.xt.maindb, path.extname(options.xt.maindb)) + '_' + options.type,
         filename: path.resolve(options.xt.maindb),
         type: 'b'
       });
