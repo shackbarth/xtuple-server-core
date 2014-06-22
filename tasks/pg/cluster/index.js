@@ -9,6 +9,22 @@ var lib = require('xtuple-server-lib'),
  */
 _.extend(exports, lib.task, /** @exports cluster */ {
 
+  options: {
+    port: {
+      optional: '[integer]',
+      description: 'Assign postgres cluster to bind on a specific port.',
+      value: null,
+      validate: function (value, options) {
+        var cluster = _.findWhere(lib.pgCli.lsclusters(), { port: value });
+        if (!_.isEmpty(cluster)) {
+          throw new Error('pg.port ('+ value +') is already assigned to another cluster');
+        }
+
+        return value;
+      }
+    }
+  },
+
   /** @override */
   beforeInstall: function (options) {
     options.pg.cluster = {
