@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-lib",
-  "version": "0.9.29",
+  "version": "0.9.32",
   "description": "xTuple Server common lib",
   "main": "index.js",
   "scripts": {
@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/xtuple/xtuple-server",
   "dependencies": {
+    "cron-tab": "^1.1.9",
     "execSync": "^1.0.1-pre",
     "lodash": "^2.4.1",
     "moment": "^2.6.0",
