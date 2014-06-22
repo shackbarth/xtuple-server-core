@@ -7,6 +7,7 @@ describe('uninstall-pilot', function () {
   this.options = {
     planName: 'uninstall-pilot',
     plan: this.planObject.plan,
+    type: 'pilot',
     requiresRoot: true,
     local: {
       workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')

@@ -68,6 +68,9 @@ _.extend(exports, /** @exports planner */ {
   },
 
   verifyOptions: function (plan, options) {
+    if (_.isEmpty(options.type)) {
+      throw new TypeError('<type> is a required field');
+    }
     exports.eachTask(plan, function (task, phase, taskName) {
       _.each(task, options, function (option, key) {
         if (_.isFunction(option.validate)) {
