@@ -5,7 +5,8 @@ var assert = require('chai').assert,
 exports.afterExecute = function (options) {
 
   it('pg.cluster.name should be set correctly', function () {
-    assert.match(options.pg.cluster.name, new RegExp(options.xt.name + "\-" + options.xt.version + "\-"));
+    var scalarVersion = options.xt.version.replace(/\./g, '');
+    assert.match(options.pg.cluster.name, new RegExp(options.xt.name + "-" + scalarVersion + "-"));
   });
 
   it('should be able to control my personal pg cluster', function () {
