@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server",
-  "version": "0.9.56",
+  "version": "0.9.57",
   "description": "xTuple Server",
   "dependencies": {
     "commander": "^2.2.0",
@@ -53,6 +53,7 @@
     "index.js"
   ],
   "scripts": {
+    "pretest": "mocha spec/uninstall-pilot.js -b",
     "test": "mocha -R spec spec/ -b"
   },
   "bin": {

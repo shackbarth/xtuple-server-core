@@ -6,9 +6,12 @@ before_install:
   - n stable
 
 install:
-  - npm install
+  - npm install nde -g
+  - nde install
+  - npm install -g
 
 script:
+  - sudo npm test xtuple-server-lib
   - sudo npm test
 
 after_failure:
