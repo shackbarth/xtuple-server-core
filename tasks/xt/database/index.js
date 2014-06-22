@@ -1,6 +1,7 @@
 var lib = require('xtuple-server-lib'),
   rimraf = require('rimraf'),
   _ = require('lodash'),
+  semver = require('semver'),
   exec = require('execSync').exec,
   path = require('path'),
   fs = require('fs');
@@ -82,6 +83,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
 
   /** @override */
   beforeInstall: function (options) {
+    options.xt.database || (options.xt.database = { });
 
     options.xt.database.list = _.compact(_.map([ 'demo', 'quickstart', 'empty' ], function (db) {
       return options.xt[db] ? {
@@ -125,7 +127,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
     });
   },
 
-  buildExtensions: function (extensions, options) {
+  buildExtensions: function (extensions, db, options) {
     _.each(extensions, function (ext) {
       var result = exec(lib.util.getExtensionBuildCommand(db, options, ext));
       if (result.code !== 0) {

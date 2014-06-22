@@ -7,8 +7,8 @@ function getPackageName (phaseName, taskName) {
 }
 
 exports.describe = function (parent) {
-  var options = _.clone(parent.options);
-  var planObject = _.clone(parent.planObject);
+  var options = JSON.parse(JSON.stringify(parent.options));
+  var planObject = JSON.parse(JSON.stringify(parent.planObject));
   var plan = planObject.plan;
 
   it.skip(planObject.description);
@@ -21,7 +21,7 @@ exports.describe = function (parent) {
   describe('before execute', function () {
 
     planner.eachTask(plan, function (task, phase, taskName) {
-      it('#beforeInstall <- '+ getPackageName(phase.name, taskName), function () {
+      it(getPackageName(phase.name, taskName) + '#beforeInstall', function () {
         task.beforeInstall(options);
       });
     });
@@ -30,9 +30,7 @@ exports.describe = function (parent) {
       var pkgName = getPackageName(phase.name, taskName);
       var spec = require(pkgName + '/spec');
       if (_.isFunction(spec.beforeExecute)) {
-        describe(pkgName, function () {
-          spec.beforeExecute(JSON.parse(JSON.stringify(options)));
-        });
+        spec.beforeExecute(options);
       }
     });
   });
@@ -60,9 +58,7 @@ exports.describe = function (parent) {
         });
 
         if (_.isFunction(spec.afterTask)) {
-          describe(pkgName, function () {
-            spec.afterTask(JSON.parse(JSON.stringify(options)));
-          });
+          spec.afterTask(options);
         }
       });
     });
@@ -75,7 +71,7 @@ exports.describe = function (parent) {
     }
 
     planner.eachTask(plan, function (task, phase, taskName) {
-      it('#afterInstall <- '+ getPackageName(phase.name, taskName), function () {
+      it(getPackageName(phase.name, taskName) + '#afterInstall', function () {
         task.afterInstall(options);
       });
     });
@@ -83,10 +79,8 @@ exports.describe = function (parent) {
     planner.eachTask(plan, function (task, phase, taskName) {
       var pkgName = getPackageName(phase.name, taskName);
       var spec = require(pkgName + '/spec');
-      if (_.isFunction(spec.afterExecute) && /^install/.test(options.planName)) {
-        describe(pkgName, function () {
-          spec.afterExecute(JSON.parse(JSON.stringify(options)));
-        });
+      if (_.isFunction(spec.afterExecute)) {
+        spec.afterExecute(options);
       }
     });
   });
