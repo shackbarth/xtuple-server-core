@@ -25,7 +25,10 @@ _.each(plans, function (plan, name) {
     .command(name)
     .description(plan.description + ' <type>')
     .action(function (type) {
-      if (plan.types !== 'all') {
+      if (_.isUndefined(plan.types)) {
+        type = 'setup';
+      }
+      else if (plan.types !== 'all') {
         if (plan.types.length === 1 && !_.isString(type)) {
           type = plan.types[0];
         }
@@ -33,6 +36,7 @@ _.each(plans, function (plan, name) {
           throw new TypeError('plan "' + name + '" does not support type "' + type + '"');
         }
       }
+
       if (!_.isString(type)) {
         throw new TypeError('A type is required. See --help');
       }
