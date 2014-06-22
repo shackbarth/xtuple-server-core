@@ -1,28 +1,38 @@
 language: c
 
 before_install:
-  - mv ~/.nvm ~/.nvm.disabled
-  - sudo bash bootstrap.sh
-  - n stable
+- mv ~/.nvm ~/.nvm.disabled
+- sudo bash bootstrap.sh
+- n stable
 
 install:
-  - npm install nde -g
-  - nde install
-  - npm install -g
+- npm install nde -g
+- nde install
+- npm install -g
 
 script:
-  - sudo npm test xtuple-server-lib
-  - sudo npm test
+- sudo npm test xtuple-server-lib
+- sudo npm test
 
 after_failure:
-  - env
-  - cat npm-debug.log
-  - cat bootstrap.log
-  - cat install.log
-  - cat node_modules/xtuple/node-datasource/config.js
-  - cat node_modules/xtuple/test/lib/login_data.json
-  - cat node_modules/xtuple/package.json
-  - ls -l node_modules/xtuple/lib
-  - ls -l node_modules/xtuple/enyo-client/application
-  - ls -l node_modules/xtuple/enyo-client/application/build
-  - ./node_modules/xtuple/enyo-client/application/tools/deploy.sh
+- env
+- cat npm-debug.log
+- cat bootstrap.log
+- cat install.log
+- cat node_modules/xtuple/node-datasource/config.js
+- cat node_modules/xtuple/test/lib/login_data.json
+- cat node_modules/xtuple/package.json
+- ls -l node_modules/xtuple/lib
+- ls -l node_modules/xtuple/enyo-client/application
+- ls -l node_modules/xtuple/enyo-client/application/build
+- ./node_modules/xtuple/enyo-client/application/tools/deploy.sh
+
+deploy:
+  provider: npm
+  email: me@traviswebb.com
+  api_key:
+    secure: KA7yjcLWyKYTNExDcp6RJsik8wna6qCvsP7ZbZPfSZEucgYWAPN65sIcdF6DMrZHYWp3Z6Cu7gXAuduxP21uFGX7YvkTmOKbyEZHrLd5vG8godt+VZceXtPA8LA75M55bU1NHuzRjKc+ogP1Y50FwQ3Z0EsEpVeCNGphZ3J16w0=
+  on:
+    tags: true
+    repo: xtuple/xtuple-server
+    branch: master
