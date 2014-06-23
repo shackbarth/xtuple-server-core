@@ -2,6 +2,7 @@ var lib = require('xtuple-server-lib'),
   format = require('string-format'),
   _ = require('lodash'),
   exec = require('execSync').exec,
+  cp = require('cp'),
   fs = require('fs'),
   path = require('path');
 
@@ -11,7 +12,7 @@ var lib = require('xtuple-server-lib'),
 _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
 
   options: {
-    'incrt': {
+    incrt: {
       optional: '[file]',
       description: 'Path to SSL certificate (.crt)',
       validate: function (value) {
@@ -22,7 +23,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
         return value;
       }
     },
-    'inkey': {
+    inkey: {
       optional: '[file]',
       description: 'Path to SSL private key (.key)',
       validate: function (value) {
@@ -30,30 +31,27 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
           throw new Error('Invalid path for nginx.inkey: '+ value);
         }
 
-        return value
+        return value;
       }
     }
   },
 
   /** @override */
   beforeTask: function (options) {
-    var nginx = options.nginx;
-
-    nginx.outcrt = path.resolve(options.xt.ssldir, 'server.crt');
-    nginx.outkey = path.resolve(options.xt.ssldir, 'server.key');
+    options.nginx.outcrt = path.resolve(options.xt.ssldir, 'server.crt');
+    options.nginx.outkey = path.resolve(options.xt.ssldir, 'server.key');
   },
 
   /** @override */
   executeTask: function (options) {
-    var nginx = options.nginx;
-    if (!_.isEmpty(nginx.incrt) && !_.isEmpty(nginx.inkey)) {
-      nginx.incrt = path.resolve(nginx.incrt);
-      nginx.inkey = path.resolve(nginx.inkey);
+    if (!_.isEmpty(options.nginx.incrt) && !_.isEmpty(options.nginx.inkey)) {
+      options.nginx.incrt = options.nginx.incrt;
+      options.nginx.inkey = options.nginx.inkey;
 
-      exec('cp {nginx.incrt} {nginx.outcrt}'.format(options));
-      exec('cp {nginx.inkey} {nginx.outkey}'.format(options));
+      cp.sync(options.nginx.incrt, options.nginx.outcrt);
+      cp.sync(options.nginx.inkey, options.nginx.outkey);
     }
-    else if (/localhost/.test(nginx.domain)) {
+    else if (/localhost/.test(options.nginx.domain)) {
       var result = exports.generate(options);
 
       if (result.code !== 0) {
@@ -73,11 +71,8 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
   afterTask: function (options) {
     exports.verifyCertificate(options);
 
-    exec('chmod 600 {nginx.outkey}'.format(options));
-    exec('chmod 600 {nginx.outcrt}'.format(options));
-
-    //exec('chown {xt.name}:ssl-cert {nginx.outcrt}'.format(options));
-    //exec('chown {xt.name}:{xt.name} {nginx.outkey}'.format(options));
+    exec('chmod 600 ' + options.nginx.outkey);
+    exec('chmod 600 ' + options.nginx.outcrt);
   },
 
   /**
