@@ -1,5 +1,9 @@
 language: c
 
+env:
+  - NODE_VERSION=0.8.26
+  - NODE_VERSION=0.10.29
+
 before_install:
 - mv ~/.nvm ~/.nvm.disabled
 - sudo bash bootstrap.sh
@@ -28,17 +32,11 @@ after_failure:
 - ./node_modules/xtuple/enyo-client/application/tools/deploy.sh
 
 deploy:
-  - provider: npm
-    email: me@traviswebb.com
-    api_key:
-      secure: KA7yjcLWyKYTNExDcp6RJsik8wna6qCvsP7ZbZPfSZEucgYWAPN65sIcdF6DMrZHYWp3Z6Cu7gXAuduxP21uFGX7YvkTmOKbyEZHrLd5vG8godt+VZceXtPA8LA75M55bU1NHuzRjKc+ogP1Y50FwQ3Z0EsEpVeCNGphZ3J16w0=
-    on:
-      tags: true
-      repo: xtuple/xtuple-server
-      branch: master
-  - provider: releases
-    user: tjwebb
-    password:
-      secure: M0g1ZHxSg+WWqa2B19//SFejSt6PS3M8oMKHv19HUXdbUIhs0ifV5WX4imnAlXRHbUqsEj2cYV8qiLd/QXQz4T1JS9I7LrNXuQ8N+zhCn4ar/INPJlt1Nw0ostBAfRa0F0NVMimzp1O+IHtgux1wmsRBLgJaisQhy7pR+cxJSWo=
-    on:
-      tags: true
+  provider: npm
+  email: me@traviswebb.com
+  api_key:
+    secure: KA7yjcLWyKYTNExDcp6RJsik8wna6qCvsP7ZbZPfSZEucgYWAPN65sIcdF6DMrZHYWp3Z6Cu7gXAuduxP21uFGX7YvkTmOKbyEZHrLd5vG8godt+VZceXtPA8LA75M55bU1NHuzRjKc+ogP1Y50FwQ3Z0EsEpVeCNGphZ3J16w0=
+  on:
+    tags: true
+    repo: xtuple/xtuple-server
+    branch: master

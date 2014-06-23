@@ -2,6 +2,7 @@ var lib = require('xtuple-server-lib'),
   format = require('string-format'),
   semver = require('semver'),
   Npm = require('npm'),
+  mkdirp = require('mkdirp'),
   Sync = require('sync'),
   _ = require('lodash'),
   exec = require('execSync').exec,
@@ -32,30 +33,28 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
     }
 
     _.each(lib.util.getRepositoryList(options), function (repo) {
+      var srcpath = path.resolve(options.xt.srcdir, repo);
       var template = _.extend({
           repo: repo,
           path: path.resolve(options.xt.srcdir, repo)
         }, options);
 
       if (!fs.existsSync(template.path)) {
-        var clone = exec('git clone --recursive https://github.com/xtuple/{repo}.git {path}'.format(template)),
-          checkout = exec(('cd {path} && git fetch && git checkout '+ options.xt.repoHash).format(template));
+        var clone = exec([ 'git clone --recursive https://github.com/xtuple/' + repo + '.git', srcpath].join(' ')),
+          checkout = exec([ 'cd', srcpath, '&& git fetch origin && git checkout', options.xt.repoHash ].join(' '));
 
         if (clone.code !== 0) {
           throw new Error(JSON.stringify(clone, null, 2));
         }
       }
 
-      exec('cd {path} && npm install'.format(template));
+      var npmlog = exec([ 'cd', srcpath, '&&', options.n.npm, 'install && n prev' ].join(' '));
+      console.log(npmlog.stdout);
 
       if (options.xt.usersrc !== options.xt.coredir) {
         // copy main repo files to user's home directory
-        exec('mkdir -p ' + options.xt.usersrc);
-        var rsync = exec([
-            'rsync -ar --exclude=.git',// --exclude=node_modules',
-            template.path + '/*',
-            options.xt.usersrc
-          ].join(' '));
+        mkdirp.sync(options.xt.usersrc);
+        var rsync = exec([ 'rsync -ar --exclude=.git', template.path + '/*', options.xt.usersrc ].join(' '));
           
         if (rsync.code !== 0) {
           throw new Error(JSON.stringify(rsync, null, 2));
