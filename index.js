@@ -86,7 +86,6 @@ _.extend(exports, /** @exports planner */ {
     options.n = { version: semver.clean(process.env.NODE_VERSION || process.version) };
     options.n.npm = 'n '+ options.n.version + ' && npm';
     options.n.use = 'n use '+ options.n.version;
-    options.n.bin = 'n bin '+ options.n.version;
 
     exports.eachTask(plan, function (task, phase, taskName) {
       options[phase.name] || (options[phase.name] = { });
