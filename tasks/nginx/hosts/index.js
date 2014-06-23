@@ -1,9 +1,7 @@
 var lib = require('xtuple-server-lib'),
   _ = require('lodash'),
   fs = require('fs'),
-  path = require('path'),
-  os = require('os'),
-  hosts_template_path = path.resolve(__dirname, 'etc-hosts.template');
+  path = require('path');
 
 /**
  * Append entries to the system hosts file if necessary.
@@ -12,17 +10,16 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-hosts */ {
 
   /** @override */
   executeTask: function (options) {
-    var template = fs.readFileSync(hosts_template_path).toString(),
-      customerRegex = 'customer=' + options.xt.name,
-      versionRegex = 'version=' + options.xt.version,
+    var id = lib.util.$(options),
       hosts = fs.readFileSync(path.resolve('/etc/hosts').toString());
 
-
-    if (new RegExp(customerRegex).test(hosts) && new RegExp(versionRegex).test(hosts)) {
-      // do nothing. the necessary host entry already exists
-    }
-    else {
-      fs.appendFileSync(path.resolve('/etc/hosts'), template.format(options));
+    if (!new RegExp(id).test(hosts)) {
+      fs.appendFileSync(path.resolve('/etc/hosts'), [
+        '# (auto-generated enty by xTuple Installer)',
+        '# host mappings for: ' + id,
+        '127.0.0.1 ' + options.nginx.hostname,
+        '127.0.0.1 ' + options.nginx.domain
+      ].join('\n'));
     }
   },
 
