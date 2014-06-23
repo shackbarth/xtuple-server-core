@@ -105,9 +105,12 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
 
   /** @override */
   uninstall: function (options) {
-    fs.unlinkSync(options.nginx.enabledSite);
-    fs.unlinkSync(options.nginx.availableSite);
-    exec('service nginx reload');
+    if (fs.existsSync(options.nginx.enabledSite)) {
+      fs.unlinkSync(options.nginx.enabledSite);
+      fs.unlinkSync(options.nginx.availableSite);
+
+      exec('service nginx reload');
+    }
   },
 
   /**
