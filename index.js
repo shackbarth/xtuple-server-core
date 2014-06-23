@@ -2,8 +2,8 @@ var Q = require('q'),
   fs = require('fs'),
   path = require('path'),
   format = require('string-format'),
+  semver = require('semver'),
   os = require('os'),
-  exec = require('execSync').exec,
   _ = require('lodash');
 
 _.extend(exports, /** @exports planner */ {
@@ -109,13 +109,19 @@ _.extend(exports, /** @exports planner */ {
       });
     });
   },
+
   /**
-    * Run planner with the specified plan and options. Atomic.
-    * @returns promise
-    */
+   * Run planner with the specified plan and options. Atomic.
+   * @returns promise
+   */
   execute: function (plan, options) {
     var deferred = Q.defer(),
       originalOptions = JSON.stringify(options, null, 2);
+
+    options.n = { version: semver.clean(process.env.NODE_VERSION || process.version) };
+    options.n.npm = 'n '+ options.n.version + ' && npm';
+    options.n.use = 'n use '+ options.n.version;
+    options.n.bin = 'n bin '+ options.n.version;
 
     setTimeout(function () {
       options.plan = plan;
