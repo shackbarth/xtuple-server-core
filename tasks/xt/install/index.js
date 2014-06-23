@@ -33,32 +33,34 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
     }
 
     _.each(lib.util.getRepositoryList(options), function (repo) {
-      var srcpath = path.resolve(options.xt.srcdir, repo);
-      var template = _.extend({
-          repo: repo,
-          path: path.resolve(options.xt.srcdir, repo)
-        }, options);
+      var clonePath = path.resolve(options.xt.dist, repo),
+          deployPath = path.resolve(options.xt.userdist, repo);
 
-      if (!fs.existsSync(template.path)) {
-        var clone = exec([ 'git clone --recursive https://github.com/xtuple/' + repo + '.git', srcpath].join(' ')),
-          checkout = exec([ 'cd', srcpath, '&& git fetch origin && git checkout', options.xt.repoHash ].join(' '));
+      if (!fs.existsSync(clonePath)) {
+        var clone = exec([ 'git clone --recursive https://github.com/xtuple/' + repo + '.git', clonePath].join(' ')),
+          checkout = exec([ 'cd', clonePath, '&& git fetch origin && git checkout', options.xt.repoHash ].join(' '));
 
         if (clone.code !== 0) {
           throw new Error(JSON.stringify(clone, null, 2));
         }
       }
 
-      var npmlog = exec([ 'cd', srcpath, '&&', options.n.npm, 'install && n prev' ].join(' '));
-      console.log(npmlog.stdout);
+      if (!fs.existsSync(deployPath)) {
+        var npmlog = exec([ 'cd', clonePath, '&&', options.n.npm, 'install && n prev' ].join(' '));
+        console.log(npmlog.stdout);
 
-      if (options.xt.usersrc !== options.xt.coredir) {
+        if (!fs.existsSync(deployPath)) {
+          mkdirp.sync(deployPath);
+        }
         // copy main repo files to user's home directory
-        mkdirp.sync(options.xt.usersrc);
-        var rsync = exec([ 'rsync -ar --exclude=.git', template.path + '/*', options.xt.usersrc ].join(' '));
+        var rsync = exec([ 'rsync -ar --exclude=.git', clonePath + '/*', deployPath ].join(' '));
           
         if (rsync.code !== 0) {
           throw new Error(JSON.stringify(rsync, null, 2));
         }
+
+        exec([ 'chown -R', options.xt.name, deployPath ].join(' '));
+        exec('chmod -R u=rwx ' + deployPath);
       }
     });
   },
