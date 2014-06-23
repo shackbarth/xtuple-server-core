@@ -17,6 +17,11 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
       description: 'The public domain name that will point to this web server',
       value: 'localhost'
     },
+    lan: {
+      optional: '[boolean]',
+      description: 'Web server will listen on LAN ip addresses',
+      value: false
+    },
     safeport: {
       optional: '[boolean]',
       description: 'Use non-root nginx http port',
@@ -25,15 +30,12 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
   },
 
   /**
-    * Generate 'sitename' value and format the domain argument if necessary
-    * @override
-    */
+   * Generate 'sitename' value and format the domain argument if necessary
+   * @override
+   */
   beforeInstall: function (options) {
-    options.nginx.sitename = 'xt-{version}-{name}'.format({
-      name: options.xt.name,
-      version: exports.getScalarVersion(options)
-    });
-    options.nginx.hostname = '{nginx.sitename}.localhost'.format(options);
+    options.nginx.sitename = lib.util.$(options);
+    options.nginx.hostname = options.nginx.sitename + '.localhost';
     options.nginx.sitesAvailable = path.resolve('/etc/nginx/sites-available');
     options.nginx.sitesEnabled = path.resolve('/etc/nginx/sites-enabled');
     options.nginx.availableSite = path.resolve(options.nginx.sitesAvailable, options.nginx.sitename);
@@ -57,29 +59,27 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
     if (options.nginx.domain === 'localhost') {
       options.nginx.domain = options.nginx.hostname;
     }
-    options.nginx.lanEndpoints = (options.pg && options.pg.mode === 'dedicated') && [
+    options.nginx.lanEndpoints = options.nginx.lan ? [
       '       (^10\\.)',
       '       (^172\\.1[6-9]\\.)',
       '       (^172\\.2[0-9]\\.)',
       '       (^172\\.3[0-1]\\.)',
       '       (^192\\.168\\.)'
-    ].join('\n') || '';
+    ].join('\n') : '';
   },
 
   /** @override */
   beforeTask: function (options) {
     options.nginx.port = lib.util.getServerSSLPort(options);
-
-    exec('rm -f '+ path.resolve(options.nginx.sitesEnabled, 'default'));
   },
 
   /**
-    * Generate and write nginx conf
-    *  - proxy requests to the node server
-    *  - auto-redirect http -> https
-    *  - set up SSL
-    *  @override
-    */
+   * Generate and write nginx conf
+   *  - proxy requests to the node server
+   *  - auto-redirect http -> https
+   *  - set up SSL
+   *  @override
+   */
   executeTask: function (options) {
     exports.writeSiteConfig(options);
   },
@@ -111,13 +111,5 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
 
       exec('service nginx reload');
     }
-  },
-
-  /**
-    * Return a version with no dots, which makes more sense when used in a URL
-    * or a database name than having punctuation.
-    */
-  getScalarVersion: function (options) {
-    return String(options.xt.version).replace(/\./g, '');
   }
 });
