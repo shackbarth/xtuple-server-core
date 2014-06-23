@@ -82,6 +82,12 @@ _.extend(exports, /** @exports planner */ {
     * Compile a pure, non-commander based options object.
     */
   compileOptions: function (plan, options) {
+
+    options.n = { version: semver.clean(process.env.NODE_VERSION || process.version) };
+    options.n.npm = 'n '+ options.n.version + ' && npm';
+    options.n.use = 'n use '+ options.n.version;
+    options.n.bin = 'n bin '+ options.n.version;
+
     exports.eachTask(plan, function (task, phase, taskName) {
       options[phase.name] || (options[phase.name] = { });
       options[phase.name][taskName] || (options[phase.name][taskName] = { });
@@ -117,11 +123,6 @@ _.extend(exports, /** @exports planner */ {
   execute: function (plan, options) {
     var deferred = Q.defer(),
       originalOptions = JSON.stringify(options, null, 2);
-
-    options.n = { version: semver.clean(process.env.NODE_VERSION || process.version) };
-    options.n.npm = 'n '+ options.n.version + ' && npm';
-    options.n.use = 'n use '+ options.n.version;
-    options.n.bin = 'n bin '+ options.n.version;
 
     setTimeout(function () {
       options.plan = plan;
