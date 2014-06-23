@@ -37,14 +37,6 @@ exports.describe = function (parent) {
 
   describe('execute', function () {
     
-    if (/^uninstall/.test(options.planName)) {
-      it('#uninstall', function () {
-        planner.uninstall(options);
-      });
-
-      return;
-    }
-
     planner.eachTask(plan, function (task, phase, taskName) {
       var pkgName = getPackageName(phase.name, taskName);
       var spec = require(pkgName + '/spec');
@@ -65,10 +57,6 @@ exports.describe = function (parent) {
   });
 
   describe('after execute', function () {
-
-    if (/^uninstall/.test(options.planName)) {
-      return;
-    }
 
     planner.eachTask(plan, function (task, phase, taskName) {
       it(getPackageName(phase.name, taskName) + '#afterInstall', function () {
