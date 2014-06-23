@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-nginx-ssl",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "description": "xTuple Server Task [nginx.ssl]: configure the SSL endpoint for a new xTuple instance deployment",
   "main": "index.js",
   "scripts": {
@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/xtuple/xtuple-server",
   "dependencies": {
+    "cp": "^0.1.1",
     "execSync": "^1.0.1-pre",
     "lodash": "^2.4.1",
     "string-format": "^0.2.1",
