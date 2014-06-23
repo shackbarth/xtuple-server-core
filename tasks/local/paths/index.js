@@ -82,7 +82,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
 
     // shared config (per account)
     options.xt.homedir = path.resolve(exports.usrLocalXtuple);
-    options.xt.dist = path.resolve(exports.usrLocalXtuple, 'dist');
+    options.xt.dist = path.resolve(options.xt.homedir, 'dist', options.xt.version);
     options.xt.userdist = options.xt.dist;
 
     options.xt.coredir = path.resolve(options.xt.userdist, 'xtuple');

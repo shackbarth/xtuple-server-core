@@ -1,23 +1,19 @@
 var lib = require('xtuple-server-lib'),
-  format = require('string-format'),
-  exec = require('execSync').exec,
   _ = require('lodash'),
   path = require('path'),
   fs = require('fs');
 
 /**
- * Generate the login_data.js file
+ * Generate the login_data file
  */
 _.extend(exports, lib.task, /** @exports xtuple-server-xt-test */ {
 
   /** @override */
   executeTask: function (options) {
-    exports.writeLoginData(options);
-  },
-
-  /** @override */
-  afterTask: function (options) {
-    options.xt.testdb = 'xtuple_demo';
+    if (options.xt.demo && options.type !== 'live') {
+      options.xt.testdb = 'demo_' + options.type;
+      exports.writeLoginData(options);
+    }
   },
 
   writeLoginData: function (options) {
@@ -26,7 +22,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-test */ {
         webaddress: 'https://' + options.nginx.hostname + ':' + options.nginx.httpsport,
         username: 'admin',
         pwd: options.xt.adminpw,
-        org: 'xtuple_demo'
+        org: options.xt.testdb
       }
     }, null, 2));
   },
