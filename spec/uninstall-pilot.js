@@ -1,12 +1,11 @@
-var _ = require('lodash'),
-  path = require('path'),
-  planner = require('./planner');
+var path = require('path'),
+  planner = require('../');
 
 describe('uninstall-pilot', function () {
-  this.planObject = require('../plans')['uninstall-pilot'];
-  this.options = {
+  var planObject = require('../plans')['uninstall-pilot'];
+  var options = {
     planName: 'uninstall-pilot',
-    plan: this.planObject.plan,
+    plan: planObject.plan,
     type: 'pilot',
     requiresRoot: true,
     local: {
@@ -21,5 +20,10 @@ describe('uninstall-pilot', function () {
       capacity: 8
     }
   };
-  planner.describe(this);
+
+  it('should run uninstall', function () {
+    planner.compileOptions(options.plan, options);
+    planner.verifyOptions(options.plan, options);
+    planner.uninstall(options);
+  });
 });
