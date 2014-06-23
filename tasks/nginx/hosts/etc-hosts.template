@@ -1,5 +1,0 @@
-
-# (xTuple Installer {xt.version}: auto-generated entry)
-# host mappings for: customer={xt.name}, version={xt.version}
-127.0.0.1 {nginx.hostname}
-127.0.0.1 {nginx.domain}

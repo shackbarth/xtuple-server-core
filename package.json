@@ -4,6 +4,7 @@
   "description": "xTuple Server",
   "dependencies": {
     "commander": "^2.2.0",
+    "cp": "^0.1.1",
     "execSync": "^1.0.1-pre",
     "latest-version": "^0.2.0",
     "lodash": "^2.4.1",
