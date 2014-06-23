@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-pg-config",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "xTuple Server Task [pg.config]: write postgres cluster configuration",
   "main": "index.js",
   "scripts": {
