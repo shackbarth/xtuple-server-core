@@ -88,7 +88,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
     options.xt.database.list = _.compact(_.map([ 'demo', 'quickstart', 'empty' ], function (db) {
       return options.xt[db] ? {
         dbname: db + '_' + options.type,
-        filename: path.resolve(options.xt.usersrc, 'foundation-database', exports.options[db].filename),
+        filename: path.resolve(options.xt.coredir, 'foundation-database', exports.options[db].filename),
         type: 's'
       } : null;
     }));
@@ -109,7 +109,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
 
   /** @override */
   beforeTask: function (options) {
-    rimraf.sync(path.resolve(options.xt.usersrc, 'scripts/lib/build'));
+    rimraf.sync(path.resolve(options.xt.coredir, 'scripts/lib/build'));
   },
 
   /** @override */

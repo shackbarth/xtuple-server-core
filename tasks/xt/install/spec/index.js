@@ -42,8 +42,8 @@ exports.afterExecute = function (options) {
       assert.include(repoList, 'private-extensions');
     });
     it('should clone and npm install public repos without prompting for password', function () {
-      var xtupleRepo = fs.existsSync(options.xt.srcdir, 'xtuple'),
-        extensionsRepo = fs.existsSync(options.xt.srcdir, 'xtuple-extensions');
+      var xtupleRepo = fs.existsSync(options.xt.userdist, 'xtuple'),
+        extensionsRepo = fs.existsSync(options.xt.userdist, 'xtuple-extensions');
 
       assert.isTrue(xtupleRepo);
       assert.isTrue(extensionsRepo);

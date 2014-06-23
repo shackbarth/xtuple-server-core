@@ -1,6 +1,6 @@
 var lib = require('xtuple-server-lib'),
-  exec = require('execSync').exec,
   rimraf = require('rimraf'),
+  mkdirp = require('mkdirp'),
   path = require('path'),
   _ = require('lodash'),
   prefix = path.resolve(lib.util.getUserHome(), '.xtuple');
@@ -79,20 +79,18 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
     options.xt.rand64file = path.resolve(exports.etcXtuple, version, name, 'rand64.txt');
     options.xt.key256file = path.resolve(exports.etcXtuple, version, name, 'key256.txt');
     options.xt.userhome = lib.util.getUserHome();
-    options.xt.usersrc = options.local.workspace;
 
     // shared config (per account)
     options.xt.homedir = path.resolve(exports.usrLocalXtuple);
+    options.xt.dist = path.resolve(exports.usrLocalXtuple, 'dist');
+    options.xt.userdist = options.xt.dist;
+
+    options.xt.coredir = path.resolve(options.xt.userdist, 'xtuple');
 
     // other system paths
     options.xt.logdir = path.resolve(exports.varLog, 'xtuple', version, name);
     options.pg.logdir = path.resolve(exports.varLog, 'postgresql');
     options.xt.socketdir = path.resolve('/var/run/postgresql');
-
-    // repositories
-    options.xt.srcdir = path.resolve(options.xt.usersrc, '..');
-    options.xt.coredir = options.xt.usersrc;
-    options.xt.extdir = path.resolve(options.xt.srcdir, 'xtuple-extensions');
 
     options.pg.snapshotdir = path.resolve(exports.varLibXtuple, options.xt.version, options.xt.name, 'snapshots');
   },
@@ -102,13 +100,13 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
    * @public
    */
   createPaths: function (options) {
-    exec('mkdir -p ' + options.xt.userhome);
-    exec('mkdir -p ' + options.pg.snapshotdir);
+    mkdirp.sync(options.xt.userhome);
+    mkdirp.sync(options.xt.userdist);
+    mkdirp.sync(options.pg.snapshotdir);
 
-    exec('mkdir -p ' + options.xt.configdir);
-    exec('mkdir -p ' + options.xt.ssldir);
-    exec('mkdir -p ' + options.xt.logdir);
-    exec('mkdir -p ' + options.xt.socketdir);
-    exec('mkdir -p ' + options.xt.srcdir);
+    mkdirp.sync(options.xt.configdir);
+    mkdirp.sync(options.xt.ssldir);
+    mkdirp.sync(options.xt.logdir);
+    mkdirp.sync(options.xt.socketdir);
   }
 });
