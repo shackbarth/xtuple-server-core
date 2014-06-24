@@ -24,12 +24,10 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
       description: 'The path of the local workspace in which to install',
       value: process.cwd(),
       validate: function (value) {
-        if (!_.isEmpty(value)) {
-          var pkg = require(path.resolve(value, 'package'));
+        var pkg = require(path.resolve(value, 'package'));
 
-          if (!_.isObject(pkg) || pkg.name !== 'xtuple') {
-            throw new Error('Please run this command from the directory of your xtuple repository, or correctly set --local-workspace');
-          }
+        if (!_.isObject(pkg) || pkg.name !== 'xtuple') {
+          throw new Error('Please run this command from the directory of your xtuple repository, or correctly set --local-workspace');
         }
 
         return value;
@@ -88,7 +86,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
     options.xt.dist = path.resolve(options.local.workspace, '..');
     options.xt.userdist = options.xt.dist;
 
-    options.xt.coredir = path.resolve(options.xt.userdist, 'xtuple');
+    options.xt.coredir = options.local.workspace;
 
     // other system paths
     options.xt.logdir = path.resolve(exports.varLog, 'xtuple', version, name);

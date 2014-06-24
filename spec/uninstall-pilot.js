@@ -1,5 +1,6 @@
 var path = require('path'),
-  planner = require('../');
+  planner = require('../'),
+  assert = require('chai').assert;
 
 describe('uninstall-pilot', function () {
   var planObject = require('../plans')['uninstall-pilot'];
@@ -13,17 +14,19 @@ describe('uninstall-pilot', function () {
     },
     xt: {
       demo: true,
-      version: this.xtupleVersion
+      version: require('xtuple/package').version
     },
     pg: {
-      version: process.env.XT_PG_VERSION,
+      version: '9.3',
       capacity: 8
     }
   };
 
-  it('should run uninstall', function () {
+  it('should run uninstall', function (done) {
     planner.compileOptions(options.plan, options);
     planner.verifyOptions(options.plan, options);
-    planner.uninstall(options);
+    planner.execute(options.plan, options)
+      .then(done)
+      .fail(assert.fail);
   });
 });
