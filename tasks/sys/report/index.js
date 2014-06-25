@@ -9,7 +9,7 @@ _.extend(exports, lib.task, /** @exports report */ {
 
   /** @override */
   beforeInstall: function (options) {
-    if (/^install/.test(options.planName) {
+    if (/^install/.test(options.planName)) {
       options.sys.installArgumentsFile = path.resolve(options.xt.configdir, 'install-arguments.json');
       mkdirp.sync(path.dirname(options.sys.installArgumentsFile));
       options.xt && options.xt.configdir && fs.writeFileSync(
