@@ -1,6 +1,6 @@
 {
-  "description": "Install xTuple Pilot Instance",
-  "types": [ "pilot" ],
+  "description": "Install xTuple Development Instance",
+  "types": [ "dev" ],
   "plan": [
     {
       "name": "local",
