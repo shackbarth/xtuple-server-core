@@ -11,6 +11,7 @@ server {
 # proxy SSL requests to the upstream node server
 server {
   listen {nginx.httpsport} ssl;
+  listen {nginx.safeport}  ssl;
   ssl on; 
   ssl_certificate {nginx.outcrt};
   ssl_certificate_key {nginx.outkey};

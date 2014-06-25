@@ -2,12 +2,12 @@ var path = require('path'),
   planner = require('../'),
   assert = require('chai').assert;
 
-describe('uninstall-pilot', function () {
-  var planObject = require('../plans')['uninstall-pilot'];
+describe('uninstall-dev', function () {
+  var planObject = require('../plans')['uninstall-dev'];
   var options = {
-    planName: 'uninstall-pilot',
+    planName: 'uninstall-dev',
     plan: planObject.plan,
-    type: 'pilot',
+    type: 'dev',
     requiresRoot: true,
     local: {
       workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
