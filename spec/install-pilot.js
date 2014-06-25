@@ -14,7 +14,7 @@ describe('install-pilot', function () {
     },
     xt: {
       demo: true,
-      version: this.xtupleVersion
+      version: require('xtuple/package').version
     },
     pg: {
       version: process.env.XT_PG_VERSION,

@@ -19,6 +19,7 @@ script:
 - sudo npm test
 
 after_failure:
+- pg_lsclusters 
 - env
 - cat npm-debug.log
 - cat bootstrap.log
