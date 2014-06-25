@@ -54,7 +54,7 @@
     "index.js"
   ],
   "scripts": {
-    "pretest": "mocha spec/uninstall-pilot.js -b",
+    "pretest": "mocha spec/uninstall-dev.js -b",
     "test": "mocha -R spec spec/ -b"
   },
   "bin": {
