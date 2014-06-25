@@ -76,6 +76,9 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
 
   /** @override */
   afterTask: function (options) {
+    if (fs.existsSync('/etc/nginx/sites-enabled/default')) {
+      fs.unlinkSync('/etc/nginx/sites-enabled/default');
+    }
     var reload = exec('service nginx reload');
 
     if (reload.code !== 0) {
