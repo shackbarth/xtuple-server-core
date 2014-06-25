@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-sys-report",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "xTuple Server Task [sys.report]: print a summary of the installation",
   "main": "index.js",
   "scripts": {
