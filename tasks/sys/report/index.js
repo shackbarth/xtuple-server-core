@@ -15,7 +15,7 @@ _.extend(exports, lib.task, /** @exports report */ {
       path.resolve(options.xt.configdir, 'install-arguments.json'),
       JSON.stringify(options, null, 2)
     );
-    options.report = { };
+    options.report || (options.report =  { });
   },
 
   /** @override */
@@ -39,12 +39,16 @@ _.extend(exports, lib.task, /** @exports report */ {
         password: options.sys.policy.userPassword
       };
     }
+    if (/^install/.test(options.planName)) {
+      options.report['Instance Details'] = {
+        'Instance Name': options.pg.cluster.name,
+        'Postgres Port': options.pg.cluster.port,
+        'Public Web Domain': options.nginx.domain,
+        'Direct Public Web Port': options.nginx.safeport
+      };
+    }
 
     console.log();
-    if (options.pg.cluster) {
-      console.log('Installation Name: '+ options.pg.cluster.name);
-    }
-    console.log('Access Credentials');
     console.log(JSON.stringify(options.report, null, 2));
     console.log('Write this information down now.');
     console.log();
