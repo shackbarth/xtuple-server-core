@@ -20,11 +20,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
       optional: '[boolean]',
       description: 'Web server will listen on LAN ip addresses',
       value: false
-    },
-    safeport: {
-      optional: '[boolean]',
-      description: 'Use non-root nginx http port',
-      value: false
     }
   },
 
@@ -42,11 +37,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
 
     options.nginx.httpport = 80;
     options.nginx.httpsport = 443;
-
-    if (options.nginx.safeport) {
-      options.nginx.httpport += 32768;
-      options.nginx.httpsport += 32768;
-    }
+    options.nginx.safeport = options.nginx.httpsport + 32768;
 
     // nginx site template file path
     options.nginx.siteTemplateFile = path.resolve(__dirname, 'xtuple-site.template');
