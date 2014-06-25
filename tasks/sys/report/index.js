@@ -9,12 +9,14 @@ _.extend(exports, lib.task, /** @exports report */ {
 
   /** @override */
   beforeInstall: function (options) {
-    options.sys.installArgumentsFile = path.resolve(options.xt.configdir, 'install-arguments.json');
-    mkdirp.sync(path.dirname(options.sys.installArgumentsFile));
-    options.xt && options.xt.configdir && fs.writeFileSync(
-      path.resolve(options.xt.configdir, 'install-arguments.json'),
-      JSON.stringify(options, null, 2)
-    );
+    if (/^install/.test(options.planName) {
+      options.sys.installArgumentsFile = path.resolve(options.xt.configdir, 'install-arguments.json');
+      mkdirp.sync(path.dirname(options.sys.installArgumentsFile));
+      options.xt && options.xt.configdir && fs.writeFileSync(
+        path.resolve(options.xt.configdir, 'install-arguments.json'),
+        JSON.stringify(options, null, 2)
+      );
+    }
     options.report || (options.report =  { });
   },
 
