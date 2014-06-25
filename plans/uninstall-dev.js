@@ -1,5 +1,5 @@
 var _ = require('lodash');
 
 module.exports = _.defaults({
-  description: "Destroy xTuple Pilot Instance"
-}, require('./install-pilot'));
+  description: "Destroy xTuple Development Instance"
+}, require('./install-dev'));
