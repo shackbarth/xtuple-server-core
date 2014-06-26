@@ -17,6 +17,10 @@ _.extend(exports, lib.task, /** @exports xtuple-server-sys-upgrade */ {
     exec('nde install');
     exec('npm update');
     exec('npm install -g');
+
+    if (options.pkg.private) {
+      exec('npm install -g xtuple-server-sys-service');
+    }
   }
 
 });
