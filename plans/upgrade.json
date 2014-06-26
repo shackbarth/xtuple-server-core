@@ -1,0 +1,7 @@
+{
+  "description": "Upgrade xTuple Server to the latest version",
+  "plan": [
+    { "name": "sys", "tasks": [ "upgrade" ] }
+  ]
+}
+
