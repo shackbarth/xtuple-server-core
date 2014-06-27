@@ -1,4 +1,5 @@
-var assert = require('chai').assert,
+var lib = require('xtuple-server-lib'),
+  assert = require('chai').assert,
   _ = require('lodash'),
   planner = require('../');
 
@@ -20,13 +21,13 @@ exports.describe = function (parent) {
 
   describe('before execute', function () {
 
-    planner.eachTask(plan, function (task, phase, taskName) {
+    lib.util.eachTask(plan, function (task, phase, taskName) {
       it(getPackageName(phase.name, taskName) + '#beforeInstall', function () {
         task.beforeInstall(options);
       });
     });
 
-    planner.eachTask(plan, function (task, phase, taskName) {
+    lib.util.eachTask(plan, function (task, phase, taskName) {
       var pkgName = getPackageName(phase.name, taskName);
       var spec = require(pkgName + '/spec');
       if (_.isFunction(spec.beforeExecute)) {
@@ -37,7 +38,7 @@ exports.describe = function (parent) {
 
   describe('execute', function () {
     
-    planner.eachTask(plan, function (task, phase, taskName) {
+    lib.util.eachTask(plan, function (task, phase, taskName) {
       var pkgName = getPackageName(phase.name, taskName);
       var spec = require(pkgName + '/spec');
 
@@ -58,13 +59,13 @@ exports.describe = function (parent) {
 
   describe('after execute', function () {
 
-    planner.eachTask(plan, function (task, phase, taskName) {
+    lib.util.eachTask(plan, function (task, phase, taskName) {
       it(getPackageName(phase.name, taskName) + '#afterInstall', function () {
         task.afterInstall(options);
       });
     });
 
-    planner.eachTask(plan, function (task, phase, taskName) {
+    lib.util.eachTask(plan, function (task, phase, taskName) {
       var pkgName = getPackageName(phase.name, taskName);
       var spec = require(pkgName + '/spec');
       if (_.isFunction(spec.afterExecute)) {
