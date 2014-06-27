@@ -59,6 +59,7 @@ function executePlan (plan, options) {
 var planner = module.exports = {
 
   verifyOptions: function (plan, options) {
+    log.silly('verifyOptions', options);
     if (_.isEmpty(options.type)) {
       throw new TypeError('<type> is a required field');
     }
@@ -82,6 +83,7 @@ var planner = module.exports = {
     options.n.npm = 'n '+ options.n.version + ' && npm';
     options.n.use = 'n use '+ options.n.version;
     log.verbose('compileOptions', 'node version = '+ options.n.version);
+    log.silly('compileOptions', options);
 
     lib.util.eachTask(plan, function (task, phase, taskName) {
       options[phase.name] || (options[phase.name] = { });
