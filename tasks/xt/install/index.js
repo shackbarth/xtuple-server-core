@@ -43,7 +43,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
       }
 
       if (!fs.existsSync(deployPath)) {
-        var npmlog = exec([ 'cd', clonePath, '&&', options.n.npm, 'install && n prev' ].join(' '));
+        var npmlog = exec([ 'cd', clonePath, '&&', options.n.npm, 'install && n stable' ].join(' '));
         console.log(npmlog.stdout);
 
         if (!fs.existsSync(deployPath)) {
