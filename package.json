@@ -33,6 +33,7 @@
     "xtuple-server-pg-rename": "^0.9.0",
     "xtuple-server-pg-restore": "^0.9.0",
     "xtuple-server-sys-report": "^0.9.0",
+    "xtuple-server-sys-upgrade": "^0.9.1",
     "xtuple-server-xt-config": "^0.9.0",
     "xtuple-server-xt-database": "^0.9.0",
     "xtuple-server-xt-install": "^0.9.0",

@@ -14,6 +14,7 @@
     "xtuple-server-pg-rename": "tasks/pg/rename",
     "xtuple-server-pg-restore": "tasks/pg/restore",
     "xtuple-server-sys-report": "tasks/sys/report",
+    "xtuple-server-sys-upgrade": "tasks/sys/upgrade",
     "xtuple-server-xt-config": "tasks/xt/config",
     "xtuple-server-xt-database": "tasks/xt/database",
     "xtuple-server-xt-install": "tasks/xt/install",
