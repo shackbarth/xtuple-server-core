@@ -1,7 +1,8 @@
 var lib = require('xtuple-server-lib'),
   assert = require('chai').assert,
   _ = require('lodash'),
-  planner = require('../');
+  planner = require('../'),
+  log = require('npmlog');
 
 function getPackageName (phaseName, taskName) {
   return 'xtuple-server-' + phaseName + '-' + taskName;
