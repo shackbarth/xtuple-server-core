@@ -9,11 +9,9 @@ var mocha = new Mocha({
   reporter: 'spec'
 });
 
-mocha.files = glob.sync(path.resolve(__dirname, '*.js'));
+mocha.files = glob.sync(path.resolve(process.cwd(), 'spec/*.js'));
 
-var runner = mocha.run(function () {
-    fs.appendFileSync('xtuple-server-pass.log', JSON.stringify(log.record, null, 2));
-  })
+mocha.run()
   .on('fail', function (test, err) {
     log.error('test', err.stack.split('\n'));
     log.info('test', 'Please see xtuple-server-test.log for more info');
