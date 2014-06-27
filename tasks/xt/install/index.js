@@ -1,9 +1,6 @@
 var lib = require('xtuple-server-lib'),
-  format = require('string-format'),
   semver = require('semver'),
-  Npm = require('npm'),
   mkdirp = require('mkdirp'),
-  Sync = require('sync'),
   _ = require('lodash'),
   exec = require('execSync').exec,
   fs = require('fs'),
@@ -92,6 +89,10 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
 
   /** @override */
   afterTask: function (options) {
-    exec('chown -R {xt.name}:{xt.name} {xt.userhome}'.format(options));
+    exec([
+      'chown -R',
+      options.xt.name + ':' + options.xt.name,
+      options.xt.userhome
+    ].join(' '));
   }
 });
