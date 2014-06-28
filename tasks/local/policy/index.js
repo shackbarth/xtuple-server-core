@@ -1,5 +1,5 @@
 var lib = require('xtuple-server-lib'),
-  exec = require('execSync').exec,
+  exec = require('sync-exec'),
   _ = require('lodash'),
   path = require('path'),
   fs = require('fs');
@@ -31,8 +31,8 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-policy */ {
 
   /** @protected */
   createUserPolicy: function (options) {
-    exec('usermod -a -G www-data,ssl-cert,postgres,xtuser {xt.name}'.format(options)),
-    exec('chown -R {xt.name}:xtuser ~/.xtuple'.format(options));
-    exec('chown -R {xt.name}:postgres /var/run/postgresql'.format(options));
+    exec('usermod -a -G www-data,ssl-cert,postgres,xtuser '+ options.xt.name);
+    exec('chown -R '+ options.xt.name +':xtuser ~/.xtuple');
+    exec('chown -R '+ options.xt.name +':xt.name:postgres /var/run/postgresql');
   }
 });
