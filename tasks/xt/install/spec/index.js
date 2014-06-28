@@ -1,8 +1,7 @@
 var assert = require('chai').assert,
   lib = require('xtuple-server-lib'),
   _ = require('lodash'),
-  fs = require('fs'),
-  exec = require('execSync').exec;
+  fs = require('fs');
 
 exports.afterExecute = function (options) {
 
