@@ -1,5 +1,5 @@
 var lib = require('xtuple-server-lib'),
-  exec = require('execSync').exec,
+  exec = require('sync-exec'),
   _ = require('lodash'),
   format = require('string-format'),
   fs = require('fs'),
@@ -81,7 +81,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
     }
     var reload = exec('service nginx reload');
 
-    if (reload.code !== 0) {
+    if (reload.status !== 0) {
       throw new Error('nginx failed to reload: ' + reload.stdout);
     }
   },
@@ -93,7 +93,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
       fs.readFileSync(options.nginx.siteTemplateFile).toString().format(options).trim()
     );
 
-    exec('ln -s {nginx.availableSite} {nginx.enabledSite}'.format(options));
+    exec([ 'ln -s', options.nginx.availableSite, options.nginx.enabledSite ].join(' '));
   },
 
   /** @override */
