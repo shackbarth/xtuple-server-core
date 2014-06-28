@@ -22,7 +22,7 @@ after_failure:
 - pg_lsclusters 
 - env
 - cat npm-debug.log
-- cat xtuple-server.log
+- cat xtuple-server-error.log
 
 deploy:
   provider: npm
