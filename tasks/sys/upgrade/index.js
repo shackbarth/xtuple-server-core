@@ -1,5 +1,5 @@
 var lib = require('xtuple-server-lib'),
-  exec = require('execSync').exec,
+  exec = require('sync-exec'),
   _ = require('lodash');
 
 _.extend(exports, lib.task, /** @exports xtuple-server-sys-upgrade */ {
