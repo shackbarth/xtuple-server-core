@@ -54,7 +54,7 @@
     "index.js"
   ],
   "scripts": {
-    "test": "node spec/index.js"
+    "test": "node spec"
   },
   "bin": {
     "xtuple-server": "cli.js"
