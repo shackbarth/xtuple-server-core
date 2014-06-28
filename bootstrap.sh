@@ -30,8 +30,11 @@ install_debian () {
     log "Adding custom Debian repositories for Ubuntu 12.04..."
     apt-get -qq install python-software-properties --force-yes
 
-    wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - > /dev/null 2>&1
-    echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list 2>&1
+    if [[ ! $(grep -Fxq pgdg /etc/apt/sources.list) && ! $(grep -Fxq pgdg /etc/apt/sources.list.d/pgdg.list) ]]; then
+      wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - > /dev/null 2>&1
+      echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list 2>&1
+    fi
+
     add-apt-repository ppa:nginx/stable -y > /dev/null 2>&1
     add-apt-repository ppa:git-core/ppa -y > /dev/null 2>&1
     apt-get -qq update | tee -a $logfile
