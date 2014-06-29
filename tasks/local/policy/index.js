@@ -35,7 +35,9 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-policy */ {
     exec('usermod -a -G ssl-cert,xtuser,www-data postgres');
 
     exec('chown -R '+ options.xt.name +' '+ options.xt.userhome);
-    exec('chown -R postgres:xtuser '+ options.xt.socketdir);
-    exec('chmod -R g+wrx '+ options.xt.socketdir);
+    //exec('chown -R postgres:xtuser '+ options.xt.socketdir);
+
+    exec('chown -R postgres:postgres '+ options.xt.socketdir);///var/run/postgresql');
+    exec('chmod -R 777 '+ options.xt.socketdir);
   }
 });
