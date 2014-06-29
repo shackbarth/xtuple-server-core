@@ -32,7 +32,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-policy */ {
   /** @protected */
   createUserPolicy: function (options) {
     exec('usermod -a -G www-data,ssl-cert,postgres,xtuser '+ options.xt.name);
-    exec('chown -R '+ options.xt.name +':xtuser ~/.xtuple');
-    exec('chown -R '+ options.xt.name +':xt.name:postgres /var/run/postgresql');
+    exec('chown -R '+ options.xt.name +':xtuser '+ options.xt.userhome);
+    exec('chown -R '+ options.xt.name +':xtuser '+ options.xt.socketdir);
   }
 });
