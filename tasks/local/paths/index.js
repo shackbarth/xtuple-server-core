@@ -91,7 +91,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
     // other system paths
     options.xt.logdir = path.resolve(exports.varLog, 'xtuple', version, name);
     options.pg.logdir = path.resolve(exports.varLog, 'postgresql');
-    options.xt.socketdir = path.resolve(exports.varRun, 'postgresql');
+    options.xt.socketdir = path.resolve('/var/run/postgresql');
 
     options.pg.snapshotdir = path.resolve(exports.varLibXtuple, options.xt.version, options.xt.name, 'snapshots');
   },
@@ -108,6 +108,5 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
     mkdirp.sync(options.xt.configdir);
     mkdirp.sync(options.xt.ssldir);
     mkdirp.sync(options.xt.logdir);
-    mkdirp.sync(options.xt.socketdir);
   }
 });
