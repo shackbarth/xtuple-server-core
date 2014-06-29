@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-pg-cluster",
-  "version": "0.9.8",
+  "version": "0.9.10",
   "description": "xTuple Server Task [pg.cluster]: create and setup a postgres cluster for xTuple",
   "main": "index.js",
   "scripts": {
@@ -34,6 +34,7 @@
   },
   "devDependencies": {
     "chai": "^1.9.1",
-    "mocha": "^1.20.0"
+    "mocha": "^1.20.0",
+    "sync-exec": "^0.3.2"
   }
 }

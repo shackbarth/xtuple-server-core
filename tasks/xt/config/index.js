@@ -1,6 +1,6 @@
 var lib = require('xtuple-server-lib'),
   format = require('string-format'),
-  exec = require('execSync').exec,
+  exec = require('sync-exec'),
   _ = require('lodash'),
   path = require('path'),
   fs = require('fs');

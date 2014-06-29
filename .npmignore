@@ -7,3 +7,4 @@ bootstrap.sh
 *.crt
 *.backup
 *.sql
+sync-exec*

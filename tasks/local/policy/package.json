@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-local-policy",
-  "version": "0.9.3",
+  "version": "0.9.12",
   "description": "xTuple Server Task [dev.policy]: setup development policy",
   "main": "index.js",
   "scripts": {
@@ -27,9 +27,8 @@
   },
   "homepage": "https://github.com/xtuple/xtuple-server",
   "dependencies": {
-    "execSync": "^1.0.1-pre",
     "lodash": "^2.4.1",
-    "string-format": "^0.2.1",
+    "sync-exec": "^0.3.2",
     "xtuple-server-lib": "^0.9.0"
   },
   "devDependencies": {

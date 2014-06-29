@@ -1,7 +1,9 @@
+global.log = require('npmlog');
+log.heading = 'xtuple-server';
+
 var lib = require('xtuple-server-lib'),
   Q = require('q'),
   semver = require('semver'),
-  log = require('npmlog'),
   _ = require('lodash');
 
 function prefix (phaseName, taskName) {

@@ -89,7 +89,7 @@ _.extend(exports, lib.task, /** @exports cluster */ {
         'GRANT xtrole TO {xt.name}'.format(options)
       ],
       results = _.map(queries, _.partial(lib.pgCli.psql, options)),
-      failed = _.difference(results, _.where(results, { code: 0 }));
+      failed = _.difference(results, _.where(results, { status: 0 }));
 
     if (failed.length > 0) {
       throw new Error(JSON.stringify(failed, null, 2));

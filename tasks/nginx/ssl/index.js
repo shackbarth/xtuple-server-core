@@ -1,7 +1,6 @@
 var lib = require('xtuple-server-lib'),
-  format = require('string-format'),
   _ = require('lodash'),
-  exec = require('execSync').exec,
+  exec = require('sync-exec'),
   cp = require('cp'),
   fs = require('fs'),
   path = require('path');
@@ -54,7 +53,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
     else if (/localhost/.test(options.nginx.domain)) {
       var result = exports.generate(options);
 
-      if (result.code !== 0) {
+      if (result.status !== 0) {
         throw new Error(JSON.stringify(result, null, 2));
       }
     }
@@ -71,8 +70,8 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
   afterTask: function (options) {
     exports.verifyCertificate(options);
 
-    exec('chmod 600 ' + options.nginx.outkey);
-    exec('chmod 600 ' + options.nginx.outcrt);
+    fs.chmodSync(options.nginx.outkey, '600');
+    fs.chmodSync(options.nginx.outcrt, '600');
   },
 
   /**
@@ -86,12 +85,12 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
         '-subj \'/CN='+ options.nginx.domain + '\'',
         '-days 365',
         '-nodes',
-        '-keyout {nginx.outkey}',
-        '-out {nginx.outcrt}',
-      ].join(' ').format(options),
+        '-keyout', options.nginx.outkey,
+        '-out', options.nginx.outcrt,
+      ].join(' '),
       result = exec(cmd);
 
-    if (result.code !== 0) {
+    if (result.status !== 0) {
       console.log(JSON.stringify(options, null, 2));
       throw new Error('could not generate keypair: '+ result.stdout);
     }
@@ -120,7 +119,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
     }
 
     // verify x509 certificate
-    if (exec('openssl x509 -noout -in ' + outcrt).code !== 0) {
+    if (exec('openssl x509 -noout -in ' + outcrt).status !== 0) {
       throw new Error('The provided .crt failed openssl x509 verify');
     }
 

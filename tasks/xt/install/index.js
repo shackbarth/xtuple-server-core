@@ -2,7 +2,7 @@ var lib = require('xtuple-server-lib'),
   semver = require('semver'),
   mkdirp = require('mkdirp'),
   _ = require('lodash'),
-  exec = require('execSync').exec,
+  exec = require('sync-exec'),
   fs = require('fs'),
   path = require('path');
 
@@ -37,7 +37,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
         var clone = exec([ 'git clone --recursive https://github.com/xtuple/' + repo + '.git', clonePath].join(' ')),
           checkout = exec([ 'cd', clonePath, '&& git fetch origin && git checkout', options.xt.repoHash ].join(' '));
 
-        if (clone.code !== 0) {
+        if (clone.status !== 0) {
           throw new Error(JSON.stringify(clone, null, 2));
         }
       }
@@ -52,7 +52,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
         // copy main repo files to user's home directory
         var rsync = exec([ 'rsync -ar --exclude=.git', clonePath + '/*', deployPath ].join(' '));
           
-        if (rsync.code !== 0) {
+        if (rsync.status !== 0) {
           throw new Error(JSON.stringify(rsync, null, 2));
         }
 

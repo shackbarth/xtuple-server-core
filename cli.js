@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 
 var lib = require('xtuple-server-lib'),
-  exec = require('execSync').exec,
+  exec = require('sync-exec'),
   _ = require('lodash'),
   program = require('commander'),
   log = require('npmlog'),
