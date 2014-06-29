@@ -1,10 +1,10 @@
+global.log = require('npmlog');
+log.heading = 'xtuple-server-test';
+
 var lib = require('xtuple-server-lib'),
   assert = require('chai').assert,
   _ = require('lodash'),
-  planner = require('../'),
-  log = require('npmlog');
-
-log.heading = 'xtuple-server-test';
+  planner = require('../');
 
 function getPackageName (phaseName, taskName) {
   return 'xtuple-server-' + phaseName + '-' + taskName;
