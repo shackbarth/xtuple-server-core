@@ -31,6 +31,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-policy */ {
 
   /** @protected */
   createUserPolicy: function (options) {
+    exec('addgroup xtuser');
     exec('usermod -a -G postgres,xtuser '+ options.xt.name);
     exec('usermod -a -G ssl-cert,xtuser,www-data postgres');
 
