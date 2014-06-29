@@ -82,7 +82,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
     var reload = exec('service nginx reload');
 
     if (reload.status !== 0) {
-      throw new Error('nginx failed to reload: ' + reload.stdout);
+      throw new Error('nginx failed to reload: ' + reload.stderr);
     }
   },
 

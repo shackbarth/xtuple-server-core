@@ -53,7 +53,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
     else if (/localhost/.test(options.nginx.domain)) {
       var result = exports.generate(options);
 
-      if (result.code !== 0) {
+      if (result.status !== 0) {
         throw new Error(JSON.stringify(result, null, 2));
       }
     }

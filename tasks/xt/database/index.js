@@ -119,7 +119,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
 
       var buildResult = exec(lib.util.getDatabaseBuildCommand(db, options));
       if (buildResult.status !== 0) {
-        throw new Error(buildResult.stdout);
+        throw new Error(buildResult.stderr);
       }
 
       // install extensions specified by the edition
@@ -131,7 +131,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
     _.each(extensions, function (ext) {
       var result = exec(lib.util.getExtensionBuildCommand(db, options, ext));
       if (result.status !== 0) {
-        throw new Error(result.stdout);
+        throw new Error(result.stderr);
       }
     });
   }

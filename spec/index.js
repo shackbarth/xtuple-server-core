@@ -1,4 +1,3 @@
-var log = require('npmlog');
 var fs = require('fs');
 var path = require('path');
 var Mocha = require('mocha');
