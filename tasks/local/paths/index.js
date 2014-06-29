@@ -2,8 +2,10 @@ var lib = require('xtuple-server-lib'),
   rimraf = require('rimraf'),
   mkdirp = require('mkdirp'),
   path = require('path'),
+  fs = require('fs'),
   _ = require('lodash'),
-  prefix = path.resolve(lib.util.getUserHome(), '.xtuple');
+  home = require('home-dir'),
+  prefix = path.resolve(home(), '.xtuple');
 
 /**
  * Sets up system file and directory paths
@@ -79,7 +81,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
     options.xt.ssldir = path.resolve(exports.etcXtuple, version, name, 'ssl');
     options.xt.rand64file = path.resolve(exports.etcXtuple, version, name, 'rand64.txt');
     options.xt.key256file = path.resolve(exports.etcXtuple, version, name, 'key256.txt');
-    options.xt.userhome = lib.util.getUserHome();
+    options.xt.userhome = home();
 
     // shared config (per account)
     options.xt.homedir = path.resolve(exports.usrLocalXtuple);
@@ -101,7 +103,9 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
    * @public
    */
   createPaths: function (options) {
-    mkdirp.sync(options.xt.userhome);
+    if (!fs.existsSync(options.xt.userhome)) {
+      mkdirp.sync(options.xt.userhome);
+    }
     mkdirp.sync(options.xt.userdist);
     mkdirp.sync(options.pg.snapshotdir);
 
