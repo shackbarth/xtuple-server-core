@@ -33,6 +33,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-policy */ {
   createUserPolicy: function (options) {
     exec('usermod -a -G www-data,ssl-cert,postgres,xtuser '+ options.xt.name);
     exec('chown -R '+ options.xt.name +':xtuser '+ options.xt.userhome);
-    exec('chown -R '+ options.xt.name +':'+ options.xt.name +' '+ options.xt.socketdir);
+    exec('chown -R :xtuser '+ options.xt.socketdir);
   }
 });
