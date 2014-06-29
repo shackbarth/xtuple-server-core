@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-local-policy",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "description": "xTuple Server Task [dev.policy]: setup development policy",
   "main": "index.js",
   "scripts": {
