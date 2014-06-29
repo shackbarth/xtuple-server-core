@@ -4,6 +4,8 @@ var lib = require('xtuple-server-lib'),
   planner = require('../'),
   log = require('npmlog');
 
+log.heading = 'xtuple-server-test';
+
 function getPackageName (phaseName, taskName) {
   return 'xtuple-server-' + phaseName + '-' + taskName;
 }

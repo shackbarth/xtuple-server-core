@@ -4,6 +4,8 @@ var lib = require('xtuple-server-lib'),
   log = require('npmlog'),
   _ = require('lodash');
 
+log.heading = 'xtuple-server';
+
 function prefix (phaseName, taskName) {
   return phaseName + '.' + taskName;
 }
