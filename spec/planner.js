@@ -1,6 +1,3 @@
-global.log = require('npmlog');
-log.heading = 'xtuple-server-test';
-
 var lib = require('xtuple-server-lib'),
   assert = require('chai').assert,
   _ = require('lodash'),

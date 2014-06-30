@@ -4,7 +4,6 @@ var lib = require('xtuple-server-lib'),
   exec = require('sync-exec'),
   _ = require('lodash'),
   program = require('commander'),
-  log = require('npmlog'),
   fs = require('fs'),
   planner = require('./'),
   plans = require('./plans');

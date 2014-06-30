@@ -5,23 +5,22 @@ env:
   - NODE_VERSION=0.10.29
 
 before_install:
-- mv ~/.nvm ~/.nvm.disabled
-- sudo bash bootstrap.sh
-- n stable
+  - mv ~/.nvm ~/.nvm.disabled
+  - sudo bash bootstrap.sh
 
 install:
-- npm install nde -g
-- nde install
-- npm install -g
+  - n 0.11
+  - npm install nex -g
+  - npm install -g
 
 script:
-- sudo npm test xtuple-server-lib
-- sudo npm test
+  - sudo npm test xtuple-server-lib
+  - sudo npm test
 
 after_failure:
-- pg_lsclusters 
-- cat npm-debug.log
-- cat xtuple-server-error.log
+  - pg_lsclusters 
+  - cat npm-debug.log
+  - cat xtuple-server-error.log
 
 deploy:
   provider: npm
