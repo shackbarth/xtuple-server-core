@@ -123,8 +123,9 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
         });
       }
       catch (e) {
-        log.warn('xt-database', 'core build', e.message);
-        log.verbose('xt-database', 'core build', e.stack.split('\n'));
+        log.error('xt-database executeTask', e.message);
+        //log.error('xt-database', 'core build', e.stack.split('\n'));
+        throw e;
       }
 
       // install extensions specified by the edition
@@ -141,8 +142,9 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
         });
       }
       catch (e) {
-        log.warn('xt-database', 'extension build', e.message);
-        log.verbose('xt-database', 'extension build', e.stack.split('\n'));
+        log.error('xt-database buildExtensions', e.message);
+        //log.error('xt-database', 'extension build', e.stack.split('\n'));
+        throw e;
       }
     });
   }
