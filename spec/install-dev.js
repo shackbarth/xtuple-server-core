@@ -21,5 +21,7 @@ describe('install-dev', function () {
       capacity: 8
     }
   };
+  planner.compileOptions(this.options.plan, this.options);
+  planner.verifyOptions(this.options.plan, this.options);
   planner.describe(this);
 });
