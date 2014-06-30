@@ -4,6 +4,10 @@ env:
   - NODE_VERSION=0.8.26
   - NODE_VERSION=0.10.29
 
+matrix:
+  allow_failures:
+    - NODE_VERSION=0.8.26
+
 before_install:
   - mv ~/.nvm ~/.nvm.disabled
   - sudo bash bootstrap.sh
