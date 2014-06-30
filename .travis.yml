@@ -4,24 +4,27 @@ env:
   - NODE_VERSION=0.8.26
   - NODE_VERSION=0.10.29
 
+matrix:
+  allow_failures:
+    - env: NODE_VERSION=0.8.26
+
 before_install:
-- mv ~/.nvm ~/.nvm.disabled
-- sudo bash bootstrap.sh
-- n stable
+  - rm -rf ~/.nvm
+  - sudo bash bootstrap.sh
 
 install:
-- npm install nde -g
-- nde install
-- npm install -g
+  - n 0.11
+  - npm install
+  - npm install -g
 
 script:
-- sudo npm test xtuple-server-lib
-- sudo npm test
+  - sudo -E npm test xtuple-server-lib
+  - sudo -E npm test
 
 after_failure:
-- pg_lsclusters 
-- cat npm-debug.log
-- cat xtuple-server-error.log
+  - pg_lsclusters 
+  - cat npm-debug.log
+  - cat xtuple-server-error.log
 
 deploy:
   provider: npm

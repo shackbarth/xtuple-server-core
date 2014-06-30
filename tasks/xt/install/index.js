@@ -2,7 +2,7 @@ var lib = require('xtuple-server-lib'),
   semver = require('semver'),
   mkdirp = require('mkdirp'),
   _ = require('lodash'),
-  exec = require('sync-exec'),
+  exec = require('child_process').execSync,
   fs = require('fs'),
   path = require('path');
 
@@ -34,17 +34,29 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
           deployPath = path.resolve(options.xt.userdist, repo);
 
       if (!fs.existsSync(clonePath)) {
-        var clone = exec([ 'git clone --recursive https://github.com/xtuple/' + repo + '.git', clonePath].join(' ')),
-          checkout = exec([ 'cd', clonePath, '&& git fetch origin && git checkout', options.xt.repoHash ].join(' '));
-
-        if (clone.status !== 0) {
-          throw new Error(JSON.stringify(clone, null, 2));
+        try {
+          exec([ 'git clone --recursive https://github.com/xtuple/' + repo + '.git', clonePath].join(' '), {
+            cwd: clonePath
+          });
+          exec('cd '+ clonePath +' && git fetch origin', { cwd: clonePath });
+          exec('cd '+ clonePath +' && git reset --hard ' + options.xt.repoHash, { cwd: clonePath });
+        }
+        catch (e) {
+          log.warn('xt-install', e.message);
+          log.verbose('xt-install', e.stack.split('\n'));
         }
       }
 
       if (!fs.existsSync(deployPath)) {
-        var npmlog = exec([ 'cd', clonePath, '&&', options.n.npm, 'install && n stable' ].join(' '));
-        console.log(npmlog.stdout);
+        try {
+          exec('n '+ options.n.version);
+          exec([ 'cd', clonePath, '&& npm install' ].join(' '), { cwd: clonePath }).toString();
+          log.verbose('xt.install executeTask', npmInstall);
+        }
+        catch (e) {
+          log.warn('xt-install', e.message);
+        }
+        exec('n latest');
 
         if (!fs.existsSync(deployPath)) {
           mkdirp.sync(deployPath);
@@ -52,10 +64,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
         // copy main repo files to user's home directory
         var rsync = exec([ 'rsync -ar --exclude=.git', clonePath + '/*', deployPath ].join(' '));
           
-        if (rsync.status !== 0) {
-          throw new Error(JSON.stringify(rsync, null, 2));
-        }
-
         exec([ 'chown -R', options.xt.name, deployPath ].join(' '));
         exec('chmod -R u=rwx ' + deployPath);
       }

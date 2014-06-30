@@ -80,7 +80,6 @@ var planner = module.exports = {
     * Compile a pure, non-commander based options object.
     */
   compileOptions: function (plan, options) {
-
     options.n = { version: semver.clean(process.env.NODE_VERSION || process.version) };
     options.n.npm = 'n '+ options.n.version + ' && npm';
     options.n.use = 'n use '+ options.n.version;

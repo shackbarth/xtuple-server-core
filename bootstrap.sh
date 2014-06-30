@@ -22,8 +22,8 @@ install_debian () {
       | tee -a $logfile
   fi
 
-  apt-get -qq remove nodejs* --force-yes > /dev/null 2>&1
-  apt-get -qq remove npm* --force-yes > /dev/null 2>&1
+  apt-get -qq purge nodejs* --force-yes > /dev/null 2>&1
+  apt-get -qq purge npm* --force-yes > /dev/null 2>&1
   apt-get -qq remove postgres* --force-yes > /dev/null 2>&1
   
   if [[ $version =~ '12.04' ]]; then
@@ -56,16 +56,23 @@ install_debian () {
 
 install_node () {
   log "Installing node.js..."
-  wget git.io/FsmDSw -qO n.bash
+  wget https://raw.githubusercontent.com/visionmedia/n/master/bin/n -qO n.bash
   chmod +x n.bash
   mv n.bash /usr/bin/n
-  n 0.8.26
-  n latest
+  n 0.8
   n stable
+  n latest
   mkdir -p /usr/local/{share/man,bin,lib/node,lib/node_modules,include/node}
-  chmod -R a+w /usr/local/{share/man,bin,lib/node*,include/node*,n,ChangeLog,LICENSE,README.md}
+  chmod -R a+w /usr/local/{share,bin,lib/node*,include/node*,n,ChangeLog,LICENSE,README.md}
+  # cp: cannot remove `/usr/local/share/systemtap/tapset/node.stp': Permission denied
 
+  npm install -g nex
   echo "export NODE_PATH=/usr/local/lib/node_modules" > /etc/profile.d/nodepath.sh
+}
+
+setup () {
+  pg_dropcluster 9.3 main --stop
+  chmod -R 777 /var/run/postgresql  # temporary
 }
 
 log() {
@@ -97,6 +104,7 @@ log "         xxx     xxx\n"
 if [[ ! -z $(which apt-get) ]]; then
   install_debian
   install_node
+  setup
   echo ''
 else
   log "apt-get not found."

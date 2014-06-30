@@ -2,7 +2,7 @@ var lib = require('xtuple-server-lib'),
   rimraf = require('rimraf'),
   _ = require('lodash'),
   semver = require('semver'),
-  exec = require('sync-exec'),
+  exec = require('child_process').execSync,
   path = require('path'),
   fs = require('fs');
 
@@ -116,10 +116,15 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
   executeTask: function (options) {
     // build all specified databases
     _.each(options.xt.database.list, function (db) {
-
-      var buildResult = exec(lib.util.getDatabaseBuildCommand(db, options));
-      if (buildResult.status !== 0) {
-        throw new Error(buildResult.stderr);
+      try {
+        exec(lib.util.getDatabaseBuildCommand(db, options), {
+          stdio: 'pipe',
+          cwd: options.xt.coredir
+        });
+      }
+      catch (e) {
+        log.warn('xt-database', 'core build', e.message);
+        log.verbose('xt-database', 'core build', e.stack.split('\n'));
       }
 
       // install extensions specified by the edition
@@ -129,9 +134,15 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
 
   buildExtensions: function (extensions, db, options) {
     _.each(extensions, function (ext) {
-      var result = exec(lib.util.getExtensionBuildCommand(db, options, ext));
-      if (result.status !== 0) {
-        throw new Error(result.stderr);
+      try {
+        exec(lib.util.getExtensionBuildCommand(db, options, ext), {
+          stdio: 'pipe',
+          cwd: options.xt.coredir
+        });
+      }
+      catch (e) {
+        log.warn('xt-database', 'extension build', e.message);
+        log.verbose('xt-database', 'extension build', e.stack.split('\n'));
       }
     });
   }
