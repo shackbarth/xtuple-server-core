@@ -59,7 +59,7 @@ install_node () {
   wget https://raw.githubusercontent.com/visionmedia/n/master/bin/n -qO n.bash
   chmod +x n.bash
   mv n.bash /usr/bin/n
-  n 0.8.26
+  n 0.8
   n latest
   n stable
   mkdir -p /usr/local/{share/man,bin,lib/node,lib/node_modules,include/node}
@@ -67,6 +67,10 @@ install_node () {
   # cp: cannot remove `/usr/local/share/systemtap/tapset/node.stp': Permission denied
 
   echo "export NODE_PATH=/usr/local/lib/node_modules" > /etc/profile.d/nodepath.sh
+}
+
+setup () {
+  pg_dropcluster 9.3 main --stop
 }
 
 log() {
@@ -98,6 +102,7 @@ log "         xxx     xxx\n"
 if [[ ! -z $(which apt-get) ]]; then
   install_debian
   install_node
+  setup
   echo ''
 else
   log "apt-get not found."
