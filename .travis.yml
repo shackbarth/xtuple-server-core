@@ -9,12 +9,11 @@ matrix:
     - env: NODE_VERSION=0.8.26
 
 before_install:
-  - mv ~/.nvm ~/.nvm.disabled
+  - rm -rf ~/.nvm
   - sudo bash bootstrap.sh
 
 install:
   - n 0.11
-  - npm install nex -g
   - npm install
   - npm install -g
 
