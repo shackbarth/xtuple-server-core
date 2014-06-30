@@ -116,7 +116,10 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
   executeTask: function (options) {
     // build all specified databases
     _.each(options.xt.database.list, function (db) {
-      var stdout = exec(lib.util.getDatabaseBuildCommand(db, options)).toString();
+      var stdout = exec(lib.util.getDatabaseBuildCommand(db, options), {
+        stdio: 'pipe',
+        cwd: options.xt.coredir
+      });
       log.verbose('xt-database', 'core build', stdout);
 
       // install extensions specified by the edition
@@ -126,7 +129,10 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
 
   buildExtensions: function (extensions, db, options) {
     _.each(extensions, function (ext) {
-      var stdout = exec(lib.util.getExtensionBuildCommand(db, options, ext)).toString();
+      var stdout = exec(lib.util.getExtensionBuildCommand(db, options, ext), {
+        stdio: 'pipe',
+        cwd: options.xt.coredir
+      });
       log.verbose('xt-database', 'extension build', stdout);
     });
   }
