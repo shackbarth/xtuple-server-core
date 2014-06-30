@@ -1,7 +1,6 @@
 var lib = require('xtuple-server-lib'),
   rimraf = require('rimraf'),
   _ = require('lodash'),
-  n = require('n-api'),
   semver = require('semver'),
   exec = require('child_process').execSync,
   path = require('path'),
