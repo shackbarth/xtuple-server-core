@@ -1,6 +1,7 @@
 var _ = require('lodash'),
   path = require('path'),
-  planner = require('./planner');
+  planner = require('./planner'),
+  index = require('../');
 
 describe('install-dev', function () {
   this.planObject = require('../plans')['install-dev'];
@@ -21,7 +22,7 @@ describe('install-dev', function () {
       capacity: 8
     }
   };
-  planner.compileOptions(this.options.plan, this.options);
-  planner.verifyOptions(this.options.plan, this.options);
+  index.compileOptions(this.options.plan, this.options);
+  index.verifyOptions(this.options.plan, this.options);
   planner.describe(this);
 });
