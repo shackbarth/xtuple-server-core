@@ -33,6 +33,9 @@
     "xtuple-server-xt-install": "^0.9.0",
     "xtuple-server-xt-test": "^0.9.0"
   },
+  "bundledDependencies": [
+    "xtuple-server-lib"
+  ],
   "linkDependencies": {
     "xtuple-server-local-paths": "tasks/local/paths",
     "xtuple-server-local-policy": "tasks/local/policy",
@@ -69,6 +72,7 @@
   "scripts": {
     "preinstall": "nex clean && nex install",
     "postinstall": "nex install xtuple --nodeVersion 0.10.29",
+    "prepublish": "npm dedupe",
     "pretest": "XT_VERSION=${XT_VERSION:-4.5.0} mocha spec/uninstall-dev.js",
     "test": "XT_VERSION=${XT_VERSION:-4.5.0} node spec"
   },
