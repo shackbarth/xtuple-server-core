@@ -11,6 +11,7 @@ before_install:
 install:
   - n 0.11
   - npm install nex -g
+  - npm install
   - npm install -g
 
 script:
