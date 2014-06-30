@@ -67,7 +67,7 @@
     "index.js"
   ],
   "scripts": {
-    "preinstall": "nex clean && sleep 1 && nex install && sleep 1",
+    "preinstall": "nex clean && nex install",
     "postinstall": "nex install xtuple --nodeVersion 0.10.29",
     "test": "node spec"
   },
