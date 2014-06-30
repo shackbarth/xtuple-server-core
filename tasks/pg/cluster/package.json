@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-pg-cluster",
-  "version": "0.9.11",
+  "version": "0.9.12",
   "description": "xTuple Server Task [pg.cluster]: create and setup a postgres cluster for xTuple",
   "main": "index.js",
   "scripts": {
