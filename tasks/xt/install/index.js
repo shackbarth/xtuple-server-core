@@ -34,22 +34,29 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
           deployPath = path.resolve(options.xt.userdist, repo);
 
       if (!fs.existsSync(clonePath)) {
-        exec([ 'git clone --recursive https://github.com/xtuple/' + repo + '.git', clonePath].join(' '), {
-          cwd: clonePath
-        });
-        exec('git fetch origin');
-        exec('git reset --hard ' + options.xt.repoHash);
+        try {
+          exec([ 'git clone --recursive https://github.com/xtuple/' + repo + '.git', clonePath].join(' '), {
+            cwd: clonePath
+          });
+          exec('cd '+ clonePath +' && git fetch origin', { cwd: clonePath });
+          exec('cd '+ clonePath +' && git reset --hard ' + options.xt.repoHash, { cwd: clonePath });
+        }
+        catch (e) {
+          log.warn('xt-install', e.message);
+          log.verbose('xt-install', e.stack.split('\n'));
+        }
       }
 
       if (!fs.existsSync(deployPath)) {
         try {
           exec('n '+ options.n.version);
-          var npmInstall = exec([ 'cd', clonePath, '&& npm install' ].join(' ')).toString();
+          exec([ 'cd', clonePath, '&& npm install' ].join(' '), { cwd: clonePath }).toString();
           log.verbose('xt.install executeTask', npmInstall);
         }
-        finally {
-          exec('n latest');
+        catch (e) {
+          log.warn('xt-install', e.message);
         }
+        exec('n latest');
 
         if (!fs.existsSync(deployPath)) {
           mkdirp.sync(deployPath);
