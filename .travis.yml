@@ -6,7 +6,7 @@ env:
 
 matrix:
   allow_failures:
-    - NODE_VERSION=0.8.26
+    - env: NODE_VERSION=0.8.26
 
 before_install:
   - mv ~/.nvm ~/.nvm.disabled
