@@ -34,6 +34,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
       description: 'Name of the installation',
       validate: function (value) {
         if (_.isEmpty(value)) {
+          log.warn('validate', 'xt.name was empty. Setting to SUDO_USER');
           return process.env.SUDO_USER;
         }
         if (/\d/.test(value)) {
