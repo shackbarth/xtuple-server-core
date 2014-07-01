@@ -77,30 +77,31 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
    * @public
    */
   definePaths: function (options) {
-    var version = options.xt.version,
-      name = options.xt.name;
-
     // node server/config stuff
-    options.xt.configdir = path.resolve(exports.etcXtuple, version, name);
+    options.xt.id = lib.util.$(options);
+    options.xt.configdir = path.resolve(exports.etcXtuple, options.xt.id);
     options.xt.configfile = path.resolve(options.xt.configdir, 'config.js');
-    options.xt.ssldir = path.resolve(exports.etcXtuple, version, name, 'ssl');
-    options.xt.rand64file = path.resolve(exports.etcXtuple, version, name, 'rand64.txt');
-    options.xt.key256file = path.resolve(exports.etcXtuple, version, name, 'key256.txt');
-    options.xt.userhome = home();
-
-    // shared config (per account)
+    options.xt.ssldir = path.resolve(options.xt.configdir, 'ssl');
     options.xt.homedir = path.resolve(exports.usrLocalXtuple);
     options.xt.dist = path.resolve(options.local.workspace, '..');
-    options.xt.userdist = options.xt.dist;
 
+    // shared config (per account)
+    options.xt.userhome = home();
+    options.xt.userconfig = path.resolve(options.xt.userhome, '.xtuple');
+    options.xt.typeconfig = path.resolve(options.xt.userconfig, options.type);
+    options.xt.rand64file = path.resolve(options.xt.typeconfig, 'rand64.txt');
+    options.xt.key256file = path.resolve(options.xt.typeconfig, 'key256.txt');
+    options.xt.userdist = options.xt.dist;
     options.xt.coredir = options.local.workspace;
 
     // other system paths
-    options.xt.logdir = path.resolve(exports.varLog, 'xtuple', version, name);
+    options.xt.logdir = path.resolve(exports.varLog, 'xtuple', options.xt.id);
     options.pg.logdir = path.resolve(exports.varLog, 'postgresql');
     options.xt.socketdir = path.resolve('/var/run/postgresql');
+    options.xt.rundir = path.resolve(exports.varRun, 'xtuple', options.xt.id);
+    options.xt.statedir = path.resolve(exports.varLibXtuple, options.xt.id);
 
-    options.pg.snapshotdir = path.resolve(exports.varLibXtuple, options.xt.version, options.xt.name, 'snapshots');
+    options.pg.snapshotdir = path.resolve(exports.varLibXtuple, options.id, 'snapshots');
   },
 
   /**
@@ -108,14 +109,18 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
    * @public
    */
   createPaths: function (options) {
-    if (!fs.existsSync(options.xt.userhome)) {
-      mkdirp.sync(options.xt.userhome);
-    }
+    mkdirp.sync(options.xt.userhome);
+    mkdirp.sync(options.xt.userconfig);
+    mkdirp.sync(options.xt.typeconfig);
     mkdirp.sync(options.xt.userdist);
     mkdirp.sync(options.pg.snapshotdir);
 
+    mkdirp.sync(options.xt.dist);
     mkdirp.sync(options.xt.configdir);
     mkdirp.sync(options.xt.ssldir);
     mkdirp.sync(options.xt.logdir);
+    mkdirp.sync(options.xt.rundir);
+    mkdirp.sync(options.xt.socketdir);
+    mkdirp.sync(options.xt.statedir);
   }
 });
