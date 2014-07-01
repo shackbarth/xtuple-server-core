@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server",
-  "version": "0.9.84",
+  "version": "0.9.85",
   "description": "xTuple Server",
   "dependencies": {
     "commander": "^2.2.0",
@@ -41,7 +41,7 @@
     "xtuple-server-nginx-site",
     "xtuple-server-nginx-ssl",
     "xtuple-server-pg-backup",
-    "xtuple-server-pg-cluster", 
+    "xtuple-server-pg-cluster",
     "xtuple-server-pg-config",
     "xtuple-server-pg-drop",
     "xtuple-server-pg-fork",
