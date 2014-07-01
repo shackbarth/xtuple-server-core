@@ -23,6 +23,7 @@ describe('uninstall-dev', function () {
   };
 
   it('should run uninstall', function (done) {
+    this.timeout(30000)
     planner.compileOptions(options.plan, options);
     planner.verifyOptions(options.plan, options);
     planner.execute(options.plan, options)
