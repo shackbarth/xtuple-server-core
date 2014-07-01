@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 
 var lib = require('xtuple-server-lib'),
-  exec = require('sync-exec'),
+  exec = require('child_process').execSync,
   _ = require('lodash'),
   program = require('commander'),
   fs = require('fs'),
@@ -56,8 +56,8 @@ function executePlan (plan, options) {
     });
 }
 
-if (exec('id -u').stdout.indexOf('0') !== 0) {
-  log.error('xtuple', 'Must be run as root');
+if (exec('id -u', { stdio: 'pipe' }).indexOf('0') !== 0) {
+  log.error('access denied', 'This tool must be run with sudo');
   process.exit(1);
 }
 
