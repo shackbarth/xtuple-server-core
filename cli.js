@@ -56,7 +56,7 @@ function executePlan (plan, options) {
     });
 }
 
-if (exec('id -u', { stdio: 'pipe' }).indexOf('0') !== 0) {
+if (exec('id -u', { stdio: 'pipe' }).toString().indexOf('0') !== 0) {
   log.error('access denied', 'This tool must be run with sudo');
   process.exit(1);
 }
