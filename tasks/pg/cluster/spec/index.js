@@ -1,6 +1,6 @@
 var assert = require('chai').assert,
   _ = require('lodash'),
-  exec = require('sync-exec');
+  exec = require('child_process').execSync;
 
 exports.afterExecute = function (options) {
 
@@ -10,9 +10,7 @@ exports.afterExecute = function (options) {
   });
 
   it('should be able to control my personal pg cluster', function () {
-    var result = exec('sudo -u {xt.name} pg_ctlcluster {pg.version} {pg.cluster.name} reload'
+    exec('sudo -u {xt.name} pg_ctlcluster {pg.version} {pg.cluster.name} reload'
       .format(options));
-
-    assert.equal(result.status, 0, 'Cannot restart cluster: '+ JSON.stringify(result));
   });
 };

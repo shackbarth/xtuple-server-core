@@ -51,6 +51,10 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
         throw new TypeError('Can\'t find xTuple package. xt.version or local.workspace might be incorrect');
       }
     }
+    
+    if (!_.isEmpty(options.xt.name)) {
+      log.warn('local-paths', 'Overwriting xt.name (', options.xt.name, ') with current user:', process.env.SUDO_USER);
+    }
     options.xt.name = process.env.SUDO_USER;
 
     if (_.isEmpty(options.xt.name)) {
