@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-sys-upgrade",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "description": "xTuple Server Task [sys.upgrade]: upgrade the xTuple Server",
   "main": "index.js",
   "scripts": {

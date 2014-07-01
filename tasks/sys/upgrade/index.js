@@ -4,18 +4,20 @@ var lib = require('xtuple-server-lib'),
 
 _.extend(exports, lib.task, /** @exports xtuple-server-sys-upgrade */ {
 
+  /** @override */
   executeTask: function (options) {
-    log.verbose('sys-upgrade', process.cwd());
-    log.verbose('sys-upgrade', options.pkg);
+    var pkg = require('./package');
 
-    exec('nex clean');
+    log.verbose('sys-upgrade cwd', process.cwd());
+    log.verbose('sys-upgrade pkg', pkg);
 
-    if (options.pkg.private) {
-      exec('git pull origin master');
+    if (pkg.private === true) {
+      exec('git pull origin master', { stdio: 'inherit' });
+      exec('npm install --force --loglevel warn', { stdio: 'inherit' });
     }
-
-    exec('npm install');
-    exec('npm install -g');
+    else {
+      exec('npm update --global --loglevel warn ' + pkg.name, { stdio: 'inherit' });
+    }
   }
 
 });
