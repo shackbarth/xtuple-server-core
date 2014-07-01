@@ -13,7 +13,10 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-restore */ {
     infile: {
       optional: '[infile]',
       description: 'Path to the file to be restored',
-      validate: function (value) {
+      validate: function (value, options) {
+        if ((options.planName === 'import-users') && ('.sql' !== path.extname(options.pg.infile))) {
+          throw new Error('The import-users plan can only import a raw ".sql" file');
+        }
         if (!fs.existsSync(path.resolve(value))) {
           throw new Error('Invalid path for pg.infile: '+ value);
         }
@@ -38,7 +41,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-restore */ {
 
   /** @override */
   executeTask: function (options) {
-    if (('import-users' === options.planName) && ('.sql' === path.extname(options.pg.infile))) {
+    if ('import-users' === options.planName && '.sql' === path.extname(options.pg.infile)) {
       lib.pgCli.psqlFile(options, options.pg.infile);
     }
     else {
@@ -47,12 +50,13 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-restore */ {
         filename: path.resolve(options.pg.infile),
         dbname: options.pg.dbname
       }, options));
+
+      // update config.js
+      var configObject = require(options.xt.configfile);
+      configObject.datasource.databases.push(options.pg.dbname);
+      fs.writeFileSync(options.xt.configfile, lib.xt.build.wrapModule(configObject));
     }
 
-    // update config.js
-    var configObject = require(options.xt.configfile);
-    configObject.datasource.databases.push(options.pg.dbname);
-    fs.writeFileSync(options.xt.configfile, lib.xt.build.wrapModule(configObject));
   },
 
   /** @override */
