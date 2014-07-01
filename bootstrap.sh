@@ -69,7 +69,7 @@ install_node () {
 
   rm -rf ~/.npm ~/tmp ~/.nvm /root/.npm /root/tmp
 
-  chmod -R a+w /usr/local/{share,bin,lib/node*,include/node*,n,ChangeLog,LICENSE,README.md}
+  chmod -Rf a+w /usr/local/{share,bin,lib/node*,include/node*,n,ChangeLog,LICENSE,README.md}
   # cp: cannot remove `/usr/local/share/systemtap/tapset/node.stp': Permission denied
 
   echo "export NODE_PATH=/usr/local/lib/node_modules" > /etc/profile.d/nodepath.sh
