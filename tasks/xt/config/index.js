@@ -1,6 +1,6 @@
 var lib = require('xtuple-server-lib'),
   format = require('string-format'),
-  exec = require('sync-exec'),
+  exec = require('child_process').execSync,
   _ = require('lodash'),
   path = require('path'),
   fs = require('fs');
@@ -66,7 +66,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
     if (!fs.existsSync(options.xt.rand64file)) {
       fs.writeFileSync(
         options.xt.rand64file,
-        exec('head -c 64 /dev/urandom | base64 | sed "s/[=\\s]//g"').stdout
+        exec('head -c 64 /dev/urandom | base64 | sed "s/[=\\s]//g"').toString()
       );
     }
 
@@ -74,7 +74,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
     if (!fs.existsSync(options.xt.key256file)) {
       fs.writeFileSync(
         options.xt.key256file,
-        exec('openssl rand 256 -hex').stdout
+        exec('openssl rand 256 -hex').toString()
       );
     }
   },

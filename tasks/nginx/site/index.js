@@ -15,11 +15,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
       optional: '[domain]',
       description: 'The public domain name that will point to this web server',
       value: 'localhost'
-    },
-    lan: {
-      optional: '[boolean]',
-      description: 'Web server will listen on LAN ip addresses',
-      value: false
     }
   },
 
@@ -37,30 +32,19 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
 
     options.nginx.httpport = 80;
     options.nginx.httpsport = 443;
-    options.nginx.safeport = options.nginx.httpsport + 32768;
 
     // nginx site template file path
     options.nginx.siteTemplateFile = path.resolve(__dirname, 'xtuple-site.template');
 
-    if (fs.existsSync(options.nginx.siteConfig)) {
-      throw new Error('nginx site already exists for this account: '+ options.nginx.siteConfig);
-    }
-
     if (options.nginx.domain === 'localhost') {
-      options.nginx.domain = options.nginx.hostname;
+      options.nginx.domain += options.nginx.hostname;
     }
-    options.nginx.lanEndpoints = options.nginx.lan ? [
-      '       (^10\\.)',
-      '       (^172\\.1[6-9]\\.)',
-      '       (^172\\.2[0-9]\\.)',
-      '       (^172\\.3[0-1]\\.)',
-      '       (^192\\.168\\.)'
-    ].join('\n') : '';
   },
 
   /** @override */
   beforeTask: function (options) {
     options.nginx.port = lib.util.getServerSSLPort(options);
+    options.nginx.safeport = options.nginx.port + 32768;
   },
 
   /**
