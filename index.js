@@ -61,16 +61,24 @@ function executePlan (plan, options) {
 var planner = module.exports = {
 
   verifyOptions: function (plan, options) {
-    log.silly('verifyOptions', options);
+    log.verbose('verifyOptions');
     if (_.isEmpty(options.type)) {
       throw new TypeError('<type> is a required field');
     }
     lib.util.eachTask(plan, function (task, phase, taskName) {
-      _.each(task, options, function (option, key) {
+      _.each(task.options, function (option, key) {
+        log.verbose('verifyOptions', 'verifying', key);
         if (_.isFunction(option.validate) && phase.options.validate !== false) {
           // this will throw an exception if invalid
           log.verbose(prefix(phase.name, taskName), 'Validating Option: '+ key);
-          options[phase.name][key] = option.validate(options[phase.name][key], options);
+          try {
+            options[phase.name][key] = option.validate(options[phase.name][key], options);
+          }
+          catch (e) {
+            log.error('verifyOptions', e.message);
+            log.verbose('verifyOptions', e.stack.split('\n'));
+            process.exit(1);
+          }
         }
       });
     });
@@ -89,6 +97,8 @@ var planner = module.exports = {
     lib.util.eachTask(plan, function (task, phase, taskName) {
       options[phase.name] || (options[phase.name] = { });
       options[phase.name][taskName] || (options[phase.name][taskName] = { });
+
+      phase.options || (phase.options = { });
 
       // load in default options specified in planfile
       if (_.isObject(phase.options)) {

@@ -31,6 +31,7 @@ function preparePlan (plan, options, cmd) {
 }
 
 function executePlan (plan, options) {
+
   planner.compileOptions(plan, options);
   planner.verifyOptions(plan, options);
 
@@ -62,7 +63,10 @@ if (exec('id -u').stdout.indexOf('0') !== 0) {
 
 program
   .version(require('./package').version)
-  .usage('<plan> <type> [options]');
+  .usage('<plan> <type> [options]')
+  .option('-v, --verbose', 'verbose mode', function () {
+    log.level = 'verbose';
+  });
 
 program._name = 'xtuple-server';
 

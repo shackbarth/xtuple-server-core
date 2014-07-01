@@ -26,6 +26,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
       description: 'The path of the local workspace in which to install',
       value: process.cwd(),
       validate: function (value) {
+        log.info('local-workspace', value);
         var pkg = require(path.resolve(value, 'package'));
 
         if (!_.isObject(pkg) || pkg.name !== 'xtuple') {
