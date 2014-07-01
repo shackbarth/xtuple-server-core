@@ -33,6 +33,14 @@
     "xtuple-server-xt-test": "^0.9.0"
   },
   "bundledDependencies": [
+    "commander",
+    "glob",
+    "lodash",
+    "n-api",
+    "npmlog",
+    "q",
+    "requireindex",
+    "semver",
     "xtuple-server-lib",
     "xtuple-server-local-paths",
     "xtuple-server-local-policy",
