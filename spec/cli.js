@@ -12,7 +12,12 @@ describe('cli', function () {
 
     describe('uninstall-dev', function () {
       it('should do something', function () {
-        exec('xtuple-server uninstall-dev');
+        exec([
+
+          'xtuple-server uninstall-dev',
+          '--local-workspace ./node_modules/xtuple'
+
+        ].join(' '))
       });
     });
 

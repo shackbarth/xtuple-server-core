@@ -30,7 +30,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
         var pkg = require(path.resolve(value, 'package'));
 
         if (!_.isObject(pkg) || pkg.name !== 'xtuple') {
-          throw new Error('Please run this command from the directory of your xtuple repository, or correctly set --local-workspace');
+          throw new Error('Run this command from xtuple git directory, or correctly set --local-workspace <path_to_xtuple>');
         }
 
         return value;

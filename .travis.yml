@@ -16,7 +16,6 @@ install:
   - n 0.11
   - npm install
   - npm install -g
-  - npm run test-install
 
 script:
   - sudo -E npm test xtuple-server-lib
