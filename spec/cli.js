@@ -15,9 +15,12 @@ describe('cli', function () {
         exec([
 
           'xtuple-server uninstall-dev',
-          '--local-workspace ./node_modules/xtuple'
+          '--local-workspace ./node_modules/xtuple',
+          '--verbose'
 
-        ].join(' '))
+        ].join(' '), {
+          stdio: 'inherit'
+        });
       });
     });
 
