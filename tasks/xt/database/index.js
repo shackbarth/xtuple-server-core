@@ -40,6 +40,8 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
         if (/\d/.test(value)) {
           throw new Error('xt.name cannot contain numbers');
         }
+
+        return value;
       }
     },
     maindb: {
