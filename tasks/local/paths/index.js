@@ -101,7 +101,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
     options.xt.rundir = path.resolve(exports.varRun, 'xtuple', options.xt.id);
     options.xt.statedir = path.resolve(exports.varLibXtuple, options.xt.id);
 
-    options.pg.snapshotdir = path.resolve(exports.varLibXtuple, options.id, 'snapshots');
+    options.pg.snapshotdir = path.resolve(exports.varLibXtuple, options.xt.id, 'snapshots');
   },
 
   /**
