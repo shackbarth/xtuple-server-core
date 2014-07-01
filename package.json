@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server",
-  "version": "0.9.88",
+  "version": "0.9.89",
   "description": "xTuple Server",
   "dependencies": {
     "commander": "^2.2.0",
@@ -88,7 +88,7 @@
     "index.js"
   ],
   "scripts": {
-    "setup-dev":"nex clean && nex install && nex install xtuple --nodeVersion 0.10.29",
+    "setup-dev": "nex clean && nex install && nex install xtuple --nodeVersion 0.10.29",
     "pretest": "XT_VERSION=${XT_VERSION:-4.5.0} mocha spec/uninstall-dev.js",
     "test": "XT_VERSION=${XT_VERSION:-4.5.0} node spec"
   },
