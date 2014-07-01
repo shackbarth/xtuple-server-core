@@ -38,7 +38,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-restore */ {
 
   /** @override */
   executeTask: function (options) {
-    if ('import-users' === options.planName && /\.sql$/.test(options.pg.infile)) {
+    if (('import-users' === options.planName) && ('.sql' === path.extname(options.pg.infile))) {
       lib.pgCli.psqlFile(options, options.pg.infile);
     }
     else {
