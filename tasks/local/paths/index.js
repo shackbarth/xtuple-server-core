@@ -60,6 +60,9 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
     if (_.isEmpty(options.xt.name)) {
       throw new Error('There is no SUDO_USER set. I don\'t know why this would be. Please file an issue');
     }
+    if (options.xt.name === 'root') {
+      throw new Error('xTuple Instance cannot be installed for the root user');
+    }
     if (_.isEmpty(options.xt.version)) {
       throw new Error('There is no version set. I don\'t know why this would be. Please file an issue');
     }
