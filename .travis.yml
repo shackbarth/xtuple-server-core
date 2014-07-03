@@ -12,7 +12,7 @@ install:
 
 script:
   - sudo -E npm test xtuple-server-lib
-  - sudo -E node --harmony spec
+  - sudo -E npm test
 
 after_failure:
   - pg_lsclusters 
