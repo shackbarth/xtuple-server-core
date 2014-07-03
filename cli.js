@@ -3,7 +3,7 @@
 var path = require('path');
 var pkg = require(path.resolve(__dirname, 'package'));
 
-require('node-version-magic').enforce(pkg), function (e, version) {
+require('node-version-magic').enforce(pkg, function (e, version) {
 
   if (e) throw Error(e);
 
@@ -112,4 +112,5 @@ require('node-version-magic').enforce(pkg), function (e, version) {
   });
 
   program.parse(process.argv);
+
 });
