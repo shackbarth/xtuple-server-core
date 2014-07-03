@@ -4,6 +4,7 @@ require('node-version-magic').enforce(require('../package'), function (e, versio
   if (e) throw Error(e);
 
   var pkg = require('../package');
+  var _ = require('lodash');
   var semver = require('semver');
   var fs = require('fs');
   var path = require('path');
@@ -17,29 +18,8 @@ require('node-version-magic').enforce(require('../package'), function (e, versio
 
   process.on('exit', function () { n(version); });
 
-  exports.run = function () {
+  _.each(glob.sync(path.resolve(process.cwd(), 'spec/*.js')), function (spec) {
+    require(spec);
+  });
 
-    var mocha = new Mocha({
-      bail: true,
-      reporter: 'spec'
-    });
-
-    mocha.files = glob.sync(path.resolve(process.cwd(), 'spec/*.js'));
-
-    mocha.run()
-      .on('fail', function (test, err) {
-        log.error('test', err.stack.split('\n'));
-        log.info('test', 'Please see xtuple-server-test.log for more info');
-        fs.appendFileSync('xtuple-server-error.log', JSON.stringify(log.record, null, 2));
-        process.exit(1);
-      });
-  };
-
-  if (!process.env.NODE_VERSION) {
-    log.warn('node', 'NODE_VERSION not set. Defaulting to', n.current());
-  }
-
-  if (require.main === module) {
-    exports.run();
-  }
 });
