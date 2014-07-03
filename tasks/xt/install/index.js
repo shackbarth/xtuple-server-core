@@ -30,7 +30,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
   /** @override */
   executeTask: function (options) {
     co(function *() {
-      var latest = yield t(Latest)();
+      var latest = yield new t(Latest)();
 
       if (_.isObject(options.local) && !_.isEmpty(options.local.workspace)) {
         console.dir(options.local.workspace);
