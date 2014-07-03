@@ -1,5 +1,7 @@
 #! /usr/bin/env node
 
+require('node-version-magic').enforce(require('./package'), function (err, statisfied) {
+
 var lib = require('xtuple-server-lib'),
   exec = require('child_process').execSync,
   _ = require('lodash'),
@@ -105,3 +107,5 @@ program.command('*').action(function (cmd) {
 });
 
 program.parse(process.argv);
+
+});
