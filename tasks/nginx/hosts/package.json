@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-nginx-hosts",
-  "version": "0.9.3",
+  "version": "1.0.0",
   "description": "xTuple Server Task [nginx.hosts]: configure the system hosts file",
   "main": "index.js",
   "scripts": {
