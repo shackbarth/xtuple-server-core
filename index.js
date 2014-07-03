@@ -88,9 +88,6 @@ var planner = module.exports = {
     * Compile a pure, non-commander based options object.
     */
   compileOptions: function (plan, options) {
-    log.verbose('compileOptions', 'node version = '+ options.n.version);
-    log.silly('compileOptions', options);
-
     lib.util.eachTask(plan, function (task, phase, taskName) {
       options[phase.name] || (options[phase.name] = { });
       options[phase.name][taskName] || (options[phase.name][taskName] = { });
