@@ -1,13 +1,5 @@
 language: c
 
-env:
-  - NODE_VERSION=0.8.26
-  - NODE_VERSION=0.10.29
-
-matrix:
-  allow_failures:
-    - env: NODE_VERSION=0.8.26
-
 before_install:
   - rm -rf ~/.nvm
   - sudo bash bootstrap.sh
