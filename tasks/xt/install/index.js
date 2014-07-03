@@ -1,6 +1,9 @@
 var lib = require('xtuple-server-lib'),
   semver = require('semver'),
   mkdirp = require('mkdirp'),
+  Latest = require('node-latest-version'),
+  co = require('co'),
+  t = require('thunkify'),
   _ = require('lodash'),
   n = require('n-api'),
   exec = require('child_process').execSync,
@@ -26,62 +29,67 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
 
   /** @override */
   executeTask: function (options) {
-    if (_.isObject(options.local) && !_.isEmpty(options.local.workspace)) {
-      options.n = { version: process.env.NODE_VERSION || require(path.resolve(options.local.workspace, 'package').engines.node) };
-      options.n.npm = 'n '+ options.n.version + ' && npm';
-      options.n.use = 'n use '+ options.n.version;
-      return;
-    }
+    co(function *() {
+      var latest = yield t(Latest)();
 
-    _.each(lib.util.getRepositoryList(options), function (repo) {
-      var clonePath = path.resolve(options.xt.dist, repo),
-          deployPath = path.resolve(options.xt.userdist, repo);
-
-      if (!fs.existsSync(clonePath)) {
-        try {
-          exec([ 'git clone --recursive https://github.com/xtuple/' + repo + '.git', clonePath].join(' '), {
-            cwd: clonePath
-          });
-          exec('cd '+ clonePath +' && git fetch origin', { cwd: clonePath });
-          exec('cd '+ clonePath +' && git reset --hard ' + options.xt.repoHash, { cwd: clonePath });
-        }
-        catch (e) {
-          log.warn('xt-install', e.message);
-          log.verbose('xt-install', e.stack.split('\n'));
-        }
-      }
-
-      /**
-       * FIXME these two "options.n" if statements should really be refactored
-       */
-      if (!options.n) {
-        var pkg = require(path.resolve(clonePath, 'package'));
-        options.n = { version: process.env.NODE_VERSION || pkg.engines.node };
+      if (_.isObject(options.local) && !_.isEmpty(options.local.workspace)) {
+        console.dir(options.local.workspace);
+        options.n = { version: latest.satisfy(require(path.resolve(options.local.workspace, 'package').engines.node)) };
         options.n.npm = 'n '+ options.n.version + ' && npm';
         options.n.use = 'n use '+ options.n.version;
+        return;
       }
 
+      _.each(lib.util.getRepositoryList(options), function (repo) {
+        var clonePath = path.resolve(options.xt.dist, repo),
+            deployPath = path.resolve(options.xt.userdist, repo);
 
-      if (!fs.existsSync(deployPath)) {
-        try {
-          n(options.n.version);
-          exec([ 'cd', clonePath, '&& npm install' ].join(' '), { cwd: clonePath });
+        if (!fs.existsSync(clonePath)) {
+          try {
+            exec([ 'git clone --recursive https://github.com/xtuple/' + repo + '.git', clonePath].join(' '), {
+              cwd: clonePath
+            });
+            exec('cd '+ clonePath +' && git fetch origin', { cwd: clonePath });
+            exec('cd '+ clonePath +' && git reset --hard ' + options.xt.repoHash, { cwd: clonePath });
+          }
+          catch (e) {
+            log.warn('xt-install', e.message);
+            log.verbose('xt-install', e.stack.split('\n'));
+          }
         }
-        catch (e) {
-          log.warn('xt-install', e.message);
+
+        /**
+        * FIXME these two "options.n" if statements should really be refactored
+        */
+        if (!options.n) {
+          var pkg = require(path.resolve(clonePath, 'package'));
+          options.n = { version: process.env.NODE_VERSION || latest.satisfy(pkg.engines.node) };
+          options.n.npm = 'n '+ options.n.version + ' && npm';
+          options.n.use = 'n use '+ options.n.version;
         }
-        n(process.version);
+
 
         if (!fs.existsSync(deployPath)) {
-          mkdirp.sync(deployPath);
+          try {
+            n(options.n.version);
+            exec([ 'cd', clonePath, '&& npm install' ].join(' '), { cwd: clonePath });
+          }
+          catch (e) {
+            log.warn('xt-install', e.message);
+          }
+          n(process.version);
+
+          if (!fs.existsSync(deployPath)) {
+            mkdirp.sync(deployPath);
+          }
+          // copy main repo files to user's home directory
+          var rsync = exec([ 'rsync -ar --exclude=.git', clonePath + '/*', deployPath ].join(' '));
+            
+          exec([ 'chown -R', options.xt.name, deployPath ].join(' '));
+          exec('chmod -R u=rwx ' + deployPath);
         }
-        // copy main repo files to user's home directory
-        var rsync = exec([ 'rsync -ar --exclude=.git', clonePath + '/*', deployPath ].join(' '));
-          
-        exec([ 'chown -R', options.xt.name, deployPath ].join(' '));
-        exec('chmod -R u=rwx ' + deployPath);
-      }
-    });
+      });
+    })();
   },
 
   /**
