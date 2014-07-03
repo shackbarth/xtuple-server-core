@@ -15,7 +15,7 @@ describe('install-dev', function () {
     },
     xt: {
       demo: true,
-      version: require('xtuple/package').version
+      version: require('../xtuple/package').version
     },
     pg: {
       version: process.env.XT_PG_VERSION,

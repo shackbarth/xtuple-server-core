@@ -14,7 +14,7 @@ describe('uninstall-dev', function () {
     },
     xt: {
       demo: true,
-      version: require('xtuple/package').version
+      version: require('../xtuple/package').version
     },
     pg: {
       version: '9.3',
