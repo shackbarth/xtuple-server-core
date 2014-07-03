@@ -100,7 +100,7 @@
   "scripts": {
     "setup-dev": "nex install && nex install xtuple --nodeVersion 0.10.29",
     "prepublish": "npm dedupe",
-    "pretest": "XT_VERSION=${XT_VERSION:-4.5.2} mocha spec/uninstall-dev.js",
+    "pretest": "XT_VERSION=${XT_VERSION:-4.5.2} mocha --harmony spec/uninstall-dev.js",
     "test": "mocha --harmony -R spec spec"
   },
   "bin": {
