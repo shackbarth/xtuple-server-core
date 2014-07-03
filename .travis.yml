@@ -11,8 +11,8 @@ install:
   - npm run setup-dev
 
 script:
-  - sudo -E npm test xtuple-server-lib
-  - sudo -E npm test
+  - sudo npm test xtuple-server-lib
+  - sudo npm test
 
 after_failure:
   - pg_lsclusters 
