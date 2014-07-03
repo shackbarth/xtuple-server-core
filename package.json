@@ -38,6 +38,7 @@
     "glob",
     "lodash",
     "n-api",
+    "node-version-magic",
     "npmlog",
     "q",
     "requireindex",
