@@ -1,6 +1,9 @@
 #! /usr/bin/env node
 
-require('node-version-magic').enforce(require('./package'), function (e, version) {
+var path = require('path');
+var pkg = require(path.resolve(__dirname, 'package'));
+
+require('node-version-magic').enforce(pkg), function (e, version) {
 
   if (e) throw Error(e);
 
