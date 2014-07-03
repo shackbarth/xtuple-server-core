@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server",
-  "version": "0.9.110",
+  "version": "0.9.111",
   "description": "xTuple Server",
   "dependencies": {
     "commander": "^2.2.0",
