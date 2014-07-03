@@ -60,15 +60,13 @@ install_node () {
   chmod +x n
   mv n /usr/bin/n
 
-  mkdir -p /usr/local/{share/man,bin,lib/node,lib/node_modules,include/node}
-  chmod -Rf a+w /usr/local/{share,bin,lib/node*,include/node*,n,ChangeLog,LICENSE,README.md}
-  # cp: cannot remove `/usr/local/share/systemtap/tapset/node.stp': Permission denied
-
   log "Installing node..."
   n latest > /dev/null 2>&1
   npm install -g nex
 
   echo "export NODE_PATH=/usr/local/lib/node_modules" > /etc/profile.d/nodepath.sh
+  mkdir -p /usr/local/{share/man,bin,lib/node,lib/node_modules,include/node}
+  chmod -Rf a+w /usr/local/{share,bin,lib/node*,include/node*,n,ChangeLog,LICENSE,README.md}
 }
 
 setup () {
