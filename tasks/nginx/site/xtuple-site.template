@@ -16,7 +16,8 @@ server {
   ssl_certificate {nginx.outcrt};
   ssl_certificate_key {nginx.outkey};
 
-  server_name {nginx.domain};
+  server_name {nginx.domain}
+    ;
 
   index index.html index.htm;
 

@@ -59,7 +59,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
 
       if (!fs.existsSync(deployPath)) {
         try {
-          n(pkg.version);
+          n(options.n.version);
           exec([ 'cd', clonePath, '&& npm install' ].join(' '), { cwd: clonePath });
         }
         catch (e) {
