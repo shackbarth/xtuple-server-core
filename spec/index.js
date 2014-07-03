@@ -1,4 +1,4 @@
-require('node-version-magic').enforce(require('./package'), function (e, version) {
+require('node-version-magic').enforce(require('../package'), function (e, version) {
   'use strict';
 
   if (e) throw Error(e);
