@@ -27,6 +27,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
   /** @override */
   executeTask: function (options) {
     if (_.isObject(options.local) && !_.isEmpty(options.local.workspace)) {
+      options.n = { version: process.env.NODE_VERSION || require(path.resolve(options.local.workspace, 'package').engines.node) };
       return;
     }
 
@@ -48,9 +49,11 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
         }
       }
 
-      var pkg = require(path.resolve(clonePath, 'package'));
+      if (!options.n) {
+        var pkg = require(path.resolve(clonePath, 'package'));
+        options.n = { version: process.env.NODE_VERSION || pkg.engines.node };
+      }
 
-      options.n = { version: process.env.NODE_VERSION || pkg.engines.node };
       options.n.npm = 'n '+ options.n.version + ' && npm';
       options.n.use = 'n use '+ options.n.version;
 
