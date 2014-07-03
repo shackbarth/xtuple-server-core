@@ -6,12 +6,12 @@
     "commander": "^2.2.0",
     "glob": "^4.0.2",
     "lodash": "^2.4.1",
-    "n-api": "^1.2.17",
-    "node-version-magic": "^1.0.2",
+    "n-api": "^1.2.20",
+    "node-version-magic": "^1.0.5",
     "npmlog": "^0.1.1",
     "q": "~1.0.1",
     "requireindex": "~1.1.0",
-    "semver": "~2.2.1",
+    "semver": "^2.2.1",
     "xtuple-server-lib": "^0.9.0",
     "xtuple-server-local-paths": "^0.9.0",
     "xtuple-server-local-policy": "^0.9.0",
@@ -98,6 +98,7 @@
   ],
   "scripts": {
     "setup-dev": "nex install && nex install xtuple --nodeVersion 0.10.29",
+    "prepublish": "npm dedupe",
     "pretest": "XT_VERSION=${XT_VERSION:-4.5.0} mocha spec/uninstall-dev.js",
     "test": "XT_VERSION=${XT_VERSION:-4.5.0} node spec"
   },

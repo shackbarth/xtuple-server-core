@@ -1,42 +1,45 @@
-var pkg = require('../package');
-var semver = require('semver');
-var fs = require('fs');
-var path = require('path');
-var Mocha = require('mocha');
-var glob = require('glob');
-var n = require('n-api');
+require('node-version-magic').enforce(require('./package'), function (e, version) {
+  'use strict';
 
-global.log = require('npmlog');
-log.heading = 'xtuple-server';
-log.level = 'verbose';
+  if (e) throw Error(e);
 
-process.on('exit', function () {
-  n(semver.clean(pkg.engines.node));
-});
+  var pkg = require('../package');
+  var semver = require('semver');
+  var fs = require('fs');
+  var path = require('path');
+  var Mocha = require('mocha');
+  var glob = require('glob');
+  var n = require('n-api');
 
-exports.run = function () {
+  global.log = require('npmlog');
+  log.heading = 'xtuple-server';
+  log.level = 'verbose';
 
-  var mocha = new Mocha({
-    bail: true,
-    reporter: 'spec'
-  });
+  process.on('exit', function () { n(version); });
 
-  mocha.files = glob.sync(path.resolve(process.cwd(), 'spec/*.js'));
+  exports.run = function () {
 
-  mocha.run()
-    .on('fail', function (test, err) {
-      log.error('test', err.stack.split('\n'));
-      log.info('test', 'Please see xtuple-server-test.log for more info');
-      fs.appendFileSync('xtuple-server-error.log', JSON.stringify(log.record, null, 2));
-      process.exit(1);
+    var mocha = new Mocha({
+      bail: true,
+      reporter: 'spec'
     });
-};
 
-if (!process.env.NODE_VERSION) {
-  n(semver.clean(pkg.engines.node));
-  log.warn('node', 'NODE_VERSION not set. Defaulting to', n.current());
-}
+    mocha.files = glob.sync(path.resolve(process.cwd(), 'spec/*.js'));
 
-if (require.main === module) {
-  exports.run();
-}
+    mocha.run()
+      .on('fail', function (test, err) {
+        log.error('test', err.stack.split('\n'));
+        log.info('test', 'Please see xtuple-server-test.log for more info');
+        fs.appendFileSync('xtuple-server-error.log', JSON.stringify(log.record, null, 2));
+        process.exit(1);
+      });
+  };
+
+  if (!process.env.NODE_VERSION) {
+    log.warn('node', 'NODE_VERSION not set. Defaulting to', n.current());
+  }
+
+  if (require.main === module) {
+    exports.run();
+  }
+});

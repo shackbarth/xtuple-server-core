@@ -10,14 +10,13 @@ server {
 
 # proxy SSL requests to the upstream node server
 server {
+  listen {nginx.safeport} default_server ssl;
   listen {nginx.httpsport} ssl;
-  listen {nginx.safeport}  ssl;
   ssl on; 
   ssl_certificate {nginx.outcrt};
   ssl_certificate_key {nginx.outkey};
 
-  server_name {nginx.domain}
-    ;
+  server_name {nginx.domain};
 
   index index.html index.htm;
 
