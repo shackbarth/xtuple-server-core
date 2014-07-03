@@ -2,6 +2,7 @@ var lib = require('xtuple-server-lib'),
   semver = require('semver'),
   mkdirp = require('mkdirp'),
   _ = require('lodash'),
+  n = require('n-api'),
   exec = require('child_process').execSync,
   fs = require('fs'),
   path = require('path');
@@ -47,16 +48,21 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
         }
       }
 
+      var pkg = require(path.resolve(clonePath, 'package'));
+
+      options.n = { version: process.env.NODE_VERSION || pkg.engines.node };
+      options.n.npm = 'n '+ options.n.version + ' && npm';
+      options.n.use = 'n use '+ options.n.version;
+
       if (!fs.existsSync(deployPath)) {
         try {
-          exec('n '+ options.n.version);
-          exec([ 'cd', clonePath, '&& npm install' ].join(' '), { cwd: clonePath }).toString();
-          log.verbose('xt.install executeTask', npmInstall);
+          n(pkg.version);
+          exec([ 'cd', clonePath, '&& npm install' ].join(' '), { cwd: clonePath });
         }
         catch (e) {
           log.warn('xt-install', e.message);
         }
-        exec('n latest');
+        n(process.version);
 
         if (!fs.existsSync(deployPath)) {
           mkdirp.sync(deployPath);

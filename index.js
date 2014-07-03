@@ -88,9 +88,6 @@ var planner = module.exports = {
     * Compile a pure, non-commander based options object.
     */
   compileOptions: function (plan, options) {
-    options.n = { version: semver.clean(process.env.NODE_VERSION || process.version) };
-    options.n.npm = 'n '+ options.n.version + ' && npm';
-    options.n.use = 'n use '+ options.n.version;
     log.verbose('compileOptions', 'node version = '+ options.n.version);
     log.silly('compileOptions', options);
 
@@ -124,12 +121,12 @@ var planner = module.exports = {
     setTimeout(function () {
       try {
         executePlan(plan, options);
-        deferred.resolve();
+        deferred.resolve(options);
       }
       catch (e) {
         deferred.reject(e);
       }
-    }, 0);
+    }, 10);
 
     return deferred.promise;
   }
