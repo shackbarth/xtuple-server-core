@@ -101,7 +101,7 @@
     "setup-dev": "nex install && nex install xtuple --nodeVersion 0.10.29",
     "prepublish": "npm dedupe",
     "pretest": "XT_VERSION=${XT_VERSION:-4.5.0} mocha spec/uninstall-dev.js",
-    "test": "XT_VERSION=${XT_VERSION:-4.5.0} node spec"
+    "test": "node --harmony spec"
   },
   "bin": {
     "xtuple-server": "cli.js"
