@@ -14,11 +14,14 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-restore */ {
       optional: '[infile]',
       description: 'Path to the file to be restored',
       validate: function (value, options) {
+        if (_.isEmpty(value)) {
+          throw new Error('pg-infile must be set');
+        }
         if ((options.planName === 'import-users') && ('.sql' !== path.extname(options.pg.infile))) {
           throw new Error('The import-users plan can only import a raw ".sql" file');
         }
         if (!fs.existsSync(path.resolve(value))) {
-          throw new Error('Invalid path for pg.infile: '+ value);
+          throw new Error('pg-infile not found: '+ value);
         }
         return value;
       }
