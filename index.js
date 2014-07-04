@@ -76,7 +76,7 @@ var planner = module.exports = {
           }
           catch (e) {
             log.error('verifyOptions', e.message);
-            log.verbose('verifyOptions', e.stack.split('\n'));
+            log.error('verifyOptions', e.stack.split('\n'));
             process.exit(1);
           }
         }
