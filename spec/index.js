@@ -60,10 +60,10 @@ describe('xTuple Server', function () {
   describe('plans', function () {
 
     describe('@install-dev', function () {
-      this.planObject = plans['install-dev'];
-      this.options = {
+      var planObject = plans['install-dev'];
+      var options = {
         planName: 'install-dev',
-        plan: this.planObject.plan,
+        plan: planObject.plan,
         type: 'dev',
         local: {
           workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
@@ -73,16 +73,20 @@ describe('xTuple Server', function () {
           version: require('../node_modules/xtuple/package').version
         }
       };
-      planner.compileOptions(this.options.plan, this.options);
-      planner.verifyOptions(this.options.plan, this.options);
-      specPlanner.describe(this);
+      
+      before(function () {
+        planner.compileOptions(options.plan, options);
+        planner.verifyOptions(options.plan, options);
+      });
+
+      specPlanner.describe({ planObject: planObject, options: options });
     });
 
     describe.skip('@backup-database', function () {
-      this.planObject = plans['backup-database'];
-      this.options = {
+      var planObject = plans['backup-database'];
+      var options = {
         planName: 'backup-database',
-        plan: this.planObject.plan,
+        plan: planObject.plan,
         type: 'dev',
         local: {
           workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
@@ -94,16 +98,20 @@ describe('xTuple Server', function () {
           dbname: 'demo_dev'
         }
       };
-      planner.compileOptions(this.options.plan, this.options);
-      planner.verifyOptions(this.options.plan, this.options);
-      specPlanner.describe(this);
+
+      before(function () {
+        planner.compileOptions(options.plan, options);
+        planner.verifyOptions(options.plan, options);
+      });
+
+      specPlanner.describe({ planObject: planObject, options: options });
     });
 
     describe.skip('@drop-database', function () {
-      this.planObject = plans['drop-database'];
-      this.options = {
+      var planObject = plans['drop-database'];
+      var options = {
         planName: 'drop-database',
-        plan: this.planObject.plan,
+        plan: planObject.plan,
         type: 'dev',
         local: {
           workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
@@ -115,16 +123,21 @@ describe('xTuple Server', function () {
           dbname: 'demo_quickstart'
         }
       };
-      planner.compileOptions(this.options.plan, this.options);
-      planner.verifyOptions(this.options.plan, this.options);
-      specPlanner.describe(this);
+
+      before(function () {
+        options.pg.infile = lib.util.getSnapshotPath(options, false);
+        planner.compileOptions(options.plan, options);
+        planner.verifyOptions(options.plan, options);
+      });
+
+      specPlanner.describe({ planObject: planObject, options: options });
     });
 
     describe.skip('@restore-database', function () {
-      this.planObject = plans['restore-database'];
-      this.options = {
+      var planObject = plans['restore-database'];
+      var options = {
         planName: 'restore-database',
-        plan: this.planObject.plan,
+        plan: planObject.plan,
         type: 'dev',
         local: {
           workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
@@ -136,17 +149,21 @@ describe('xTuple Server', function () {
           dbname: 'demo_dev_restored'
         }
       };
-      this.options.pg.infile = lib.util.getSnapshotPath(this.options, false),
-      planner.compileOptions(this.options.plan, this.options);
-      planner.verifyOptions(this.options.plan, this.options);
-      specPlanner.describe(this);
+
+      before(function () {
+        options.pg.infile = lib.util.getSnapshotPath(options, false);
+        planner.compileOptions(options.plan, options);
+        planner.verifyOptions(options.plan, options);
+      });
+
+      specPlanner.describe({ planObject: planObject, options: options });
     });
 
     describe.skip('@rename-database', function () {
-      this.planObject = plans['rename-database'];
-      this.options = {
+      var planObject = plans['rename-database'];
+      var options = {
         planName: 'rename-database',
-        plan: this.planObject.plan,
+        plan: planObject.plan,
         type: 'dev',
         local: {
           workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
@@ -158,10 +175,13 @@ describe('xTuple Server', function () {
           dbname: 'demo_dev_restored'
         }
       };
-      this.options.pg.infile = lib.util.getSnapshotPath(this.options, false),
-      planner.compileOptions(this.options.plan, this.options);
-      planner.verifyOptions(this.options.plan, this.options);
-      specPlanner.describe(this);
+
+      before(function () {
+        planner.compileOptions(options.plan, options);
+        planner.verifyOptions(options.plan, options);
+      });
+
+      specPlanner.describe({ planObject: planObject, options: options });
     });
   });
 });
