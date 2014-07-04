@@ -132,6 +132,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
         throw e;
       }
       finally {
+        log.verbose('xt-database executeTask', 'finally');
         n(process.version);
       }
 
@@ -154,6 +155,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
         throw e;
       }
       finally {
+        log.verbose('xt-database buildExtensions', 'finally');
         n(process.version);
       }
     });
