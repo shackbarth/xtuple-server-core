@@ -41,7 +41,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
 
     _.each(lib.util.getRepositoryList(options), function (repo) {
       var clonePath = path.resolve(options.xt.dist, repo),
-          deployPath = path.resolve(options.xt.userdist, repo);
+        deployPath = path.resolve(options.xt.userdist, repo);
 
       if (!fs.existsSync(clonePath)) {
         try {
@@ -75,9 +75,12 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
           exec([ 'cd', clonePath, '&& npm install' ].join(' '), { cwd: clonePath });
         }
         catch (e) {
-          log.warn('xt-install', e.message);
+          log.error('xt-install', e.message);
+          throw e;
         }
-        n(process.version);
+        finally {
+          n(process.version);
+        }
 
         if (!fs.existsSync(deployPath)) {
           mkdirp.sync(deployPath);
