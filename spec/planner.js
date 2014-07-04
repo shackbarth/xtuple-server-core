@@ -1,5 +1,5 @@
 var lib = require('xtuple-server-lib'),
-  assert = require('chai').assert,
+  assert = require('assert'),
   _ = require('lodash'),
   planner = require('../');
 
