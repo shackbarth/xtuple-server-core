@@ -30,9 +30,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
     var latest = path.resolve(__dirname, 'node_modules', 'node-latest-version', 'index.js');
 
     if (_.isObject(options.local) && !_.isEmpty(options.local.workspace)) {
-      console.dir(require(path.resolve(options.local.workspace, 'package')));
       version = exec('node ' + latest + ' "' + require(path.resolve(options.local.workspace, 'package')).engines.node + '"').toString();
-      console.dir(options.local.workspace);
       options.n = { version: version };
       options.n.npm = 'n '+ options.n.version + ' && npm';
       options.n.use = 'n use '+ options.n.version;
