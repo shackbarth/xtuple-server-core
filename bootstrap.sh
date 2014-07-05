@@ -60,7 +60,10 @@ install_node () {
   chmod +x n
   mv n /usr/bin/n
 
-  log "Installing node..."
+  log "Installing latest npm..."
+  npm install -g npm --silent
+
+  log "Installing latest node..."
   n latest > /dev/null 2>&1
 
   mkdir -p /usr/local/{share/man,bin,lib/node,lib/node_modules,include/node}
