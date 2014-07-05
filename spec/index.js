@@ -13,12 +13,13 @@ var fs = require('fs');
 var path = require('path');
 var n = require('n-api');
 var proc = require('child_process');
+var logfile = require('npmlog-file');
 
 global.log = require('npmlog');
 
 process.on('exit', function () {
   log.info('test', 'Test result details in xtuple-server-test.log');
-  fs.appendFileSync('xtuple-server-test.log', JSON.stringify(log.record, null, 2));
+  logfile.write(log, 'xtuple-server-test.log');
 
   n(process.version);
 });

@@ -2,6 +2,9 @@
 
 var path = require('path');
 var pkg = require(path.resolve(__dirname, 'package'));
+var logfile = require('npmlog-file');
+
+global.log = require('npmlog');
 
 require('node-version-magic').enforce(pkg, function (e, version) {
 
@@ -56,9 +59,9 @@ require('node-version-magic').enforce(pkg, function (e, version) {
       })
       .fail(function (e) {
         log.error('xtuple', e.message);
-        log.info('xtuple', 'Please see xtuple-server.log for more info');
         log.verbose('xtuple', e.stack.split('\n'));
-        fs.appendFileSync('xtuple-server.log', JSON.stringify(log.record, null, 2));
+        log.info('xtuple', 'Please see xtuple-server.log for more info');
+        logfile.write(log, 'xtuple-server.log');
         process.exit(1);
       });
   }
