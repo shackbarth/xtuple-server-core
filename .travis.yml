@@ -27,4 +27,4 @@ deploy:
   on:
     tags: true
     repo: xtuple/xtuple-server
-    branch: master
+    all_branches: true
