@@ -44,8 +44,8 @@ exports.afterExecute = function (options) {
       var xtupleRepo = fs.existsSync(options.xt.userdist, 'xtuple'),
         extensionsRepo = fs.existsSync(options.xt.userdist, 'xtuple-extensions');
 
-      assert.isTrue(xtupleRepo);
-      assert.isTrue(extensionsRepo);
+      assert.ok(xtupleRepo);
+      assert.ok(extensionsRepo);
     });
   });
 };
