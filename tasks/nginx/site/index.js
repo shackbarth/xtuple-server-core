@@ -23,6 +23,11 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
    * @override
    */
   beforeInstall: function (options) {
+    if (fs.existsSync('/etc/nginx/sites-enabled/default')) {
+      fs.unlinkSync('/etc/nginx/sites-enabled/default');
+      fs.unlinkSync('/etc/nginx/sites-available/default');
+    }
+
     options.nginx.sitename = lib.util.$(options);
     options.nginx.hostname = options.nginx.sitename + '.localhost';
     options.nginx.sitesAvailable = path.resolve('/etc/nginx/sites-available');
@@ -60,14 +65,19 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
 
   /** @override */
   afterTask: function (options) {
-    if (fs.existsSync('/etc/nginx/sites-enabled/default')) {
-      fs.unlinkSync('/etc/nginx/sites-enabled/default');
-    }
-    var reload = exec('service nginx reload');
+    exec('service nginx reload');
+  },
 
-    if (reload.status !== 0) {
-      throw new Error('nginx failed to reload: ' + reload.stderr);
-    }
+  /** @override */
+  afterInstall: function (options) {
+    if (/^install/.test(options.planName && !_.isEmpty(options.xt.adminpw))) { 
+      options.report['xTuple Instance'] = { 
+        'Public Web Domain': options.nginx.domain,
+        'Direct Web Port': options.nginx.safeport,
+        'xTuple Username': 'admin',
+        'xTuple Password': options.xt.adminpw
+      };
+    } 
   },
 
   writeSiteConfig: function (options) {
