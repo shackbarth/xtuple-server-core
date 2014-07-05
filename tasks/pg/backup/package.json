@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-pg-backup",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "description": "xTuple Server Task [pg.backup]: backup a database",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "tuple"
   ],
   "author": "xTuple",
-  "license": "GPL",
+  "license": "MPL-2.0",
   "bugs": {
     "url": "https://github.com/xtuple/xtuple-server/issues"
   },
@@ -33,7 +33,6 @@
     "xtuple-server-lib": "^0.9.62"
   },
   "devDependencies": {
-    "chai": "^1.9.1",
     "mocha": "^1.20.0"
   }
 }
