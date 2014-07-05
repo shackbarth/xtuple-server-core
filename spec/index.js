@@ -30,15 +30,16 @@ describe('xTuple Server', function () {
     log.level = 'verbose';
   });
 
-  it('should be run with node '+ pkg.engines.node, function () {
-    assert(semver.satisfies(process.version, pkg.engines.node));
-  });
-
-  describe('cli', function () {
+  describe('@cli', function () {
 
     afterEach(function () {
       log.verbose(this.child);
     });
+
+    it('should be run with node '+ pkg.engines.node, function () {
+      assert(semver.satisfies(process.version, pkg.engines.node));
+    });
+
 
     it('should be installed globally', function () {
       var stdout = proc.execSync('command -v xtuple-server');
