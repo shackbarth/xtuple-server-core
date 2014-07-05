@@ -79,7 +79,8 @@
   ],
   "scripts": {
     "setup-dev": "nex install && nex install xtuple --nodeVersion 0.10.29",
-    "test": "mocha --harmony -R spec spec/index.js -b"
+    "test": "mocha --harmony -R spec spec/index.js -b",
+    "prepublish": "git clean -xfd"
   },
   "bin": {
     "xtuple-server": "cli.js"
@@ -102,7 +103,7 @@
   ],
   "engines": {
     "node": "^0.11.13",
-    "postgresql": "9.3.0",
+    "postgresql": "^9.3.0",
     "nginx": ">=1.4.6"
   },
   "cpu": [

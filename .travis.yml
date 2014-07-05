@@ -19,6 +19,10 @@ after_failure:
   - cat npm-debug.log
   - cat xtuple-server-test.log
 
+before_deploy:
+  - npm install -g npm
+  - git clean -fxd
+
 deploy:
   provider: npm
   email: me@traviswebb.com
