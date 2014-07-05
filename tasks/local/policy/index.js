@@ -1,5 +1,5 @@
 var lib = require('xtuple-server-lib'),
-  exec = require('sync-exec'),
+  exec = require('child_process').execSync,
   _ = require('lodash'),
   path = require('path'),
   fs = require('fs');
@@ -31,14 +31,26 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-policy */ {
 
   /** @protected */
   createUserPolicy: function (options) {
-    exec('addgroup xtuser');
-    exec('usermod -a -G postgres,xtuser '+ options.xt.name);
-    exec('usermod -a -G ssl-cert,xtuser,www-data postgres');
+    try {
+      exec('addgroup xtuser');
+      exec('usermod -a -G postgres,xtuser '+ options.xt.name);
+      exec('usermod -a -G ssl-cert,xtuser,www-data postgres');
+    }
+    catch (e) {
+      log.verbose('local-policy', e.message);
+      log.verbose('local-policy', e.stack.split('\n'));
+    }
 
-    exec('chown -R '+ options.xt.name +' '+ options.xt.userhome);
-    //exec('chown -R postgres:xtuser '+ options.xt.socketdir);
+    try {
+      exec('chown -R '+ options.xt.name +' '+ options.xt.userhome);
+      //exec('chown -R postgres:xtuser '+ options.xt.socketdir);
 
-    exec('chown -R postgres:postgres '+ options.xt.socketdir);///var/run/postgresql');
-    exec('chmod -R 777 '+ options.xt.socketdir);
+      exec('chown -R postgres:postgres '+ options.xt.socketdir);///var/run/postgresql');
+      exec('chmod -R 777 '+ options.xt.socketdir);
+    }
+    catch (e) {
+      log.verbose('local-policy', e.message);
+      log.verbose('local-policy', e.stack.split('\n'));
+    }
   }
 });
