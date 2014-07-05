@@ -32,16 +32,14 @@ describe('xTuple Server', function () {
 
   describe('@cli', function () {
 
-    afterEach(function () {
-      log.verbose(this.child);
-    });
+    afterEach(function () { log.silly(this.child); });
 
     it('should be run with node '+ pkg.engines.node, function () {
       assert(semver.satisfies(process.version, pkg.engines.node));
     });
 
 
-    it('should be installed globally', function () {
+    it('"xtuple-server" should be installed globally', function () {
       var stdout = proc.execSync('command -v xtuple-server');
       assert(/xtuple-server\n$/.test(stdout));
     });
