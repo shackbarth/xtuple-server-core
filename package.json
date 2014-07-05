@@ -9,6 +9,7 @@
     "n-api": "^1.2.20",
     "node-version-magic": "^1.1.0",
     "npmlog": "^0.1.1",
+    "npmlog-file": "^0.1.1",
     "q": "~1.0.1",
     "requireindex": "~1.1.0",
     "semver": "^2.2.1",

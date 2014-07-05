@@ -3,6 +3,7 @@ var lib = require('xtuple-server-lib'),
   _ = require('lodash'),
   render = require('prettyjson').render,
   fs = require('fs'),
+  logfile = require('npmlog-file'),
   path = require('path');
 
 _.extend(exports, lib.task, /** @exports report */ {
@@ -39,5 +40,7 @@ _.extend(exports, lib.task, /** @exports report */ {
       path.resolve(options.xt.configdir, 'install-results.json'),
       JSON.stringify(options, null, 2)
     );
+
+    logfile.write(log, 'xtuple-server-report.log');
   }
 });
