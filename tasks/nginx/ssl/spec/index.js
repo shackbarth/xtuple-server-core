@@ -1,4 +1,4 @@
-var assert = require('chai').assert,
+var assert = require('assert'),
   _ = require('lodash'),
   fs = require('fs'),
   path = require('path'),
@@ -8,7 +8,7 @@ exports.afterExecute = function (options) {
 
   describe('#verifyCertificate', function () {
     it('should verify a legit cert', function () {
-      assert(sslTask.verifyCertificate(options));
+      assert.ok(sslTask.verifyCertificate(options));
     });
     it('should reject a non-existent .crt', function () {
       assert.throws(function () {
