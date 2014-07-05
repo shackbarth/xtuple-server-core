@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-xt-config",
-  "version": "0.9.17",
+  "version": "0.9.18",
   "description": "xTuple Server Task [xt.config]: configure the xTuple web server",
   "main": "index.js",
   "scripts": {
@@ -32,7 +32,6 @@
     "xtuple-server-lib": "^0.9.62"
   },
   "devDependencies": {
-    "chai": "^1.9.1",
     "mocha": "^1.20.0"
   }
 }
