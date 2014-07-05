@@ -37,7 +37,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
     options.nginx.siteTemplateFile = path.resolve(__dirname, 'xtuple-site.template');
 
     if (options.nginx.domain === 'localhost') {
-      options.nginx.domain += options.nginx.hostname;
+      options.nginx.domain = options.nginx.hostname;
     }
   },
 
