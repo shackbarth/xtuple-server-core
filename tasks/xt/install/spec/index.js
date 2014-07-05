@@ -16,7 +16,7 @@ exports.afterExecute = function (options) {
 
       assert.ok(_.contains(repoList, 'xtuple'));
       assert.ok(_.contains(repoList, 'xtuple-extensions'));
-      assert.notInclude(repoList, 'private-extensions');
+      assert.ok(!_.contains(repoList, 'private-extensions'));
     });
     it('should clone all repos if installing a premium edition', function () {
       options.xt.edition = 'manufacturing';
