@@ -21,13 +21,12 @@ after_failure:
 
 before_deploy:
   - npm install -g npm
-  - git clean -fxd
 
 deploy:
   provider: npm
   email: me@traviswebb.com
   api_key:
-    secure: "f3cYn87EJeSHSPU6hiM0fnWDAZap72sxNdJkgQtyVsODshsUpxl/oj9uzpFeq4ftRp1nUOJJE/g55g3KdBVsSEaBfxe0i5hGQb8RAnqmX7DtnmrERDl4oO+3yc/thxjim+CKxg9k9pP7EeE5nyVUSk4gZEaO3cT3I2bXXKAUESc="
+    secure: "Dg+WqvgoTUf4Cm7JnbcThsjuvnuKPvxqy2SPZMDmgP1goYW64LvSXOa+LcVz2Pof/CX78922oUa3S+FWJ1erzIsFaMbiBP9arEK1tM1V89IMkwwv6rMhMHLGDHQSelal6N3SI5yplPWXtQux6vVEyDWUzGQ4+KWtdnHd/c2vIVE="
   on:
     tags: true
     repo: xtuple/xtuple-server
