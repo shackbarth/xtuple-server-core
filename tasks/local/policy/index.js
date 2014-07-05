@@ -38,7 +38,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-policy */ {
     }
     catch (e) {
       log.verbose('local-policy', e.message);
-      log.verbose('local-policy', e.stack.split('\n'));
+      log.silly('local-policy', e.stack.split('\n'));
     }
 
     try {
@@ -50,7 +50,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-policy */ {
     }
     catch (e) {
       log.verbose('local-policy', e.message);
-      log.verbose('local-policy', e.stack.split('\n'));
+      log.silly('local-policy', e.stack.split('\n'));
     }
   }
 });
