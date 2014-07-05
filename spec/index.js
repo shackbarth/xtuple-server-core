@@ -15,8 +15,6 @@ var n = require('n-api');
 var proc = require('child_process');
 
 global.log = require('npmlog');
-log.heading = 'xtuple-server-test';
-log.level = 'verbose';
 
 process.on('exit', function () {
   log.info('test', 'Test result details in xtuple-server-test.log');
@@ -28,6 +26,7 @@ process.on('exit', function () {
 describe('xTuple Server', function () {
 
   beforeEach(function () {
+    log.heading = 'xtuple-server-test';
     log.level = 'verbose';
   });
 

@@ -7,7 +7,7 @@
     "glob": "^4.0.2",
     "lodash": "^2.4.1",
     "n-api": "^1.2.20",
-    "node-version-magic": "^1.0.5",
+    "node-version-magic": "^1.1.0",
     "npmlog": "^0.1.1",
     "q": "~1.0.1",
     "requireindex": "~1.1.0",

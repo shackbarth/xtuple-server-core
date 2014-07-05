@@ -17,7 +17,7 @@ script:
 after_failure:
   - pg_lsclusters 
   - cat npm-debug.log
-  - cat xtuple-server-error.log
+  - cat xtuple-server-test.log
 
 deploy:
   provider: npm
