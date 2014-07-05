@@ -21,7 +21,7 @@
     "tuple"
   ],
   "author": "xTuple",
-  "license": "GPL",
+  "license": "MPL-2.0",
   "bugs": {
     "url": "https://github.com/xtuple/xtuple-server/issues"
   },
@@ -35,7 +35,6 @@
     "xtuple-server-lib": "^0.9.62"
   },
   "devDependencies": {
-    "chai": "^1.9.1",
     "mocha": "^1.20.0"
   }
 }
