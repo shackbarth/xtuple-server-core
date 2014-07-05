@@ -79,8 +79,7 @@
   ],
   "scripts": {
     "setup-dev": "nex install && nex install xtuple --nodeVersion 0.10.29",
-    "test": "mocha --harmony -R spec spec/index.js -b",
-    "prepublish": "git clean -xfd"
+    "test": "mocha --harmony -R spec spec/index.js -b"
   },
   "bin": {
     "xtuple-server": "cli.js"
