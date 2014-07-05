@@ -23,7 +23,7 @@ deploy:
   provider: npm
   email: me@traviswebb.com
   api_key:
-    secure: "BPZ1otwqkqaIUNcwXNOzl9VFkSv8ipPaFNVYj2RK28DlnxL80OOAfB/VWrSZ/9dR5wlkwk9oX1O/5Uo2cY4Nvq6ctmsleL/hasRTIUkveUaSvZaaRECo0c32fT4C1IJpWSG07zTxGyCs+kNBcaBJInYAE9ARMD5SDH52tnKwWTA="
+    secure: "f3cYn87EJeSHSPU6hiM0fnWDAZap72sxNdJkgQtyVsODshsUpxl/oj9uzpFeq4ftRp1nUOJJE/g55g3KdBVsSEaBfxe0i5hGQb8RAnqmX7DtnmrERDl4oO+3yc/thxjim+CKxg9k9pP7EeE5nyVUSk4gZEaO3cT3I2bXXKAUESc="
   on:
     tags: true
     repo: xtuple/xtuple-server
