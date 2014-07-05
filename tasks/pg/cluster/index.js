@@ -48,6 +48,16 @@ _.extend(exports, lib.task, /** @exports cluster */ {
   },
 
   /** @override */
+  afterInstall: function (options) {
+    if (/^install/.test(options.planName)) {
+      options.report['Postgres Instance'] = {
+        'Cluster Name': options.pg.cluster.name,
+        'Port Number': options.pg.cluster.port,
+      };
+    }
+  },
+
+  /** @override */
   uninstall: function (options) {
     try {
       config.discoverCluster(options);

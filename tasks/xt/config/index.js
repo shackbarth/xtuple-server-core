@@ -42,7 +42,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
           certFile: options.nginx.outcrt,
           saltFile: options.xt.rand64file,
           encryptionKeyFile: options.xt.key256file,
-          hostname: options.nginx.hostname,
+          hostname: options.nginx.domain,
           description: options.nginx.sitename,
           port: options.xt.sslport,
           redirectPort: options.xt.port,

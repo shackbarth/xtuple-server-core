@@ -1,13 +1,5 @@
 language: c
 
-env:
-  - NODE_VERSION=0.8.26
-  - NODE_VERSION=0.10.29
-
-matrix:
-  allow_failures:
-    - env: NODE_VERSION=0.8.26
-
 before_install:
   - rm -rf ~/.nvm
   - sudo bash bootstrap.sh
@@ -19,19 +11,19 @@ install:
   - npm run setup-dev
 
 script:
-  - sudo -E npm test xtuple-server-lib
-  - sudo -E npm test
+  - sudo npm test xtuple-server-lib
+  - sudo npm test
 
 after_failure:
   - pg_lsclusters 
   - cat npm-debug.log
-  - cat xtuple-server-error.log
+  - cat xtuple-server-test.log
 
 deploy:
   provider: npm
   email: me@traviswebb.com
   api_key:
-    secure: KA7yjcLWyKYTNExDcp6RJsik8wna6qCvsP7ZbZPfSZEucgYWAPN65sIcdF6DMrZHYWp3Z6Cu7gXAuduxP21uFGX7YvkTmOKbyEZHrLd5vG8godt+VZceXtPA8LA75M55bU1NHuzRjKc+ogP1Y50FwQ3Z0EsEpVeCNGphZ3J16w0=
+    secure: "BPZ1otwqkqaIUNcwXNOzl9VFkSv8ipPaFNVYj2RK28DlnxL80OOAfB/VWrSZ/9dR5wlkwk9oX1O/5Uo2cY4Nvq6ctmsleL/hasRTIUkveUaSvZaaRECo0c32fT4C1IJpWSG07zTxGyCs+kNBcaBJInYAE9ARMD5SDH52tnKwWTA="
   on:
     tags: true
     repo: xtuple/xtuple-server

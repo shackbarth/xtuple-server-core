@@ -1,20 +1,21 @@
 {
   "name": "xtuple-server",
-  "version": "0.9.100",
+  "version": "0.9.113",
   "description": "xTuple Server",
   "dependencies": {
     "commander": "^2.2.0",
     "glob": "^4.0.2",
     "lodash": "^2.4.1",
-    "n-api": "^1.2.11",
+    "n-api": "^1.2.20",
+    "node-version-magic": "^1.1.0",
     "npmlog": "^0.1.1",
     "q": "~1.0.1",
     "requireindex": "~1.1.0",
-    "semver": "~2.2.1",
+    "semver": "^2.2.1",
     "xtuple-server-lib": "^0.9.0",
     "xtuple-server-local-paths": "^0.9.0",
     "xtuple-server-local-policy": "^0.9.0",
-    "xtuple-server-nginx-hosts": "^0.9.0",
+    "xtuple-server-nginx-hosts": "^1.0.0",
     "xtuple-server-nginx-site": "^0.9.0",
     "xtuple-server-nginx-ssl": "^0.9.0",
     "xtuple-server-pg-backup": "^0.9.0",
@@ -37,30 +38,11 @@
     "glob",
     "lodash",
     "n-api",
+    "node-version-magic",
     "npmlog",
     "q",
     "requireindex",
-    "semver",
-    "xtuple-server-lib",
-    "xtuple-server-local-paths",
-    "xtuple-server-local-policy",
-    "xtuple-server-nginx-hosts",
-    "xtuple-server-nginx-site",
-    "xtuple-server-nginx-ssl",
-    "xtuple-server-pg-backup",
-    "xtuple-server-pg-cluster",
-    "xtuple-server-pg-config",
-    "xtuple-server-pg-drop",
-    "xtuple-server-pg-fork",
-    "xtuple-server-pg-hba",
-    "xtuple-server-pg-rename",
-    "xtuple-server-pg-restore",
-    "xtuple-server-sys-report",
-    "xtuple-server-sys-upgrade",
-    "xtuple-server-xt-config",
-    "xtuple-server-xt-database",
-    "xtuple-server-xt-install",
-    "xtuple-server-xt-test"
+    "semver"
   ],
   "linkDependencies": {
     "xtuple-server-local-paths": "tasks/local/paths",
@@ -85,7 +67,6 @@
     "xtuple-server-lib": "lib"
   },
   "devDependencies": {
-    "chai": "^1.9.1",
     "lodash": "^2.4.1",
     "mocha": "^1.20.1"
   },
@@ -97,8 +78,7 @@
   ],
   "scripts": {
     "setup-dev": "nex install && nex install xtuple --nodeVersion 0.10.29",
-    "pretest": "XT_VERSION=${XT_VERSION:-4.5.0} mocha spec/uninstall-dev.js",
-    "test": "XT_VERSION=${XT_VERSION:-4.5.0} node spec"
+    "test": "mocha --harmony -R spec spec/index.js -b"
   },
   "bin": {
     "xtuple-server": "cli.js"
@@ -120,9 +100,9 @@
     "enterprise"
   ],
   "engines": {
-    "node": "0.11.13",
-    "postgresql": ">=9.3",
-    "nginx": ">= 1.4.6"
+    "node": "^0.11.13",
+    "postgresql": "9.3.0",
+    "nginx": ">=1.4.6"
   },
   "cpu": [
     "!ia32"

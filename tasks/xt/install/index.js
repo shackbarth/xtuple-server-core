@@ -2,6 +2,7 @@ var lib = require('xtuple-server-lib'),
   semver = require('semver'),
   mkdirp = require('mkdirp'),
   _ = require('lodash'),
+  n = require('n-api'),
   exec = require('child_process').execSync,
   fs = require('fs'),
   path = require('path');
@@ -25,13 +26,20 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
 
   /** @override */
   executeTask: function (options) {
+    var version;
+    var latest = path.resolve(__dirname, 'node_modules', 'node-latest-version', 'index.js');
+
     if (_.isObject(options.local) && !_.isEmpty(options.local.workspace)) {
+      version = exec('node ' + latest + ' "' + require(path.resolve(options.local.workspace, 'package')).engines.node + '"').toString();
+      options.n = { version: version };
+      options.n.npm = 'n '+ options.n.version + ' && npm';
+      options.n.use = 'n use '+ options.n.version;
       return;
     }
 
     _.each(lib.util.getRepositoryList(options), function (repo) {
       var clonePath = path.resolve(options.xt.dist, repo),
-          deployPath = path.resolve(options.xt.userdist, repo);
+        deployPath = path.resolve(options.xt.userdist, repo);
 
       if (!fs.existsSync(clonePath)) {
         try {
@@ -47,16 +55,30 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
         }
       }
 
+      /**
+       * FIXME these two "options.n" if statements should really be refactored
+       */
+      if (!options.n) {
+        var pkg = 
+        version = exec('node ' + latest + ' "' + require(require(path.resolve(clonePath, 'package'))).engines.node + '"').toString();
+        options.n = { version: process.env.NODE_VERSION || version };
+        options.n.npm = 'n '+ options.n.version + ' && npm';
+        options.n.use = 'n use '+ options.n.version;
+      }
+
+
       if (!fs.existsSync(deployPath)) {
         try {
-          exec('n '+ options.n.version);
-          exec([ 'cd', clonePath, '&& npm install' ].join(' '), { cwd: clonePath }).toString();
-          log.verbose('xt.install executeTask', npmInstall);
+          n(options.n.version);
+          exec([ 'cd', clonePath, '&& npm install' ].join(' '), { cwd: clonePath });
         }
         catch (e) {
-          log.warn('xt-install', e.message);
+          log.error('xt-install', e.message);
+          throw e;
         }
-        exec('n latest');
+        finally {
+          n(process.version);
+        }
 
         if (!fs.existsSync(deployPath)) {
           mkdirp.sync(deployPath);

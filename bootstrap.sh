@@ -55,17 +55,16 @@ install_debian () {
 }
 
 install_node () {
-  log "Installing node.js..."
+  log "Installing n..."
   wget https://raw.githubusercontent.com/visionmedia/n/master/bin/n -qO n
   chmod +x n
   mv n /usr/bin/n
 
-  n 0.8
-  n stable
-  n latest
+  log "Installing node..."
+  n latest > /dev/null 2>&1
 
   mkdir -p /usr/local/{share/man,bin,lib/node,lib/node_modules,include/node}
-  npm install -g nex
+  npm install -g nex --silent
 
   rm -rf ~/.npm ~/tmp ~/.nvm /root/.npm /root/tmp
 

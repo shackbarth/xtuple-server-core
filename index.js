@@ -76,7 +76,7 @@ var planner = module.exports = {
           }
           catch (e) {
             log.error('verifyOptions', e.message);
-            log.verbose('verifyOptions', e.stack.split('\n'));
+            log.error('verifyOptions', e.stack.split('\n'));
             process.exit(1);
           }
         }
@@ -88,12 +88,6 @@ var planner = module.exports = {
     * Compile a pure, non-commander based options object.
     */
   compileOptions: function (plan, options) {
-    options.n = { version: semver.clean(process.env.NODE_VERSION || process.version) };
-    options.n.npm = 'n '+ options.n.version + ' && npm';
-    options.n.use = 'n use '+ options.n.version;
-    log.verbose('compileOptions', 'node version = '+ options.n.version);
-    log.silly('compileOptions', options);
-
     lib.util.eachTask(plan, function (task, phase, taskName) {
       options[phase.name] || (options[phase.name] = { });
       options[phase.name][taskName] || (options[phase.name][taskName] = { });
@@ -124,12 +118,12 @@ var planner = module.exports = {
     setTimeout(function () {
       try {
         executePlan(plan, options);
-        deferred.resolve();
+        deferred.resolve(options);
       }
       catch (e) {
         deferred.reject(e);
       }
-    }, 0);
+    }, 10);
 
     return deferred.promise;
   }
