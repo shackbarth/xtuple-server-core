@@ -25,14 +25,24 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-backup */ {
     lib.pgCli.dumpall(_.extend({ snapshotpath: lib.util.getSnapshotPath(options, true) }, options));
     
     // dump data
-    lib.pgCli.dump(_.extend({
-      snapshotpath: lib.util.getSnapshotPath(options),
-      dbname: options.pg.dbname
-    }, options));
+    try {
+      lib.pgCli.dump(_.extend({
+        snapshotpath: lib.util.getSnapshotPath(options),
+        dbname: options.pg.dbname
+      }, options));
+    }
+    catch (e) {
+      if (/File exists/.test(e.message)) {
+        log.error('Please wait a minute before trying to create another backup.');
+      }
+      else {
+        throw e;
+      }
+    }
   },
 
   /** @override */
   afterTask: function (options) {
-    console.log('Database backed up to: ', options.pg.snapshotdir);
+    log.info('Database backed up to', lib.util.getSnapshotPath(options));
   }
 });

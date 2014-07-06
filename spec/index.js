@@ -39,7 +39,6 @@ describe('xTuple Server', function () {
       assert(semver.satisfies(process.version, pkg.engines.node));
     });
 
-
     it('"xtuple-server" should be installed globally', function () {
       var stdout = proc.execSync('command -v xtuple-server');
       assert(/xtuple-server\n$/.test(stdout));
@@ -53,7 +52,6 @@ describe('xTuple Server', function () {
         );
       });
     });
-
   });
 
   describe('plans', function () {
@@ -72,16 +70,11 @@ describe('xTuple Server', function () {
           version: require('../node_modules/xtuple/package').version
         }
       };
-      
-      before(function () {
-        planner.compileOptions(options.plan, options);
-        planner.verifyOptions(options.plan, options);
-      });
 
       specPlanner.describe({ planObject: planObject, options: options });
     });
 
-    describe.skip('@backup-database', function () {
+    describe('@backup-database', function () {
       var planObject = plans['backup-database'];
       var options = {
         planName: 'backup-database',
@@ -97,11 +90,6 @@ describe('xTuple Server', function () {
           dbname: 'demo_dev'
         }
       };
-
-      before(function () {
-        planner.compileOptions(options.plan, options);
-        planner.verifyOptions(options.plan, options);
-      });
 
       specPlanner.describe({ planObject: planObject, options: options });
     });
@@ -119,14 +107,12 @@ describe('xTuple Server', function () {
           version: require('../node_modules/xtuple/package').version
         },
         pg: {
-          dbname: 'demo_quickstart'
+          dbname: 'demo_dev'
         }
       };
 
       before(function () {
         options.pg.infile = lib.util.getSnapshotPath(options, false);
-        planner.compileOptions(options.plan, options);
-        planner.verifyOptions(options.plan, options);
       });
 
       specPlanner.describe({ planObject: planObject, options: options });
@@ -151,8 +137,6 @@ describe('xTuple Server', function () {
 
       before(function () {
         options.pg.infile = lib.util.getSnapshotPath(options, false);
-        planner.compileOptions(options.plan, options);
-        planner.verifyOptions(options.plan, options);
       });
 
       specPlanner.describe({ planObject: planObject, options: options });
@@ -174,11 +158,6 @@ describe('xTuple Server', function () {
           dbname: 'demo_dev_restored'
         }
       };
-
-      before(function () {
-        planner.compileOptions(options.plan, options);
-        planner.verifyOptions(options.plan, options);
-      });
 
       specPlanner.describe({ planObject: planObject, options: options });
     });
