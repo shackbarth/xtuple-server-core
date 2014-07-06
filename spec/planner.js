@@ -12,9 +12,8 @@ exports.describe = function (parent) {
   var planObject = JSON.parse(JSON.stringify(parent.planObject));
   var plan = planObject.plan;
 
-  it.skip(planObject.description);
-
   before(function () {
+    log.info(planObject.description);
     planner.compileOptions(plan, options);
     planner.verifyOptions(plan, options);
   });
@@ -37,12 +36,13 @@ exports.describe = function (parent) {
   });
 
   describe('execute', function () {
-    
     lib.util.eachTask(plan, function (task, phase, taskName) {
       var pkgName = getPackageName(phase.name, taskName);
       var spec = require(pkgName + '/spec');
+      var phaseOptions = phase.options || { };
 
       describe(pkgName, function () {
+        if (phaseOptions.execute === false) return;
 
         it('#beforeTask, #executeTask, #afterTask', function () {
           task.beforeTask(options);
@@ -60,17 +60,15 @@ exports.describe = function (parent) {
   describe('after execute', function () {
 
     lib.util.eachTask(plan, function (task, phase, taskName) {
-      it(getPackageName(phase.name, taskName) + '#afterInstall', function () {
-        task.afterInstall(options);
-      });
-    });
-
-    lib.util.eachTask(plan, function (task, phase, taskName) {
       var pkgName = getPackageName(phase.name, taskName);
       var spec = require(pkgName + '/spec');
-      if (_.isFunction(spec.afterExecute)) {
-        spec.afterExecute(options);
-      }
+
+      it(pkgName + '#afterInstall', function () {
+        task.afterInstall(options);
+        if (_.isFunction(spec.afterExecute)) {
+          spec.afterExecute(options);
+        }
+      });
     });
   });
 };

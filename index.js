@@ -48,7 +48,6 @@ function executePlan (plan, options) {
       task.executeTask(options);
       task.afterTask(options);
     }
-
   }, options);
 
   log.info('xtuple', 'Finishing...');
