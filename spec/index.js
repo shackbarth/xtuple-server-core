@@ -107,7 +107,7 @@ describe('xTuple Server', function () {
           version: require('../node_modules/xtuple/package').version
         },
         pg: {
-          dbname: 'demo_quickstart'
+          dbname: 'demo_dev'
         }
       };
 
