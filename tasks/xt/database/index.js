@@ -17,7 +17,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
       optional: '[version]',
       description: 'xTuple Version',
       validate: function (value, options) {
-        if (_.isEmpty(value)) {
+        if (_.isEmpty(value) && _.isObject(options.local)) {
           return require(path.resolve(options.local.workspace, 'package')).version;
         }
         if (_.isNumber(parseInt(value, 16))) {
