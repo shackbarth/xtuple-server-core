@@ -6,16 +6,14 @@ var assert = require('assert'),
 
 exports.afterTask = function (options) {
   it('should back up database '+ options.pg.dbname, function () {
-    var snapshotfile = lib.util.getSnapshotPath(options, false);
-    var globalsfile = lib.util.getSnapshotPath(options, true);
-    var snapshotstat = fs.statSync(snapshotfile);
-    var globalstat = fs.statSync(globalsfile);
+    var snapshotstat = fs.statSync(options.pg.backup.backupFile);
+    var globalstat = fs.statSync(options.pg.backup.globalsFile);
 
-    log.verbose('pg-backup snapshotfile path', snapshotfile);
+    log.verbose('pg-backup snapshotfile path', options.pg.backup.backupFile);
     assert(snapshotstat.isDirectory());
     assert(snapshotstat.size > 0);
 
-    log.verbose('pg-backup globalsfile path', globalsfile);
+    log.verbose('pg-backup globalsfile path', options.pg.backup.globalsFile);
     assert(globalstat.isFile());
     assert(globalstat.size > 0);
   });

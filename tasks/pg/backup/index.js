@@ -21,15 +21,15 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-backup */ {
 
   /** @override */
   executeTask: function (options) {
+    var backupFile = options.pg.backup.backupFile = lib.util.getSnapshotPath(options);
+    var globalsFile = options.pg.backup.globalsFile = lib.util.getSnapshotPath(options, true);
+
     // dump globals
-    lib.pgCli.dumpall(_.extend({ snapshotpath: lib.util.getSnapshotPath(options, true) }, options));
+    lib.pgCli.dumpall(_.extend({ snapshotpath: globalsFile }, options));
     
     // dump data
     try {
-      lib.pgCli.dump(_.extend({
-        snapshotpath: lib.util.getSnapshotPath(options),
-        dbname: options.pg.dbname
-      }, options));
+      lib.pgCli.dump(_.extend({ snapshotpath: backupFile, dbname: options.pg.dbname }, options));
     }
     catch (e) {
       if (/File exists/.test(e.message)) {
@@ -43,6 +43,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-backup */ {
 
   /** @override */
   afterTask: function (options) {
-    log.info('Database backed up to', lib.util.getSnapshotPath(options));
+    log.info('pg-backup dump', options.pg.backup.backupFile);
+    log.info('pg-backup globals', options.pg.backup.globalsFile);
   }
 });
