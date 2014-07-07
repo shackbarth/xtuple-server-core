@@ -67,7 +67,6 @@ describe('xTuple Server', function () {
         },
         xt: {
           demo: true,
-          version: require('../node_modules/xtuple/package').version
         }
       };
 
@@ -82,9 +81,6 @@ describe('xTuple Server', function () {
         type: 'dev',
         local: {
           workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
-        },
-        xt: {
-          version: require('../node_modules/xtuple/package').version
         },
         pg: {
           dbname: 'demo_dev'
@@ -102,9 +98,6 @@ describe('xTuple Server', function () {
         type: 'dev',
         local: {
           workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
-        },
-        xt: {
-          version: require('../node_modules/xtuple/package').version
         },
         pg: {
           dbname: 'demo_dev'
@@ -127,9 +120,6 @@ describe('xTuple Server', function () {
         local: {
           workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
         },
-        xt: {
-          version: require('../node_modules/xtuple/package').version
-        },
         pg: {
           dbname: 'demo_dev_restored'
         }
@@ -150,9 +140,6 @@ describe('xTuple Server', function () {
         type: 'dev',
         local: {
           workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
-        },
-        xt: {
-          version: require('../node_modules/xtuple/package').version
         },
         pg: {
           dbname: 'demo_dev_restored'
