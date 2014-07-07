@@ -7,9 +7,9 @@ function getPackageName (phaseName, taskName) {
   return 'xtuple-server-' + phaseName + '-' + taskName;
 }
 
-exports.describe = function (parent) {
-  var options = JSON.parse(JSON.stringify(parent.options));
-  var planObject = JSON.parse(JSON.stringify(parent.planObject));
+exports.describe = function (spec) {
+  var options = spec.options;
+  var planObject = spec.planObject;
   var plan = planObject.plan;
 
   describe(planObject.description, function () {
