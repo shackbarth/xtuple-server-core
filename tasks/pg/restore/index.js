@@ -64,6 +64,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-restore */ {
 
   /** @override */
   afterTask: function (options) {
-    console.log('Restart the xTuple server for changes to take effect.');
+    log.info('pg-restore', 'restored', options.pg.dbname);
   }
 });
