@@ -3,15 +3,17 @@ var assert = require('assert'),
   _ = require('lodash'),
   fs = require('fs');
 
-exports.afterExecute = function (options) {
+exports.afterExecute = function (_options) {
+  var options = { };
 
   describe('#getRepositoryList', function () {
 
-    afterEach(function () {
-      options.xt.edition = 'core';
+    beforeEach(function () {
+      options = JSON.parse(JSON.stringify(_options));
     });
 
     it('should clone only public repos if installing a free edition', function () {
+      options.xt.edition = 'core';
       var repoList = lib.util.getRepositoryList(options);
 
       assert.ok(_.contains(repoList, 'xtuple'));

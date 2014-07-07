@@ -92,10 +92,10 @@ require('node-version-magic').enforce(pkg, function (e, version) {
           type = 'setup';
         }
         else if (plan.types !== 'all') {
-          if (plan.types.length === 1 && !_.isString(type)) {
+          if (plan.types.length === 1) {
             type = plan.types[0];
           }
-          if (!_.contains(plan.types, type)) {
+          else if (!_.contains(plan.types, type)) {
             throw new TypeError('plan "' + name + '" does not support type "' + type + '"');
           }
         }
