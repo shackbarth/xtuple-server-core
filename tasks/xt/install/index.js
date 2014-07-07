@@ -55,12 +55,9 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
         }
       }
 
-      /**
-       * FIXME these two "options.n" if statements should really be refactored
-       */
       if (!options.n) {
-        var pkg = 
-        version = exec('node ' + latest + ' "' + require(require(path.resolve(clonePath, 'package'))).engines.node + '"').toString();
+        var pkg = require(path.resolve(clonePath, 'package'));
+        version = exec('node ' + latest + ' "' + pkg.engines.node + '"').toString();
         options.n = { version: process.env.NODE_VERSION || version };
         options.n.npm = 'n '+ options.n.version + ' && npm';
         options.n.use = 'n use '+ options.n.version;
