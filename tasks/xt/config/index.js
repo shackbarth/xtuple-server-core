@@ -96,10 +96,12 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
    * node-datasource/config.js
    */
   afterInstall: function (options) {
+    /*
     var localConfig = path.resolve(options.xt.userdist, 'xtuple', 'node-datasource', 'config.js');
     if (fs.existsSync(localConfig)) {
       fs.unlinkSync(localConfig);
     }
     fs.symlinkSync(options.xt.configfile, localConfig);
+    */
   }
 });

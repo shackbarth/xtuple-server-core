@@ -56,6 +56,8 @@ describe('xTuple Server', function () {
 
   describe('plans', function () {
 
+    var backupFile, copyFile;
+
     describe('@install-dev', function () {
       var planObject = plans['install-dev'];
       var options = {
@@ -67,7 +69,6 @@ describe('xTuple Server', function () {
         },
         xt: {
           demo: true,
-          version: require('../node_modules/xtuple/package').version
         }
       };
 
@@ -83,13 +84,35 @@ describe('xTuple Server', function () {
         local: {
           workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
         },
-        xt: {
-          version: require('../node_modules/xtuple/package').version
-        },
         pg: {
           dbname: 'demo_dev'
         }
       };
+
+      specPlanner.describe({ planObject: planObject, options: options });
+
+      after(function () {
+        backupFile = options.pg.backup.backupFile;
+      });
+    });
+
+    describe.skip('@restore-database', function () {
+      var planObject = plans['restore-database'];
+      var options = {
+        planName: 'restore-database',
+        plan: planObject.plan,
+        type: 'dev',
+        local: {
+          workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
+        },
+        pg: {
+          dbname: 'demo_dev_restored_test'
+        }
+      };
+
+      before(function () {
+        options.pg.infile = backupFile;
+      });
 
       specPlanner.describe({ planObject: planObject, options: options });
     });
@@ -103,41 +126,10 @@ describe('xTuple Server', function () {
         local: {
           workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
         },
-        xt: {
-          version: require('../node_modules/xtuple/package').version
-        },
         pg: {
           dbname: 'demo_dev'
         }
       };
-
-      before(function () {
-        options.pg.infile = lib.util.getSnapshotPath(options, false);
-      });
-
-      specPlanner.describe({ planObject: planObject, options: options });
-    });
-
-    describe.skip('@restore-database', function () {
-      var planObject = plans['restore-database'];
-      var options = {
-        planName: 'restore-database',
-        plan: planObject.plan,
-        type: 'dev',
-        local: {
-          workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
-        },
-        xt: {
-          version: require('../node_modules/xtuple/package').version
-        },
-        pg: {
-          dbname: 'demo_dev_restored'
-        }
-      };
-
-      before(function () {
-        options.pg.infile = lib.util.getSnapshotPath(options, false);
-      });
 
       specPlanner.describe({ planObject: planObject, options: options });
     });
@@ -150,9 +142,6 @@ describe('xTuple Server', function () {
         type: 'dev',
         local: {
           workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
-        },
-        xt: {
-          version: require('../node_modules/xtuple/package').version
         },
         pg: {
           dbname: 'demo_dev_restored'

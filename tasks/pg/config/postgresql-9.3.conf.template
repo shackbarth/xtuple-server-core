@@ -594,4 +594,4 @@ restart_after_crash = on		# reinitialize after backend crash?
 #------------------------------------------------------------------------------
 
 # Add settings for extensions here
-plv8.start_proc = 'xt.js_init'
+#plv8.start_proc = 'xt.js_init'
