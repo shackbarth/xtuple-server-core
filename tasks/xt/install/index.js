@@ -1,5 +1,6 @@
 var lib = require('xtuple-server-lib'),
   semver = require('semver'),
+  home = require('home-dir'),
   mkdirp = require('mkdirp'),
   _ = require('lodash'),
   n = require('n-api'),
@@ -16,6 +17,15 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
 
   /** @override */
   beforeTask: function (options) {
+    // add github.com to known_hosts file to avoid host authenticity prompt
+    try {
+      exec('ssh -o StrictHostKeyChecking=no git@github.com', { stdio: 'ignore' });
+    }
+    catch (e) {
+      log.verbose('xt-install', e.message);
+      log.silly('xt-install', e.stack.split('\n'));
+    }
+
     if (lib.util.isTaggedVersion(options)) {
       options.xt.repoHash = 'v' + options.xt.version;
     }
@@ -28,6 +38,9 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
   executeTask: function (options) {
     var version;
     var latest = path.resolve(__dirname, 'node_modules', 'node-latest-version', 'index.js');
+    var protocol = process.env.CI ? 'git@github.com:' : 'https://github.com/';
+
+    /** FIXME this whole task needs cleanup */
 
     if (_.isObject(options.local) && !_.isEmpty(options.local.workspace)) {
       version = exec('node ' + latest + ' "' + require(path.resolve(options.local.workspace, 'package')).engines.node + '"').toString();
@@ -43,7 +56,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
 
       if (!fs.existsSync(clonePath)) {
         try {
-          exec([ 'git clone --recursive https://github.com/xtuple/' + repo + '.git', clonePath].join(' '), {
+          exec([ 'git clone --recursive', protocol + 'xtuple/' + repo + '.git', clonePath].join(' '), {
             cwd: clonePath
           });
           exec('cd '+ clonePath +' && git fetch origin', { cwd: clonePath });
