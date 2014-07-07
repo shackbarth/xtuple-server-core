@@ -80,7 +80,8 @@
   "scripts": {
     "setup-dev": "nex install && nex install xtuple --nodeVersion 0.10.29",
     "pretest": "node cli uninstall-dev --local-workspace node_modules/xtuple",
-    "test": "mocha --harmony -R spec spec/index.js -b"
+    "test": "mocha --harmony -R spec spec/index.js -b",
+    "publish": "npm prune"
   },
   "bin": {
     "xtuple-server": "cli.js"
