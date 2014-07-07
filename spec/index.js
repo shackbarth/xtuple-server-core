@@ -106,7 +106,7 @@ describe('xTuple Server', function () {
           workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
         },
         pg: {
-          dbname: 'demo_dev_restored'
+          dbname: 'demo_dev_restored_test'
         }
       };
 
