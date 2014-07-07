@@ -1,28 +1,28 @@
 var _ = require('lodash'),
   task = require('../');
 
-exports.afterTask = function (options) {
+exports.afterTask = function (_options) {
+  var options = { };
+
   describe('source databases', function () {
     beforeEach(function () {
+      options = JSON.parse(JSON.stringify(_options));
+
       options.xt.demo = false;
       options.xt.quickstart = false;
       options.xt.empty = false;
     });
     it('should be able to build the "quickstart" database from source', function () {
       options.xt.quickstart = true;
+      task.beforeInstall(options);
       task.executeTask(options);
       task.afterTask(options);
     });
-    it('should be able to build the "empty" database from source', function () {
+    it.skip('should be able to build the "empty" database from source', function () {
       options.xt.empty = true;
+      task.beforeInstall(options);
       task.executeTask(options);
       task.afterTask(options);
-    });
-    after(function () {
-      options.xt.demo = true;
-
-      options.xt.quickstart = false;
-      options.xt.empty = false;
     });
   });
 };
