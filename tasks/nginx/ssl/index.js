@@ -72,6 +72,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
 
     fs.chmodSync(options.nginx.outkey, '600');
     fs.chmodSync(options.nginx.outcrt, '600');
+    exec('chown -R '+ options.xt.name + ' ' + options.xt.ssldir);
   },
 
   /**
@@ -80,6 +81,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
    */
   generate: function (options) {
     var cmd = [
+        'sudo -u', options.xt.name,
         'openssl req',
         '-x509 -newkey rsa:2048',
         '-subj \'/CN='+ options.nginx.domain + '\'',
