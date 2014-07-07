@@ -96,7 +96,7 @@ describe('xTuple Server', function () {
       });
     });
 
-    describe('@restore-database', function () {
+    describe.skip('@restore-database', function () {
       var planObject = plans['restore-database'];
       var options = {
         planName: 'restore-database',
