@@ -56,6 +56,8 @@ describe('xTuple Server', function () {
 
   describe('plans', function () {
 
+    var backupFile, copyFile;
+
     describe('@install-dev', function () {
       var planObject = plans['install-dev'];
       var options = {
@@ -105,13 +107,13 @@ describe('xTuple Server', function () {
       };
 
       before(function () {
-        options.pg.infile = lib.util.getSnapshotPath(options, false);
+        backupFile = options.pg.infile = lib.util.getSnapshotPath(options, false);
       });
 
       specPlanner.describe({ planObject: planObject, options: options });
     });
 
-    describe.skip('@restore-database', function () {
+    describe('@restore-database', function () {
       var planObject = plans['restore-database'];
       var options = {
         planName: 'restore-database',
@@ -126,7 +128,7 @@ describe('xTuple Server', function () {
       };
 
       before(function () {
-        options.pg.infile = lib.util.getSnapshotPath(options, false);
+        options.pg.infile = backupFile;
       });
 
       specPlanner.describe({ planObject: planObject, options: options });
