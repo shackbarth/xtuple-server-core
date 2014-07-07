@@ -43,7 +43,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
     /** FIXME this whole task needs cleanup */
 
     if (_.isObject(options.local) && !_.isEmpty(options.local.workspace)) {
-      version = exec('node ' + latest + ' "' + require(path.resolve(options.local.workspace, 'package')).engines.node + '"').toString();
+      version = exec('node ' + latest + ' "' + require(path.resolve(options.local.workspace, 'package')).engines.node + '"').toString().trim();
       options.n = { version: version };
       options.n.npm = 'n '+ options.n.version + ' && npm';
       options.n.use = 'n use '+ options.n.version;
@@ -70,7 +70,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
 
       if (!options.n) {
         var pkg = require(path.resolve(clonePath, 'package'));
-        version = exec('node ' + latest + ' "' + pkg.engines.node + '"').toString();
+        version = exec('node ' + latest + ' "' + pkg.engines.node + '"').toString().trim();
         options.n = { version: process.env.NODE_VERSION || version };
         options.n.npm = 'n '+ options.n.version + ' && npm';
         options.n.use = 'n use '+ options.n.version;
