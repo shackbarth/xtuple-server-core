@@ -67,11 +67,8 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
   /** @override */
   afterTask: function (options) {
     exec('service nginx reload');
-  },
 
-  /** @override */
-  afterInstall: function (options) {
-    if (/^install/.test(options.planName && !_.isEmpty(options.xt.adminpw))) { 
+    if (/^install/.test(options.planName)) {
       options.report['xTuple Instance'] = { 
         'IP Address': ip.address(),
         'Public Web Domain': options.nginx.domain,
