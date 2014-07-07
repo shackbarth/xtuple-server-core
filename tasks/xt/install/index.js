@@ -19,7 +19,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
   beforeTask: function (options) {
     // add github.com to known_hosts file to avoid host authenticity prompt
     try {
-      exec('ssh -o StrictHostKeyChecking=no git@github.com');
+      exec('ssh -o StrictHostKeyChecking=no git@github.com', { stdio: 'ignore' });
     }
     catch (e) {
       log.verbose('xt-install', e.message);
