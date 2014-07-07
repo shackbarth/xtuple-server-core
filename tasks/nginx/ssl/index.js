@@ -81,7 +81,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
    */
   generate: function (options) {
     var cmd = [
-        'sudo -u', options.xt.name,
         'openssl req',
         '-x509 -newkey rsa:2048',
         '-subj \'/CN='+ options.nginx.domain + '\'',
@@ -93,9 +92,11 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
       result = exec(cmd);
 
     if (result.status !== 0) {
-      console.log(JSON.stringify(options, null, 2));
-      throw new Error('could not generate keypair: '+ result.stdout);
+      throw new Error('could not generate keypair: '+ result);
     }
+
+    exec('chown -R '+ options.xt.name + ' ' + path.basename(options.nginx.outkey));
+    exec('chmod -R u=rx ' + path.basename(options.nginx.outkey));
 
     return result;
   },
