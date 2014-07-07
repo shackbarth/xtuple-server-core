@@ -1,6 +1,7 @@
 var lib = require('xtuple-server-lib'),
   exec = require('sync-exec'),
   _ = require('lodash'),
+  ip = require('ip'),
   format = require('string-format'),
   fs = require('fs'),
   path = require('path');
@@ -72,6 +73,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
   afterInstall: function (options) {
     if (/^install/.test(options.planName && !_.isEmpty(options.xt.adminpw))) { 
       options.report['xTuple Instance'] = { 
+        'IP Address': ip.address(),
         'Public Web Domain': options.nginx.domain,
         'Direct Web Port': options.nginx.safeport,
         'xTuple Username': 'admin',
