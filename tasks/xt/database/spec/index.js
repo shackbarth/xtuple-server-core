@@ -18,7 +18,7 @@ exports.afterTask = function (_options) {
       task.executeTask(options);
       task.afterTask(options);
     });
-    it('should be able to build the "empty" database from source', function () {
+    it.skip('should be able to build the "empty" database from source', function () {
       options.xt.empty = true;
       task.beforeInstall(options);
       task.executeTask(options);
