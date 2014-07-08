@@ -1,6 +1,6 @@
 var lib = require('xtuple-server-lib'),
   _ = require('lodash'),
-  exec = require('sync-exec'),
+  exec = require('child_process').execSync,
   format = require('string-format'),
   fs = require('fs'),
   path = require('path');
@@ -98,7 +98,7 @@ _.extend(exports, lib.task, /** @exports hba */ {
     exec('chown {xt.name}:ssl-cert {pg.outcrt}'.format(options));
     exec('chown {xt.name}:{xt.name} {pg.outkey}'.format(options));
 
-    exec('chmod 600 {pg.outcrt}'.format(options));
-    exec('chmod 600 {pg.outkey}'.format(options));
+    fs.chmodSync(options.pg.outcrt, '600');
+    fs.chmodSync(options.pg.outkey, '600');
   }
 });

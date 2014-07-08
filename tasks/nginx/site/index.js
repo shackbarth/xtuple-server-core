@@ -1,5 +1,5 @@
 var lib = require('xtuple-server-lib'),
-  exec = require('sync-exec'),
+  exec = require('child_process').execSync,
   _ = require('lodash'),
   ip = require('ip'),
   format = require('string-format'),

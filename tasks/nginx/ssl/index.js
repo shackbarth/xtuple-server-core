@@ -1,6 +1,6 @@
 var lib = require('xtuple-server-lib'),
   _ = require('lodash'),
-  exec = require('sync-exec'),
+  exec = require('child_process').execSync,
   cp = require('cp'),
   fs = require('fs'),
   path = require('path');
@@ -51,11 +51,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
       cp.sync(options.nginx.inkey, options.nginx.outkey);
     }
     else if (/localhost/.test(options.nginx.domain)) {
-      var result = exports.generate(options);
-
-      if (result.status !== 0) {
-        throw new Error(JSON.stringify(result, null, 2));
-      }
+      exports.generate(options);
     }
     else {
       throw new Error([
@@ -72,6 +68,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
 
     fs.chmodSync(options.nginx.outkey, '600');
     fs.chmodSync(options.nginx.outcrt, '600');
+
     exec('chown -R '+ options.xt.name + ' ' + options.xt.ssldir);
   },
 
@@ -88,17 +85,18 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
         '-nodes',
         '-keyout', options.nginx.outkey,
         '-out', options.nginx.outcrt,
-      ].join(' '),
-      result = exec(cmd);
+      ].join(' ');
 
-    if (result.status !== 0) {
-      throw new Error('could not generate keypair: '+ result);
+    try {
+      exec(cmd);
+    }
+    catch (e) {
+      log.warn(e);
+      throw new Error('could not generate keypair');
     }
 
-    exec('chown -R '+ options.xt.name + ' ' + path.basename(options.nginx.outkey));
-    exec('chmod -R u=rx ' + path.basename(options.nginx.outkey));
-
-    return result;
+    exec('chown -R '+ options.xt.name + ' ' + path.dirname(options.nginx.outkey));
+    exec('chmod -R u=rx ' + path.dirname(options.nginx.outkey));
   },
 
   /**
@@ -122,18 +120,22 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
     }
 
     // verify x509 certificate
-    if (exec('openssl x509 -noout -in ' + outcrt).status !== 0) {
+    try { 
+      exec('openssl x509 -noout -in ' + outcrt);
+    }
+    catch (e) {
+      log.warn(e);
       throw new Error('The provided .crt failed openssl x509 verify');
     }
 
-    var key_modulus = exec('openssl rsa -noout -modulus -in '+ outkey).stdout,
-      crt_modulus = exec('openssl x509 -noout -modulus -in '+ outcrt).stdout;
+    var key_modulus = exec('openssl rsa -noout -modulus -in '+ outkey).toString().trim(),
+      crt_modulus = exec('openssl x509 -noout -modulus -in '+ outcrt).toString().trim();
 
     // perform modulus check
-    if (key_modulus !==/*======*/ crt_modulus) {  // much equal. very modulus.
+    if (key_modulus !== crt_modulus) {
       throw new Error(
         'crt/key moduli inconsistent; ' +
-        'basically, the .crt was not created from the .key'
+        'basically, the .crt was not created from the specified .key'
       );
     }
 
