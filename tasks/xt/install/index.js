@@ -47,6 +47,20 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
       options.n = { version: version };
       options.n.npm = 'n '+ options.n.version + ' && npm';
       options.n.use = 'n use '+ options.n.version;
+
+      // run npm install on local workspace before each installation, for safety
+      // FIXME copy-paste from deploy section below
+      try {
+        n(options.n.version);
+        exec([ 'cd', options.local.workspace, '&& npm install' ].join(' '), { cwd: options.local.workspace });
+      }
+      catch (e) {
+        log.error('xt-install', e.message);
+        throw e;
+      }
+      finally {
+        n(process.version);
+      }
       return;
     }
 
@@ -75,7 +89,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
         options.n.npm = 'n '+ options.n.version + ' && npm';
         options.n.use = 'n use '+ options.n.version;
       }
-
 
       if (!fs.existsSync(deployPath)) {
         try {
