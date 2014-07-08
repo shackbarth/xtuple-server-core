@@ -12,8 +12,8 @@ _.extend(exports, lib.task, /** @exports xtuple-server-sys-upgrade */ {
     log.verbose('sys-upgrade pkg', pkg);
 
     if (pkg.private === true) {
-      exec('git pull origin master', { stdio: 'inherit' });
-      exec('npm install --force --loglevel warn', { stdio: 'inherit' });
+      exec('rm -rf node_modules');
+      exec('npm install --loglevel warn', { stdio: 'inherit' });
     }
     else {
       exec('npm update --global --loglevel warn ' + pkg.name, { stdio: 'inherit' });
