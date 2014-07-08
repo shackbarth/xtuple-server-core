@@ -78,7 +78,7 @@ install_node () {
 }
 
 setup () {
-  pg_dropcluster 9.3 main --stop
+  pg_dropcluster 9.3 main --stop > /dev/null 2>&1
   chmod -R 777 /var/run/postgresql  # temporary
 
   rm -f /etc/nginx/sites-available/default
