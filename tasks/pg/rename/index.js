@@ -41,7 +41,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-rename */ {
     res = _.pull(configObject.datasource.databases, options.pg.dbname);
     configObject.datasource.databases.push(options.pg.newname);
 
-    fs.writeFileSync(options.xt.configfile, lib.build.wrapModule(configObject));
+    fs.writeFileSync(options.xt.configfile, lib.util.wrapModule(configObject));
   },
 
   /** @override */

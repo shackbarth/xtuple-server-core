@@ -57,9 +57,8 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-restore */ {
       // update config.js
       var configObject = require(options.xt.configfile);
       configObject.datasource.databases.push(options.pg.dbname);
-      fs.writeFileSync(options.xt.configfile, lib.xt.build.wrapModule(configObject));
+      fs.writeFileSync(options.xt.configfile, lib.util.wrapModule(configObject));
     }
-
   },
 
   /** @override */
