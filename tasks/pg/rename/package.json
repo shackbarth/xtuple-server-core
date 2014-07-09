@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-pg-rename",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "description": "xTuple Server Task [pg.rename]: rename a postgres database",
   "main": "index.js",
   "scripts": {
