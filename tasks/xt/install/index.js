@@ -43,20 +43,24 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
     /** FIXME this whole task needs cleanup */
 
     if (_.isObject(options.local) && !_.isEmpty(options.local.workspace)) {
+      log.verbose('local.workspace', options.local.workspace);
       version = exec('node ' + latest + ' "' + require(path.resolve(options.local.workspace, 'package')).engines.node + '"').toString().trim();
       options.n = { version: version };
       options.n.npm = 'n '+ options.n.version + ' && npm';
       options.n.use = 'n use '+ options.n.version;
 
+      log.verbose('options.n.version', options.n.version);
+
       // run npm install on local workspace before each installation, for safety
       // FIXME copy-paste from deploy section below
       try {
         n(options.n.version);
-        exec([ 'cd', options.local.workspace, '&& npm install' ].join(' '), { cwd: options.local.workspace });
+        exec([ 'cd', options.local.workspace, '&& npm install --unsafe-perm' ].join(' '), { cwd: options.local.workspace, stdio: 'inherit' });
+        exec('chown -R '+ options.xt.name + ' ' + options.local.workspace);
       }
       catch (e) {
         log.error('xt-install', e.message);
-        throw e;
+        log.error('xt-install', e.stack.split('\n'));
       }
       finally {
         n(process.version);
@@ -93,7 +97,8 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
       if (!fs.existsSync(deployPath)) {
         try {
           n(options.n.version);
-          exec([ 'cd', clonePath, '&& npm install' ].join(' '), { cwd: clonePath });
+          exec([ 'cd', clonePath, '&& npm install --unsafe-perm' ].join(' '), { cwd: clonePath });
+          exec('chown -R '+ options.xt.name + ' ' + clonePath);
         }
         catch (e) {
           log.error('xt-install', e.message);
