@@ -19,7 +19,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
   beforeTask: function (options) {
     // add github.com to known_hosts file to avoid host authenticity prompt
     try {
-      exec('ssh -o StrictHostKeyChecking=no git@github.com', { stdio: 'ignore' });
+      exec('ssh -o StrictHostKeyChecking=no git@github.com', { stdio: 'pipe' });
     }
     catch (e) {
       log.verbose('xt-install', e.message);
@@ -54,8 +54,12 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
       // run npm install on local workspace before each installation, for safety
       // FIXME copy-paste from deploy section below
       try {
+        log.verbose([ 'cd', options.local.workspace, '&& npm install --unsafe-perm' ].join(' '));
+        log.verbose('xt-install', 'running n...');
         n(options.n.version);
-        exec([ 'cd', options.local.workspace, '&& npm install --unsafe-perm' ].join(' '), { cwd: options.local.workspace, stdio: 'inherit' });
+
+        log.verbose('xt-install', 'npm install...');
+        exec([ 'cd', options.local.workspace, '&&', 'sudo -u', options.xt.name, 'npm install' ].join(' '), { cwd: options.local.workspace });
         exec('chown -R '+ options.xt.name + ' ' + options.local.workspace);
       }
       catch (e) {
@@ -63,7 +67,9 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
         log.error('xt-install', e.stack.split('\n'));
       }
       finally {
+        log.verbose('xt-install', 'finally before n');
         n(process.version);
+        log.verbose('xt-install', 'finally after n');
       }
       return;
     }
@@ -97,6 +103,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
 
       if (!fs.existsSync(deployPath)) {
         try {
+          log.http('xt-install', 'running n inside deployPath if stmt...');
           n(options.n.version);
           log.http('xt-install', 'installing npm module...');
           exec([ 'cd', clonePath, '&& npm install --unsafe-perm' ].join(' '), { cwd: clonePath });
@@ -107,7 +114,9 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
           throw e;
         }
         finally {
+          log.verbose('xt-install', 'finally before n in deployPath if...');
           n(process.version);
+          log.verbose('xt-install', 'finally after n in deployPath if...');
         }
 
         log.info('xt-install', 'copying files...');
