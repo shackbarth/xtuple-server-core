@@ -14,7 +14,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-restore */ {
       optional: '[infile]',
       description: 'Path to the file to be restored',
       validate: function (value, options) {
-        if (_.isEmpty(value)) {
+        if (_.isEmpty(value) && /restore/.test(options.planeName)) {
           throw new Error('pg-infile must be set');
         }
         if ((options.planName === 'import-users') && ('.sql' !== path.extname(options.pg.infile))) {
