@@ -61,6 +61,10 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
    *  @override
    */
   executeTask: function (options) {
+    if (fs.existsSync(options.nginx.sitesEnabled)) {
+      fs.unlinkSync(options.nginx.sitesEnabled);
+      fs.unlinkSync(options.nginx.sitesAvailable);
+    }
     exports.writeSiteConfig(options);
   },
 
