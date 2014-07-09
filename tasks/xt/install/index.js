@@ -72,6 +72,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
       var clonePath = path.resolve(options.xt.dist, repo),
         deployPath = path.resolve(options.xt.userdist, repo);
 
+      log.http('xt-install', 'downloading...');
       if (!fs.existsSync(clonePath)) {
         try {
           exec([ 'git clone --recursive', protocol + 'xtuple/' + repo + '.git', clonePath].join(' '), {
@@ -97,6 +98,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
       if (!fs.existsSync(deployPath)) {
         try {
           n(options.n.version);
+          log.http('xt-install', 'installing npm module...');
           exec([ 'cd', clonePath, '&& npm install --unsafe-perm' ].join(' '), { cwd: clonePath });
           exec('chown -R '+ options.xt.name + ' ' + clonePath);
         }
@@ -108,6 +110,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
           n(process.version);
         }
 
+        log.info('xt-install', 'copying files...');
         if (!fs.existsSync(deployPath)) {
           mkdirp.sync(deployPath);
         }
