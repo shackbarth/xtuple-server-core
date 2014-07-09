@@ -56,8 +56,6 @@ install_debian () {
 
 install_node () {
   rm -rf ~/.npm ~/tmp ~/.nvm /root/.npm /root/tmp
-  mkdir -p /usr/local/{share/man,bin,lib/node,lib/node_modules,include/node}
-  chmod -Rf a+wrx /usr/local/{share,bin,lib/node*,include/node*,n}
 
   log "Installing n..."
   wget https://raw.githubusercontent.com/visionmedia/n/master/bin/n -qO n
@@ -71,6 +69,9 @@ install_node () {
   npm install -g npm nex --silent
 
   echo "export NODE_PATH=/usr/local/lib/node_modules" > /etc/profile.d/nodepath.sh
+
+  mkdir -p /usr/local/{share/man,bin,lib/node,lib/node_modules,include/node,n/versions}
+  chmod -Rf a+wrx /usr/local/{share/systemtap,share/man,bin,lib/node*,include/node*,n*}
 }
 
 setup () {
