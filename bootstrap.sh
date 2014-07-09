@@ -55,6 +55,10 @@ install_debian () {
 }
 
 install_node () {
+  rm -rf ~/.npm ~/tmp ~/.nvm /root/.npm /root/tmp
+  mkdir -p /usr/local/{share/man,bin,lib/node,lib/node_modules,include/node}
+  chmod -Rf a+wrx /usr/local/{share,bin,lib/node*,include/node*,n}
+
   log "Installing n..."
   wget https://raw.githubusercontent.com/visionmedia/n/master/bin/n -qO n
   chmod +x n
@@ -64,22 +68,16 @@ install_node () {
   n latest > /dev/null 2>&1
 
   log "Installing latest npm..."
-  npm install -g npm --silent
-
-  mkdir -p /usr/local/{share/man,bin,lib/node,lib/node_modules,include/node}
-  npm install -g nex --silent
-
-  rm -rf ~/.npm ~/tmp ~/.nvm /root/.npm /root/tmp
-
-  chmod -Rf a+w /usr/local/{share,bin,lib/node*,include/node*,n,ChangeLog,LICENSE,README.md}
-  # cp: cannot remove `/usr/local/share/systemtap/tapset/node.stp': Permission denied
+  npm install -g npm nex --silent
 
   echo "export NODE_PATH=/usr/local/lib/node_modules" > /etc/profile.d/nodepath.sh
 }
 
 setup () {
   pg_dropcluster 9.3 main --stop > /dev/null 2>&1
-  chmod -R 777 /var/run/postgresql  # temporary
+
+  # TODO solve
+  chmod -R 777 /var/run/postgresql
 
   rm -f /etc/nginx/sites-available/default
   rm -f /etc/nginx/sites-enabled/default
@@ -118,9 +116,10 @@ if [[ ! -z $(which apt-get) ]]; then
   echo ''
 else
   log "apt-get not found."
-  exit 1;
+  exit 1
 fi
 
 log "Done! You now have yourself a bona fide xTuple Server."
 log "We recommend that you reboot the machine now"
 rm -f bootstrap.sh
+exit 0
