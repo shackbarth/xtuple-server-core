@@ -26,23 +26,26 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-rename */ {
 
   /** @override */
   executeTask: function (options) {
-    var res = lib.pgCli.psql(options,
-    'select pg_terminate_backend(pg_stat_activity.pid) from pg_stat_activity where pg_stat_activity.datname = \'' + options.pg.dbname + '\' and pid <> pg_backend_pid(); alter database \"' + options.pg.dbname + '\" rename to ' + options.pg.newname
-    );
-    console.log(res);
+    var res = lib.pgCli.psql(options, [
+
+      'select pg_terminate_backend(pg_stat_activity.pid)',
+      'from pg_stat_activity where pg_stat_activity.datname = \'' + options.pg.dbname + '\'',
+      'and pid <> pg_backend_pid();',
+
+      'alter database \"' + options.pg.dbname + '\" rename to ' + options.pg.newname
+
+    ].join(' '));
+    log.verbose('pg-rename', res);
 
     var configObject = require(options.xt.configfile);
     res = _.pull(configObject.datasource.databases, options.pg.dbname);
     configObject.datasource.databases.push(options.pg.newname);
 
-    console.log(JSON.stringify(configObject.datasource.databases, null, 2));
-    console.log(res);
-
-    fs.writeFileSync(options.xt.configfile, lib.xt.build.wrapModule(configObject));
+    fs.writeFileSync(options.xt.configfile, lib.build.wrapModule(configObject));
   },
 
   /** @override */
   afterTask: function (options) {
-    console.log('Restart the xTuple server for changes to take effect');
+    log.info('pg-rename', 'Restart the xTuple server for changes to take effect');
   }
 });
