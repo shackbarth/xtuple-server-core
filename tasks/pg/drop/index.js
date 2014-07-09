@@ -28,14 +28,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-drop */ {
     var configObject = require(options.xt.configfile);
     var res = _.pull(configObject.datasource.databases, options.pg.dbname);
 
-    console.log(JSON.stringify(configObject.datasource.databases, null, 2));
-    console.log(res);
-
-    fs.writeFileSync(options.xt.configfile, lib.xt.build.wrapModule(configObject));
-  },
-
-  /** @override */
-  afterTask: function (options) {
-    console.log('Restart the xTuple server for changes to take effect');
+    fs.writeFileSync(options.xt.configfile, lib.util.wrapModule(configObject));
   }
 });
