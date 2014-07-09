@@ -58,12 +58,13 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
    *  - proxy requests to the node server
    *  - auto-redirect http -> https
    *  - set up SSL
+   *  - replace existing site, if any
    *  @override
    */
   executeTask: function (options) {
-    if (fs.existsSync(options.nginx.sitesEnabled)) {
-      fs.unlinkSync(options.nginx.sitesEnabled);
-      fs.unlinkSync(options.nginx.sitesAvailable);
+    if (fs.existsSync(options.nginx.enabledSite)) {
+      fs.unlinkSync(options.nginx.availableSite);
+      fs.unlinkSync(options.nginx.enabledSite);
     }
     exports.writeSiteConfig(options);
   },

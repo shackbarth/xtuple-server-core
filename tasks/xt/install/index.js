@@ -19,7 +19,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
   beforeTask: function (options) {
     // add github.com to known_hosts file to avoid host authenticity prompt
     try {
-      exec('ssh -o StrictHostKeyChecking=no git@github.com', { stdio: 'ignore' });
+      exec('ssh -o StrictHostKeyChecking=no git@github.com', { stdio: 'pipe' });
     }
     catch (e) {
       log.verbose('xt-install', e.message);
@@ -43,10 +43,34 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
     /** FIXME this whole task needs cleanup */
 
     if (_.isObject(options.local) && !_.isEmpty(options.local.workspace)) {
+      log.verbose('local.workspace', options.local.workspace);
       version = exec('node ' + latest + ' "' + require(path.resolve(options.local.workspace, 'package')).engines.node + '"').toString().trim();
       options.n = { version: version };
       options.n.npm = 'n '+ options.n.version + ' && npm';
       options.n.use = 'n use '+ options.n.version;
+
+      log.verbose('options.n.version', options.n.version);
+
+      // run npm install on local workspace before each installation, for safety
+      // FIXME copy-paste from deploy section below
+      try {
+        log.verbose([ 'cd', options.local.workspace, '&& npm install --unsafe-perm' ].join(' '));
+        log.verbose('xt-install', 'running n...');
+        n(options.n.version);
+
+        log.verbose('xt-install', 'npm install...');
+        exec([ 'cd', options.local.workspace, '&&', 'sudo -u', options.xt.name, 'npm install' ].join(' '), { cwd: options.local.workspace });
+        exec('chown -R '+ options.xt.name + ' ' + options.local.workspace);
+      }
+      catch (e) {
+        log.error('xt-install', e.message);
+        log.error('xt-install', e.stack.split('\n'));
+      }
+      finally {
+        log.verbose('xt-install', 'finally before n');
+        n(process.version);
+        log.verbose('xt-install', 'finally after n');
+      }
       return;
     }
 
@@ -54,6 +78,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
       var clonePath = path.resolve(options.xt.dist, repo),
         deployPath = path.resolve(options.xt.userdist, repo);
 
+      log.http('xt-install', 'downloading...');
       if (!fs.existsSync(clonePath)) {
         try {
           exec([ 'git clone --recursive', protocol + 'xtuple/' + repo + '.git', clonePath].join(' '), {
@@ -76,20 +101,25 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
         options.n.use = 'n use '+ options.n.version;
       }
 
-
       if (!fs.existsSync(deployPath)) {
         try {
+          log.http('xt-install', 'running n inside deployPath if stmt...');
           n(options.n.version);
-          exec([ 'cd', clonePath, '&& npm install' ].join(' '), { cwd: clonePath });
+          log.http('xt-install', 'installing npm module...');
+          exec([ 'cd', clonePath, '&& npm install --unsafe-perm' ].join(' '), { cwd: clonePath });
+          exec('chown -R '+ options.xt.name + ' ' + clonePath);
         }
         catch (e) {
           log.error('xt-install', e.message);
           throw e;
         }
         finally {
+          log.verbose('xt-install', 'finally before n in deployPath if...');
           n(process.version);
+          log.verbose('xt-install', 'finally after n in deployPath if...');
         }
 
+        log.info('xt-install', 'copying files...');
         if (!fs.existsSync(deployPath)) {
           mkdirp.sync(deployPath);
         }

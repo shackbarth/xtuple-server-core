@@ -95,7 +95,9 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
       throw new Error('could not generate keypair');
     }
 
-    exec('chown -R '+ options.xt.name + ' ' + path.dirname(options.nginx.outkey));
+    if (!_.isEmpty(options.xt.name)) {
+      exec('chown -R '+ options.xt.name + ' ' + path.dirname(options.nginx.outkey));
+    }
     exec('chmod -R u=rx ' + path.dirname(options.nginx.outkey));
   },
 
