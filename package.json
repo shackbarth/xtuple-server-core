@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server",
-  "version": "0.9.137",
+  "version": "0.9.138",
   "description": "The xTuple Server installs, configures, runs, serves, secures, backs up, restores, forks, upgrades, pilots, monitors and manages your xTuple appliance, demo, cloud app, or development environment.",
   "dependencies": {
     "commander": "^2.2.0",
