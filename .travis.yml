@@ -19,6 +19,7 @@ after_failure:
 
 before_deploy:
   - git clean -fxd
+  - npm install -g npm
 
 deploy:
   provider: npm
