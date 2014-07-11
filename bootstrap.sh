@@ -67,7 +67,9 @@ install_node () {
   n latest > /dev/null 2>&1
 
   log "Installing latest npm..."
-  npm install -g npm nex --quiet
+  npm install -g npm --quiet
+  log "Installing latest nex..."
+  npm install -g nex --quiet
 
   echo "export NODE_PATH=/usr/local/lib/node_modules" > /etc/profile.d/nodepath.sh
 
