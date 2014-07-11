@@ -14,6 +14,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-test */ {
       options.xt.testdb = 'demo_' + options.type;
       exports.writeLoginData(options);
     }
+    fs.symlinkSync(options.xt.configfile, path.resolve(options.xt.coredir, 'node-datasource/config.js'));
   },
 
   writeLoginData: function (options) {
