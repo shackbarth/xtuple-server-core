@@ -50,7 +50,6 @@ describe('xTuple Server', function () {
 
     describe('@uninstall-dev', function () {
       it('should do something', function () {
-        proc.execSync('n latest');
         this.child = proc.execSync(
           // local-workspace path relative to ../
           'xtuple-server uninstall-dev --local-workspace node_modules/xtuple --verbose'
