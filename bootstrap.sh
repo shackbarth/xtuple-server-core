@@ -74,6 +74,7 @@ install_node () {
   echo "export NODE_PATH=/usr/local/lib/node_modules" > /etc/profile.d/nodepath.sh
 
   chmod -Rf 777 /usr/local/{share/systemtap,share/man,bin,lib/node*,include/node*,n*}
+  rm -rf ~/.npm ~/tmp /root/.npm /root/tmp
 }
 
 setup () {
