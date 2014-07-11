@@ -43,6 +43,10 @@
     "requireindex",
     "semver"
   ],
+  "devDependencies": {
+    "lodash": "^2.4.1",
+    "mocha": "^1.20.1"
+  },
   "linkDependencies": {
     "xtuple-server-local-paths": "tasks/local/paths",
     "xtuple-server-local-policy": "tasks/local/policy",
@@ -65,10 +69,13 @@
     "xtuple-server-xt-test": "tasks/xt/test",
     "xtuple-server-lib": "lib"
   },
-  "devDependencies": {
-    "lodash": "^2.4.1",
-    "mocha": "^1.20.1"
+  "globalDependencies": {
+    "xtuple-server": "^0.9.0"
   },
+  "nex": [
+    "linkDependencies",
+    "globalDependencies"
+  ],
   "files": [
     "plans/",
     "spec/",
@@ -76,7 +83,7 @@
     "index.js"
   ],
   "scripts": {
-    "setup-dev": "nex install && nex install xtuple --nodeVersion 0.10.29",
+    "postinstall": "nex do",
     "test": "mocha --harmony -R spec spec/index.js -b"
   },
   "bin": {

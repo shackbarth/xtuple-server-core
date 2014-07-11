@@ -5,10 +5,7 @@ before_install:
   - sudo bash bootstrap.sh
 
 install:
-  - n 0.11
   - npm install
-  - npm install -g
-  - npm run setup-dev
 
 script:
   - sudo npm test xtuple-server-lib
