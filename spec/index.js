@@ -31,6 +31,18 @@ describe('xTuple Server', function () {
     log.level = 'verbose';
   });
 
+  before(function () {
+    try {
+      require('xtuple');
+    }
+    catch (e) {
+      n('stable');
+      proc.execSync('cd '+ process.cwd() + ' && npm install xtuple');
+      n(process.version);
+    }
+
+  });
+
   describe('@cli', function () {
 
     afterEach(function () { log.silly(this.child); });

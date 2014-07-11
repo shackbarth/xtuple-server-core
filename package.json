@@ -45,8 +45,7 @@
   ],
   "devDependencies": {
     "lodash": "^2.4.1",
-    "mocha": "^1.20.1",
-    "xtuple": ">4.5.0"
+    "mocha": "^1.20.1"
   },
   "linkDependencies": {
     "xtuple-server-local-paths": "tasks/local/paths",
