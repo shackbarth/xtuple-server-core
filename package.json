@@ -81,6 +81,7 @@
     "plans/",
     "spec/",
     "cli.js",
+    "load-cli.js",
     "index.js"
   ],
   "scripts": {
