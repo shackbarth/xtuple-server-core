@@ -5,6 +5,7 @@
   "dependencies": {
     "commander": "^2.2.0",
     "glob": "^4.0.2",
+    "harmonious": "^0.5.15",
     "lodash": "^2.4.1",
     "n-api": "^1.2.20",
     "npmlog": "^0.1.1",
@@ -90,7 +91,7 @@
     "preupdate": "nex do engines"
   },
   "bin": {
-    "xtuple-server": "cli.js"
+    "xtuple-server": "load-cli.js"
   },
   "preferGlobal": true,
   "keywords": [
