@@ -17,7 +17,7 @@ after_failure:
   - cat xtuple-server-test.log
 
 before_deploy:
-  - npm install -g npm
+  - git clean -fxd
 
 deploy:
   provider: npm
