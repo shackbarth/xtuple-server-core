@@ -1,7 +1,6 @@
 language: c
 
 before_install:
-  - rm -rf ~/.nvm
   - sudo bash bootstrap.sh
 
 install:
@@ -14,6 +13,7 @@ script:
 after_failure:
   - pg_lsclusters 
   - cat npm-debug.log
+  - cat nex-debug.log
   - cat xtuple-server-test.log
 
 before_deploy:
