@@ -10,7 +10,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-test */ {
 
   /** @override */
   executeTask: function (options) {
-    if (options.xt.demo && options.type !== 'live') {
+    if (options.xt.demo) {
       options.xt.testdb = 'demo_' + options.type;
       exports.writeLoginData(options);
     }
