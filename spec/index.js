@@ -32,15 +32,7 @@ describe('xTuple Server', function () {
   });
 
   before(function () {
-    try {
-      require('xtuple');
-    }
-    catch (e) {
-      n('stable');
-      proc.execSync('cd '+ process.cwd() + ' && npm install xtuple');
-      n(process.version);
-    }
-
+    proc.execSync('cd '+ process.cwd() + ' && npm install xtuple', { stdio: 'inherit' });
   });
 
   describe('@cli', function () {
@@ -58,6 +50,7 @@ describe('xTuple Server', function () {
 
     describe('@uninstall-dev', function () {
       it('should do something', function () {
+        proc.execSync('n latest');
         this.child = proc.execSync(
           // local-workspace path relative to ../
           'xtuple-server uninstall-dev --local-workspace node_modules/xtuple --verbose'

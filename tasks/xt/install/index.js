@@ -54,7 +54,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
       // run npm install on local workspace before each installation, for safety
       // FIXME copy-paste from deploy section below
       try {
-        log.verbose([ 'cd', options.local.workspace, '&& npm install --unsafe-perm' ].join(' '));
+        log.verbose([ 'cd', options.local.workspace, '&& npm install' ].join(' '));
         log.verbose('xt-install', 'running n...');
         n(options.n.version);
 
@@ -106,7 +106,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
           log.http('xt-install', 'running n inside deployPath if stmt...');
           n(options.n.version);
           log.http('xt-install', 'installing npm module...');
-          exec([ 'cd', clonePath, '&& npm install --unsafe-perm' ].join(' '), { cwd: clonePath });
+          exec([ 'cd', clonePath, '&& npm install' ].join(' '), { cwd: clonePath });
           exec('chown -R '+ options.xt.name + ' ' + clonePath);
         }
         catch (e) {

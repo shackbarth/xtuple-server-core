@@ -84,7 +84,8 @@
     "index.js"
   ],
   "scripts": {
-    "preinstall": "nex do",
+    "preinstall": "nex do engines",
+    "postinstall": "nex do",
     "pretest": "nex do engines",
     "test": "mocha --harmony -R spec spec/index.js -b",
     "preupdate": "nex do engines"
