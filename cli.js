@@ -66,7 +66,7 @@ if (exec('id -u', { stdio: 'pipe' }).toString().indexOf('0') !== 0) {
 }
 
 program
-  .version(version)
+  .version(pkg.version)
   .usage('<plan> <type> [options]')
   .option('-v, --verbose', 'verbose mode', function () {
     log.level = 'verbose';
