@@ -1,5 +1,3 @@
-#! /usr/bin/env node
-
 var path = require('path');
 var pkg = require(path.resolve(__dirname, 'package'));
 var logfile = require('npmlog-file');
