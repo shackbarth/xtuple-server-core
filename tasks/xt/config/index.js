@@ -1,6 +1,7 @@
 var lib = require('xtuple-server-lib'),
   format = require('string-format'),
   exec = require('child_process').execSync,
+  forge = require('node-forge'),
   _ = require('lodash'),
   path = require('path'),
   fs = require('fs');
@@ -74,7 +75,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
     if (!fs.existsSync(options.xt.key256file)) {
       fs.writeFileSync(
         options.xt.key256file,
-        exec('openssl rand 256 -hex').toString()
+        forge.util.bytesToHex(forge.random.getBytesSync(32)).toString()
       );
     }
   },
