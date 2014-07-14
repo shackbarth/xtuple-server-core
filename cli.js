@@ -50,8 +50,7 @@ function executePlan (plan, options) {
     .then(function () {
       log.info('xtuple', 'Done!');
       process.exit(0);
-    })
-    .fail(function (e) {
+    }, function (e) {
       log.error('xtuple', e.message);
       log.verbose('xtuple', e.stack.split('\n'));
       log.info('xtuple', 'Please see xtuple-server.log for more info');
