@@ -9,5 +9,3 @@ node_modules
 *.tar.gz*
 *.tgz
 *.deb
-*.exec
-sync-exec*
