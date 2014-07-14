@@ -10,6 +10,17 @@ var lib = require('xtuple-server-lib'),
 
 _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
 
+  options: {
+    ghuser: {
+      optional: '[ghuser]',
+      description: 'Github username'
+    },
+    ghpass: {
+      optional: '[ghpass]',
+      description: 'Github password'
+    }
+  },
+
   /** @override */
   beforeInstall: function (options) {
     options.xt.scalarversion = options.xt.version.replace(/\./g, '');
@@ -40,10 +51,17 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
     var latest = path.resolve(__dirname, 'node_modules', 'node-latest-version', 'index.js');
     var protocol = process.env.CI ? 'git@github.com:' : 'https://github.com/';
 
+    // FIXME this needs to be validated more thoroughly
+    if (!_.isEmpty(options.xt.ghuser) && !_.isEmpty(options.xt.ghpass)) {
+      protocol = 'https://' + options.xt.ghuser + ':' + options.xt.ghpass + '@github.com/';
+    }
+
     /** FIXME this whole task needs cleanup */
 
     if (_.isObject(options.local) && !_.isEmpty(options.local.workspace)) {
       log.verbose('local.workspace', options.local.workspace);
+      // XXX this version switching will not be necessary once all these
+      // are using nex
       version = exec('node ' + latest + ' "' + require(path.resolve(options.local.workspace, 'package')).engines.node + '"').toString().trim();
       options.n = { version: version };
       options.n.npm = 'n '+ options.n.version + ' && npm';
@@ -67,9 +85,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
         log.error('xt-install', e.stack.split('\n'));
       }
       finally {
-        log.verbose('xt-install', 'finally before n');
         n(process.version);
-        log.verbose('xt-install', 'finally after n');
       }
       return;
     }
@@ -78,6 +94,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
       var clonePath = path.resolve(options.xt.dist, repo),
         deployPath = path.resolve(options.xt.userdist, repo);
 
+      // FIXME all this stuff should be done through npm
       log.http('xt-install', 'downloading...');
       if (!fs.existsSync(clonePath)) {
         try {
@@ -85,7 +102,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
             cwd: clonePath
           });
           exec('cd '+ clonePath +' && git fetch origin', { cwd: clonePath });
-          exec('cd '+ clonePath +' && git reset --hard ' + options.xt.repoHash, { cwd: clonePath });
+          exec('cd '+ clonePath +' && git checkout -f ' + options.xt.repoHash, { cwd: clonePath });
         }
         catch (e) {
           log.warn('xt-install', e.message);
@@ -114,9 +131,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
           throw e;
         }
         finally {
-          log.verbose('xt-install', 'finally before n in deployPath if...');
           n(process.version);
-          log.verbose('xt-install', 'finally after n in deployPath if...');
         }
 
         log.info('xt-install', 'copying files...');
@@ -130,31 +145,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
         exec('chmod -R u=rwx ' + deployPath);
       }
     });
-  },
-
-  /**
-   * Return the node.js version specified in the package.json of the main
-   * xtuple repo.
-   */
-  getPackageNodeVersion: function (options) {
-    var pkg = require(path.resolve(options.xt.coredir, 'package')),
-      node = pkg.engines.node;
-
-    return exports.crudeVersionResolve(node);
-  },
-
-  crudeVersionResolve: function (version) {
-    if (!semver.validRange(version)) {
-      throw new Error('xtuple package version does not seem to be valid: '+ version);
-    }
-
-    // TODO remove
-    if ('0.8.x' === version) {
-      return '0.8.26';
-    }
-    else {
-      return semver.clean(version);
-    }
   },
 
   /** @override */
