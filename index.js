@@ -2,7 +2,6 @@ global.log = require('npmlog');
 log.heading = 'xtuple-server';
 
 var lib = require('xtuple-server-lib'),
-  Q = require('q'),
   semver = require('semver'),
   _ = require('lodash');
 
@@ -112,18 +111,14 @@ var planner = module.exports = {
    * @returns promise
    */
   execute: function (plan, options) {
-    var deferred = Q.defer();
-
-    setTimeout(function () {
+    return new Promise(function (resolve, reject) {
       try {
         executePlan(plan, options);
-        deferred.resolve(options);
+        resolve(options);
       }
       catch (e) {
-        deferred.reject(e);
+        reject(e);
       }
-    }, 10);
-
-    return deferred.promise;
+    });
   }
 };
