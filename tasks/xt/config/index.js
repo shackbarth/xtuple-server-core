@@ -11,6 +11,14 @@ var lib = require('xtuple-server-lib'),
  */
 _.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
 
+  options: {
+    authkey: {
+      optional: '[authkey]',
+      description: 'The "enhancedAuthKey" used by the database clients to scramble Postgres passwords',
+      value: 'xTuple'
+    }
+  },
+
   /** @override */
   beforeTask: function (options) {
     options.xt.port = lib.util.getServerPort(options);
@@ -43,6 +51,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
           certFile: options.nginx.outcrt,
           saltFile: options.xt.rand64file,
           encryptionKeyFile: options.xt.key256file,
+          enhancedAuthKey: options.xt.authkey,
           hostname: options.nginx.domain,
           description: options.nginx.sitename,
           port: options.xt.sslport,
