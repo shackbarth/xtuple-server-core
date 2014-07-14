@@ -123,6 +123,7 @@
     "type": "git",
     "url": "git://github.com/xtuple/xtuple-server.git"
   },
+  "homepage": "http://www.xtuple.com",
   "author": "Travis Webb <travis@xtuple.com>",
   "license": "MPL-2.0",
   "bugs": {
