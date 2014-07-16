@@ -2,6 +2,7 @@ var lib = require('xtuple-server-lib'),
   format = require('string-format'),
   exec = require('child_process').execSync,
   forge = require('node-forge'),
+  rimraf = require('rimraf'),
   _ = require('lodash'),
   path = require('path'),
   fs = require('fs');
@@ -90,6 +91,13 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
   },
 
   /** @override */
+  uninstall: function (options) {
+    if (!_.isEmpty(options.xt.configdir) && fs.existsSync(options.xt.configdir)) {
+      rimraf.sync(options.xt.configdir);
+    }
+  },
+
+  /** @override */
   afterTask: function (options) {
     exec('chown {xt.name}:{xt.name} {xt.key256file}'.format(options));
     exec('chown {xt.name}:{xt.name} {xt.rand64file}'.format(options));
@@ -98,20 +106,5 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
     exec('chmod 700 {xt.key256file}'.format(options));
     exec('chmod 700 {xt.rand64file}'.format(options));
     exec('chmod 700 {xt.configfile}'.format(options));
-  },
-
-  /**
-   * @override
-   * Link the written config to be the new 'default' config located in 
-   * node-datasource/config.js
-   */
-  afterInstall: function (options) {
-    /*
-    var localConfig = path.resolve(options.xt.userdist, 'xtuple', 'node-datasource', 'config.js');
-    if (fs.existsSync(localConfig)) {
-      fs.unlinkSync(localConfig);
-    }
-    fs.symlinkSync(options.xt.configfile, localConfig);
-    */
   }
 });
