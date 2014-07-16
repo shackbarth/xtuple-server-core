@@ -27,7 +27,7 @@
     "xtuple-server-pg-rename": "^1.0.0",
     "xtuple-server-pg-restore": "^1.0.0",
     "xtuple-server-sys-report": "^1.0.0",
-    "xtuple-server-sys-upgrade": "^1.0.0",
+    "xtuple-server-sys-upgrade": "^0.9.0",
     "xtuple-server-xt-config": "^1.0.0",
     "xtuple-server-xt-database": "^1.0.0",
     "xtuple-server-xt-install": "^1.0.0",
