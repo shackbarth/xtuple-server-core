@@ -30,7 +30,7 @@
     "xtuple-server-sys-upgrade": "^0.9.0",
     "xtuple-server-xt-config": "^1.0.0",
     "xtuple-server-xt-database": "^1.0.0",
-    "xtuple-server-xt-install": "^1.0.0",
+    "xtuple-server-xt-install": "^0.9.0",
     "xtuple-server-xt-test": "^1.0.0"
   },
   "bundledDependencies": [
