@@ -8,8 +8,8 @@ exports.afterTask = function (options) {
   it('should restore database '+ options.pg.dbname, function () {
     log.info('pg-restore test', options.pg.infile);
 
-    var list = lib.pgCli.psql(options, '\\list').split('\n');
-    log.info('pg-restore test', list);
+    var list = lib.pgCli.psql(options, '\\list', true);
+    assert.notEqual(list.indexOf(options.pg.dbname), -1);
   });
 };
 

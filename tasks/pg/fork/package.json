@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-pg-fork",
-  "version": "0.9.4",
+  "version": "0.9.8",
   "description": "xTuple Server Task [pg.fork]: fork a database (backup + restore)",
   "main": "index.js",
   "scripts": {
@@ -29,6 +29,7 @@
   "homepage": "https://github.com/xtuple/xtuple-server",
   "dependencies": {
     "lodash": "^2.4.1",
+    "npmlog": "^0.1.1",
     "xtuple-server-lib": "^0.9.62",
     "xtuple-server-pg-config": "^0.9.0"
   },

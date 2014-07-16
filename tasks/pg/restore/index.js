@@ -14,30 +14,25 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-restore */ {
       optional: '[infile]',
       description: 'Path to the file to be restored',
       validate: function (value, options) {
-        if (options.planName === 'copy-database') {
-          return value;
-        }
-        if (_.isEmpty(value) && options.planName === 'restore-database') {
-          throw new Error('pg-infile must be set');
-        }
-        if ((options.planName === 'import-users') && ('.sql' !== path.extname(options.pg.infile))) {
-          throw new Error('The import-users plan can only import a raw ".sql" file');
+        var infile = !_.isEmpty(value) && path.resolve(value);
+
+        if (!infile) {
+          throw new Error('pg-infile must be set to the backup file you want to restore');
         }
         if (!fs.existsSync(path.resolve(value))) {
           throw new Error('pg-infile not found: '+ value);
         }
-        return value;
+        if ((options.planName === 'import-users') && ('.sql' !== path.extname(options.pg.infile))) {
+          throw new Error('The import-users plan can only import a raw ".sql" file');
+        }
+
+        return infile;
       }
     },
     dbname: {
       optional: '[dbname]',
-      description: 'Name of database to operate on'
+      description: 'Name of database to restore'
     }
-  },
-
-  /** @override */
-  beforeInstall: function (options) {
-    options.pg.infile = path.resolve(options.pg.infile);
   },
 
   /** @override */
@@ -47,13 +42,13 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-restore */ {
 
   /** @override */
   executeTask: function (options) {
-    if ('import-users' === options.planName && '.sql' === path.extname(options.pg.infile)) {
+    if ('import-users' === options.planName) {
       lib.pgCli.psqlFile(options, options.pg.infile);
     }
     else {
       lib.pgCli.createdb(options, 'admin', options.pg.dbname);
       lib.pgCli.restore(_.extend({
-        filename: path.resolve(options.pg.infile),
+        filename: options.pg.infile,
         dbname: options.pg.dbname
       }, options));
 
