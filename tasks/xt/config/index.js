@@ -101,8 +101,8 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
     exec([ 'chown', options.xt.name, options.xt.rand64file ].join(' '));
     exec([ 'chown', options.xt.name, options.xt.configfile ].join(' '));
 
-    fs.chownSync(options.xt.key256file, '700');
-    fs.chownSync(options.xt.rand64file, '700');
-    fs.chownSync(options.xt.configfile, '700');
+    fs.chmodSync(options.xt.key256file, '700');
+    fs.chmodSync(options.xt.rand64file, '700');
+    fs.chmodSync(options.xt.configfile, '700');
   }
 });
