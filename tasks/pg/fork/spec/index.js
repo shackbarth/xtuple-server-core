@@ -23,7 +23,7 @@ exports.afterExecute = function (options) {
     it('should have restored database '+ options.pg.dbname, function () {
       var list = lib.pgCli.psql(options, '\\list', true);
 
-      assert(list.indexOf(options.pg.dbname));
+      assert.notEqual(list.indexOf(options.pg.dbname), -1);
     });
   });
 
