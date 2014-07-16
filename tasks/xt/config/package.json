@@ -29,6 +29,7 @@
   "dependencies": {
     "lodash": "^2.4.1",
     "node-forge": "^0.6.11",
+    "rimraf": "^2.2.8",
     "xtuple-server-lib": "^0.9.62"
   },
   "devDependencies": {
