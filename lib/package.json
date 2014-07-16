@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-lib",
-  "version": "0.9.84",
+  "version": "1.0.0",
   "description": "xTuple Server common lib",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,7 @@
     "tuple"
   ],
   "author": "xTuple",
-  "license": "MPL-2.0",
+  "license": "CPAL-1.0",
   "bugs": {
     "url": "https://github.com/xtuple/xtuple-server/issues"
   },

@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-xt-install",
-  "version": "0.9.57",
+  "version": "0.9.58",
   "description": "xTuple Server Task [xt.install]: clone and install the xTuple source",
   "main": "index.js",
   "scripts": {
@@ -16,12 +16,13 @@
     "erp",
     "business",
     "software",
+    "database",
     "postgres",
     "postgresql",
     "tuple"
   ],
   "author": "xTuple",
-  "license": "MPL-2.0",
+  "license": "CPAL-1.0",
   "bugs": {
     "url": "https://github.com/xtuple/xtuple-server/issues"
   },
@@ -33,7 +34,7 @@
     "n-api": "^1.2.20",
     "node-latest-version": "^1.0.3",
     "semver": "^2.3.0",
-    "xtuple-server-lib": "^0.9.62"
+    "xtuple-server-lib": "^1.0.0"
   },
   "devDependencies": {
     "mocha": "^1.20.0"

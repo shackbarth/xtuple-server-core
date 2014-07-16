@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-nginx-ssl",
-  "version": "0.9.17",
+  "version": "1.0.0",
   "description": "xTuple Server Task [nginx.ssl]: configure the SSL endpoint for a new xTuple instance deployment",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,7 @@
     "tuple"
   ],
   "author": "xTuple",
-  "license": "MPL-2.0",
+  "license": "CPAL-1.0",
   "bugs": {
     "url": "https://github.com/xtuple/xtuple-server/issues"
   },
@@ -30,7 +30,7 @@
   "dependencies": {
     "cp": "^0.1.1",
     "lodash": "^2.4.1",
-    "xtuple-server-lib": "^0.9.62"
+    "xtuple-server-lib": "^1.0.0"
   },
   "devDependencies": {
     "mocha": "^1.20.0"
