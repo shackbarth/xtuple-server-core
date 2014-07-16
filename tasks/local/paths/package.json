@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-local-paths",
-  "version": "0.9.35",
+  "version": "1.0.0",
   "description": "xTuple Server Task [local.paths]: setup paths for local server mode",
   "main": "index.js",
   "scripts": {
@@ -16,6 +16,7 @@
     "erp",
     "business",
     "software",
+    "database",
     "postgres",
     "postgresql",
     "tuple"
@@ -31,7 +32,7 @@
     "lodash": "^2.4.1",
     "mkdirp": "^0.5.0",
     "rimraf": "^2.2.8",
-    "xtuple-server-lib": "^0.9.62"
+    "xtuple-server-lib": "^1.0.0"
   },
   "devDependencies": {
     "mocha": "^1.20.0"
