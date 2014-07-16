@@ -1,5 +1,4 @@
 var lib = require('xtuple-server-lib'),
-  format = require('string-format'),
   exec = require('child_process').execSync,
   forge = require('node-forge'),
   rimraf = require('rimraf'),
@@ -72,8 +71,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
     fs.writeFileSync(options.xt.configfile, output_conf);
         
     // write salt file
-    // XXX QUESTION: is this really a salt, or an actual private key? is it
-    // necessary? I am ignorant of its purpose and cannot find docs on it
+    // TODO use node-forge for this
     if (!fs.existsSync(options.xt.rand64file)) {
       fs.writeFileSync(
         options.xt.rand64file,
@@ -99,12 +97,12 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
 
   /** @override */
   afterTask: function (options) {
-    exec('chown {xt.name}:{xt.name} {xt.key256file}'.format(options));
-    exec('chown {xt.name}:{xt.name} {xt.rand64file}'.format(options));
-    exec('chown {xt.name}:{xt.name} {xt.configfile}'.format(options));
+    exec([ 'chown', options.xt.name, options.xt.key256file ].join(' '));
+    exec([ 'chown', options.xt.name, options.xt.rand64file ].join(' '));
+    exec([ 'chown', options.xt.name, options.xt.configfile ].join(' '));
 
-    exec('chmod 700 {xt.key256file}'.format(options));
-    exec('chmod 700 {xt.rand64file}'.format(options));
-    exec('chmod 700 {xt.configfile}'.format(options));
+    fs.chownSync(options.xt.key256file, '700');
+    fs.chownSync(options.xt.rand64file, '700');
+    fs.chownSync(options.xt.configfile, '700');
   }
 });
