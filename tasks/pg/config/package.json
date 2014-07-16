@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-pg-config",
-  "version": "0.9.9",
+  "version": "1.0.0",
   "description": "xTuple Server Task [pg.config]: write postgres cluster configuration",
   "main": "index.js",
   "scripts": {
@@ -30,7 +30,7 @@
   "dependencies": {
     "lodash": "^2.4.1",
     "string-format": "^0.2.1",
-    "xtuple-server-lib": "^0.9.62"
+    "xtuple-server-lib": "^1.0.0"
   },
   "devDependencies": {
     "mocha": "^1.20.0"
