@@ -1,4 +1,3 @@
-/* jshint node: true */
 'use strict';
 
 var assert = require('assert');
@@ -79,7 +78,7 @@ describe('xTuple Server', function () {
       specPlanner.describe({ planObject: planObject, options: options });
     });
 
-    describe('@backup-database', function () {
+    describe.skip('@backup-database', function () {
       var planObject = plans['backup-database'];
       var options = {
         planName: 'backup-database',
@@ -98,6 +97,23 @@ describe('xTuple Server', function () {
       after(function () {
         backupFile = options.pg.backup.backupFile;
       });
+    });
+
+    describe('@copy-database', function () {
+      var planObject = plans['copy-database'];
+      var options = {
+        planName: 'copy-database',
+        plan: planObject.plan,
+        type: 'dev',
+        local: {
+          workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
+        },
+        pg: {
+          dbname: 'demo_dev'
+        }
+      };
+
+      specPlanner.describe({ planObject: planObject, options: options });
     });
 
     describe.skip('@restore-database', function () {

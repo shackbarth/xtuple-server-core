@@ -19,7 +19,12 @@
     },
     {
       "name": "pg",
-      "tasks": [ "backup", "fork", "restore" ]
+      "tasks": [ "backup", "fork" ]
+    },
+    {
+      "name": "pg",
+      "tasks": [ "restore" ],
+      "options": { "validate": false }
     }
   ]
 }

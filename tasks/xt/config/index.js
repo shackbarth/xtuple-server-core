@@ -1,7 +1,7 @@
 var lib = require('xtuple-server-lib'),
-  format = require('string-format'),
   exec = require('child_process').execSync,
   forge = require('node-forge'),
+  rimraf = require('rimraf'),
   _ = require('lodash'),
   path = require('path'),
   fs = require('fs');
@@ -71,8 +71,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
     fs.writeFileSync(options.xt.configfile, output_conf);
         
     // write salt file
-    // XXX QUESTION: is this really a salt, or an actual private key? is it
-    // necessary? I am ignorant of its purpose and cannot find docs on it
+    // TODO use node-forge for this
     if (!fs.existsSync(options.xt.rand64file)) {
       fs.writeFileSync(
         options.xt.rand64file,
@@ -90,28 +89,20 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-config */ {
   },
 
   /** @override */
-  afterTask: function (options) {
-    exec('chown {xt.name}:{xt.name} {xt.key256file}'.format(options));
-    exec('chown {xt.name}:{xt.name} {xt.rand64file}'.format(options));
-    exec('chown {xt.name}:{xt.name} {xt.configfile}'.format(options));
-
-    exec('chmod 700 {xt.key256file}'.format(options));
-    exec('chmod 700 {xt.rand64file}'.format(options));
-    exec('chmod 700 {xt.configfile}'.format(options));
+  uninstall: function (options) {
+    if (!_.isEmpty(options.xt.configdir) && fs.existsSync(options.xt.configdir)) {
+      rimraf.sync(options.xt.configdir);
+    }
   },
 
-  /**
-   * @override
-   * Link the written config to be the new 'default' config located in 
-   * node-datasource/config.js
-   */
-  afterInstall: function (options) {
-    /*
-    var localConfig = path.resolve(options.xt.userdist, 'xtuple', 'node-datasource', 'config.js');
-    if (fs.existsSync(localConfig)) {
-      fs.unlinkSync(localConfig);
-    }
-    fs.symlinkSync(options.xt.configfile, localConfig);
-    */
+  /** @override */
+  afterTask: function (options) {
+    exec([ 'chown', options.xt.name, options.xt.key256file ].join(' '));
+    exec([ 'chown', options.xt.name, options.xt.rand64file ].join(' '));
+    exec([ 'chown', options.xt.name, options.xt.configfile ].join(' '));
+
+    fs.chmodSync(options.xt.key256file, '700');
+    fs.chmodSync(options.xt.rand64file, '700');
+    fs.chmodSync(options.xt.configfile, '700');
   }
 });

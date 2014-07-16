@@ -1,5 +1,6 @@
 var lib = require('xtuple-server-lib'),
   config = require('xtuple-server-pg-config'),
+  fs = require('fs'),
   _ = require('lodash');
 
 /**
@@ -10,7 +11,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-backup */ {
   options: {
     dbname: {
       optional: '[dbname]',
-      description: 'Name of database to operate on'
+      description: 'Name of database to backup'
     }
   },
 
@@ -19,26 +20,25 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-backup */ {
     config.discoverCluster(options);
   },
 
-  /** @override */
+  /**
+   * @param options.pg.dbname
+   *
+   * @override
+   */
   executeTask: function (options) {
-    var backupFile = options.pg.backup.backupFile = lib.util.getSnapshotPath(options);
-    var globalsFile = options.pg.backup.globalsFile = lib.util.getSnapshotPath(options, true);
+    var backupMoment = options.pg.backup.backupMoment = new Date();
+    var backupFile = options.pg.backup.backupFile = lib.util.getSnapshotPath(options, false, backupMoment);
+    var globalsFile = options.pg.backup.globalsFile = lib.util.getSnapshotPath(options, true, backupMoment);
+
+    if (fs.existsSync(backupFile) || fs.existsSync(globalsFile)) {
+      throw new Error('Please wait a minute before trying to create another backup.');
+    }
 
     // dump globals
     lib.pgCli.dumpall(_.extend({ snapshotpath: globalsFile }, options));
     
     // dump data
-    try {
-      lib.pgCli.dump(_.extend({ snapshotpath: backupFile, dbname: options.pg.dbname }, options));
-    }
-    catch (e) {
-      if (/File exists/.test(e.message)) {
-        log.error('Please wait a minute before trying to create another backup.');
-      }
-      else {
-        throw e;
-      }
-    }
+    lib.pgCli.dump(_.extend({ snapshotpath: backupFile, dbname: options.pg.dbname }, options));
   },
 
   /** @override */
