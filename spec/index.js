@@ -100,6 +100,23 @@ describe('xTuple Server', function () {
       });
     });
 
+    describe('@copy-database', function () {
+      var planObject = plans['copy-database'];
+      var options = {
+        planName: 'copy-database',
+        plan: planObject.plan,
+        type: 'dev',
+        local: {
+          workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
+        },
+        pg: {
+          dbname: 'demo_dev'
+        }
+      };
+
+      specPlanner.describe({ planObject: planObject, options: options });
+    });
+
     describe.skip('@restore-database', function () {
       var planObject = plans['restore-database'];
       var options = {
