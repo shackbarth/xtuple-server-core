@@ -23,7 +23,8 @@
     },
     {
       "name": "pg",
-      "tasks": [ "restore" ]
+      "tasks": [ "restore" ],
+      "options": { "validate": false }
     }
   ]
 }
