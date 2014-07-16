@@ -1,4 +1,3 @@
-/* jshint node: true */
 'use strict';
 
 var assert = require('assert');
@@ -79,7 +78,7 @@ describe('xTuple Server', function () {
       specPlanner.describe({ planObject: planObject, options: options });
     });
 
-    describe('@backup-database', function () {
+    describe.skip('@backup-database', function () {
       var planObject = plans['backup-database'];
       var options = {
         planName: 'backup-database',
