@@ -21,7 +21,7 @@ exports.afterExecute = function (options) {
 
   describe('post-conditions', function () {
     it('should have restored database '+ options.pg.dbname, function () {
-      var list = lib.pgCli.psql(options, '\\list').split('\n');
+      var list = lib.pgCli.psql(options, '\\list', true).split('\n');
       log.info('pg-fork test', list);
 
     });
