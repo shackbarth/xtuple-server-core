@@ -26,7 +26,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-backup */ {
    * @override
    */
   executeTask: function (options) {
-    var backupMoment = options.pg.backup.backupMoment = Date.now();
+    var backupMoment = options.pg.backup.backupMoment = new Date();
     var backupFile = options.pg.backup.backupFile = lib.util.getSnapshotPath(options, false, backupMoment);
     var globalsFile = options.pg.backup.globalsFile = lib.util.getSnapshotPath(options, true, backupMoment);
 
