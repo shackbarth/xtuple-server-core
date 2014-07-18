@@ -65,13 +65,13 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
         deployPath = path.resolve(options.xt.userdist, repo);
 
       // FIXME all this stuff should be done through npm
-      log.http('xt-install', 'downloading...');
+      log.http('xt-install', 'downloading', repo, options.xt.gitVersion);
       if (!fs.existsSync(path.resolve(clonePath, 'node_modules'))) {
         proc.execSync([ 'git clone --recursive', protocol + 'xtuple/' + repo + '.git', clonePath].join(' '), {
           cwd: clonePath
         });
         proc.execSync('cd '+ clonePath +' && git fetch origin', { cwd: clonePath });
-        proc.execSync('cd '+ clonePath +' && git checkout -f ' + options.xt.repoHash, { cwd: clonePath });
+        proc.execSync('cd '+ clonePath +' && git checkout -f ' + options.xt.gitVersion, { cwd: clonePath });
         proc.execSync('cd '+ clonePath +' && git submodule update --init');
       }
 
