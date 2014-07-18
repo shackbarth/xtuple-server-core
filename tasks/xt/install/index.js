@@ -1,10 +1,9 @@
 var lib = require('xtuple-server-lib'),
-  semver = require('semver'),
-  home = require('home-dir'),
   mkdirp = require('mkdirp'),
   _ = require('lodash'),
   n = require('n-api'),
-  exec = require('child_process').execSync,
+  r = require('node-latest-version'),
+  proc = require('child_process'),
   fs = require('fs'),
   path = require('path');
 
@@ -13,80 +12,51 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
   options: {
     ghuser: {
       optional: '[ghuser]',
-      description: 'Github username'
+      description: 'Github Account username',
+      validate: function (value, options) {
+        if (!_.isEmpty(value) && _.isEmpty(options.xt.ghpass)) {
+          throw new Error('cannot use xt-ghuser without xt-ghpass');
+        }
+        return (value || '').trim();
+      }
     },
     ghpass: {
       optional: '[ghpass]',
-      description: 'Github password'
+      description: 'Github Account password',
+      validate: function (value, options) {
+        if (!_.isEmpty(value) && _.isEmpty(options.xt.ghuser)) {
+          throw new Error('cannot use xt-ghpass without xt-ghuser');
+        }
+        return (value || '').trim();
+      }
     }
-  },
-
-  /** @override */
-  beforeInstall: function (options) {
-    options.xt.scalarversion = options.xt.version.replace(/\./g, '');
   },
 
   /** @override */
   beforeTask: function (options) {
     // add github.com to known_hosts file to avoid host authenticity prompt
-    try {
-      exec('ssh -o StrictHostKeyChecking=no git@github.com', { stdio: 'pipe' });
-    }
-    catch (e) {
-      log.verbose('xt-install', e.message);
-      log.silly('xt-install', e.stack.split('\n'));
-    }
-
-    if (lib.util.isTaggedVersion(options)) {
-      options.xt.repoHash = 'v' + options.xt.version;
-    }
-    else {
-      options.xt.repoHash = options.xt.version.slice(0, 6);
+    if (process.env.CI) {
+      try {
+        proc.spawnSync('ssh', [ '-o', 'StrictHostKeyChecking=no', 'git@github.com' ], { stdio: 'ignore' });
+      }
+      catch (e) {
+        log.silly('xt-install', e.stack.split('\n'));
+      }
     }
   },
 
   /** @override */
   executeTask: function (options) {
-    var version;
     var latest = path.resolve(__dirname, 'node_modules', 'node-latest-version', 'index.js');
     var protocol = process.env.CI ? 'git@github.com:' : 'https://github.com/';
 
-    // FIXME this needs to be validated more thoroughly
-    if (!_.isEmpty(options.xt.ghuser) && !_.isEmpty(options.xt.ghpass)) {
-      protocol = 'https://' + options.xt.ghuser + ':' + options.xt.ghpass + '@github.com/';
-    }
+    if (options.planName === 'install-dev') {
+      var pkg = require(path.resolve(options.local.workspace, 'package'));
+      var node = pkg.engines && pkg.engines.node;
+      options.xt.nodeVersion = r.satisfy.sync(node);
 
-    /** FIXME this whole task needs cleanup */
-
-    if (_.isObject(options.local) && !_.isEmpty(options.local.workspace)) {
-      log.verbose('local.workspace', options.local.workspace);
-      // XXX this version switching will not be necessary once all these
-      // are using nex
-      version = exec('node ' + latest + ' "' + require(path.resolve(options.local.workspace, 'package')).engines.node + '"').toString().trim();
-      options.n = { version: version };
-      options.n.npm = 'n '+ options.n.version + ' && npm';
-      options.n.use = 'n use '+ options.n.version;
-
-      log.verbose('options.n.version', options.n.version);
-
-      // run npm install on local workspace before each installation, for safety
-      // FIXME copy-paste from deploy section below
-      try {
-        log.verbose([ 'cd', options.local.workspace, '&& npm install' ].join(' '));
-        log.verbose('xt-install', 'running n...');
-        n(options.n.version);
-
-        log.verbose('xt-install', 'npm install...');
-        exec([ 'cd', options.local.workspace, '&&', 'sudo -u', options.xt.name, 'npm install' ].join(' '), { cwd: options.local.workspace });
-        exec('chown -R '+ options.xt.name + ' ' + options.local.workspace);
-      }
-      catch (e) {
-        log.error('xt-install', e.message);
-        log.error('xt-install', e.stack.split('\n'));
-      }
-      finally {
-        n(process.version);
-      }
+      log.info('xt-install', 'local-workspace expected to already be npm-installed. skipping');
+      log.info('xt-install', 'using node', options.xt.nodeVersion);
       return;
     }
 
@@ -96,63 +66,44 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
 
       // FIXME all this stuff should be done through npm
       log.http('xt-install', 'downloading...');
-      if (!fs.existsSync(clonePath)) {
-        try {
-          exec([ 'git clone --recursive', protocol + 'xtuple/' + repo + '.git', clonePath].join(' '), {
-            cwd: clonePath
-          });
-          exec('cd '+ clonePath +' && git fetch origin', { cwd: clonePath });
-          exec('cd '+ clonePath +' && git checkout -f ' + options.xt.repoHash, { cwd: clonePath });
-        }
-        catch (e) {
-          log.warn('xt-install', e.message);
-          log.verbose('xt-install', e.stack.split('\n'));
-        }
+      if (!fs.existsSync(path.resolve(clonePath, 'node_modules'))) {
+        proc.execSync([ 'git clone --recursive', protocol + 'xtuple/' + repo + '.git', clonePath].join(' '), {
+          cwd: clonePath
+        });
+        proc.execSync('cd '+ clonePath +' && git fetch origin', { cwd: clonePath });
+        proc.execSync('cd '+ clonePath +' && git checkout -f ' + options.xt.repoHash, { cwd: clonePath });
+        proc.execSync('cd '+ clonePath +' && git submodule update --init');
       }
 
-      if (!options.n) {
+      if (_.isEmpty(options.xt.nodeVersion)) {
         var pkg = require(path.resolve(clonePath, 'package'));
-        version = exec('node ' + latest + ' "' + pkg.engines.node + '"').toString().trim();
-        options.n = { version: process.env.NODE_VERSION || version };
-        options.n.npm = 'n '+ options.n.version + ' && npm';
-        options.n.use = 'n use '+ options.n.version;
+        var node = pkg.engines && pkg.engines.node;
+        options.xt.nodeVersion = r.satisfy.sync(node);
+
+        log.info('xt-install', 'using node', options.xt.nodeVersion);
+        n(options.xt.nodeVersion);
       }
 
       if (!fs.existsSync(deployPath)) {
-        try {
-          log.http('xt-install', 'running n inside deployPath if stmt...');
-          n(options.n.version);
-          log.http('xt-install', 'installing npm module...');
-          exec([ 'cd', clonePath, '&& npm install' ].join(' '), { cwd: clonePath });
-          exec('chown -R '+ options.xt.name + ' ' + clonePath);
-        }
-        catch (e) {
-          log.error('xt-install', e.message);
-          throw e;
-        }
-        finally {
-          n(process.version);
-        }
+        log.http('xt-install', 'installing npm module...');
+        proc.execSync([ 'cd', clonePath, '&& npm install' ].join(' '), { cwd: clonePath });
 
         log.info('xt-install', 'copying files...');
         if (!fs.existsSync(deployPath)) {
           mkdirp.sync(deployPath);
         }
         // copy main repo files to user's home directory
-        var rsync = exec([ 'rsync -ar --exclude=.git', clonePath + '/*', deployPath ].join(' '));
+        var rsync = proc.execSync([ 'rsync -ar --exclude=.git', clonePath + '/*', deployPath ].join(' '));
           
-        exec([ 'chown -R', options.xt.name, deployPath ].join(' '));
-        exec('chmod -R u=rwx ' + deployPath);
+        proc.execSync([ 'chown -R', options.xt.name, deployPath ].join(' '));
+        proc.execSync('chmod -R u=rwx ' + deployPath);
       }
     });
   },
 
   /** @override */
   afterTask: function (options) {
-    exec([
-      'chown -R',
-      options.xt.name + ':' + options.xt.name,
-      options.xt.userhome
-    ].join(' '));
+    proc.spawnSync([ 'chown -R', options.xt.name + ':' + options.xt.name, options.xt.userhome ]);
+    n(process.version);
   }
 });
