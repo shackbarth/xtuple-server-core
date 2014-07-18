@@ -101,7 +101,7 @@ var xtInstall = _.extend(exports, lib.task, /** @exports xtuple-server-xt-instal
 
   /** @override */
   afterTask: function (options) {
-    proc.spawnSync('chown', [ '-R', options.xt.name, options.xt.userhome ]);
+    proc.spawnSync('chown', [ '-R', options.xt.name, options.local.workspace ]);
     n(process.version);
   }
 });
