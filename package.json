@@ -8,6 +8,7 @@
     "harmonious": "^0.5.15",
     "lodash": "^2.4.1",
     "n-api": "^1.2.20",
+    "node-latest-version": "^1.0.8",
     "npmlog": "^0.1.1",
     "npmlog-file": "^0.1.1",
     "requireindex": "~1.1.0",

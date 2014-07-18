@@ -20,10 +20,12 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
         if (_.isEmpty(value) && _.isObject(options.local)) {
           return require(path.resolve(options.local.workspace, 'package')).version;
         }
-        if (_.isNumber(parseInt(value, 16))) {
-          return value;
+        if (/^[0-9A-Fa-f]+$/.test(value)) {
+          options.xt.gitVersion = value;
+          return value.slice(0, 4);
         }
         if (semver.valid(value)) {
+          options.xt.gitVersion = 'v' + value;
           return value;
         }
 
@@ -118,46 +120,21 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
 
   /** @override */
   executeTask: function (options) {
-    // build all specified databases
     _.each(options.xt.database.list, function (db) {
-      try {
-        n(options.n.version);
-        exec(lib.util.getDatabaseBuildCommand(db, options), {
-          stdio: 'pipe',
-          cwd: options.xt.coredir
-        });
-      }
-      catch (e) {
-        log.error('xt-database executeTask', e.message);
-        throw e;
-      }
-      finally {
-        log.verbose('xt-database executeTask', 'finally');
-        n(process.version);
-      }
-
-      // install extensions specified by the edition
+      exports.buildCore(options, db);
       exports.buildExtensions(lib.util.editions[options.xt.edition], db, options);
     });
   },
 
+  // build all specified databases
+  buildCore: function (options, db) {
+    exec(lib.util.getDatabaseBuildCommand(db, options));
+  },
+
+  // install extensions specified by the edition
   buildExtensions: function (extensions, db, options) {
     _.each(extensions, function (ext) {
-      try {
-        n(options.n.version);
-        exec(lib.util.getExtensionBuildCommand(db, options, ext), {
-          stdio: 'pipe',
-          cwd: options.xt.coredir
-        });
-      }
-      catch (e) {
-        log.error('xt-database buildExtensions', e.message);
-        throw e;
-      }
-      finally {
-        log.verbose('xt-database buildExtensions', 'finally');
-        n(process.version);
-      }
+      exec(lib.util.getExtensionBuildCommand(db, options, ext));
     });
   }
 });

@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-xt-install",
-  "version": "0.9.58",
+  "version": "0.9.60",
   "description": "xTuple Server Task [xt.install]: clone and install the xTuple source",
   "main": "index.js",
   "scripts": {
@@ -28,11 +28,10 @@
   },
   "homepage": "https://github.com/xtuple/xtuple-server",
   "dependencies": {
-    "home-dir": "^0.2.0",
     "lodash": "^2.4.1",
-    "mkdirp": "^0.5.0",
     "n-api": "^1.2.20",
-    "node-latest-version": "^1.0.3",
+    "nex-github": "^0.5.12",
+    "node-latest-version": "^1.0.8",
     "semver": "^2.3.0",
     "xtuple-server-lib": "^1.0.0"
   },
