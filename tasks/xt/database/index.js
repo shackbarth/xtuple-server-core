@@ -25,7 +25,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
           return options.xt.gitVersion;
         }
         if (semver.valid(value)) {
-          options.xt.gitVersion = value;
+          options.xt.gitVersion = 'v' + value;
           return value;
         }
 

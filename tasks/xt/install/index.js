@@ -3,6 +3,7 @@ var lib = require('xtuple-server-lib'),
   _ = require('lodash'),
   n = require('n-api'),
   r = require('node-latest-version'),
+  rimraf = require('rimraf'),
   proc = require('child_process'),
   fs = require('fs'),
   path = require('path');
@@ -60,6 +61,11 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
       return;
     }
 
+    // FIXME this needs to be validated more thoroughly
+    if (!_.isEmpty(options.xt.ghuser) && !_.isEmpty(options.xt.ghpass)) {
+      protocol = 'https://' + options.xt.ghuser + ':' + options.xt.ghpass + '@github.com/';
+    }
+
     _.each(lib.util.getRepositoryList(options), function (repo) {
       var clonePath = path.resolve(options.xt.dist, repo),
         deployPath = path.resolve(options.xt.userdist, repo);
@@ -67,6 +73,8 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
       // FIXME all this stuff should be done through npm
       log.http('xt-install', 'downloading', repo, options.xt.gitVersion);
       if (!fs.existsSync(path.resolve(clonePath, 'node_modules'))) {
+        rimraf.sync(clonePath);
+
         proc.execSync([ 'git clone --recursive', protocol + 'xtuple/' + repo + '.git', clonePath].join(' '), {
           cwd: clonePath
         });
