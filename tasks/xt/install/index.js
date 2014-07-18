@@ -45,9 +45,10 @@ var xtInstall = _.extend(exports, lib.task, /** @exports xtuple-server-xt-instal
     // add github.com to known_hosts file to avoid host authenticity prompt
     if (process.env.CI) {
       try {
-        proc.spawnSync('ssh', [ '-o', 'StrictHostKeyChecking=no', 'git@github.com' ], { stdio: 'ignore' });
+        proc.execSync('ssh', [ '-o', 'StrictHostKeyChecking=no', 'git@github.com' ]);
       }
       catch (e) {
+        log.verbose('xt-install', e.message);
         log.silly('xt-install', e.stack.split('\n'));
       }
     }
@@ -56,12 +57,12 @@ var xtInstall = _.extend(exports, lib.task, /** @exports xtuple-server-xt-instal
   /** @override */
   executeTask: function (options) {
     if (options.planName === 'install-dev') {
+      log.info('xt-install', 'local-workspace expected to already be npm-installed. skipping');
+      log.info('xt-install', 'using node', options.xt.nodeVersion);
+
       var pkg = require(path.resolve(options.local.workspace, 'package'));
       var node = pkg.engines && pkg.engines.node;
       options.xt.nodeVersion = r.satisfy.sync(node);
-
-      log.info('xt-install', 'local-workspace expected to already be npm-installed. skipping');
-      log.info('xt-install', 'using node', options.xt.nodeVersion);
       return;
     }
 
