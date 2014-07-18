@@ -57,8 +57,12 @@ var xtInstall = _.extend(exports, lib.task, /** @exports xtuple-server-xt-instal
   /** @override */
   executeTask: function (options) {
     if (options.planName === 'install-dev') {
-      log.info('xt-install', 'local-workspace expected to already be npm-installed');
-      log.info('xt-install', 'skipping');
+      log.info('xt-install', 'local-workspace expected to already be npm-installed. skipping');
+      log.info('xt-install', 'using node', options.xt.nodeVersion);
+
+      var pkg = require(path.resolve(options.local.workspace, 'package'));
+      var node = pkg.engines && pkg.engines.node;
+      options.xt.nodeVersion = r.satisfy.sync(node);
       return;
     }
 
@@ -82,19 +86,23 @@ var xtInstall = _.extend(exports, lib.task, /** @exports xtuple-server-xt-instal
       github.getRelease.sync(release);
       github.extractRelease.sync(release);
 
-      var pkg = require(path.resolve(release.target, 'package'));
-      var node = pkg.engines && pkg.engines.node;
-      var latest = r.satisfy.sync(node);
+      if (repo === 'xtuple') {
+        var pkg = require(path.resolve(release.target, 'package'));
+        var node = pkg.engines && pkg.engines.node;
+        options.xt.nodeVersion = r.satisfy.sync(node);
 
-      n(latest);
+        log.info('xt-install', 'using node', options.xt.nodeVersion);
+        n(options.xt.nodeVersion);
+      }
+
       log.http('xt-install', 'installing npm module...');
       proc.execSync([ 'cd', release.target, '&& npm install' ].join(' '), { stdio: 'ignore' });
-      n(process.version);
     });
   },
 
   /** @override */
   afterTask: function (options) {
-    proc.execSync('chown', [ '-R', options.xt.name, options.xt.userhome ]);
+    proc.spawnSync('chown', [ '-R', options.xt.name, options.local.workspace ]);
+    n(process.version);
   }
 });
