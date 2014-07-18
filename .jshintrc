@@ -4,7 +4,6 @@
   "maxlen": 120,
   "esnext": true,
   "expr": true,
-  "undef": true,
   "trailing": true,
   "node": true,
   "esnext": true,
