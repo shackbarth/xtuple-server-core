@@ -20,10 +20,12 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
         if (_.isEmpty(value) && _.isObject(options.local)) {
           return require(path.resolve(options.local.workspace, 'package')).version;
         }
-        if (_.isNumber(parseInt(value, 16))) {
-          return value;
+        if (/^[0-9A-Fa-f]+$/.test(value)) {
+          options.xt.gitVersion = value;
+          return value.slice(0, 4);
         }
         if (semver.valid(value)) {
+          options.xt.gitVersion = 'v' + value;
           return value;
         }
 
