@@ -95,7 +95,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
       // npm install no matter what. this way, partial npm installs are always
       // recoverable without manual intervention
       log.http('xt-install', 'installing npm module...');
-      proc.execSync([ 'cd', clonePath, '&& npm install' ].join(' '), { cwd: clonePath });
+      proc.execSync([ 'cd', clonePath, '&& npm install --unsafe-perm' ].join(' '), { cwd: clonePath });
 
       if (!fs.existsSync(deployPath)) {
 
