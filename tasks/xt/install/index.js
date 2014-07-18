@@ -61,6 +61,11 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
       return;
     }
 
+    // FIXME this needs to be validated more thoroughly
+    if (!_.isEmpty(options.xt.ghuser) && !_.isEmpty(options.xt.ghpass)) {
+      protocol = 'https://' + options.xt.ghuser + ':' + options.xt.ghpass + '@github.com/';
+    }
+
     _.each(lib.util.getRepositoryList(options), function (repo) {
       var clonePath = path.resolve(options.xt.dist, repo),
         deployPath = path.resolve(options.xt.userdist, repo);
