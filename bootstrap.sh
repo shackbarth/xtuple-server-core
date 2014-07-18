@@ -63,7 +63,9 @@ install_node () {
   chmod +x n
   mv n /usr/bin/n
 
-  log "Installing latest node..."
+  log "Installing node..."
+  n 0.8 > /dev/null 2>&1
+  n 0.10 > /dev/null 2>&1
   n latest > /dev/null 2>&1
 
   log "Installing latest npm..."
