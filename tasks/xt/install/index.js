@@ -1,6 +1,4 @@
 var lib = require('xtuple-server-lib'),
-  semver = require('semver'),
-  home = require('home-dir'),
   mkdirp = require('mkdirp'),
   _ = require('lodash'),
   n = require('n-api'),
