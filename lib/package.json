@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-lib",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "xTuple Server common lib",
   "main": "index.js",
   "scripts": {
@@ -31,6 +31,7 @@
     "cron-tab": "^1.1.9",
     "lodash": "^2.4.1",
     "moment": "^2.7.0",
+    "node-latest-version": "^1.0.10",
     "npmlog": "^0.1.1",
     "semver": "^2.3.0"
   },
