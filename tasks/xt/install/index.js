@@ -2,13 +2,12 @@ var lib = require('xtuple-server-lib'),
   mkdirp = require('mkdirp'),
   _ = require('lodash'),
   n = require('n-api'),
-  r = require('node-latest-version'),
   rimraf = require('rimraf'),
   proc = require('child_process'),
   fs = require('fs'),
   path = require('path');
 
-_.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
+var xtInstall = _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
 
   options: {
     ghuser: {
@@ -44,6 +43,10 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
         log.silly('xt-install', e.stack.split('\n'));
       }
     }
+
+    if (fs.existsSync(options.xt.coredir)) {
+      lib.util.resolveNodeVersion(options);
+    }
   },
 
   /** @override */
@@ -52,12 +55,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
     var protocol = process.env.CI ? 'git@github.com:' : 'https://github.com/';
 
     if (options.planName === 'install-dev') {
-      var pkg = require(path.resolve(options.local.workspace, 'package'));
-      var node = pkg.engines && pkg.engines.node;
-      options.xt.nodeVersion = r.satisfy.sync(node);
-
       log.info('xt-install', 'local-workspace expected to already be npm-installed. skipping');
-      log.info('xt-install', 'using node', options.xt.nodeVersion);
       return;
     }
 
@@ -76,26 +74,21 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-install */ {
         rimraf.sync(clonePath);
 
         proc.execSync([ 'git clone --recursive', protocol + 'xtuple/' + repo + '.git', clonePath].join(' '), {
-          cwd: clonePath
+          cwd: clonePath, stdio: 'ignore'
         });
-        proc.execSync('cd '+ clonePath +' && git fetch origin', { cwd: clonePath });
-        proc.execSync('cd '+ clonePath +' && git checkout -f ' + options.xt.gitVersion, { cwd: clonePath });
+        proc.execSync('cd '+ clonePath +' && git checkout ' + options.xt.gitVersion, { cwd: clonePath, stdio: 'ignore' });
         proc.execSync('cd '+ clonePath +' && git submodule update --init');
       }
 
       if (_.isEmpty(options.xt.nodeVersion)) {
-        var pkg = require(path.resolve(clonePath, 'package'));
-        var node = pkg.engines && pkg.engines.node;
-        options.xt.nodeVersion = r.satisfy.sync(node);
-
-        log.info('xt-install', 'using node', options.xt.nodeVersion);
+        lib.util.resolveNodeVersion(options, clonePath);
         n(options.xt.nodeVersion);
       }
 
       // npm install no matter what. this way, partial npm installs are always
       // recoverable without manual intervention
       log.http('xt-install', 'installing npm module...');
-      proc.execSync([ 'cd', clonePath, '&& npm install' ].join(' '), { cwd: clonePath });
+      proc.execSync([ 'cd', clonePath, '&& npm install --unsafe-perm' ].join(' '), { cwd: clonePath });
 
       if (!fs.existsSync(deployPath)) {
 
