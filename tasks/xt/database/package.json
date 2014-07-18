@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-xt-database",
-  "version": "1.0.3",
+  "version": "1.0.2",
   "description": "xTuple Server Task [xt.database]: build an xTuple database",
   "main": "index.js",
   "scripts": {

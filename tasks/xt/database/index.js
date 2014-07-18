@@ -21,11 +21,11 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
           return require(path.resolve(options.local.workspace, 'package')).version;
         }
         if (/^[0-9A-Fa-f]+$/.test(value)) {
-          options.xt.gitVersion = value.slice(0, 7);
-          return options.xt.gitVersion;
+          options.xt.gitVersion = value;
+          return value.slice(0, 4);
         }
         if (semver.valid(value)) {
-          options.xt.gitVersion = value;
+          options.xt.gitVersion = 'v' + value;
           return value;
         }
 
