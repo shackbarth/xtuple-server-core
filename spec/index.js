@@ -11,6 +11,7 @@ var pkg = require('../package');
 var fs = require('fs');
 var path = require('path');
 var n = require('n-api');
+var r = require('node-latest-version');
 var proc = require('child_process');
 var logfile = require('npmlog-file');
 
@@ -32,6 +33,7 @@ describe('xTuple Server', function () {
 
   before(function () {
     proc.execSync('cd '+ process.cwd() + ' && npm install xtuple', { stdio: 'inherit' });
+    n(process.version);
   });
 
   describe('@cli', function () {
