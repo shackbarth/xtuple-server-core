@@ -50,10 +50,20 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
     maindb: {
       optional: '[path]',
       description: 'Path to primary database .backup/.sql filename to use in production',
-      validate: function (value) {
-        if (!_.isEmpty(value) && !fs.existsSync(path.resolve(value))) {
-          throw new Error('Invalid path for xt.maindb: '+ value);
+      validate: function (value, options) {
+        if (_.isEmpty(value)) return null;
+
+        if (!fs.existsSync(path.resolve(value))) {
+          throw new Error('specified xt-maindb file does not exist: '+ value);
         }
+        if (options.xt.demo || options.xt.quickstart || options.xt.empty) {
+          log.warn('xt-install', 'demo, empty, and quickstart, source dbs cannot be used with xt-maindb');
+          log.warn('xt-install', 'ignoring options --xt-demo, --xt-quickstart, and --xt-empty');
+        }
+
+        options.xt.demo = false;
+        options.xt.quickstart = false;
+        options.xt.empty = false;
 
         return value;
       }
@@ -109,7 +119,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
     }
 
     if (/^install/.test(options.planName) && options.xt.database.list.length === 0) {
-      throw new Error('No databases have been found for installation');
+      throw new Error('No databases have been specified for installation');
     }
   },
 
@@ -121,7 +131,10 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
 
     _.each(options.xt.database.list, function (db) {
       exports.buildCore(options, db);
-      exports.buildExtensions(lib.util.editions[options.xt.edition], db, options);
+
+      if (db.type === 's') {
+        exports.buildExtensions(lib.util.editions[options.xt.edition], db, options);
+      }
     });
 
     n(process.version);
