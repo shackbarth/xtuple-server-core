@@ -2,6 +2,7 @@ var lib = require('xtuple-server-lib'),
   rimraf = require('rimraf'),
   mkdirp = require('mkdirp'),
   path = require('path'),
+  colors = require('colors'),
   fs = require('fs'),
   _ = require('lodash'),
   home = require('home-dir'),
@@ -52,8 +53,10 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
       }
     }
     
-    if (!_.isEmpty(options.xt.name)) {
-      log.warn('local-paths', 'Overwriting xt.name (', options.xt.name, ') with current user:', process.env.SUDO_USER);
+    if (!_.isEmpty(options.xt.name) && options.xt.name !== process.env.SUDO_USER) {
+      log.warn('local-paths', 'ignoring', ('--xt-name ' + options.xt.name).magenta);
+      log.warn('local-paths', 'using', process.env.SUDO_USER.green, 'as --xt-name');
+      log.warn('local-paths', 'You should not use --xt-name with a "dev" install. it is ignored anyway.');
     }
     options.xt.name = process.env.SUDO_USER;
 
@@ -61,12 +64,13 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
       throw new Error('There is no SUDO_USER set. I don\'t know why this would be. Please file an issue');
     }
     if (options.xt.name === 'root') {
-      throw new Error('xTuple Instance cannot be installed for the root user');
+      throw new Error('xTuple cannot be installed for the root user');
     }
     if (_.isEmpty(options.xt.version)) {
       throw new Error('There is no version set. I don\'t know why this would be. Please file an issue');
     }
 
+    options.xt.id = lib.util.$(options);
     exports.definePaths(options);
   },
 
@@ -81,7 +85,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
    */
   definePaths: function (options) {
     // node server/config stuff
-    options.xt.id = lib.util.$(options);
     options.xt.configdir = path.resolve(exports.etcXtuple, options.xt.id);
     options.xt.configfile = path.resolve(options.xt.configdir, 'config.js');
     options.xt.ssldir = path.resolve(options.xt.configdir, 'ssl');
