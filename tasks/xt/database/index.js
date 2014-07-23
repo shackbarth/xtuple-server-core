@@ -35,9 +35,9 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
     name: {
       optional: '[name]',
       description: 'Name of the installation',
-      validate: function (value) {
-        if (_.isEmpty(value)) {
-          log.warn('validate', 'xt.name was empty. Setting to SUDO_USER');
+      validate: function (value, options) {
+        if (_.isEmpty(value) && _.isEmpty(options.local)) {
+          log.warn('xt-database validate', 'xt-name was empty. Defaulting to', process.env.SUDO_USER);
           return process.env.SUDO_USER;
         }
         if (/\d/.test(value)) {
@@ -123,7 +123,12 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
     }
   },
 
-  /** @override */
+  /**
+   * @param options.xt.nodeVersion
+   * @param options.xt.coredir
+   * @param options.xt.edition
+   * @override
+   */
   executeTask: function (options) {
     n(options.xt.nodeVersion);
 
