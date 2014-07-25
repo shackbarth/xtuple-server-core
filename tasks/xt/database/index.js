@@ -112,7 +112,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
     // schedule main database file for installation
     if (!_.isEmpty(options.xt.maindb)) {
       options.xt.database.list.push({
-        dbname: path.basename(options.xt.maindb, path.extname(options.xt.maindb)) + '_' + options.type,
+        dbname: lib.util.getDatabaseName(options.xt.maindb, options.type),
         filename: path.resolve(options.xt.maindb),
         type: 'b'
       });
