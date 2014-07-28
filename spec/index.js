@@ -32,7 +32,7 @@ describe('xTuple Server', function () {
 
   before(function () {
     this.timeout(300 * 1000); // 5 minutes
-    proc.execSync('cd '+ process.cwd() + ' && npm install xtuple', { stdio: 'inherit' });
+    proc.spawnSync('cd '+ process.cwd() + ' && npm install xtuple', { stdio: 'inherit' });
   });
 
   describe('@cli', function () {
