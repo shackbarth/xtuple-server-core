@@ -5,6 +5,8 @@ exports.afterTask = function (_options) {
   var options = { };
 
   describe('source databases', function () {
+    this.timeout(300 * 1000); // 5 minutes
+
     beforeEach(function () {
       options = JSON.parse(JSON.stringify(_options));
 
