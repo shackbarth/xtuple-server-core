@@ -87,7 +87,7 @@
     "preinstall": "nex do engines",
     "postinstall": "nex do",
     "pretest": "nex do engines",
-    "test": "mocha --harmony -R spec spec/index.js -b",
+    "test": "mocha --harmony -R spec spec/index.js -b --timeout 10000",
     "preupdate": "nex do engines"
   },
   "bin": {
