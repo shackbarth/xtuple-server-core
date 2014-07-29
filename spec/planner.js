@@ -13,6 +13,7 @@ exports.describe = function (spec) {
   var plan = planObject.plan;
 
   describe('('+ planObject.description +')', function () {
+    this.timeout(600 * 1000); // 10 minutes
 
     before(function () {
       planner.compileOptions(plan, options);

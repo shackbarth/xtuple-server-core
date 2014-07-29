@@ -1,10 +1,10 @@
 {
   "name": "xtuple-server-lib",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "xTuple Server common lib",
   "main": "index.js",
   "scripts": {
-    "test": "mocha spec/ -R spec -b"
+    "test": "mocha spec/ -R spec -b -t 10000"
   },
   "repository": {
     "type": "git",
