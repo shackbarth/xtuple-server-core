@@ -18,13 +18,15 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-test */ {
   },
 
   writeLoginData: function (options) {
-    fs.writeFileSync(path.resolve(options.xt.coredir, 'test/lib/login_data.json'), JSON.stringify({
-      data: {
-        webaddress: 'https://' + options.nginx.hostname + ':' + options.nginx.httpsport,
-        username: 'admin',
-        pwd: options.xt.adminpw,
-        org: options.xt.testdb
-      }
-    }, null, 2));
+    fs.writeFileSync(
+      path.resolve(options.xt.coredir, 'test/lib/login_data.js'),
+      lib.util.wrapModule({
+        data: {
+          webaddress: 'https://' + options.nginx.hostname + ':' + options.nginx.httpsport,
+          username: 'admin',
+          pwd: options.xt.adminpw,
+          org: options.xt.testdb
+        }
+      }));
   },
 });
