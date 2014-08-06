@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-xt-test",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "xTuple Server Task [xt.test]: setup the xTuple unit test suite",
   "main": "index.js",
   "scripts": {
