@@ -9,7 +9,7 @@ var lib = require('xtuple-server-lib'),
 /**
  * Create a new nginx site
  */
-_.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
+var nginxSite = _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
 
   options: {
     domain: {
@@ -28,6 +28,8 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
       fs.unlinkSync('/etc/nginx/sites-enabled/default');
       fs.unlinkSync('/etc/nginx/sites-available/default');
     }
+
+    nginxSite.prepareNginxConf(options);
 
     options.nginx.sitename = lib.util.$(options);
     options.nginx.hostname = options.nginx.sitename + '.localhost';
