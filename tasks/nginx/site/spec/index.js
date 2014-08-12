@@ -14,5 +14,9 @@ exports.afterExecute = function (options) {
     assert.ok(new RegExp('ssl_certificate '+ options.nginx.outcrt).test(conf));
     assert.ok(new RegExp('server 127.0.0.1:{nginx.port};'.format(options)).test(conf));
   });
+  it('should increase the name size constraint', function () {
+    var conf = fs.readFileSync('/etc/nginx/nginx.conf').toString();
+    assert(conf.indexOf('# server_names_hash_bucket_size 64') !== -1);
+  });
 
 };
