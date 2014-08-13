@@ -9,7 +9,7 @@ var lib = require('xtuple-server-lib'),
 /**
  * Create a new nginx site
  */
-_.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
+var nginxSite = _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
 
   options: {
     domain: {
@@ -28,6 +28,8 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
       fs.unlinkSync('/etc/nginx/sites-enabled/default');
       fs.unlinkSync('/etc/nginx/sites-available/default');
     }
+
+    nginxSite.prepareNginxConf(options);
 
     options.nginx.sitename = lib.util.$(options);
     options.nginx.hostname = options.nginx.sitename + '.localhost';
@@ -102,5 +104,26 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-site */ {
 
       exec('service nginx reload');
     }
+  },
+
+  /**
+   * The main nginx config file needs to be altered in some cases before an
+   * install can proceed.
+   */
+  prepareNginxConf: function (options) {
+    var file = '/etc/nginx/nginx.conf';
+    var conf = fs.readFileSync(file).toString();
+    var replaceSettings = {
+      '# server_names_hash_bucket_size 64': 'server_names_hash_bucket_size 64'
+    };
+
+    var newConf = _.reduce(replaceSettings, function (resultConf, newSetting, oldSetting) {
+      return resultConf.replace(oldSetting, newSetting);
+    }, conf);
+
+    if (conf == newConf) return;
+
+    fs.writeFileSync(file, conf);
+    exec('service nginx reload');
   }
 });
