@@ -28,6 +28,11 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
           options.xt.gitVersion = 'v' + value;
           return value;
         }
+        // Valid git branch names.
+        if (/^(?!.*/\.)(?!.*\.\.)(?!/)(?!.*//)(?!.*@\{)(?!.*\\)[^\040\177 ~^:?*[]+/[^\040\177 ~^:?*[]+(?<!\.lock)(?<!/)(?<!\.)$/.test(value)) {
+          options.xt.gitVersion = value;
+          return value;
+        }
 
         throw new TypeError('Specified version is not valid: '+ value);
       }
