@@ -29,7 +29,11 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-database */ {
           return value;
         }
         // Valid git branch names.
-        if (/^(?!.*/\.)(?!.*\.\.)(?!/)(?!.*//)(?!.*@\{)(?!.*\\)[^\040\177 ~^:?*[]+/[^\040\177 ~^:?*[]+(?<!\.lock)(?<!/)(?<!\.)$/.test(value)) {
+        // https://www.kernel.org/pub/software/scm/git/docs/git-check-ref-format.html
+        if (/^(?!\/|.*(?:[/.]\.|\/\/|@\{|\\))[^\040\177 ~^:?*[]+$/.test(value)
+          && value.indexOf('.lock', value.length - 5) === -1
+          && value.indexOf('.', value.length - 1) === -1
+          && value.indexOf('/', value.length - 1) === -1) {
           options.xt.gitVersion = value;
           return value;
         }
