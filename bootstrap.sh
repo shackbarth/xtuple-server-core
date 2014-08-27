@@ -74,6 +74,8 @@ install_node () {
   npm install -g nex --quiet
 
   echo "export NODE_PATH=/usr/local/lib/node_modules" > /etc/profile.d/nodepath.sh
+  update-locale LANG=en_US.UTF-8
+  update-locale LC_ALL=en_US.UTF-8
 
   chmod -Rf 777 /usr/local/{share/systemtap,share/man,bin,lib/node*,include/node*,n*}
   rm -rf ~/.npm ~/tmp /root/.npm /root/tmp
