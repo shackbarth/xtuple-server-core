@@ -43,12 +43,19 @@ exports.afterExecute = function (options) {
       assert.throws(function () {
           sslTask.verifyCertificate({
             nginx: {
-              outcrt: options.nginx.outcrt,
-              outkey: path.resolve(__filename)
+              // this test file (__filename) is obviously not a valid key
+              outkey: path.resolve(__filename),
+              outcrt: options.nginx.outcrt
             }
           });
         }, Error, /moduli inconsistent/);
 
+    });
+    it('should support multiple CNAMEs in openssl subj (subjectAltName', function () {
+      options.nginx.sslcnames = [ 'IP:127.0.0.1', 'localhost', 'example.com' ];
+      var cmd = sslTask.generate(options);
+      assert(_.isString(cmd));
+      console.log('subjectAltName command:', cmd);
     });
   });
 };

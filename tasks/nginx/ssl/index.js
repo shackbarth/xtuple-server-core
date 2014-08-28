@@ -113,6 +113,8 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
       exec('chown -R '+ options.xt.name + ' ' + path.dirname(options.nginx.outkey));
     }
     exec('chmod -R u=rx ' + path.dirname(options.nginx.outkey));
+
+    return cmd;
   },
 
   /**
