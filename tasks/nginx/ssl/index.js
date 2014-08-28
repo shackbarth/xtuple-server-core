@@ -94,7 +94,7 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
     var cmd = [
         'openssl req',
         '-x509 -newkey rsa:2048',
-        '-subj \'CN=' + cnames.join('/CN=') + '\'',
+        '-subj \'/CN=' + cnames.join('/CN=') + '\'',
         '-days 365',
         '-nodes',
         '-keyout', options.nginx.outkey,
