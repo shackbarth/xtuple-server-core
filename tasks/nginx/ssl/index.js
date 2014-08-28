@@ -13,7 +13,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
     sslcnames: {
       optional: '[sslnames]',
       description: 'Additional CN entries for generated SSL cert',
-      value: [ ],
       validate: function (value, options) {
         var names = (value || '').trim().split(',');
         if (names.length === 0) {
