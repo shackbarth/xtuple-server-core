@@ -15,10 +15,10 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
       description: 'Additional CN entries for generated SSL cert',
       validate: function (value, options) {
         var names = (value || '').trim().split(',');
-        if (names.length === 0) {
+        if (_.isEmpty(names)) {
           return [ ];
         }
-        if ('pilot' === options.type) {
+        if ('live' === options.type) {
           throw new TypeError('Alternative SSL CNAMEs cannot be used in production');
         }
         return names;
