@@ -9,8 +9,21 @@ var lib = require('xtuple-server-lib'),
  * Setup SSL in nginx
  */
 _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
-
   options: {
+    sslcnames: {
+      optional: '[sslnames]',
+      description: 'Additional CN entries for generated SSL cert',
+      validate: function (value, options) {
+        var names = (value || '').trim().split(',');
+        if (names.length === 0) {
+          return [ ];
+        }
+        if ('pilot' === options.type) {
+          throw new TypeError('Alternative SSL CNAMEs cannot be used in production');
+        }
+        return names;
+      }
+    },
     incrt: {
       optional: '[file]',
       description: 'Path to SSL certificate (.crt)',
@@ -77,10 +90,11 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
    * @static
    */
   generate: function (options) {
+    var cnames = _.compact([ options.nginx.domain ].concat(options.nginx.sslcnames));
     var cmd = [
         'openssl req',
         '-x509 -newkey rsa:2048',
-        '-subj \'/CN='+ options.nginx.domain + '\'',
+        '-subj \'/CN=' + cnames.join('/CN=') + '\'',
         '-days 365',
         '-nodes',
         '-keyout', options.nginx.outkey,
@@ -99,6 +113,8 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
       exec('chown -R '+ options.xt.name + ' ' + path.dirname(options.nginx.outkey));
     }
     exec('chmod -R u=rx ' + path.dirname(options.nginx.outkey));
+
+    return cmd;
   },
 
   /**
