@@ -18,9 +18,6 @@ _.extend(exports, lib.task, /** @exports xtuple-server-nginx-ssl */ {
         if (_.isEmpty(names)) {
           return [ ];
         }
-        if ('live' === options.type) {
-          throw new TypeError('Alternative SSL CNAMEs cannot be used in production');
-        }
         return names;
       }
     },
