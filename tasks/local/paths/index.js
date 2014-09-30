@@ -84,6 +84,8 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
    * @public
    */
   definePaths: function (options) {
+    options.pg = options.pg || { };
+
     // node server/config stuff
     options.xt.configdir = path.resolve(exports.etcXtuple, options.xt.id);
     options.xt.configfile = path.resolve(options.xt.configdir, 'config.js');

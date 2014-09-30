@@ -73,11 +73,11 @@ var xtInstall = _.extend(exports, lib.task, /** @exports xtuple-server-xt-instal
       if (!fs.existsSync(path.resolve(clonePath, 'node_modules'))) {
         rimraf.sync(clonePath);
 
-        proc.execSync([ 'git clone --recursive', protocol + 'xtuple/' + repo + '.git', clonePath].join(' '), {
-          cwd: clonePath, stdio: 'ignore'
+        proc.spawnSync('git', [ 'clone', '--recursive', protocol + 'xtuple/' + repo + '.git'], {
+          cwd: options.xt.dist, stdio: 'ignore'
         });
-        proc.execSync('cd '+ clonePath +' && git checkout ' + options.xt.gitVersion, { cwd: clonePath, stdio: 'ignore' });
-        proc.execSync('cd '+ clonePath +' && git submodule update --init');
+        proc.spawnSync('git', [ 'checkout', options.xt.gitVersion ], { cwd: clonePath.xt.dist, stdio: 'ignore' });
+        proc.spawnSync('git', [ 'submodule', 'update', '--init' ], { cwd: clonePath, stdio: 'ignore' });
       }
 
       if (_.isEmpty(options.xt.nodeVersion)) {
@@ -88,17 +88,15 @@ var xtInstall = _.extend(exports, lib.task, /** @exports xtuple-server-xt-instal
       // npm install no matter what. this way, partial npm installs are always
       // recoverable without manual intervention
       log.http('xt-install', 'installing npm module...');
-      proc.execSync([ 'cd', clonePath, '&& npm install --unsafe-perm' ].join(' '), { cwd: clonePath });
+      proc.spawnSync('npm', [ 'install', '--unsafe-perm' ], { cwd: clonePath, stdio: 'ignore' });
 
       if (!fs.existsSync(deployPath)) {
-
         log.info('xt-install', 'copying files...');
         if (!fs.existsSync(deployPath)) {
           mkdirp.sync(deployPath);
         }
         // copy main repo files to user's home directory
-        var rsync = proc.execSync([ 'rsync -ar --exclude=.git', clonePath + '/*', deployPath ].join(' '));
-          
+        proc.spawnSync('rsync', [ '-ar', '--exclude=.git', clonePath + '/*', deployPath ]);
         proc.execSync([ 'chown -R', options.xt.name, deployPath ].join(' '));
         proc.execSync('chmod -R u=rwx ' + deployPath);
       }
