@@ -73,10 +73,8 @@ var xtInstall = _.extend(exports, lib.task, /** @exports xtuple-server-xt-instal
       if (!fs.existsSync(path.resolve(clonePath, 'node_modules'))) {
         rimraf.sync(clonePath);
 
-        proc.spawnSync('git', [ 'clone', '--recursive', protocol + 'xtuple/' + repo + '.git'], {
-          cwd: options.xt.dist, stdio: 'ignore'
-        });
-        proc.spawnSync('git', [ 'checkout', options.xt.gitVersion ], { cwd: options.xt.dist, stdio: 'ignore' });
+        proc.spawnSync('git', [ 'clone', '--recursive', protocol + 'xtuple/' + repo + '.git', clonePath ], { stdio: 'ignore' });
+        proc.spawnSync('git', [ 'checkout', options.xt.gitVersion ], { cwd: clonePath, stdio: 'ignore' });
         proc.spawnSync('git', [ 'submodule', 'update', '--init' ], { cwd: clonePath, stdio: 'ignore' });
       }
 
