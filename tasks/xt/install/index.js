@@ -76,7 +76,7 @@ var xtInstall = _.extend(exports, lib.task, /** @exports xtuple-server-xt-instal
         proc.spawnSync('git', [ 'clone', '--recursive', protocol + 'xtuple/' + repo + '.git'], {
           cwd: options.xt.dist, stdio: 'ignore'
         });
-        proc.spawnSync('git', [ 'checkout', options.xt.gitVersion ], { cwd: clonePath.xt.dist, stdio: 'ignore' });
+        proc.spawnSync('git', [ 'checkout', options.xt.gitVersion ], { cwd: options.xt.dist, stdio: 'ignore' });
         proc.spawnSync('git', [ 'submodule', 'update', '--init' ], { cwd: clonePath, stdio: 'ignore' });
       }
 
