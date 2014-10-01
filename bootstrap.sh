@@ -66,7 +66,7 @@ install_node () {
   log "Installing node..."
   n 0.8 > /dev/null 2>&1
   n 0.10 > /dev/null 2>&1
-  n latest > /dev/null 2>&1
+  n 0.11.13 > /dev/null 2>&1
 
   log "Installing latest npm..."
   npm install -g npm@^1.4 --quiet
