@@ -32,7 +32,7 @@ describe('xTuple Server', function () {
 
   before(function () {
     this.timeout(300 * 1000); // 5 minutes
-    proc.execSync('cd '+ process.cwd() + ' && npm install xtuple@4.5', { stdio: 'inherit' });
+    //proc.execSync('cd '+ process.cwd() + ' && npm install xtuple@4.5', { stdio: 'inherit' });
   });
 
   describe('@cli', function () {
@@ -52,7 +52,7 @@ describe('xTuple Server', function () {
       it('should do something', function () {
         this.child = proc.execSync(
           // local-workspace path relative to ../
-          'xtuple-server uninstall-dev --local-workspace node_modules/xtuple --verbose'
+          'xtuple-server uninstall-dev --local-workspace xtuple --verbose'
         );
       });
     });
@@ -69,7 +69,7 @@ describe('xTuple Server', function () {
         plan: planObject.plan,
         type: 'dev',
         local: {
-          workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
+          workspace: path.resolve(process.cwd(), 'xtuple')
         },
         xt: {
           demo: true,
@@ -86,7 +86,7 @@ describe('xTuple Server', function () {
         plan: planObject.plan,
         type: 'dev',
         local: {
-          workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
+          workspace: path.resolve(process.cwd(), 'xtuple')
         },
         pg: {
           dbname: 'demo_dev'
@@ -107,7 +107,7 @@ describe('xTuple Server', function () {
         plan: planObject.plan,
         type: 'dev',
         local: {
-          workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
+          workspace: path.resolve(process.cwd(), 'xtuple')
         },
         pg: {
           dbname: 'demo_dev'
@@ -124,7 +124,7 @@ describe('xTuple Server', function () {
         plan: planObject.plan,
         type: 'dev',
         local: {
-          workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
+          workspace: path.resolve(process.cwd(), 'xtuple')
         },
         pg: {
           dbname: 'demo_dev_restored_test'
@@ -145,7 +145,7 @@ describe('xTuple Server', function () {
         plan: planObject.plan,
         type: 'dev',
         local: {
-          workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
+          workspace: path.resolve(process.cwd(), 'xtuple')
         },
         pg: {
           dbname: 'demo_dev'
@@ -162,7 +162,7 @@ describe('xTuple Server', function () {
         plan: planObject.plan,
         type: 'dev',
         local: {
-          workspace: path.resolve(process.cwd(), 'node_modules', 'xtuple')
+          workspace: path.resolve(process.cwd(), 'xtuple')
         },
         pg: {
           dbname: 'demo_dev_restored'
