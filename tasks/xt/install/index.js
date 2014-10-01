@@ -74,9 +74,9 @@ var xtInstall = _.extend(exports, lib.task, /** @exports xtuple-server-xt-instal
         rimraf.sync(clonePath);
 
         proc.execSync([ 'git clone --recursive', protocol + 'xtuple/' + repo + '.git', clonePath].join(' '), {
-          cwd: clonePath, stdio: 'ignore'
+          stdio: 'ignore'
         });
-        proc.execSync('cd '+ clonePath +' && git checkout ' + options.xt.gitVersion, { cwd: clonePath, stdio: 'ignore' });
+        proc.execSync('cd '+ clonePath +' && git checkout ' + options.xt.gitVersion, { stdio: 'ignore' });
         proc.execSync('cd '+ clonePath +' && git submodule update --init');
       }
 
@@ -88,7 +88,7 @@ var xtInstall = _.extend(exports, lib.task, /** @exports xtuple-server-xt-instal
       // npm install no matter what. this way, partial npm installs are always
       // recoverable without manual intervention
       log.http('xt-install', 'installing npm module...');
-      proc.execSync([ 'cd', clonePath, '&& npm install --unsafe-perm' ].join(' '), { cwd: clonePath });
+      proc.execSync([ 'cd', clonePath, '&& npm install --unsafe-perm' ].join(' '));
 
       if (!fs.existsSync(deployPath)) {
 
