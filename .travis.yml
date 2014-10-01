@@ -2,8 +2,14 @@ language: c
 
 before_install:
   - sudo bash bootstrap.sh
+  - git clone git@github.com:xtuple/xtuple.git --recursive
+  - cd xtuple
+  - n stable
+  - npm install
+  - cd ..
 
 install:
+  - n 0.11.13
   - npm install
   - npm install -g
 
@@ -16,10 +22,6 @@ after_failure:
   - cat npm-debug.log
   - cat nex-debug.log
   - cat xtuple-server-test.log
-
-before_deploy:
-  - git clean -fxd
-  - npm install -g npm
 
 deploy:
   provider: npm
