@@ -69,7 +69,7 @@ install_node () {
   n 0.11.13 > /dev/null 2>&1
 
   log "Installing latest npm..."
-  npm install -g npm@1.4.x --quiet
+  npm install -g npm@1.4.28 --quiet
   log "Installing latest nex..."
   npm install -g nex --quiet
 
