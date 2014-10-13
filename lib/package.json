@@ -4,7 +4,7 @@
   "description": "xTuple Server common lib",
   "main": "index.js",
   "scripts": {
-    "test": "mocha spec/ -R spec -b -t 10000"
+    "test": "mocha spec/ -R spec -b -t 10000 -ig 'sudo'"
   },
   "repository": {
     "type": "git",
