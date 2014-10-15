@@ -11,7 +11,13 @@ _.extend(exports, lib.task, /** @exports xtuple-server-pg-backup */ {
   options: {
     dbname: {
       optional: '[dbname]',
-      description: 'Name of database to backup'
+      description: 'Name of database to backup',
+      validate: function (value) {
+        if (!value) {
+          throw new Error('Please provide the name of the database to back up');
+        }
+        return value;
+      }
     }
   },
 
