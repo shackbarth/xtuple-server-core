@@ -22,9 +22,9 @@ install_debian () {
       | tee -a $logfile
   fi
 
-  apt-get -qq purge nodejs* --force-yes > /dev/null 2>&1
-  apt-get -qq purge npm* --force-yes > /dev/null 2>&1
-  apt-get -qq remove postgres* --force-yes > /dev/null 2>&1
+  apt-get -qq purge ^nodejs --force-yes > /dev/null 2>&1
+  apt-get -qq purge ^npm --force-yes > /dev/null 2>&1
+  apt-get -qq purge ^postgres --force-yes > /dev/null 2>&1
   
   if [[ $version =~ '12.04' ]]; then
     log "Adding custom Debian repositories for Ubuntu 12.04..."
@@ -48,7 +48,7 @@ install_debian () {
     postgresql-contrib-$XT_PG_VERSION postgresql-$XT_PG_VERSION-plv8 \
     libavahi-compat-libdnssd-dev \
     perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python \
-    couchdb --force-yes | tee -a $logfile > /dev/null 2>&1
+    --force-yes | tee -a $logfile > /dev/null 2>&1
 
   log "Cleaning up packages..."
   apt-get -qq autoremove --force-yes > /dev/null 2>&1
