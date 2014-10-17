@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-pg-backup",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "xTuple Server Task [pg.backup]: backup a database",
   "main": "index.js",
   "scripts": {
