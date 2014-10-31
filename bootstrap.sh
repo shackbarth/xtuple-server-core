@@ -2,13 +2,10 @@
 
 logfile=$(pwd)/bootstrap.log
 
-install_debian () {
-  log "Checking Operating System..."
-  dist=$(lsb_release -sd)
+install_ubuntu () {
   version=$(lsb_release -sr)
   animal=$(lsb_release -sc)
 
-  [[ $dist =~ 'Ubuntu' ]] || die "Linux distro not supported"
   [[ $version =~ '12.04' || $version =~ '14.04' ]] || die "Ubuntu version not supported"
 
   log "Updating package lists..."
@@ -44,6 +41,50 @@ install_debian () {
 
   apt-get -qq install \
     curl build-essential libssl-dev openssh-server cups git-core nginx-full apache2-utils vim \
+    postgresql-$XT_PG_VERSION postgresql-server-dev-$XT_PG_VERSION \
+    postgresql-contrib-$XT_PG_VERSION postgresql-$XT_PG_VERSION-plv8 \
+    libavahi-compat-libdnssd-dev \
+    perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python \
+    --force-yes | tee -a $logfile > /dev/null 2>&1
+
+  log "Cleaning up packages..."
+  apt-get -qq autoremove --force-yes > /dev/null 2>&1
+}
+
+install_debian () {
+  version=$(lsb_release -sr)
+  animal=$(lsb_release -sc)
+
+  [[ $version =~ '7.7' ]] || die "Debian version not supported"
+
+  log "Updating package lists..."
+  apt-get -qq update | tee -a $logfile
+
+  log "Upgrading/Removing existing packages..."
+
+  apt-get -qq purge ^nodejs --force-yes > /dev/null 2>&1
+  apt-get -qq purge ^npm --force-yes > /dev/null 2>&1
+  apt-get -qq purge ^postgres --force-yes > /dev/null 2>&1
+  
+  log "Adding custom Debian repositories for Debian 7.7 ..."
+  #apt-get -qq install python-software-properties --force-yes
+
+  if [[ ! $(grep -Fxq pgdg /etc/apt/sources.list) && ! $(grep -Fxq pgdg /etc/apt/sources.list.d/pgdg.list) ]]; then
+    wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - > /dev/null 2>&1
+    echo "deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list 2>&1
+  fi
+
+  #add-apt-repository ppa:nginx/stable -y > /dev/null 2>&1
+  #add-apt-repository ppa:git-core/ppa -y > /dev/null 2>&1
+  apt-get -qq update | tee -a $logfile
+
+  log "Installing Debian Packages (this will take a few minutes)..."
+  apt-get -qq install -t wheezy-backports \
+    git-core nginx-full \
+    --force-yes | tee -a $logfile > /dev/null 2>&1
+
+  apt-get -qq install \
+    curl build-essential libssl-dev openssh-server cups apache2-utils vim zsh \
     postgresql-$XT_PG_VERSION postgresql-server-dev-$XT_PG_VERSION \
     postgresql-contrib-$XT_PG_VERSION postgresql-$XT_PG_VERSION-plv8 \
     libavahi-compat-libdnssd-dev \
@@ -118,7 +159,18 @@ log "          xxx   xxx "
 log "         xxx     xxx\n"
 
 if [[ ! -z $(which apt-get) ]]; then
-  install_debian
+  
+  log "Checking Operating System..."
+  dist=$(lsb_release -sd)
+  
+  if [[ $dist =~ 'Ubuntu' ]]; then
+      install_ubuntu
+  elif [[ $dist =~ 'Debian' ]]; then
+      install_debian
+  else
+      die "Linux distro not supported"
+  fi
+
   install_node
   setup
   echo ''
