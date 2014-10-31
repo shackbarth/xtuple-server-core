@@ -82,7 +82,7 @@ install_node () {
 }
 
 setup () {
-  pg_dropcluster 9.3 main --stop > /dev/null 2>&1
+  #pg_dropcluster 9.3 main --stop > /dev/null 2>&1
 
   # TODO solve
   chmod -R 777 /var/run/postgresql
