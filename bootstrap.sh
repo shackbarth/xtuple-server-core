@@ -67,15 +67,17 @@ install_debian () {
   apt-get -qq purge ^postgres --force-yes > /dev/null 2>&1
   
   log "Adding custom Debian repositories for Debian 7.7 ..."
-  #apt-get -qq install python-software-properties --force-yes
 
   if [[ ! $(grep -Fxq pgdg /etc/apt/sources.list) && ! $(grep -Fxq pgdg /etc/apt/sources.list.d/pgdg.list) ]]; then
     wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - > /dev/null 2>&1
     echo "deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list 2>&1
   fi
 
-  #add-apt-repository ppa:nginx/stable -y > /dev/null 2>&1
-  #add-apt-repository ppa:git-core/ppa -y > /dev/null 2>&1
+  # adds wheezy-backports in order to get newer versions of git and nginx
+  if [[ ! $(grep -Fxq backports /etc/apt/sources.list) && ! $(grep -Fxq backports /etc/apt/sources.list.d/backports.list) ]]; then
+    echo "deb http://http.debian.net/debian wheezy-backports main" | tee /etc/apt/sources.list.d/backports.list 2>&1
+  fi
+
   apt-get -qq update | tee -a $logfile
 
   log "Installing Debian Packages (this will take a few minutes)..."
