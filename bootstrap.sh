@@ -80,7 +80,7 @@ install_debian () {
 
   log "Installing Debian Packages (this will take a few minutes)..."
   apt-get -qq install -t wheezy-backports \
-    git-core nginx-full \
+    git nginx-full \
     --force-yes | tee -a $logfile > /dev/null 2>&1
 
   apt-get -qq install \
