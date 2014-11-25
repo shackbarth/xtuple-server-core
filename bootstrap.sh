@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -o pipefail
+
 logfile=$(pwd)/bootstrap.log
 
 install_debian () {
@@ -43,15 +45,50 @@ install_debian () {
   log "Installing Debian Packages (this will take a few minutes)..."
 
   apt-get -qq install \
-    curl build-essential libssl-dev openssh-server cups git-core nginx-full apache2-utils vim \
+    curl build-essential libssl-dev openssh-server cups git-core \
+    nginx-full apache2-utils vim xvfb \
     postgresql-$XT_PG_VERSION postgresql-server-dev-$XT_PG_VERSION \
     postgresql-contrib-$XT_PG_VERSION postgresql-$XT_PG_VERSION-plv8 \
     libavahi-compat-libdnssd-dev \
-    perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python \
+    perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime \
+    libio-pty-perl apt-show-versions python \
     --force-yes | tee -a $logfile > /dev/null 2>&1
 
   log "Cleaning up packages..."
   apt-get -qq autoremove --force-yes > /dev/null 2>&1
+}
+
+install_openrpt() {
+  local STARTDIR=$PWD
+  local WORKINGDIR=${TMPDIR:-/tmp}
+
+  apt-get -qq install openrpt --force-yes
+  if DISPLAY=:-1 rptrender --help | grep -q rptrender ; then
+    # if rptrender supports --help, it supports the other options we need, too
+    log "OpenRPT package will suffice"
+  else
+    [ -d $WORKINGDIR ] || mkdir -p $WORKINGDIR || die "Couldn't mkdir $WORKINGDIR"
+    cd $WORKINGDIR || die "Couldn't change to $WORKINGDIR"
+
+    # build from source:-(
+    rm -rf openrpt
+    git clone https://github.com/xtuple/openrpt.git |& tee -a $logfile || die "Can't clone openrpt"
+    apt-get install -qq --force-yes qt4-qmake libqt4-dev libqt4-sql-psql |& tee -a $logfile || die "Can't install Qt tools"
+    cd openrpt  || die "Can't cd openrpt"
+# TODO: remove the remote creation when the branch is merged
+git remote add GILMOSKOWITZ https://github.com/gilmoskowitz/openrpt.git |& tee -a $LOGFILE || die "Couldn't add git remote"
+git fetch GILMOSKOWITZ
+# TODO: checkout version tag unless master becomes 'latest stable release'
+git checkout GILMOSKOWITZ/ghXtuple2024_connectOpenrptToSocketDir |& tee -a $logfile || die "Couldn't check out the right OpenRPT code"
+    qmake |& tee -a $logfile    || die "Can't qmake openrpt"
+    make > /dev/null            || die "Can't build openrpt"
+    mkdir -p /usr/local/bin     || die "Couldn't make /usr/local/bin"
+    mkdir -p /usr/local/lib     || die "Couldn't make /usr/local/lib"
+    tar cf - bin lib | (cd /usr/local ; tar xf -) || die "Error installing OpenRPT"
+    ldconfig |& tee -a $logfile || die "ldconfig failed"
+  fi
+
+  cd $STARTDIR || die "Couldn't return to $STARTDIR"
 }
 
 install_node () {
@@ -103,6 +140,8 @@ die() {
 
 trap 'CODE=$? ; log "\n\nxTuple bootstrap Aborted:\n  line: $BASH_LINENO \n  cmd: $BASH_COMMAND \n  code: $CODE\n  msg: $TRAPMSG\n" ; exit 1' ERR
 
+[ $(id -u) -eq 0 ] || die "You must run this script as root"
+
 if [[ -z $XT_PG_VERSION ]]; then
   export XT_PG_VERSION="9.3"
 fi
@@ -119,6 +158,7 @@ log "         xxx     xxx\n"
 
 if [[ ! -z $(which apt-get) ]]; then
   install_debian
+  install_openrpt
   install_node
   setup
   echo ''
