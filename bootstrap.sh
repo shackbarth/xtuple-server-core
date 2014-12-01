@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -o pipefail
+
 logfile=$(pwd)/bootstrap.log
 
 install_debian () {
@@ -12,14 +14,14 @@ install_debian () {
   [[ $version =~ '12.04' || $version =~ '14.04' ]] || die "Ubuntu version not supported"
 
   log "Updating package lists..."
-  apt-get -qq update | tee -a $logfile
+  apt-get -qq update |& tee -a $logfile  || die "Could not update package lists"
 
   log "Upgrading/Removing existing packages..."
 
   # do not run upgrade in CI environment
   if [[ -z $TRAVIS ]]; then
     sudo DEBIAN_FRONTEND=noninteractive apt-get -qq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --force-yes upgrade \
-      | tee -a $logfile
+      |& tee -a $logfile
   fi
 
   apt-get -qq purge ^nodejs --force-yes > /dev/null 2>&1
@@ -37,7 +39,7 @@ install_debian () {
 
     add-apt-repository ppa:nginx/stable -y > /dev/null 2>&1
     add-apt-repository ppa:git-core/ppa -y > /dev/null 2>&1
-    apt-get -qq update | tee -a $logfile
+    apt-get -qq update |& tee -a $logfile
   fi
   
   log "Installing Debian Packages (this will take a few minutes)..."
@@ -48,7 +50,7 @@ install_debian () {
     postgresql-contrib-$XT_PG_VERSION postgresql-$XT_PG_VERSION-plv8 \
     libavahi-compat-libdnssd-dev \
     perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python \
-    --force-yes | tee -a $logfile > /dev/null 2>&1
+    --force-yes |& tee -a $logfile > /dev/null 2>&1
 
   log "Cleaning up packages..."
   apt-get -qq autoremove --force-yes > /dev/null 2>&1
@@ -68,10 +70,10 @@ install_node () {
   n 0.10 > /dev/null 2>&1
   n 0.11.13 > /dev/null 2>&1
 
-  log "Installing latest npm..."
-  npm install -g npm@1.4.28 --quiet
-  log "Installing latest nex..."
-  npm install -g nex --quiet
+  for GLOBALPKG in npm@1.4.28 nex bower ; do
+    log "Installing $GLOBALPKG ..."
+    npm install -g $GLOBALPKG --quiet |& tee -a $logfile || die "Could not install $GLOBALPKG"
+  done
 
   echo "export NODE_PATH=/usr/local/lib/node_modules" > /etc/profile.d/nodepath.sh
   update-locale LANG=en_US.UTF-8
