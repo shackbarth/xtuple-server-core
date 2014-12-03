@@ -80,7 +80,8 @@ install_openrpt() {
     OPENRPT_VER=master #TODO: OPENRPT_VER=`latest stable release`
     git checkout -q $OPENRPT_VER |& tee -a $logfile || die "Can't checkout openrpt"
     qmake                        |& tee -a $logfile || die "Can't qmake openrpt"
-    make -j $[2 * $(nproc)] > /dev/null |& tee -a $logfile || die "Can't make openrpt"
+  # make -j $[2 * $(nproc)] > /dev/null |& tee -a $logfile || die "Can't make openrpt"
+    make                                |& tee -a $logfile || die "Can't make openrpt"
     mkdir -p /usr/local/bin                         || die "Can't make /usr/local/bin"
     mkdir -p /usr/local/lib                         || die "Can't make /usr/local/lib"
     tar cf - bin lib | (cd /usr/local ; tar xf -)   || die "Can't install OpenRPT"
