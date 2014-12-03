@@ -68,24 +68,23 @@ install_openrpt() {
     log "OpenRPT package will suffice"
   else
     [ -d $WORKINGDIR ] || mkdir -p $WORKINGDIR || die "Couldn't mkdir $WORKINGDIR"
-    cd $WORKINGDIR || die "Couldn't change to $WORKINGDIR"
+    cd $WORKINGDIR                             || die "Couldn't cd $WORKINGDIR"
 
-    # build from source:-(
+    log "building OpenRPT from source:-("
     rm -rf openrpt
-    git clone https://github.com/xtuple/openrpt.git |& tee -a $logfile || die "Can't clone openrpt"
-    apt-get install -qq --force-yes qt4-qmake libqt4-dev libqt4-sql-psql |& tee -a $logfile || die "Can't install Qt tools"
-    cd openrpt  || die "Can't cd openrpt"
-# TODO: remove the remote creation when the branch is merged
-git remote add GILMOSKOWITZ https://github.com/gilmoskowitz/openrpt.git |& tee -a $LOGFILE || die "Couldn't add git remote"
-git fetch GILMOSKOWITZ
-# TODO: checkout version tag unless master becomes 'latest stable release'
-git checkout GILMOSKOWITZ/ghXtuple2024_connectOpenrptToSocketDir |& tee -a $logfile || die "Couldn't check out the right OpenRPT code"
-    qmake |& tee -a $logfile    || die "Can't qmake openrpt"
-    make > /dev/null            || die "Can't build openrpt"
-    mkdir -p /usr/local/bin     || die "Couldn't make /usr/local/bin"
-    mkdir -p /usr/local/lib     || die "Couldn't make /usr/local/lib"
-    tar cf - bin lib | (cd /usr/local ; tar xf -) || die "Error installing OpenRPT"
-    ldconfig |& tee -a $logfile || die "ldconfig failed"
+    git clone -q https://github.com/xtuple/openrpt.git |& \
+                                    tee -a $logfile || die "Can't clone openrpt"
+    apt-get install -qq --force-yes qt4-qmake libqt4-dev libqt4-sql-psql |& \
+                                    tee -a $logfile || die "Can't install Qt"
+    cd openrpt                                      || die "Can't cd openrpt"
+    OPENRPT_VER=master #TODO: OPENRPT_VER=`latest stable release`
+    git checkout -q $OPENRPT_VER |& tee -a $logfile || die "Can't checkout openrpt"
+    qmake                        |& tee -a $logfile || die "Can't qmake openrpt"
+    make -j $[2 * $(nproc)] > /dev/null |& tee -a $logfile || die "Can't make openrpt"
+    mkdir -p /usr/local/bin                         || die "Can't make /usr/local/bin"
+    mkdir -p /usr/local/lib                         || die "Can't make /usr/local/lib"
+    tar cf - bin lib | (cd /usr/local ; tar xf -)   || die "Can't install OpenRPT"
+    ldconfig                     |& tee -a $logfile || die "ldconfig failed"
   fi
 
   cd $STARTDIR || die "Couldn't return to $STARTDIR"
