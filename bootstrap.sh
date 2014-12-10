@@ -9,12 +9,9 @@ install_debian () {
   dist=$(lsb_release -sd)
   version=$(lsb_release -sr)
   animal=$(lsb_release -sc)
-
-  [[ $dist =~ 'Ubuntu' ]] || die "Linux distro not supported"
-  [[ $version =~ '12.04' || $version =~ '14.04' ]] || die "Ubuntu version not supported"
-
-  log "Updating package lists..."
-  apt-get -qq update |& tee -a $logfile  || die "Could not update package lists"
+  
+  [[ $dist =~ 'Ubuntu' || $dist =~ 'Debian' ]] || die "$dist linux distribution not supported"
+  [[ $version =~ '12.04' || $version =~ '14.04' || $version =~ '7.7' ]] || die "$dist version not supported"
 
   log "Upgrading/Removing existing packages..."
 
@@ -39,14 +36,40 @@ install_debian () {
 
     add-apt-repository ppa:nginx/stable -y > /dev/null 2>&1
     add-apt-repository ppa:git-core/ppa -y > /dev/null 2>&1
-    apt-get -qq update |& tee -a $logfile
   fi
   
-  log "Installing Debian Packages (this will take a few minutes)..."
+  if [[ $version =~ '7.7' ]]; then
+    log "Adding custom Debian repositories for Debian 7.7 ..."
+
+    if [[ ! $(grep -Fxq pgdg /etc/apt/sources.list) && ! $(grep -Fxq pgdg /etc/apt/sources.list.d/pgdg.list) ]]; then
+      wget -qO- https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - > /dev/null 2>&1
+      echo "deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list 2>&1
+    fi
+
+    # adds wheezy-backports in order to get newer versions of git and nginx
+    if [[ ! $(grep -Fxq backports /etc/apt/sources.list) && ! $(grep -Fxq backports /etc/apt/sources.list.d/backports.list) ]]; then
+      echo "deb http://http.debian.net/debian wheezy-backports main" | tee /etc/apt/sources.list.d/backports.list 2>&1
+    fi
+  fi
+
+  log "Updating package lists..."
+  apt-get -qq update |& tee -a $logfile  || die "Could not update package lists"
+
+  log "Installing Packages (this will take a few minutes)..."
+
+  if [[ $version =~ '12.04' || $version =~ '14.04' ]]; then
+    apt-get -qq install \
+      git-core nginx-full \
+      --force-yes |& tee -a $logfile > /dev/null 2>&1
+  elif [[ $version =~ '7.7' ]]; then
+    apt-get -qq install -t wheezy-backports \
+      git nginx-full \
+      --force-yes | tee -a $logfile > /dev/null 2>&1
+  fi
 
   apt-get -qq install \
-    curl build-essential libssl-dev openssh-server cups git-core \
-    nginx-full apache2-utils vim xvfb \
+    curl build-essential libssl-dev openssh-server cups \
+    apache2-utils vim xvfb \
     postgresql-$XT_PG_VERSION postgresql-server-dev-$XT_PG_VERSION \
     postgresql-contrib-$XT_PG_VERSION postgresql-$XT_PG_VERSION-plv8 \
     libavahi-compat-libdnssd-dev \
