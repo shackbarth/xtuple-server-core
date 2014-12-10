@@ -6,9 +6,9 @@ logfile=$(pwd)/bootstrap.log
 
 install_debian () {
   log "Checking Operating System..."
+  dist=$(lsb_release -sd)
   version=$(lsb_release -sr)
   animal=$(lsb_release -sc)
-  dist=$(lsb_release -sd)
   
   [[ $dist =~ 'Ubuntu' || $dist =~ 'Debian' ]] || die "$dist linux distribution not supported"
   [[ $version =~ '12.04' || $version =~ '14.04' || $version =~ '7.7' ]] || die "$dist version not supported"
