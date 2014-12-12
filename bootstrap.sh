@@ -14,6 +14,7 @@ install_debian () {
   [[ $version =~ '12.04' || $version =~ '14.04' || $version =~ '7.7' ]] || die "$dist version not supported"
 
   log "Upgrading/Removing existing packages..."
+  apt-get -qq update |& tee -a $logfile  || die "Could not update package lists"
 
   # do not run upgrade in CI environment
   if [[ -z $TRAVIS ]]; then
