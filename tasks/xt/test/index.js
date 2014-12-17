@@ -10,9 +10,22 @@ _.extend(exports, lib.task, /** @exports xtuple-server-xt-test */ {
 
   /** @override */
   executeTask: function (options) {
+    var configFileName = path.resolve(options.xt.coredir, 'node-datasource/config.js');
     if (options.xt.demo) {
       options.xt.testdb = 'demo_' + options.type;
       exports.writeLoginData(options);
+    }
+    // try to back up a real pre-existing config.js
+    try {
+      var configFileStat = fs.lstatSync(configFileName);
+      if (configFileStat.isSymbolicLink(configFileName)) {
+        fs.unlinkSync(configFileName);
+      }
+      else if (configFileStat.isFile()) {
+        fs.renameSync(configFileName, configFileName + '.' + Date.now());
+      }
+    } catch (e) {
+      try { fs.unlinkSync(configFileName); } catch (e) {}
     }
     fs.symlinkSync(options.xt.configfile, path.resolve(options.xt.coredir, 'node-datasource/config.js'));
   },

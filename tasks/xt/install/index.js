@@ -49,15 +49,30 @@ var xtInstall = _.extend(exports, lib.task, /** @exports xtuple-server-xt-instal
     }
   },
 
+  /**
+   * Execute a process synchronously, including logging.
+   * TODO: return the exit code to allow callers to check & handle errors
+   * TODO: move to lib/util.js
+   */
+  runCmd: function (command, options) {
+    var cmdStr = _.isArray(command) ? command.join(' ') : command,
+        result;
+    log.info('cmd', cmdStr);
+    try {
+      result = _.isObject(options) ? proc.execSync(cmdStr, options)
+                                   : proc.execSync(cmdStr);
+    } catch (e) {
+      log.error('cmd', 'command failed: ' + cmdStr);
+      log.info('cmd', result);
+      throw e;
+    }
+    log.silly('cmd', result);
+    return result;
+  },
+
   /** @override */
   executeTask: function (options) {
-    var latest = path.resolve(__dirname, 'node_modules', 'node-latest-version', 'index.js');
     var protocol = process.env.CI ? 'git@github.com:' : 'https://github.com/';
-
-    if (options.planName === 'install-dev') {
-      log.info('xt-install', 'local-workspace expected to already be npm-installed. skipping');
-      return;
-    }
 
     // FIXME this needs to be validated more thoroughly
     if (!_.isEmpty(options.xt.ghuser) && !_.isEmpty(options.xt.ghpass)) {
@@ -65,43 +80,41 @@ var xtInstall = _.extend(exports, lib.task, /** @exports xtuple-server-xt-instal
     }
 
     _.each(lib.util.getRepositoryList(options), function (repo) {
-      var clonePath = path.resolve(options.xt.dist, repo),
-        deployPath = path.resolve(options.xt.userdist, repo);
+      var clonePath   = path.resolve(options.xt.dist, repo),
+          deployPath  = path.resolve(options.xt.userdist, repo),
+          gitVersion  = options.xt.gitVersions || 'master';
 
-      // FIXME all this stuff should be done through npm
-      log.http('xt-install', 'downloading', repo, options.xt.gitVersion);
-      if (!fs.existsSync(path.resolve(clonePath, 'node_modules'))) {
+      // preserve dev environments, create or replace non-dev environments
+      if (fs.existsSync(clonePath) && options.planName !== 'install-dev') {
         rimraf.sync(clonePath);
-
-        proc.execSync([ 'git clone --recursive', protocol + 'xtuple/' + repo + '.git', clonePath].join(' '), {
-          stdio: 'ignore'
-        });
-        proc.execSync('cd '+ clonePath +' && git checkout ' + options.xt.gitVersion, { stdio: 'ignore' });
-        proc.execSync('cd '+ clonePath +' && git submodule update --init');
       }
 
+      if (! fs.existsSync(clonePath)) {
+        log.http('xt-install', 'downloading', repo, gitVersion);
+        exports.runCmd('git clone --recursive ' + protocol + 'xtuple/' + repo + '.git ' + clonePath,
+                          { stdio: 'ignore' });
+        exports.runCmd('cd ' + clonePath + ' && git checkout ' + gitVersion,
+                          { stdio: 'ignore' });
+      }
+      exports.runCmd('cd ' + clonePath + ' && git submodule update --init --recursive');
+
+      // always npm install to handle fresh checkouts and prior partial installs
       if (_.isEmpty(options.xt.nodeVersion)) {
         lib.util.resolveNodeVersion(options, clonePath);
         n(options.xt.nodeVersion);
       }
-
-      // npm install no matter what. this way, partial npm installs are always
-      // recoverable without manual intervention
-      log.http('xt-install', 'installing npm module...');
-      proc.execSync([ 'cd', clonePath, '&& npm install --unsafe-perm' ].join(' '));
+      log.http('xt-install', 'installing npm modules...');
+      log.info(exports.runCmd("/usr/local/bin/npm version | awk '/node/ {print $2}'"));
+      exports.runCmd('cd ' + clonePath + ' && /usr/local/bin/npm install --unsafe-perm');
 
       if (!fs.existsSync(deployPath)) {
-
-        log.info('xt-install', 'copying files...');
-        if (!fs.existsSync(deployPath)) {
-          mkdirp.sync(deployPath);
-        }
-        // copy main repo files to user's home directory
-        var rsync = proc.execSync([ 'rsync -ar --exclude=.git', clonePath + '/*', deployPath ].join(' '));
-          
-        proc.execSync([ 'chown -R', options.xt.name, deployPath ].join(' '));
-        proc.execSync('chmod -R u=rwx ' + deployPath);
+        mkdirp.sync(deployPath);
       }
+      log.info('xt-install', 'copying files...');
+      // copy main repo files to user's home directory
+      exports.runCmd([ 'rsync -ar --exclude=.git', clonePath + '/*', deployPath ]);
+      exports.runCmd([ 'chown -R', options.xt.name, deployPath ]);
+      exports.runCmd('chmod -R u=rwx ' + deployPath);
     });
   },
 
