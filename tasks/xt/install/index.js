@@ -51,7 +51,7 @@ var xtInstall = _.extend(exports, lib.task, /** @exports xtuple-server-xt-instal
 
   /** @override */
   executeTask: function (options) {
-    var protocol = process.env.CI ? 'git@github.com:' : 'https://github.com/';
+    var protocol = process.env.CI ? 'git://github.com/' : 'https://github.com/';
 
     // FIXME this needs to be validated more thoroughly
     if (!_.isEmpty(options.xt.ghuser) && !_.isEmpty(options.xt.ghpass)) {
