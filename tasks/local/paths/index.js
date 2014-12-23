@@ -28,10 +28,16 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
       value: process.cwd(),
       validate: function (value) {
         log.info('local-workspace', value);
-        var pkg = require(path.resolve(value, 'package'));
+        var pkg;
+        try {
+          pkg = require(path.resolve(value, 'package'));
+        } catch (e) {}
 
         if (!_.isObject(pkg) || pkg.name !== 'xtuple') {
-          throw new Error('Run this command from xtuple git directory, or correctly set --local-workspace <path_to_xtuple>');
+          throw new Error("Can't find the xtuple package. Make sure you have " +
+                          "cloned xtuple.git. Then either run this command "   +
+                          "from the xtuple git directory or set "              +
+                          "--local-workspace <path_to_xtuple>");
         }
 
         return value;
