@@ -1,6 +1,5 @@
 var lib = require('xtuple-server-lib'),
   _ = require('lodash'),
-  exec = require('child_process').execSync,
   format = require('string-format'),
   fs = require('fs'),
   path = require('path');
@@ -59,6 +58,7 @@ _.extend(exports, lib.task, /** @exports hba */ {
 
     fs.unlinkSync(hba_target);
     fs.writeFileSync(hba_target, hba_conf);
+    lib.util.runCmd([ 'chown', options.xt.name, hba_target ]);
 
     exports.createClientCert(options);
 
@@ -75,14 +75,14 @@ _.extend(exports, lib.task, /** @exports hba */ {
     // create a client key and a signing request against the installed domain
     // cert
     // TODO use some openssl npm module instead of calling 'exec'
-    exec([
+    lib.util.runCmd([
         'openssl req -new -nodes',
         '-keyout {pg.outkey}',
         '-out {xt.ssldir}/{xt.name}.csr',
         '-subj \'/CN={nginx.domain}\''
     ].join(' ').format(options));
 
-    exec([
+    lib.util.runCmd([
         'openssl x509 -req -CAcreateserial',
         '-in {xt.ssldir}/{xt.name}.csr',
         '-CAkey {nginx.outkey}',
@@ -91,12 +91,12 @@ _.extend(exports, lib.task, /** @exports hba */ {
     ].join(' ').format(options));
 
     // copy the ca cert into the postgres data dir
-    exec('cp {pg.cacrt} {pg.outcacrt}'.format(options));
+    lib.util.runCmd('cp {pg.cacrt} {pg.outcacrt}'.format(options));
 
-    exec('chown {xt.name}:ssl-cert {pg.outcacrt}'.format(options));
-    exec('chown {xt.name}:{xt.name} {pg.outcacrt}'.format(options));
-    exec('chown {xt.name}:ssl-cert {pg.outcrt}'.format(options));
-    exec('chown {xt.name}:{xt.name} {pg.outkey}'.format(options));
+    lib.util.runCmd('chown {xt.name}:ssl-cert {pg.outcacrt}'.format(options));
+    lib.util.runCmd('chown {xt.name}:{xt.name} {pg.outcacrt}'.format(options));
+    lib.util.runCmd('chown {xt.name}:ssl-cert {pg.outcrt}'.format(options));
+    lib.util.runCmd('chown {xt.name}:{xt.name} {pg.outkey}'.format(options));
 
     fs.chmodSync(options.pg.outcrt, '600');
     fs.chmodSync(options.pg.outkey, '600');

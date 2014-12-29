@@ -1,8 +1,6 @@
 var lib = require('xtuple-server-lib'),
-  rimraf = require('rimraf'),
   mkdirp = require('mkdirp'),
   path = require('path'),
-  colors = require('colors'),
   fs = require('fs'),
   _ = require('lodash'),
   home = require('home-dir'),
@@ -131,10 +129,13 @@ _.extend(exports, lib.task, /** @exports xtuple-server-local-paths */ {
 
     mkdirp.sync(options.xt.dist);
     mkdirp.sync(options.xt.configdir);
+
     mkdirp.sync(options.xt.ssldir);
     mkdirp.sync(options.xt.logdir);
     mkdirp.sync(options.xt.rundir);
     mkdirp.sync(options.xt.socketdir);
     mkdirp.sync(options.xt.statedir);
+
+    fs.chmodSync(options.xt.configdir, '711');
   }
 });
