@@ -1,6 +1,6 @@
 {
   "name": "xtuple-server-lib",
-  "version": "1.0.9",
+  "version": "1.1.1",
   "description": "xTuple Server common lib",
   "main": "index.js",
   "scripts": {
@@ -22,6 +22,12 @@
     "tuple"
   ],
   "author": "xTuple",
+  "contributors": [{
+    "name": "Travis Webb"
+  }, {
+    "name": "Gil Moskowitz",
+    "email": "gmoskowitz@xtuple.com"
+  }],
   "license": "CPAL-1.0",
   "bugs": {
     "url": "https://github.com/xtuple/xtuple-server/issues"
