@@ -53,10 +53,10 @@ _.extend(exports, lib.task, /** @exports report */ {
     log.info('success', 'Database: %s\n', options.xt.database.list[0].dbname);
 
     log.info('success', 'The server will depend on where you have set up this instance');
-    log.info('success', 'and where you are trying to access it from.');
+    log.info('success', 'and where you are trying to access it from.\n');
     log.info('success', 'If you have set up the xTuple Server on a dedicated machine on');
     log.info('success', 'your network, you can access it from any other machine on the');
-    log.info('success', 'network using the server\'s network address.');
+    log.info('success', 'network using the server\'s network address.\n');
     log.info('success', 'If you are running this in a Vagrant sandbox per our demo-setup');
     log.info('success', 'guidelines and want to connect to it from the host computer,');
     log.info('success', 'enter 192.168.33.10.');
