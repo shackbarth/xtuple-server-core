@@ -40,7 +40,7 @@ function executePlan (plan, options) {
   planner.verifyOptions(plan, options);
 
   log.verbose('xtuple', 'Execution Plan: '),
-      
+
   log.verbose('xtuple', JSON.stringify(options, function (key, value) {
     return _.isEmpty(value) ? undefined : value;
   }, 2).split('\n'));
@@ -105,6 +105,7 @@ _.each(plans, function (plan, name) {
 
 program.command('*').action(function (cmd) {
   log.error('xtuple', 'Plan not found:' + cmd);
+  //process.exit(1);
 });
 
 program.parse(process.argv);
