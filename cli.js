@@ -105,7 +105,7 @@ _.each(plans, function (plan, name) {
 
 program.command('*').action(function (cmd) {
   log.error('xtuple', 'Plan not found:' + cmd);
-  process.exit(1);
+  //process.exit(1);
 });
 
 program.parse(process.argv);
