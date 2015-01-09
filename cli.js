@@ -12,6 +12,11 @@ var lib = require('xtuple-server-lib'),
   planner = require('./'),
   plans = require('./plans');
 
+// make the "commercial" plans available to this tool as well
+if (fs.existsSync(path.resolve(__dirname, "../xtuple-server"))) {
+  _.extend(plans, require("../xtuple-server/plans"));
+}
+
 /**
 * compile Commander's options list. I wish it accepted a json object; instead
 * we must populate it via api calls
